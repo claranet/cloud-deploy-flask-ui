@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Create an App' %}
+
+{% block content %}
+  <div class="container">
+    <form class="form form-horizontal" method="POST" action="/web/result" enctype="multipart/form-data">
+      <h1>App</h1>
+      <label>App Name</label>
+      <input type="text" tabindex="1" placeholder="Application Name" name="name" required>
+
+      <label>Region</label>
+      <select name="region">
+          <option>eu-west-1</option>
+          <option>us-east-1</option>
+      </select>
+
+      <label>Instance Type</label>
+      <select name="instance_type">
+       {% for it in types %}
+            <option>{{it}}</option>
+       {% endfor %}
+      </select>
+
+      <label>Env</label>
+      <select name="env">
+       {% for env in envs %}
+            <option>{{env}}</option>
+       {% endfor %}
+      </select>
+
+      <label>Role</label>
+      <select name="role">
+       {% for role in roles %}
+            <option>{{role}}</option>
+       {% endfor %}
+      </select>
+
+      <label>VPC</label>
+      <select name="vpc_id">
+       {% for vpc in vpcs %}
+            <option>{{vpc}}</option>
+       {% endfor %}
+      </select>
+
+        <h1>Module</h1>
+        <label>Name</label>
+        <input type="text" tabindex="" placeholder="Module Name" name="module-name" required>
+
+        <label>Git repository</label>
+        <input type="text" tabindex="" placeholder="https://github.com/test/test"  name="module-git_repo" required>
+
+        <label>Path</label>
+        <input type="text" tabindex="" placeholder="/var/www/test"  name="module-path" required>
+
+        <label>Scope</label>
+        <select name="module-scope"  tabindex="">
+            <option>code</option>
+            <option>system</option>
+        </select>
+
+        <label>Buildpack</label>
+        <input type="file" tabindex=""  name="module-build_pack" required>
+
+        <label>Post deploy</label>
+        <input type="file" tabindex=""  name="module-post_deploy" required>
+
+    <input type="submit" class="btnLogin" value="Create" tabindex="">
+  </form>
+</div>
+{% endblock %}
