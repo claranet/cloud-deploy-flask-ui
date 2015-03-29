@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Apps List' %}
+
+{% block page_content %}
+    {% for app in apps %}
+        <label>App {{app['name']}} actions:</label>
+        <div class="btn-group" role="group">
+            <form class="form form-horizontal" method="POST" action="/web/module-deploy" enctype="multipart/form-data">
+                <button type="submit" name="_id" value="{{app['_id']}}" class="btn btn-default">Deploy</button>
+            </form>
+            <form class="form form-horizontal" method="POST" action="/web/app-update" enctype="multipart/form-data">
+                <button type="submit" name="_id" value="{{app['_id']}}" class="btn btn-default">Edit</button>
+            </form>
+            <form class="form form-horizontal" method="POST" action="/web/app-delete" enctype="multipart/form-data">
+                <button type="submit" name="_id" value="{{app['_id']}}" class="btn btn-default">Delete</button>
+            </form>
+        </div>
+    {% endfor %}
+{% endblock %}

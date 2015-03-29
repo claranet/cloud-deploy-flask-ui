@@ -2,19 +2,17 @@
 
 {% set page_title = 'App Deployment - step 2' %}
 
-{% block content %}
-<form class="box login" method="POST" action="/web/create-job"
-    enctype="multipart/form-data">
-	<fieldset class="boxBody">
+{% block page_content %}
+    <form class="form form-horizontal" method="POST" action="/web/create-job" enctype="multipart/form-data">
+        <label>Select a Module to deploy</label>
+        <select name="module-name">
+            {% for module in modules %}
+                <option>{{module['name']}}</option>
+            {% endfor %}
+        </select>
 
-	  <label>Select a Module to deploy</label>
-      <select name="module-name">
-       {% for module in modules %}
-       <option>{{module['name']}}</option>
-       {% endfor %}
-      </select>
-      <input type=hidden value={{id}} name="app-id">
-	</fieldset>
-	<input type="submit" class="btnLogin" value="Deploy" tabindex="">
-</form>
+        <input type="hidden" value="{{id}}" name="app-id">
+
+        <input type="submit" value="Deploy" tabindex="">
+    </form>
 {% endblock %}

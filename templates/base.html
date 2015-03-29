@@ -3,6 +3,11 @@
 
 {% block title %}Morea GHOST - {{ page_title }}{% endblock %}
 
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='ghost.css')}}">
+{% endblock %}
+
 {% block navbar %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -22,7 +27,7 @@
                             Apps <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="/web/app-list">List Apps (TODO)</a></li>
+                            <li><a href="/web/app-list">List Apps</a></li>
                             <li><a href="/web/app-create">Create App</a></li>
                         </ul>
                         </li>
@@ -53,5 +58,7 @@
 
 {% block content %}
     <div class="container theme-showcase" role="main">
+        {% block page_content %}
+        {% endblock %}
     </div>
 {% endblock %}
