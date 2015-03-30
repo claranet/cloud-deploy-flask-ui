@@ -1,23 +1,48 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Apps List' %}
+{% set page_title = 'Applications List' %}
 
 {% block page_content %}
     <h1>Available Applications</h1>
-    <ol>
-    {% for app in apps %}
-        <li>
-            <label>{{app['name']}}</label>
-            <form class="form-inline" style="display: inline" method="POST" action="/web/module-deploy" enctype="multipart/form-data">
-                <button type="submit" name="_id" value="{{app['_id']}}" class="btn btn-default">Deploy</button>
-            </form>
-            <form class="form-inline" style="display: inline" method="POST" action="/web/app-update" enctype="multipart/form-data">
-                <button type="submit" name="_id" value="{{app['_id']}}" class="btn btn-default">Edit</button>
-            </form>
-            <form class="form-inline" style="display: inline" method="POST" action="/web/app-delete" enctype="multipart/form-data">
-                <button class="btn btn-default" type="submit" name="_id" value="{{app['_id']}}">Delete</button>
-            </form>
-        </li>
-    {% endfor %}
-    </ol>
+    <table class="table">
+        <caption>Applications are sorted by last modification date</caption>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Application Name</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th>Environment</th>
+                <th>Role</th>
+                <th>AWS Region</th>
+                <th>AWS Instance Type</th>
+                <th>AWS VPC</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in apps | sort(attribute='_updated') %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td style="white-space:nowrap;">
+                    {{ app['name'] }}
+                    <br>
+                    {{ app['_id'] }}
+                </td>
+                <td>{{ app['_created'] }}</td>
+                <td>{{ app['_updated'] }}</td>
+                <td>{{ app['env'] }}</td>
+                <td>{{ app['role'] }}</td>
+                <td style="white-space:nowrap;">{{ app['region'] }}</td>
+                <td style="white-space:nowrap;">{{ app['instance_type'] }}</td>
+                <td style="white-space:nowrap;">{{ app['vpc_id'] }}</td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/apps/{{ app['_id'] }}/deploy"><button class="btn btn-default">Deploy</button></a>
+                    <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-default">Edit</button></a>
+                    <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-default">Delete</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

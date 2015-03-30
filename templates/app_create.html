@@ -1,90 +1,27 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Create an App' %}
+{% set page_title = 'Create an Application' %}
 
 {% block page_content %}
-    <div class="container">
-        <form class="form-horizontal" method="POST" action="/web/app-create" enctype="multipart/form-data">
-            <h1>New Application</h1>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">App Name</label>
-                <input type="text" placeholder="Application Name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Region</label>
-                <select name="region">
-                    <option>eu-west-1</option>
-                    <option>us-east-1</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Instance Type</label>
-                <select name="instance_type">
-                    {% for it in types %}
-                        <option>{{it}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Env</label>
-                <select name="env">
-                    {% for env in envs %}
-                        <option>{{env}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
+    <h1>New Application</h1>
+    <form class="form-horizontal" method="POST" action="/web/apps/create" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
 
-                <label class="col-sm-2 control-label">Role</label>
-                <select name="role">
-                    {% for role in roles %}
-                        <option>{{role}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">VPC</label>
-                <select name="vpc_id">
-                    {% for vpc in vpcs %}
-                        <option>{{vpc}}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        {{ wtf.form_field(form.name, form_type='horizontal', placeholder='Application Name') }}
+        {{ wtf.form_field(form.region, form_type='horizontal') }}
+        {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
+        {{ wtf.form_field(form.env, form_type='horizontal') }}
+        {{ wtf.form_field(form.role, form_type='horizontal') }}
+        {{ wtf.form_field(form.vpc_id, form_type='horizontal') }}
 
-            <h2>Module</h2>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Name</label>
-                <input type="text" placeholder="Module Name" name="module-name" required>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Git repository</label>
-                <input type="text" placeholder="https://github.com/test/test"  name="module-git_repo" required>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Path</label>
-                <input type="text" placeholder="/var/www/test"  name="module-path" required>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Scope</label>
-                <select name="module-scope">  
-                    <option>code</option>
-                    <option>system</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Buildpack</label>
-                <input type="file" name="module-build_pack" required>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Post deploy</label>
-                <input type="file" name="module-post_deploy" required>
-            </div>
+        <h2>Module</h2>
+        {{ wtf.form_field(form.module_name, form_type='horizontal', placeholder='Module Name') }}
+        {{ wtf.form_field(form.module_git_repo, form_type='horizontal', placeholder='https://github.com/test/test') }}
+        {{ wtf.form_field(form.module_path, form_type='horizontal', placeholder='/var/www/test') }}
+        {{ wtf.form_field(form.module_scope, form_type='horizontal') }}
+        {{ wtf.form_field(form.module_build_pack, form_type='horizontal') }}
+        {{ wtf.form_field(form.module_post_deploy, form_type='horizontal') }}
 
-            <div class="form-group">
-                <div class="col-sm-offset-2">
-                    <button type="submit" class="btn btn-default">Create</button>
-                </div>
-            </div>
-        </form>
-    </div>
+        {{ wtf.form_field(form.submit, form_type='horizontal') }}
+    </form>
 {% endblock %}
