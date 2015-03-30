@@ -8,8 +8,8 @@
         <caption>Applications are sorted by last modification date</caption>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Application Name</th>
+                <th>#</th>
+                <th>Name / ID</th>
                 <th>Created</th>
                 <th>Modified</th>
                 <th>Environment</th>
@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for app in apps | sort(attribute='_updated') %}
+            {% for app in apps | sort(reverse=True, attribute='_updated') %}
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td style="white-space:nowrap;">

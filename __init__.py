@@ -4,11 +4,17 @@ from flask_wtf import Form
 from flask_wtf.file import FileField, FileRequired as FileRequiredValidator
 from wtforms import StringField, SelectField, SubmitField, HiddenField
 from wtforms.validators import DataRequired as DataRequiredValidator, Regexp as RegexpValidator
+
+from eve import RFC1123_DATE_FORMAT
+
 import aws_data
 import instance_role
 import env
+
 from base64 import b64encode
+from datetime import datetime
 import tempfile
+import traceback
 import os
 import sys
 import requests
@@ -24,6 +30,12 @@ url_jobs = 'http://localhost:5000/jobs'
 def get_ghost_apps():
     try:
         apps = requests.get(url_apps, headers=headers, auth=auth).json()['_items']
+        for app in apps:
+            try:
+                app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
+                app['_updated'] = datetime.strptime(app['_updated'], RFC1123_DATE_FORMAT)
+            except:
+                traceback.print_exc()
     except:
         apps = ['Failed to retrieve Apps']
 
