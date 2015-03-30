@@ -1,9 +1,14 @@
 from flask import Flask, render_template, request, make_response, flash
+
 from flask_bootstrap import Bootstrap
+
 from flask_wtf import Form
-from flask_wtf.file import FileField, FileRequired as FileRequiredValidator
-from wtforms import StringField, SelectField, SubmitField, HiddenField
-from wtforms.validators import DataRequired as DataRequiredValidator, Regexp as RegexpValidator
+from flask_wtf.file import FileField
+from flask_wtf.file import FileRequired as FileRequiredValidator
+
+from wtforms import HiddenField, RadioField, SelectField, StringField, SubmitField
+from wtforms.validators import DataRequired as DataRequiredValidator
+from wtforms.validators import Regexp as RegexpValidator
 
 from eve import RFC1123_DATE_FORMAT
 
@@ -111,6 +116,12 @@ class DeployAppForm(Form):
 
     submit = SubmitField('Deploy Application Module')
 
+class DeleteAppForm(Form):
+    etag = HiddenField(validators=[DataRequiredValidator()])
+    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()], choices=[('yes', 'Yes'), ('no', 'No')])
+
+    submit = SubmitField('Delete Application')
+
 # Web UI App
 def create_app():
     app = Flask(__name__)
@@ -158,8 +169,9 @@ def create_app():
             try:
                 message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=auth).content
                 print(message)
-                flash('Application created')
+                flash('Application created.')
             except:
+                traceback.print_exc()
                 message = 'Failed to create Application (%s)' % (sys.exc_info()[1])
 
             return render_template('action_completed.html', message=message)
@@ -175,7 +187,9 @@ def create_app():
         try:
             modules = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()['modules']
         except:
+            traceback.print_exc()
             modules = ['Failed to retrieve Application Modules']
+
         form.module_name.choices = [(module['name'], module['name']) for module in modules if module['scope'] == 'code']
 
         # Perform validation in POST case
@@ -194,14 +208,44 @@ def create_app():
 
             try:
                 message = requests.post(url=url_jobs, data=json.dumps(job), headers=headers, auth=auth).content
-                flash('Job created')
+                print(message)
+                flash('Job created.')
             except:
+                traceback.print_exc()
                 message = 'Failed to create Job (%s)' % (sys.exc_info()[1])
 
             return render_template('action_completed.html', message=message)
 
         # Display default template in GET case
         return render_template('app_deploy.html', app_id=app_id, form=form)
+
+    @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
+    def web_app_delete(app_id):
+        form = DeleteAppForm()
+
+        # Perform validation in POST case
+        if form.validate_on_submit and form.confirmation.data == 'yes':
+            local_headers = headers.copy()
+            local_headers['If-Match'] = form.etag.data
+
+            try:
+                message = requests.delete(url=url_apps + '/' + app_id, headers=local_headers, auth=auth).content
+                print(message)
+                flash('Application deleted.')
+            except:
+                traceback.print_exc()
+                message = 'Failed to delete App (%s)' % (sys.exc_info()[1])
+
+            return render_template('action_completed.html', message=message)
+
+        # Get Application etag
+        try:
+            form.etag.data = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()['_etag']
+        except:
+            traceback.print_exc()
+
+        # Display default template in GET case
+        return render_template('app_delete.html', app_id=app_id, form=form)
 
     return app
 
