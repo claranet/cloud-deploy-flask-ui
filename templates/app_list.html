@@ -17,6 +17,8 @@
                 <th>AWS Region</th>
                 <th>AWS Instance Type</th>
                 <th>AWS VPC</th>
+                <th>Features</th>
+                <th>Modules</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -29,13 +31,23 @@
                     <br>
                     {{ app['_id'] }}
                 </td>
-                <td>{{ app['_created'] }}</td>
-                <td>{{ app['_updated'] }}</td>
+                <td style="white-space:nowrap;">{{ app['_created'] }}</td>
+                <td style="white-space:nowrap;">{{ app['_updated'] }}</td>
                 <td>{{ app['env'] }}</td>
                 <td>{{ app['role'] }}</td>
                 <td style="white-space:nowrap;">{{ app['region'] }}</td>
                 <td style="white-space:nowrap;">{{ app['instance_type'] }}</td>
                 <td style="white-space:nowrap;">{{ app['vpc_id'] }}</td>
+                <td style="white-space:nowrap;">
+                    {% for feature in app['features'] %}
+                        {{ feature['name'] }}:{{ feature['version'] }}<br>
+                    {% endfor %}
+                </td>
+                <td style="white-space:nowrap;">
+                    {% for module in app['modules'] %}
+                        {{ module['name'] }}<br>
+                    {% endfor %}
+                </td>
                 <td style="white-space:nowrap;">
                     <a href="/web/apps/{{ app['_id'] }}/deploy"><button class="btn btn-default">Deploy</button></a>
                     <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-default">Edit</button></a>
