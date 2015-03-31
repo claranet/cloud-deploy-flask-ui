@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Create an Application' %}
+{% set page_title = edit and 'Update' or 'Create' ' an Application' %}
 
 {% block page_content %}
-    <h1>New Application</h1>
-    <form class="form-horizontal" method="POST" action="/web/apps/create" enctype="multipart/form-data">
+    <h1>{{ edit and 'Update' or 'New' }} Application</h1>
+    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
         {{ wtf.form_field(form.name, form_type='horizontal', placeholder='Application Name') }}

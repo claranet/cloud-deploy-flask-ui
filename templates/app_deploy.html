@@ -4,7 +4,7 @@
 
 {% block page_content %}
     <h1>{{ page_title }}</h1>
-    <form class="form-horizontal" method="POST" action="/web/apps/{{ app_id }}/deploy" enctype="multipart/form-data">
+    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
         {{ wtf.form_field(form.module_name, form_type='horizontal') }}

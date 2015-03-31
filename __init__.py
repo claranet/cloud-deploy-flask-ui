@@ -74,6 +74,82 @@ def get_aws_regions():
 def get_aws_instance_types():
     return [(value, value) for value in aws_data.instance_type]
 
+# Mappings
+def map_form_to_app(form, app):
+    app['name'] = form.name.data
+    app['env'] = form.env.data
+    app['role'] = form.role.data
+    app['region'] = form.region.data
+    app['instance_type'] = form.instance_type.data
+    app['vpc_id'] = form.vpc_id.data
+
+    # Extract app data
+    #app['autoscale'] = {}
+    #app['build_infos'] = {}
+
+    # Extract features data
+    app['features'] = []
+    for form_feature in form.features:
+        feature = {}
+        feature_name, feature_version = form_feature.feature_name_colon_version.data.split(':')
+        if feature_name:
+            feature['name'] = feature_name
+            if feature_version and '0' != feature_version:
+                feature['version'] = feature_version
+            app['features'].append(feature)
+
+    # Extract modules data
+    app['modules'] = []
+    for form_module in form.modules:
+        module = {}
+        module['name'] = form_module.module_name.data
+        module['git_repo'] = form_module.module_git_repo.data
+        module['path'] = form_module.module_path.data
+        module['scope'] = form_module.module_scope.data
+        if form_module.module_build_pack.data:
+            module['build_pack'] = b64encode(form_module.module_build_pack.data.stream.read())
+        if form_module.module_pre_deploy.data:
+            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.stream.read())
+        if form_module.module_post_deploy.data:
+            module['post_deploy'] = b64encode(form_module.module_post_deploy.data.stream.read())
+        app['modules'].append(module)
+
+def map_app_to_form(app, form):
+    # Store App etag in form
+    form.etag.data = app['_etag']
+
+    # Populate form with app data
+    form.name.data = app['name']
+    form.env.data = app['env']
+    form.role.data = app['role']
+    form.region.data = app['region']
+    form.instance_type.data = app['instance_type']
+    form.vpc_id.data = app['vpc_id']
+
+    # TODO : handle autoscale and build_infos
+
+    # Populate form with features data
+    if 'features' in app:
+        form.features.pop_entry() # Remove default entry
+        for feature in app['features']:
+            form.features.append_entry()
+            form.features.entries[-1].form.feature_name_colon_version.data = feature['name'] + ':' + feature.get('version', '0')
+
+    # Populate form with modules data
+    if 'modules' in app:
+        form.modules.pop_entry() # Remove default entry
+        for module in app['modules']:
+            form.modules.append_entry()
+            form.modules.entries[-1].form.module_name.data = module['name']
+            form.modules.entries[-1].form.module_git_repo.data = module['git_repo']
+            form.modules.entries[-1].form.module_path.data = module['path']
+            form.modules.entries[-1].form.module_scope.data = module['scope']
+
+            # TODO : handle files
+            #form.modules.entries[-1].form.module_build_pack.data = module.get('build_pack', '')
+            #form.modules.entries[-1].form.module_pre_deploy.data = module.get('pre_deploy', '')
+            #form.modules.entries[-1].form.module_post_deploy.data = module.get('post_deploy', '')
+
 
 # Forms
 class FeatureForm(Form):
@@ -105,7 +181,7 @@ class ModuleForm(Form):
         message='The post deploy file can only have a .txt or .json extension')
     ])
 
-class AppForm(Form):
+class BaseAppForm(Form):
     name = StringField('Name', validators=[
         DataRequiredValidator(), 
         RegexpValidator(
@@ -133,7 +209,13 @@ class AppForm(Form):
     # Modules
     modules = FieldList(FormField(ModuleForm), min_entries=1)
 
+class CreateAppForm(BaseAppForm):
     submit = SubmitField('Create Application')
+
+class EditAppForm(BaseAppForm):
+    etag = HiddenField(validators=[DataRequiredValidator()])
+
+    submit = SubmitField('Update Application')
 
 class DeployAppForm(Form):
     module_name = SelectField('Module to deploy', validators=[DataRequiredValidator()])
@@ -161,48 +243,12 @@ def create_app():
 
     @app.route('/web/apps/create', methods=['GET', 'POST'])
     def web_app_create():
-        form = AppForm()
+        form = CreateAppForm()
 
         # Perform validation in POST case
         if form.validate_on_submit():
             app = {}
-            app['name'] = form.name.data
-            app['env'] = form.env.data
-            app['role'] = form.role.data
-            app['region'] = form.region.data
-            app['instance_type'] = form.instance_type.data
-            app['vpc_id'] = form.vpc_id.data
-
-            # Extract app data
-            #app['autoscale'] = {}
-            #app['build_infos'] = {}
-
-            # Extract features data
-            app['features'] = []
-            for form_feature in form.features:
-                feature = {}
-                feature_name, feature_version = form_feature.feature_name_colon_version.data.split(':')
-                if feature_name:
-                    feature['name'] = feature_name
-                    if feature_version and '0' != feature_version:
-                        feature['version'] = feature_version
-                    app['features'].append(feature)
-
-            # Extract modules data
-            app['modules'] = []
-            for form_module in form.modules:
-                module = {}
-                module['name'] = form_module.module_name.data
-                module['git_repo'] = form_module.module_git_repo.data
-                module['path'] = form_module.module_path.data
-                module['scope'] = form_module.module_scope.data
-                if form_module.module_build_pack.data:
-                    module['build_pack'] = b64encode(form_module.module_build_pack.data.stream.read())
-                if form_module.module_pre_deploy.data:
-                    module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.stream.read())
-                if form_module.module_post_deploy.data:
-                    module['post_deploy'] = b64encode(form_module.module_post_deploy.data.stream.read())
-                app['modules'].append(module)
+            map_form_to_app(form, app)
 
             try:
                 message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=auth).content
@@ -215,7 +261,42 @@ def create_app():
             return render_template('action_completed.html', message=message)
 
         # Display default template in GET case
-        return render_template('app_create.html', form=form)
+        return render_template('app_create.html', form=form, edit=False)
+
+    @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
+    def web_app_edit(app_id):
+        form = EditAppForm()
+
+        # Perform validation in POST case
+        if form.validate_on_submit():
+            local_headers = headers.copy()
+            local_headers['If-Match'] = form.etag.data
+
+            # Update Application
+            app = {}
+            map_form_to_app(form, app)
+
+            try:
+                message = requests.put(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=auth).content
+                print(message)
+                flash('Application updated.')
+            except:
+                traceback.print_exc()
+                message = 'Failed to update App (%s)' % (sys.exc_info()[1])
+
+            return render_template('action_completed.html', message=message)
+
+        # Get Application etag
+        try:
+            # Get App data
+            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+
+            map_app_to_form(app, form)
+        except:
+            traceback.print_exc()
+
+        # Display default template in GET case
+        return render_template('app_create.html', form=form, edit=True)
 
     @app.route('/web/apps/<app_id>/deploy', methods=['GET', 'POST'])
     def web_app_deploy(app_id):
@@ -255,7 +336,7 @@ def create_app():
             return render_template('action_completed.html', message=message)
 
         # Display default template in GET case
-        return render_template('app_deploy.html', app_id=app_id, form=form)
+        return render_template('app_deploy.html', form=form)
 
     @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
     def web_app_delete(app_id):
@@ -283,7 +364,7 @@ def create_app():
             traceback.print_exc()
 
         # Display default template in GET case
-        return render_template('app_delete.html', app_id=app_id, form=form)
+        return render_template('app_delete.html', form=form)
 
     return app
 
