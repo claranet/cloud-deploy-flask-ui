@@ -14,14 +14,51 @@
         {{ wtf.form_field(form.role, form_type='horizontal') }}
         {{ wtf.form_field(form.vpc_id, form_type='horizontal') }}
 
-        <h2>Module</h2>
-        {{ wtf.form_field(form.module_name, form_type='horizontal', placeholder='Module Name') }}
-        {{ wtf.form_field(form.module_git_repo, form_type='horizontal', placeholder='https://github.com/test/test') }}
-        {{ wtf.form_field(form.module_path, form_type='horizontal', placeholder='/var/www/test') }}
-        {{ wtf.form_field(form.module_scope, form_type='horizontal') }}
-        {{ wtf.form_field(form.module_build_pack, form_type='horizontal') }}
-        {{ wtf.form_field(form.module_post_deploy, form_type='horizontal') }}
+        <h2>Modules</h2>
+        <div id="modules_list">
+            {% for module in form.modules %}
+                <div id="module_{{ loop.index }}" data-module>
+                    <h3>Module {{ loop.index }}</h3>
+                    {{ wtf.form_field(module.module_name, form_type='horizontal', placeholder='Module Name') }}
+                    {{ wtf.form_field(module.module_git_repo, form_type='horizontal', placeholder='https://github.com/test/test') }}
+                    {{ wtf.form_field(module.module_path, form_type='horizontal', placeholder='/var/www/test') }}
+                    {{ wtf.form_field(module.module_scope, form_type='horizontal') }}
+                    {{ wtf.form_field(module.module_build_pack, form_type='horizontal') }}
+                    {{ wtf.form_field(module.module_pre_deploy, form_type='horizontal') }}
+                    {{ wtf.form_field(module.module_post_deploy, form_type='horizontal') }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="add_module_button" class="form-group">
+            <div class="col-lg-offset-2 col-lg-10 "> 
+                <input class="btn btn-default" id="add-module" name="add-module" type="button" value="Add Module" onclick="javascript:add_module()">
+            </div>
+        </div>
 
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
+
+    <script type="text/javascript">
+        function add_module() {
+            var count = $("div[data-module]").size();
+            var clone = $("div[data-module]:first").clone();
+
+            clone.attr("id", "module_"+(count+1));
+            clone.find("h3").text("Module "+(count+1));
+            for (field of ["name", "git_repo", "path", "scope", "build_pack", "pre_deploy", "post_deploy"]) {
+                var old_id = "modules-0-module_" + field;
+                var new_id = "modules-" + count + "-module_" + field;
+                var field_input = clone.find("#" + old_id);
+                field_input.attr("id", new_id);
+                field_input.attr("name", new_id);
+                field_input.val(null);
+
+                var field_label = clone.find("label[for='" + old_id + "']");
+                field_label.attr("for", new_id);
+            }
+
+            clone.appendTo("div#modules_list");
+        }
+    </script>
 {% endblock %}

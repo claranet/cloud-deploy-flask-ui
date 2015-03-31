@@ -6,7 +6,7 @@ from flask_wtf import Form
 from flask_wtf.file import FileField
 from flask_wtf.file import FileRequired as FileRequiredValidator
 
-from wtforms import HiddenField, RadioField, SelectField, StringField, SubmitField
+from wtforms import FieldList, FormField, HiddenField, RadioField, SelectField, StringField, SubmitField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import Regexp as RegexpValidator
 
@@ -76,6 +76,19 @@ def get_aws_instance_types():
 
 
 # Forms
+class ModuleForm(Form):
+    # Disable CSRF in module forms as they are AppForm subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(ModuleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    module_name = StringField('Name', validators=[DataRequiredValidator()])
+    module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
+    module_path = StringField('Path', validators=[DataRequiredValidator()])
+    module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
+    module_build_pack = FileField('Build Pack', validators=[FileRequiredValidator()])
+    module_pre_deploy = FileField('Pre Deploy', validators=[FileRequiredValidator()])
+    module_post_deploy = FileField('Post Deploy', validators=[FileRequiredValidator()])
+
 class AppForm(Form):
     name = StringField('Name', validators=[
         DataRequiredValidator(), 
@@ -99,12 +112,7 @@ class AppForm(Form):
     ])
 
     # Modules
-    module_name = StringField('Name', validators=[DataRequiredValidator()])
-    module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
-    module_path = StringField('Path', validators=[DataRequiredValidator()])
-    module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
-    module_build_pack = FileField('Build Pack', validators=[FileRequiredValidator()])
-    module_post_deploy = FileField('Post Deploy', validators=[FileRequiredValidator()])
+    modules = FieldList(FormField(ModuleForm), min_entries=1)
 
     # Features
     #feature = StringField('Name', validators=[DataRequiredValidator()])
@@ -155,16 +163,19 @@ def create_app():
 
             # Extract modules data
             app['modules'] = []
-            module = {}
-            module['name'] = form.module_name.data
-            module['git_repo'] = form.module_git_repo.data
-            module['path'] = form.module_path.data
-            module['scope'] = form.module_scope.data
-            if form.module_build_pack.data:
-                module['build_pack'] = b64encode(form.module_build_pack.data.stream.read())
-            if form.module_post_deploy.data:
-                module['post_deploy'] = b64encode(form.module_post_deploy.data.stream.read())
-            app['modules'].append(module)
+            for form_module in form.modules:
+                module = {}
+                module['name'] = form_module.module_name.data
+                module['git_repo'] = form_module.module_git_repo.data
+                module['path'] = form_module.module_path.data
+                module['scope'] = form_module.module_scope.data
+                if form_module.module_build_pack.data:
+                    module['build_pack'] = b64encode(form_module.module_build_pack.data.stream.read())
+                if form_module.module_pre_deploy.data:
+                    module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.stream.read())
+                if form_module.module_post_deploy.data:
+                    module['post_deploy'] = b64encode(form_module.module_post_deploy.data.stream.read())
+                app['modules'].append(module)
 
             try:
                 message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=auth).content
