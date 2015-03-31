@@ -4,7 +4,7 @@ from flask_bootstrap import Bootstrap
 
 from flask_wtf import Form
 from flask_wtf.file import FileField
-from flask_wtf.file import FileRequired as FileRequiredValidator
+from flask_wtf.file import FileAllowed as FileAllowedValidator
 
 from wtforms import FieldList, FormField, HiddenField, RadioField, SelectField, StringField, SubmitField
 from wtforms.validators import DataRequired as DataRequiredValidator
@@ -85,9 +85,18 @@ class ModuleForm(Form):
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
     module_path = StringField('Path', validators=[DataRequiredValidator()])
     module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
-    module_build_pack = FileField('Build Pack', validators=[FileRequiredValidator()])
-    module_pre_deploy = FileField('Pre Deploy', validators=[FileRequiredValidator()])
-    module_post_deploy = FileField('Post Deploy', validators=[FileRequiredValidator()])
+    module_build_pack = FileField('Build Pack', validators=[FileAllowedValidator(
+        upload_set=('txt', 'json'),
+        message='The build pack file can only have a .txt or .json extension')
+    ])
+    module_pre_deploy = FileField('Pre Deploy', validators=[FileAllowedValidator(
+        upload_set=('txt', 'json'),
+        message='The pre deploy file can only have a .txt or .json extension')
+    )])
+    module_post_deploy = FileField('Post Deploy', validators=[FileAllowedValidator(
+        upload_set=('txt', 'json'),
+        message='The post deploy file can only have a .txt or .json extension')
+    )])
 
 class AppForm(Form):
     name = StringField('Name', validators=[
