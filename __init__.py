@@ -12,9 +12,9 @@ from wtforms.validators import Regexp as RegexpValidator
 
 from eve import RFC1123_DATE_FORMAT
 
+from apps import apps_schema as ghost_app_schema
+
 import aws_data
-import instance_role
-import env
 
 from base64 import b64encode
 from datetime import datetime
@@ -47,16 +47,16 @@ def get_ghost_apps():
     return apps
 
 def get_ghost_app_envs():
-    return [(value, value) for value in env.env]
+    return [(value, value) for value in ghost_app_schema['env']['allowed']]
 
 def get_ghost_app_roles():
-    return [(value, value) for value in instance_role.role]
+    return [(value, value) for value in ghost_app_schema['role']['allowed']]
+
+def get_ghost_app_features():
+    return [(value['name'] + ':' + value.get('version', '0'), value['name'] + ':' + value.get('version', '0')) for value in ghost_app_schema['features']['schema']['allowed']]
 
 def get_ghost_mod_scopes():
-    return [
-        ('code', 'code'),
-        ('system', 'system')
-    ]
+    return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
 
 # FIXME: Get lists from AWS API
 def get_aws_vps_ids():
@@ -76,6 +76,13 @@ def get_aws_instance_types():
 
 
 # Forms
+class FeatureForm(Form):
+    # Disable CSRF in feature forms as they are AppForm subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(FeatureForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    feature_name_colon_version = SelectField('Name:Version', validators=[DataRequiredValidator()], choices=get_ghost_app_features())
+
 class ModuleForm(Form):
     # Disable CSRF in module forms as they are AppForm subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -120,11 +127,11 @@ class AppForm(Form):
         )
     ])
 
+    # Features
+    features = FieldList(FormField(FeatureForm), min_entries=1)
+
     # Modules
     modules = FieldList(FormField(ModuleForm), min_entries=1)
-
-    # Features
-    #feature = StringField('Name', validators=[DataRequiredValidator()])
 
     submit = SubmitField('Create Application')
 
@@ -169,6 +176,17 @@ def create_app():
             # Extract app data
             #app['autoscale'] = {}
             #app['build_infos'] = {}
+
+            # Extract features data
+            app['features'] = []
+            for form_feature in form.features:
+                feature = {}
+                feature_name, feature_version = form_feature.feature_name_colon_version.data.split(':')
+                if feature_name:
+                    feature['name'] = feature_name
+                    if feature_version:
+                        feature['version'] = feature_version
+                    app['features'].append(feature)
 
             # Extract modules data
             app['modules'] = []
