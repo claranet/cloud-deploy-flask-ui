@@ -92,11 +92,11 @@ class ModuleForm(Form):
     module_pre_deploy = FileField('Pre Deploy', validators=[FileAllowedValidator(
         upload_set=('txt', 'json'),
         message='The pre deploy file can only have a .txt or .json extension')
-    )])
+    ])
     module_post_deploy = FileField('Post Deploy', validators=[FileAllowedValidator(
         upload_set=('txt', 'json'),
         message='The post deploy file can only have a .txt or .json extension')
-    )])
+    ])
 
 class AppForm(Form):
     name = StringField('Name', validators=[
