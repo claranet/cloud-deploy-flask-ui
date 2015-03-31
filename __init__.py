@@ -53,7 +53,7 @@ def get_ghost_app_roles():
     return [(value, value) for value in ghost_app_schema['role']['allowed']]
 
 def get_ghost_app_features():
-    return [(value['name'] + ':' + value.get('version', '0'), value['name'] + ':' + value.get('version', '0')) for value in ghost_app_schema['features']['schema']['allowed']]
+    return [('','')] + [(value['name'] + ':' + value.get('version', '0'), value['name'] + ':' + value.get('version', '0')) for value in ghost_app_schema['features']['schema']['allowed']]
 
 def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
@@ -184,7 +184,7 @@ def create_app():
                 feature_name, feature_version = form_feature.feature_name_colon_version.data.split(':')
                 if feature_name:
                     feature['name'] = feature_name
-                    if feature_version:
+                    if feature_version and '0' != feature_version:
                         feature['version'] = feature_version
                     app['features'].append(feature)
 
