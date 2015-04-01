@@ -258,6 +258,15 @@ def create_app():
         try:
             # Get App data
             app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+
+            # Decode module scripts
+            for module in app['modules']:
+                if 'build_pack' in module:
+                    module['build_pack'] = b64decode(module['build_pack'])
+                if 'pre_deploy' in module:
+                    module['pre_deploy'] = b64decode(module['pre_deploy'])
+                if 'post_deploy' in module:
+                    module['post_deploy'] = b64decode(module['post_deploy'])
         except:
             traceback.print_exc()
 
