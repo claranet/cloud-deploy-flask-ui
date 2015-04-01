@@ -38,9 +38,9 @@
                     {{ wtf.form_field(module.module_git_repo, form_type='horizontal', placeholder='https://github.com/test/test') }}
                     {{ wtf.form_field(module.module_path, form_type='horizontal', placeholder='/var/www/test') }}
                     {{ wtf.form_field(module.module_scope, form_type='horizontal') }}
-                    {{ wtf.form_field(module.module_build_pack, form_type='horizontal') }}
-                    {{ wtf.form_field(module.module_pre_deploy, form_type='horizontal') }}
-                    {{ wtf.form_field(module.module_post_deploy, form_type='horizontal') }}
+                    {{ wtf.form_field(module.module_build_pack, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                    {{ wtf.form_field(module.module_pre_deploy, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                    {{ wtf.form_field(module.module_post_deploy, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
                 </div>
             {% endfor %}
         </div>
@@ -94,6 +94,18 @@
             }
 
             clone.appendTo("div#modules_list");
+        }
+
+        function dropHandler(dropEvent) {
+            dropEvent.stopPropagation();
+            dropEvent.preventDefault();
+            var reader = new FileReader();
+            reader.onloadend = function(loadEvent) {
+                if (loadEvent.target.readyState == FileReader.DONE) {
+                    dropEvent.target.value = loadEvent.target.result;
+                }
+            };
+            reader.readAsText(dropEvent.dataTransfer.files[0],"UTF-8");
         }
     </script>
 {% endblock %}

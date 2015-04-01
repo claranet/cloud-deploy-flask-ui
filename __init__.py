@@ -3,10 +3,8 @@ from flask import Flask, render_template, request, make_response, flash
 from flask_bootstrap import Bootstrap
 
 from flask_wtf import Form
-from flask_wtf.file import FileField
-from flask_wtf.file import FileAllowed as FileAllowedValidator
 
-from wtforms import FieldList, FormField, HiddenField, RadioField, SelectField, StringField, SubmitField
+from wtforms import FieldList, FormField, HiddenField, RadioField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import Regexp as RegexpValidator
 
@@ -16,11 +14,9 @@ from apps import apps_schema as ghost_app_schema
 
 import aws_data
 
-from base64 import b64encode
+from base64 import b64encode, b64decode
 from datetime import datetime
-import tempfile
 import traceback
-import os
 import sys
 import requests
 import json
@@ -108,11 +104,11 @@ def map_form_to_app(form, app):
         module['path'] = form_module.module_path.data
         module['scope'] = form_module.module_scope.data
         if form_module.module_build_pack.data:
-            module['build_pack'] = b64encode(form_module.module_build_pack.data.stream.read())
+            module['build_pack'] = b64encode(form_module.module_build_pack.data)
         if form_module.module_pre_deploy.data:
-            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.stream.read())
+            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data)
         if form_module.module_post_deploy.data:
-            module['post_deploy'] = b64encode(form_module.module_post_deploy.data.stream.read())
+            module['post_deploy'] = b64encode(form_module.module_post_deploy.data)
         app['modules'].append(module)
 
 def map_app_to_form(app, form):
@@ -141,15 +137,17 @@ def map_app_to_form(app, form):
         form.modules.pop_entry() # Remove default entry
         for module in app['modules']:
             form.modules.append_entry()
-            form.modules.entries[-1].form.module_name.data = module['name']
-            form.modules.entries[-1].form.module_git_repo.data = module['git_repo']
-            form.modules.entries[-1].form.module_path.data = module['path']
-            form.modules.entries[-1].form.module_scope.data = module['scope']
-
-            # TODO : handle files
-            #form.modules.entries[-1].form.module_build_pack.data = module.get('build_pack', '')
-            #form.modules.entries[-1].form.module_pre_deploy.data = module.get('pre_deploy', '')
-            #form.modules.entries[-1].form.module_post_deploy.data = module.get('post_deploy', '')
+            form_module = form.modules.entries[-1].form
+            form_module.module_name.data = module['name']
+            form_module.module_git_repo.data = module['git_repo']
+            form_module.module_path.data = module['path']
+            form_module.module_scope.data = module['scope']
+            if 'build_pack' in module:
+                form_module.module_build_pack.data = b64decode(module['build_pack'])
+            if 'pre_deploy' in module:
+                form_module.module_pre_deploy.data = b64decode(module['pre_deploy'])
+            if 'post_deploy' in module:
+                form_module.module_post_deploy.data = b64decode(module['post_deploy'])
 
 
 # Forms
@@ -169,18 +167,9 @@ class ModuleForm(Form):
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
     module_path = StringField('Path', validators=[DataRequiredValidator()])
     module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
-    module_build_pack = FileField('Build Pack', validators=[FileAllowedValidator(
-        upload_set=('txt', 'json'),
-        message='The build pack file can only have a .txt or .json extension')
-    ])
-    module_pre_deploy = FileField('Pre Deploy', validators=[FileAllowedValidator(
-        upload_set=('txt', 'json'),
-        message='The pre deploy file can only have a .txt or .json extension')
-    ])
-    module_post_deploy = FileField('Post Deploy', validators=[FileAllowedValidator(
-        upload_set=('txt', 'json'),
-        message='The post deploy file can only have a .txt or .json extension')
-    ])
+    module_build_pack = TextAreaField('Build Pack', validators=[])
+    module_pre_deploy = TextAreaField('Pre Deploy', validators=[])
+    module_post_deploy = TextAreaField('Post Deploy', validators=[])
 
 class BaseAppForm(Form):
     name = StringField('Name', validators=[
