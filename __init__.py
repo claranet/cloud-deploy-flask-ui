@@ -76,7 +76,8 @@ def get_aws_instance_types():
 
 # Mappings
 def map_form_to_app(form, app):
-    app['name'] = form.name.data
+    if form.name:
+        app['name'] = form.name.data
     app['env'] = form.env.data
     app['role'] = form.role.data
     app['region'] = form.region.data
@@ -272,12 +273,15 @@ def create_app():
             local_headers = headers.copy()
             local_headers['If-Match'] = form.etag.data
 
+            # App name cannot be changed
+            del form.name
+
             # Update Application
             app = {}
             map_form_to_app(form, app)
 
             try:
-                message = requests.put(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=auth).content
+                message = requests.patch(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=auth).content
                 print(message)
                 flash('Application updated.')
             except:

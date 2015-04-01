@@ -7,7 +7,7 @@
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
-        {{ wtf.form_field(form.name, form_type='horizontal', placeholder='Application Name') }}
+        {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
         {{ wtf.form_field(form.region, form_type='horizontal') }}
         {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
         {{ wtf.form_field(form.env, form_type='horizontal') }}
