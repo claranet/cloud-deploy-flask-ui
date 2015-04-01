@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, flash
+from flask import Flask, flash, make_response, render_template, request, redirect
 
 from flask_bootstrap import Bootstrap
 
@@ -225,7 +225,7 @@ def create_app():
 
     @app.route('/web/')
     def web_index():
-        return render_template('index.html')
+        return redirect('/web/apps')
 
     @app.route('/web/apps')
     def web_app_list():
