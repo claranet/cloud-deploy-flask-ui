@@ -253,6 +253,16 @@ def create_app():
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=False)
 
+    @app.route('/web/apps/<app_id>', methods=['GET'])
+    def web_app_view(app_id):
+        try:
+            # Get App data
+            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+        except:
+            traceback.print_exc()
+
+        return render_template('app_view.html', app=app)
+
     @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
     def web_app_edit(app_id):
         form = EditAppForm()

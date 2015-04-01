@@ -27,7 +27,7 @@
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td style="white-space:nowrap;">
-                    {{ app['name'] }}
+                    <a href="/web/apps/{{ app['_id'] }}">{{ app['name'] }}</a>
                     <br>
                     {{ app['_id'] }}
                 </td>

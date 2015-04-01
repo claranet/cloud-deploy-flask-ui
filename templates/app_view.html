@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Application Details' %}
+
+{% block page_content %}
+    <h1>Application Details</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ app['name'] }}</div>
+        <div class="panel-body">
+            <div class="row">
+                <label class="control-label col-md-3" for="app-name">Name</label>
+                <div class="col-md-3" id="app-name">{{ app['name'] }}</div>
+                <label class="control-label col-md-3" for="app-id">ID</label>
+                <div class="col-md-3" id="app-id">{{ app['_id'] }}</div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-3" for="app-created">Created</label>
+                <div class="col-md-3" id="app-created">{{ app['_created'] }}</div>
+                <label class="control-label col-md-3" for="app-updated">Modified</label>
+                <div class="col-md-3" id="app-updated">{{ app['_updated'] }}</div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-3" for="app-env">Environment</label>
+                <div class="col-md-3" id="app-env">{{ app['env'] }}</div>
+                <label class="control-label col-md-3" for="app-role">Role</label>
+                <div class="col-md-3" id="app-role">{{ app['role'] }}</div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-3" for="app-aws-region">AWS Region</label>
+                <div class="col-md-3" id="app-aws-region">{{ app['region'] }}</div>
+                <label class="control-label col-md-3" for="app-aws-instance-type">AWS Instance Type</label>
+                <div class="col-md-3" id="app-aws-instance-type">{{ app['instance_type'] }}</div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-3" for="app-aws-vpc">AWS VPC</label>
+                <div class="col-md-3" id="app-aws-vpc">{{ app['vpc_id'] }}</div>
+            </div>
+        </div>
+
+        <table class="table">
+            <caption>Features</caption>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Version</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature in app['features'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ feature['name'] }}</td>
+                        <td>{{ feature['version'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="table">
+            <caption>Modules</caption>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Git</th>
+                    <th>Path</th>
+                    <th>Scope</th>
+                    <th>Build Pack</th>
+                    <th>Pre Deploy</th>
+                    <th>Post Deploy</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for module in app['modules'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ module['name'] }}</td>
+                        <td>{{ module['git_repo'] }}</td>
+                        <td>{{ module['path'] }}</td>
+                        <td>{{ module['scope'] }}</td>
+                        <td>{{ module['build_pack'] }}</td>
+                        <td>{{ module['pre_deploy'] }}</td>
+                        <td>{{ module['post_deploy'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Actions</div>
+        <div class="panel-body">
+            <a href="/web/apps/{{ app['_id'] }}/deploy"><button class="btn btn-default">Deploy</button></a>
+            <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-default">Edit</button></a>
+            <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-default">Delete</button></a>
+        </div>
+    </div>
+{% endblock %}
