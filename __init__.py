@@ -251,7 +251,7 @@ def create_app():
             return render_template('action_completed.html', message=message)
 
         # Display default template in GET case
-        return render_template('app_create.html', form=form, edit=False)
+        return render_template('app_edit.html', form=form, edit=False)
 
     @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
     def web_app_edit(app_id):
@@ -289,7 +289,7 @@ def create_app():
             traceback.print_exc()
 
         # Display default template in GET case
-        return render_template('app_create.html', form=form, edit=True)
+        return render_template('app_edit.html', form=form, edit=True)
 
     @app.route('/web/apps/<app_id>/deploy', methods=['GET', 'POST'])
     def web_app_deploy(app_id):
