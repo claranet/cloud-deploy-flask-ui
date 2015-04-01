@@ -79,9 +79,9 @@
                         <td>{{ module['git_repo'] }}</td>
                         <td>{{ module['path'] }}</td>
                         <td>{{ module['scope'] }}</td>
-                        <td>{{ module['build_pack'] }}</td>
-                        <td>{{ module['pre_deploy'] }}</td>
-                        <td>{{ module['post_deploy'] }}</td>
+                        <td>{{ module.get('build_pack', '')[:10] }}{% if module.get('build_pack', '') | length > 10 %}<abbr title="{{module['build_pack']}}">&hellip;</abbr>{% endif %}</td>
+                        <td>{{ module.get('pre_deploy', '')[:10] }}{% if module.get('pre_deploy', '') | length > 10 %}<abbr title="{{module['pre_deploy']}}">&hellip;</abbr>{% endif %}</td>
+                        <td>{{ module.get('post_deploy', '')[:10] }}{% if module.get('post_deploy', '') | length > 10 %}<abbr title="{{module['post_deploy']}}">&hellip;</abbr>{% endif %}</td>
                     </tr>
                 {% endfor %}
             </tbody>

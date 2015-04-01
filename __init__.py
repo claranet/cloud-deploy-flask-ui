@@ -49,7 +49,7 @@ def get_ghost_app_roles():
     return [(value, value) for value in ghost_app_schema['role']['allowed']]
 
 def get_ghost_app_features():
-    return [('','')] + [(value['name'] + ':' + value.get('version', '0'), value['name'] + ':' + value.get('version', '0')) for value in ghost_app_schema['features']['schema']['allowed']]
+    return [('','')] + [(map_feature_to_value(value), map_feature_to_value(value)) for value in ghost_app_schema['features']['schema']['allowed']]
 
 def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
@@ -71,6 +71,43 @@ def get_aws_instance_types():
     return [(value, value) for value in aws_data.instance_type]
 
 # Mappings
+
+"""
+Map a string value composed of a name and an optional version, separated by a colon, to a feature.
+
+Examples:
+>>> map_value_to_feature('feature-test:1.0')
+{'name': 'feature-test', 'version': '1.0'}
+
+>>> map_value_to_feature('feature-test:0')
+{'name': 'feature-test'}
+
+>>> map_value_to_feature('')
+{}
+"""
+def map_value_to_feature(value):
+    feature = {}
+    feature['name'], sep, feature['version'] = value.partition(':')
+    if '0' == feature['version']:
+        del feature['version']
+    return feature
+
+"""
+Map a feature composed of a name and an optional version to a string value, separated by a colon.
+
+Examples:
+>>> map_feature_to_value({'name': 'feature-test', 'version': '1.0'})
+'feature-test:1.0'
+
+>>> map_feature_to_value({'name': 'feature-test'})
+'feature-test:0'
+
+>>> map_feature_to_value('')
+':0'
+"""
+def map_feature_to_value(feature):
+    return feature['name'] + ':' + feature.get('version', '0')
+
 def map_form_to_app(form, app):
     if form.name:
         app['name'] = form.name.data
@@ -87,12 +124,8 @@ def map_form_to_app(form, app):
     # Extract features data
     app['features'] = []
     for form_feature in form.features:
-        feature = {}
-        feature_name, feature_version = form_feature.feature_name_colon_version.data.split(':')
-        if feature_name:
-            feature['name'] = feature_name
-            if feature_version and '0' != feature_version:
-                feature['version'] = feature_version
+        feature = map_value_to_feature(form_feature.feature_name_colon_version.data)
+        if feature:
             app['features'].append(feature)
 
     # Extract modules data
@@ -130,7 +163,7 @@ def map_app_to_form(app, form):
         form.features.pop_entry() # Remove default entry
         for feature in app['features']:
             form.features.append_entry()
-            form.features.entries[-1].form.feature_name_colon_version.data = feature['name'] + ':' + feature.get('version', '0')
+            form.features.entries[-1].form.feature_name_colon_version.data = map_feature_to_value(feature)
 
     # Populate form with modules data
     if 'modules' in app:
@@ -156,7 +189,7 @@ class FeatureForm(Form):
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(FeatureForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
 
-    feature_name_colon_version = SelectField('Name:Version', validators=[DataRequiredValidator()], choices=get_ghost_app_features())
+    feature_name_colon_version = SelectField('Name:Version', validators=[], choices=get_ghost_app_features())
 
 class ModuleForm(Form):
     # Disable CSRF in module forms as they are AppForm subforms
