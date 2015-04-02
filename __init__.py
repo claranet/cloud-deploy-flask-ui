@@ -20,6 +20,7 @@ import traceback
 import sys
 import requests
 import json
+import boto.vpc
 
 # FIXME: Static conf to externalize with Flask-Appconfig
 auth = ('api', 'api')
@@ -54,12 +55,13 @@ def get_ghost_app_features():
 def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
 
-# FIXME: Get lists from AWS API
 def get_aws_vps_ids():
-    return [
-        ('vpc-12345', 'vpc-12345'),
-        ('vpc-7896', 'vpc-7896')
-    ]
+    c = boto.vpc.connect_to_region('eu-west-1')
+    vpcs = c.get_all_vpcs()
+    vpc_ids = []
+    for vpc in vpcs:
+        vpc_ids.append(vpc.id)
+    return [(value, value) for value in vpc_ids]
 
 def get_aws_regions():
     return [
@@ -422,4 +424,4 @@ def create_app():
 
 def run_web_ui():
     app = create_app()
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5001, debug=True)
