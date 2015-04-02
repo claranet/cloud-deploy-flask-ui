@@ -58,12 +58,16 @@ def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
 
 def get_aws_vps_ids():
-    c = boto.vpc.connect_to_region('eu-west-1')
-    vpcs = c.get_all_vpcs()
-    vpc_ids = []
-    for vpc in vpcs:
-        vpc_ids.append(vpc.id)
-    return [(value, value) for value in vpc_ids]
+    try:
+        c = boto.vpc.connect_to_region('eu-west-1')
+        vpcs = c.get_all_vpcs()
+        vpc_ids = []
+        for vpc in vpcs:
+            vpc_ids.append(vpc.id)
+        return [(value, value) for value in vpc_ids]
+    except:
+        traceback.print_exc()
+        return [('vpc-0', 'vpc-0 (dummy)')]
 
 def get_aws_regions():
     return [
