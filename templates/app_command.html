@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Application Deployment' %}
+{% set page_title = 'Application Command' %}
 
 {% block page_content %}
     <h1>{{ page_title }}</h1>
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
+        {{ wtf.form_field(form.command, form_type='horizontal') }}
         {{ wtf.form_field(form.module_name, form_type='horizontal') }}
 
         {{ wtf.form_field(form.submit, form_type='horizontal') }}

@@ -12,6 +12,7 @@ from eve import RFC1123_DATE_FORMAT
 
 from apps import apps_schema as ghost_app_schema
 from salt_features import recipes as ghost_app_features
+from jobs import jobs_schema as ghost_job_schema
 
 import aws_data
 
@@ -51,8 +52,8 @@ def get_ghost_app_envs():
 def get_ghost_app_roles():
     return [(value, value) for value in ghost_app_schema['role']['allowed']]
 
-def get_ghost_app_features():
-    return [('','')] + [(map_feature_to_value(value), map_feature_to_value(value)) for value in ghost_app_features['allowed']]
+def get_ghost_job_commands():
+    return [(value, value) for value in ghost_job_schema['command']['allowed']]
 
 def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
@@ -231,10 +232,11 @@ class EditAppForm(BaseAppForm):
 
     submit = SubmitField('Update Application')
 
-class DeployAppForm(Form):
-    module_name = SelectField('Module to deploy', validators=[DataRequiredValidator()])
+class CommandAppForm(Form):
+    command = SelectField('Command', validators=[DataRequiredValidator()], choices=get_ghost_job_commands())
+    module_name = SelectField('Module', validators=[DataRequiredValidator()])
 
-    submit = SubmitField('Deploy Application Module')
+    submit = SubmitField('Run Application Command')
 
 class DeleteAppForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])
@@ -340,9 +342,9 @@ def create_app():
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=True)
 
-    @app.route('/web/apps/<app_id>/deploy', methods=['GET', 'POST'])
-    def web_app_deploy(app_id):
-        form = DeployAppForm()
+    @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
+    def web_app_command(app_id):
+        form = CommandAppForm()
 
         # Get Application Modules
         try:
@@ -351,21 +353,21 @@ def create_app():
             traceback.print_exc()
             modules = ['Failed to retrieve Application Modules']
 
-        form.module_name.choices = [(module['name'], module['name']) for module in modules if module['scope'] == 'code']
+        form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules if module['scope'] == 'code']
 
         # Perform validation in POST case
         if form.validate_on_submit():
             job = {}
             job['user'] = 'web'
-            job['command'] = 'deploy'
+            job['command'] = form.command.data
             job['app_id'] = app_id
 
             module = {}
-            module['name'] = form.module_name.data
-            modules = []
-            modules.append(module)
-
-            job['modules'] = modules
+            if form.module_name.data:
+                module['name'] = form.module_name.data
+                modules = []
+                modules.append(module)
+                job['modules'] = modules
 
             try:
                 message = requests.post(url=url_jobs, data=json.dumps(job), headers=headers, auth=auth).content
@@ -378,7 +380,7 @@ def create_app():
             return render_template('action_completed.html', message=message)
 
         # Display default template in GET case
-        return render_template('app_deploy.html', form=form)
+        return render_template('app_command.html', form=form)
 
     @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
     def web_app_delete(app_id):
