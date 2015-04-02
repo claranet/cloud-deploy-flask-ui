@@ -11,6 +11,7 @@ from wtforms.validators import Regexp as RegexpValidator
 from eve import RFC1123_DATE_FORMAT
 
 from apps import apps_schema as ghost_app_schema
+from salt_features import recipes as ghost_app_features
 
 import aws_data
 
@@ -39,6 +40,7 @@ def get_ghost_apps():
             except:
                 traceback.print_exc()
     except:
+        traceback.print_exc()
         apps = ['Failed to retrieve Apps']
 
     return apps
@@ -50,7 +52,7 @@ def get_ghost_app_roles():
     return [(value, value) for value in ghost_app_schema['role']['allowed']]
 
 def get_ghost_app_features():
-    return [('','')] + [(map_feature_to_value(value), map_feature_to_value(value)) for value in ghost_app_schema['features']['schema']['allowed']]
+    return [('','')] + [(map_feature_to_value(value), map_feature_to_value(value)) for value in ghost_app_features['allowed']]
 
 def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
@@ -74,42 +76,6 @@ def get_aws_instance_types():
 
 # Mappings
 
-"""
-Map a string value composed of a name and an optional version, separated by a colon, to a feature.
-
-Examples:
->>> map_value_to_feature('feature-test:1.0')
-{'name': 'feature-test', 'version': '1.0'}
-
->>> map_value_to_feature('feature-test:0')
-{'name': 'feature-test'}
-
->>> map_value_to_feature('')
-{}
-"""
-def map_value_to_feature(value):
-    feature = {}
-    feature['name'], sep, feature['version'] = value.partition(':')
-    if '0' == feature['version']:
-        del feature['version']
-    return feature
-
-"""
-Map a feature composed of a name and an optional version to a string value, separated by a colon.
-
-Examples:
->>> map_feature_to_value({'name': 'feature-test', 'version': '1.0'})
-'feature-test:1.0'
-
->>> map_feature_to_value({'name': 'feature-test'})
-'feature-test:0'
-
->>> map_feature_to_value('')
-':0'
-"""
-def map_feature_to_value(feature):
-    return feature['name'] + ':' + feature.get('version', '0')
-
 def map_form_to_app(form, app):
     if form.name:
         app['name'] = form.name.data
@@ -126,7 +92,11 @@ def map_form_to_app(form, app):
     # Extract features data
     app['features'] = []
     for form_feature in form.features:
-        feature = map_value_to_feature(form_feature.feature_name_colon_version.data)
+        feature = {}
+        if form_feature.feature_name.data:
+            feature['name'] = form_feature.feature_name.data
+            if form_feature.feature_version.data:
+                feature['version'] = form_feature.feature_version.data
         if feature:
             app['features'].append(feature)
 
@@ -160,16 +130,20 @@ def map_app_to_form(app, form):
 
     # TODO : handle autoscale and build_infos
 
-    # Populate form with features data
-    if 'features' in app:
-        form.features.pop_entry() # Remove default entry
+    # Populate form with features data if available
+    if 'features' in app and len(app['features']) > 0:
+        # Remove default entry
+        form.features.pop_entry()
         for feature in app.get('features', []):
             form.features.append_entry()
-            form.features.entries[-1].form.feature_name_colon_version.data = map_feature_to_value(feature)
+            form_feature = form.features.entries[-1].form
+            form_feature.feature_name.data = feature.get('name', '')
+            form_feature.feature_version.data = feature.get('version', '')
 
-    # Populate form with modules data
-    if 'modules' in app:
-        form.modules.pop_entry() # Remove default entry
+    # Populate form with modules data if available
+    if 'modules' in app and len(app['modules']) > 0:
+        # Remove default entry
+        form.modules.pop_entry()
         for module in app.get('modules', []):
             form.modules.append_entry()
             form_module = form.modules.entries[-1].form
@@ -191,7 +165,18 @@ class FeatureForm(Form):
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(FeatureForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
 
-    feature_name_colon_version = SelectField('Name:Version', validators=[], choices=get_ghost_app_features())
+    feature_name = StringField('Name', validators=[
+        RegexpValidator(
+            ghost_app_schema['features']['schema']['schema']['name']['regex'],
+            message='The feature name can only contain ASCII letters or digits'
+        )
+    ])
+    feature_version = StringField('Version', validators=[
+        RegexpValidator(
+            ghost_app_schema['features']['schema']['schema']['version']['regex'],
+            message='The feature version can only contain ASCII letters, digits or dots'
+        )
+    ])
 
 class ModuleForm(Form):
     # Disable CSRF in module forms as they are AppForm subforms

@@ -18,7 +18,9 @@
         <div id="features_list">
             {% for feature in form.features %}
                 <div id="feature_{{ loop.index }}" data-feature>
-                    {{ wtf.form_field(feature.feature_name_colon_version, form_type='horizontal') }}
+                    <h3>Feature {{ loop.index }}</h3>
+                    {{ wtf.form_field(feature.feature_name, form_type='horizontal', placeholder='Feature Name') }}
+                    {{ wtf.form_field(feature.feature_version, form_type='horizontal', placeholder='Feature Version') }}
                 </div>
             {% endfor %}
         </div>
@@ -60,7 +62,7 @@
             var clone = $("div[data-feature]:first").clone();
 
             clone.attr("id", "feature_"+(count+1));
-            for (field of ["name_colon_version"]) {
+            for (field of ["name", "version"]) {
                 var old_id = "features-0-feature_" + field;
                 var new_id = "features-" + count + "-feature_" + field;
                 var field_input = clone.find("#" + old_id);
