@@ -57,7 +57,7 @@ def get_ghost_app_features():
 def get_ghost_mod_scopes():
     return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
 
-def get_aws_vps_ids():
+def get_aws_vpc_ids():
     try:
         c = boto.vpc.connect_to_region('eu-west-1')
         vpcs = c.get_all_vpcs()
@@ -209,7 +209,7 @@ class BaseAppForm(Form):
     # AWS properties
     region = SelectField('AWS Region', validators=[DataRequiredValidator()], choices=get_aws_regions())
     instance_type = SelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=get_aws_instance_types())
-    vpc_id = SelectField('AWS VPC', choices=get_aws_vps_ids(), validators=[
+    vpc_id = SelectField('AWS VPC', choices=get_aws_vpc_ids(), validators=[
         DataRequiredValidator(), 
         RegexpValidator(
             '^vpc-[a-z0-9]*$',
