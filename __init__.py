@@ -254,6 +254,12 @@ class DeleteAppForm(Form):
 # Web UI App
 def create_app():
     app = Flask(__name__)
+
+    app.config.update(
+        SECRET_KEY = 'a random string',
+        WTF_CSRF_SECRET_KEY = 'a random string'
+    )
+
     Bootstrap(app)
 
     @app.route('/web/')
@@ -416,9 +422,4 @@ def create_app():
 
 def run_web_ui():
     app = create_app()
-    app.config.update(
-        DEBUG = True,
-        SECRET_KEY = 'a random string',
-        WTF_CSRF_SECRET_KEY = 'a random string'
-    )
     app.run(host='0.0.0.0', port=5001)
