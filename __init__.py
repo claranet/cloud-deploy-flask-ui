@@ -151,32 +151,32 @@ def map_app_to_form(app, form):
     form.etag.data = app['_etag']
 
     # Populate form with app data
-    form.name.data = app['name']
-    form.env.data = app['env']
-    form.role.data = app['role']
-    form.region.data = app['region']
-    form.instance_type.data = app['instance_type']
-    form.vpc_id.data = app['vpc_id']
+    form.name.data = app.get('name', '')
+    form.env.data = app.get('env', '')
+    form.role.data = app.get('role', '')
+    form.region.data = app.get('region', '')
+    form.instance_type.data = app.get('instance_type', '')
+    form.vpc_id.data = app.get('vpc_id', '')
 
     # TODO : handle autoscale and build_infos
 
     # Populate form with features data
     if 'features' in app:
         form.features.pop_entry() # Remove default entry
-        for feature in app['features']:
+        for feature in app.get('features', []):
             form.features.append_entry()
             form.features.entries[-1].form.feature_name_colon_version.data = map_feature_to_value(feature)
 
     # Populate form with modules data
     if 'modules' in app:
         form.modules.pop_entry() # Remove default entry
-        for module in app['modules']:
+        for module in app.get('modules', []):
             form.modules.append_entry()
             form_module = form.modules.entries[-1].form
-            form_module.module_name.data = module['name']
-            form_module.module_git_repo.data = module['git_repo']
-            form_module.module_path.data = module['path']
-            form_module.module_scope.data = module['scope']
+            form_module.module_name.data = module.get('name', '')
+            form_module.module_git_repo.data = module.get('git_repo', '')
+            form_module.module_path.data = module.get('path', '')
+            form_module.module_scope.data = module.get('scope', '')
             if 'build_pack' in module:
                 form_module.module_build_pack.data = b64decode(module['build_pack'])
             if 'pre_deploy' in module:
