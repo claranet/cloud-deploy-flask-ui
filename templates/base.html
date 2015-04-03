@@ -46,3 +46,18 @@
         {% endblock %}
     </div>
 {% endblock %}
+
+{% macro ghost_script(value) -%}
+    {%- if value | length > 10 -%}
+        <abbr title="{{ value }}">
+    {%- endif -%}
+    {{ value[:10] }}
+    {%- if value | length > 10 -%}
+        &hellip;</abbr>
+    {%- endif %}
+{%- endmacro %}
+
+{% macro ghost_display_field(id, name, value) -%}
+    <label class="control-label col-md-3" for="{{ id }}">{{ name }}</label>
+    <div class="col-md-3" id="{{ id }}">{{ value }}</div>
+{%- endmacro %}

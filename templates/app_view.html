@@ -8,32 +8,24 @@
         <div class="panel-heading">{{ app['name'] }}</div>
         <div class="panel-body">
             <div class="row">
-                <label class="control-label col-md-3" for="app-name">Name</label>
-                <div class="col-md-3" id="app-name">{{ app['name'] }}</div>
-                <label class="control-label col-md-3" for="app-id">ID</label>
-                <div class="col-md-3" id="app-id">{{ app['_id'] }}</div>
+                {{ ghost_display_field('app-name', 'Name', app['name']) }}
+                {{ ghost_display_field('app-id', 'ID', app['_id']) }}
             </div>
             <div class="row">
-                <label class="control-label col-md-3" for="app-created">Created</label>
-                <div class="col-md-3" id="app-created">{{ app['_created'] }}</div>
-                <label class="control-label col-md-3" for="app-updated">Modified</label>
-                <div class="col-md-3" id="app-updated">{{ app['_updated'] }}</div>
+                {{ ghost_display_field('app-created', 'Created', app['_created']) }}
+                {{ ghost_display_field('app-updated', 'Modified', app['_updated']) }}
             </div>
             <div class="row">
-                <label class="control-label col-md-3" for="app-env">Environment</label>
-                <div class="col-md-3" id="app-env">{{ app['env'] }}</div>
-                <label class="control-label col-md-3" for="app-role">Role</label>
-                <div class="col-md-3" id="app-role">{{ app['role'] }}</div>
+                {{ ghost_display_field('app-env', 'Environment', app['env']) }}
+                {{ ghost_display_field('app-role', 'Role', app['role']) }}
             </div>
             <div class="row">
-                <label class="control-label col-md-3" for="app-aws-region">AWS Region</label>
-                <div class="col-md-3" id="app-aws-region">{{ app['region'] }}</div>
-                <label class="control-label col-md-3" for="app-aws-instance-type">AWS Instance Type</label>
-                <div class="col-md-3" id="app-aws-instance-type">{{ app['instance_type'] }}</div>
+                {{ ghost_display_field('app-aws-region', 'AWS Region', app['region']) }}
+                {{ ghost_display_field('app-aws-instance-type', 'AWS Instance Type', app['instance_type']) }}
             </div>
             <div class="row">
-                <label class="control-label col-md-3" for="app-aws-vpc">AWS VPC</label>
-                <div class="col-md-3" id="app-aws-vpc">{{ app['vpc_id'] }}</div>
+                {{ ghost_display_field('app-aws-vpc', 'AWS VPC', app['vpc_id']) }}
+                {{ ghost_display_field('app-aws-ami', 'AWS AMI', app['ami']) }}
             </div>
         </div>
 
@@ -62,6 +54,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Init</th>
                     <th>Name</th>
                     <th>Git</th>
                     <th>Path</th>
@@ -75,13 +68,14 @@
                 {% for module in app['modules'] %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
+                        <td>{{ module['initialized'] and '&#10004;' or '' | safe }}</td>
                         <td>{{ module['name'] }}</td>
                         <td>{{ module['git_repo'] }}</td>
                         <td>{{ module['path'] }}</td>
                         <td>{{ module['scope'] }}</td>
-                        <td>{{ module.get('build_pack', '')[:10] }}{% if module.get('build_pack', '') | length > 10 %}<abbr title="{{module['build_pack']}}">&hellip;</abbr>{% endif %}</td>
-                        <td>{{ module.get('pre_deploy', '')[:10] }}{% if module.get('pre_deploy', '') | length > 10 %}<abbr title="{{module['pre_deploy']}}">&hellip;</abbr>{% endif %}</td>
-                        <td>{{ module.get('post_deploy', '')[:10] }}{% if module.get('post_deploy', '') | length > 10 %}<abbr title="{{module['post_deploy']}}">&hellip;</abbr>{% endif %}</td>
+                        <td>{{ ghost_script(module.get('build_pack', '')) }}</td>
+                        <td>{{ ghost_script(module.get('pre_deploy', '')) }}</td>
+                        <td>{{ ghost_script(module.get('post_deploy', '')) }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
