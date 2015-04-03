@@ -114,11 +114,11 @@ def map_form_to_app(form, app):
         module['path'] = form_module.module_path.data
         module['scope'] = form_module.module_scope.data
         if form_module.module_build_pack.data:
-            module['build_pack'] = b64encode(form_module.module_build_pack.data)
+            module['build_pack'] = b64encode(form_module.module_build_pack.data.replace('\r\n', '\n'))
         if form_module.module_pre_deploy.data:
-            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data)
+            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.replace('\r\n', '\n'))
         if form_module.module_post_deploy.data:
-            module['post_deploy'] = b64encode(form_module.module_post_deploy.data)
+            module['post_deploy'] = b64encode(form_module.module_post_deploy.data.replace('\r\n', '\n'))
         app['modules'].append(module)
 
 def map_app_to_form(app, form):
