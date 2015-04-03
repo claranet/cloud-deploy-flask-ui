@@ -4,9 +4,10 @@ from flask_bootstrap import Bootstrap
 
 from flask_wtf import Form
 
-from wtforms import FieldList, FormField, HiddenField, RadioField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import Regexp as RegexpValidator
+from wtforms.validators import NumberRange as NumberRangeValidator
 
 from eve import RFC1123_DATE_FORMAT
 
@@ -90,7 +91,14 @@ def map_form_to_app(form, app):
     app['instance_type'] = form.instance_type.data
     app['vpc_id'] = form.vpc_id.data
 
-    # Extract app data
+    # Extract log_notifications data
+    app['log_notifications'] = []
+    for form_log_notification in form.log_notifications:
+        if form_log_notification.data:
+            log_notification = form_log_notification.data
+            app['log_notifications'].append(log_notification)
+
+    # TODO: Extract app data
     #app['autoscale'] = {}
     #app['build_infos'] = {}
 
@@ -133,7 +141,16 @@ def map_app_to_form(app, form):
     form.instance_type.data = app.get('instance_type', '')
     form.vpc_id.data = app.get('vpc_id', '')
 
-    # TODO : handle autoscale and build_infos
+    # Populate form with log_notifications data if available
+    if 'log_notifications' in app and len(app['log_notifications']) > 0:
+        # Remove default entry
+        form.log_notifications.pop_entry()
+        for log_notification in app.get('log_notifications', []):
+            form.log_notifications.append_entry()
+            form_log_notification = form.log_notifications.entries[-1]
+            form_log_notification.data = log_notification
+
+    # TODO: handle missing data (autoscale, build_infos, etc.)
 
     # Populate form with features data if available
     if 'features' in app and len(app['features']) > 0:
@@ -165,26 +182,85 @@ def map_app_to_form(app, form):
 
 
 # Forms
+class AutoscaleForm(Form):
+    # Disable CSRF in autoscale forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(AutoscaleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    name = StringField('Name', validators=[])
+    min = IntegerField('Min', validators=[NumberRangeValidator(min=0)])
+    max = IntegerField('Max', validators=[NumberRangeValidator(min=1)])
+    current = IntegerField('Current', validators=[])
+
+class BuildInfosForm(Form):
+    # Disable CSRF in build_infos forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(BuildInfosForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    ssh_username = StringField('SSH Username', validators=[DataRequiredValidator()])
+    source_ami = StringField('Source AWS AMI', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['build_infos']['schema']['source_ami']['regex']
+        )
+    ])
+    ami_name = StringField('AWS AMI Name', validators=[DataRequiredValidator()])
+    subnet_id = StringField('AWS Subnet', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
+        )
+    ])
+    associate_eip = StringField('Associated EIP', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['build_infos']['schema']['associate_EIP']['regex']
+        )
+    ])
+
+class EnvironmentInfosForm(Form):
+    # Disable CSRF in environment_infos forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(EnvironmentInfosForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    security_groups = FieldList(StringField('Security Group', validators=[
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['security_groups']['schema']['regex']
+        )
+    ]), min_entries=1)
+    subnet_ids = FieldList(StringField('Subnet ID', validators=[
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['subnet_ids']['schema']['regex']
+        )
+    ]), min_entries=1)
+    instance_profile = StringField('Instance Profile', validators=[])
+    key_name = StringField('Key Name', validators=[])
+
+class ResourceForm(Form):
+    # Disable CSRF in resource forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(ResourceForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    # TODO: implement resource form
+
 class FeatureForm(Form):
-    # Disable CSRF in feature forms as they are AppForm subforms
+    # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(FeatureForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
 
     feature_name = StringField('Name', validators=[
         RegexpValidator(
-            ghost_app_schema['features']['schema']['schema']['name']['regex'],
-            message='The feature name can only contain ASCII letters or digits'
+            ghost_app_schema['features']['schema']['schema']['name']['regex']
         )
     ])
     feature_version = StringField('Version', validators=[
         RegexpValidator(
-            ghost_app_schema['features']['schema']['schema']['version']['regex'],
-            message='The feature version can only contain ASCII letters, digits or dots'
+            ghost_app_schema['features']['schema']['schema']['version']['regex']
         )
     ])
 
 class ModuleForm(Form):
-    # Disable CSRF in module forms as they are AppForm subforms
+    # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(ModuleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
 
@@ -197,15 +273,38 @@ class ModuleForm(Form):
     module_post_deploy = TextAreaField('Post Deploy', validators=[])
 
 class BaseAppForm(Form):
+    # App properties
     name = StringField('Name', validators=[
         DataRequiredValidator(), 
         RegexpValidator(
-            '^[a-zA-Z0-9_.+-]*$',
-            message='The application name can only contain ASCII letters, digits or _.+- characters'
+            ghost_app_schema['name']['regex']
         )
     ])
     env = SelectField('Environment', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
     role = SelectField('Role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+
+    # Notification properties
+    log_notifications = FieldList(StringField('', validators=[
+        RegexpValidator(
+            ghost_app_schema['log_notifications']['schema']['regex']
+        )
+    ]), min_entries=1)
+
+    # Autoscale properties
+    # TODO: implement autoscale
+    #autoscale = FormField(AutoscaleForm)
+
+    # Build properties
+    # TODO: implement build_infos
+    #build_infos = FormField(BuildInfosForm)
+
+    # Resources properties
+    # TODO: implement resources
+    #resources = FieldList(FormField(ResourceForm), min_entries=1)
+
+    # Environment properties
+    # TODO: implement environment_infos
+    #environment_infos = FormField(EnvironmentInfosForm)
 
     # AWS properties
     region = SelectField('AWS Region', validators=[DataRequiredValidator()], choices=get_aws_regions())
@@ -213,8 +312,7 @@ class BaseAppForm(Form):
     vpc_id = SelectField('AWS VPC', choices=get_aws_vpc_ids(), validators=[
         DataRequiredValidator(), 
         RegexpValidator(
-            '^vpc-[a-z0-9]*$',
-            message='The VPC id must begin by <i>vpc</i> followed by lowercase ASCII letters or digits'
+            ghost_app_schema['vpc_id']['regex']
         )
     ])
 
