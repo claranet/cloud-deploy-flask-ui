@@ -62,6 +62,7 @@
             var clone = $("div[data-feature]:first").clone();
 
             clone.attr("id", "feature_"+(count+1));
+            clone.find("h3").text("Feature "+(count+1));
             for (field of ["name", "version"]) {
                 var old_id = "features-0-feature_" + field;
                 var new_id = "features-" + count + "-feature_" + field;
