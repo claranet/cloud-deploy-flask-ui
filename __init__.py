@@ -349,7 +349,7 @@ def create_app():
             traceback.print_exc()
             modules = ['Failed to retrieve Application Modules']
 
-        form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules if module['scope'] == 'code']
+        form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
 
         # Perform validation in POST case
         if form.validate_on_submit():
