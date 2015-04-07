@@ -129,6 +129,10 @@ def map_form_to_app(form, app):
             module['post_deploy'] = b64encode(form_module.module_post_deploy.data)
         app['modules'].append(module)
 
+def empty_fieldlist(fieldlist):
+    while len(fieldlist) > 0:
+        fieldlist.pop_entry()
+
 def map_app_to_form(app, form):
     # Store App etag in form
     form.etag.data = app['_etag']
@@ -144,7 +148,7 @@ def map_app_to_form(app, form):
     # Populate form with log_notifications data if available
     if 'log_notifications' in app and len(app['log_notifications']) > 0:
         # Remove default entry
-        form.log_notifications.pop_entry()
+        empty_fieldlist(form.log_notifications)
         for log_notification in app.get('log_notifications', []):
             form.log_notifications.append_entry()
             form_log_notification = form.log_notifications.entries[-1]
@@ -155,7 +159,7 @@ def map_app_to_form(app, form):
     # Populate form with features data if available
     if 'features' in app and len(app['features']) > 0:
         # Remove default entry
-        form.features.pop_entry()
+        empty_fieldlist(form.features)
         for feature in app.get('features', []):
             form.features.append_entry()
             form_feature = form.features.entries[-1].form
@@ -365,7 +369,7 @@ def create_app():
     def web_app_create():
         form = CreateAppForm()
 
-        # Perform validation in POST case
+        # Perform validation
         if form.validate_on_submit():
             app = {}
             map_form_to_app(form, app)
@@ -406,7 +410,7 @@ def create_app():
     def web_app_edit(app_id):
         form = EditAppForm()
 
-        # Perform validation in POST case
+        # Perform validation
         if form.validate_on_submit():
             local_headers = headers.copy()
             local_headers['If-Match'] = form.etag.data
@@ -428,14 +432,14 @@ def create_app():
 
             return render_template('action_completed.html', message=message)
 
-        # Get Application etag
-        try:
-            # Get App data
-            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+        # Get App data on first access
+        if not form.etag.data:
+            try:
+                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
 
-            map_app_to_form(app, form)
-        except:
-            traceback.print_exc()
+                map_app_to_form(app, form)
+            except:
+                traceback.print_exc()
 
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=True)
@@ -453,7 +457,7 @@ def create_app():
 
         form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules if module['scope'] == 'code']
 
-        # Perform validation in POST case
+        # Perform validation
         if form.validate_on_submit():
             job = {}
             job['user'] = 'web'
@@ -484,7 +488,7 @@ def create_app():
     def web_app_delete(app_id):
         form = DeleteAppForm()
 
-        # Perform validation in POST case
+        # Perform validation
         if form.validate_on_submit and form.confirmation.data == 'yes':
             local_headers = headers.copy()
             local_headers['If-Match'] = form.etag.data
