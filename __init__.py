@@ -47,17 +47,28 @@ def get_ghost_apps():
 
     return apps
 
+def get_wtforms_selectfield_values(allowed_schema_values):
+    """
+    >>> get_wtforms_selectfield_values([])
+    []
+    >>> get_wtforms_selectfield_values(['value'])
+    [('value', 'value')]
+    >>> get_wtforms_selectfield_values(['value1', 'value2'])
+    [('value1', 'value1'), ('value2', 'value2')]
+    """
+    return [(value, value) for value in allowed_schema_values]
+
 def get_ghost_app_envs():
-    return [(value, value) for value in ghost_app_schema['env']['allowed']]
+    return get_wtforms_selectfield_values(ghost_app_schema['env']['allowed'])
 
 def get_ghost_app_roles():
-    return [(value, value) for value in ghost_app_schema['role']['allowed']]
+    return get_wtforms_selectfield_values(ghost_app_schema['role']['allowed'])
 
 def get_ghost_job_commands():
-    return [(value, value) for value in ghost_job_schema['command']['allowed']]
+    return get_wtforms_selectfield_values(ghost_job_schema['command']['allowed'])
 
 def get_ghost_mod_scopes():
-    return [(value, value) for value in ghost_app_schema['modules']['schema']['schema']['scope']['allowed']]
+    return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['scope']['allowed'])
 
 def get_aws_vpc_ids():
     try:
@@ -214,7 +225,7 @@ def map_app_to_form(app, form):
     form.environment_infos.form.instance_profile.data = environment_infos.get('instance_profile', '')
     form.environment_infos.form.key_name.data = environment_infos.get('key_name', '')
 
-    # TODO: handle missing data (ressources)
+    # TODO: handle resources app data
 
     # Populate form with features data if available
     if 'features' in app and len(app['features']) > 0:
