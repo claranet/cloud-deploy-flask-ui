@@ -98,8 +98,12 @@ def map_form_to_app(form, app):
             log_notification = form_log_notification.data
             app['log_notifications'].append(log_notification)
 
+    app['autoscale'] = {}
+    app['autoscale']['min'] = form.autoscale.form.min.data
+    app['autoscale']['max'] = form.autoscale.form.max.data
+    app['autoscale']['name'] = form.autoscale.form.name.data
+
     # TODO: Extract app data
-    #app['autoscale'] = {}
     #app['build_infos'] = {}
 
     # Extract features data
@@ -154,7 +158,12 @@ def map_app_to_form(app, form):
             form_log_notification = form.log_notifications.entries[-1]
             form_log_notification.data = log_notification
 
-    # TODO: handle missing data (autoscale, build_infos, etc.)
+    autoscale = app.get('autoscale', {})
+    form.autoscale.form.min.data = autoscale.get('min', 0)
+    form.autoscale.form.max.data = autoscale.get('max', 1)
+    form.autoscale.form.name.data = autoscale.get('name', '')
+
+    # TODO: handle missing data (build_infos, etc.)
 
     # Populate form with features data if available
     if 'features' in app and len(app['features']) > 0:
@@ -295,8 +304,7 @@ class BaseAppForm(Form):
     ]), min_entries=1)
 
     # Autoscale properties
-    # TODO: implement autoscale
-    #autoscale = FormField(AutoscaleForm)
+    autoscale = FormField(AutoscaleForm)
 
     # Build properties
     # TODO: implement build_infos

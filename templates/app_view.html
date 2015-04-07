@@ -27,6 +27,14 @@
                 {{ ghost_display_field('app-aws-vpc', 'AWS VPC', app['vpc_id']) }}
                 {{ ghost_display_field('app-aws-ami', 'AWS AMI', app['ami']) }}
             </div>
+            <div class="row">
+                {{ ghost_display_field('app-autoscale-name', 'Autoscale', app['autoscale']['name']) }}
+                {{ ghost_display_field('app-autoscale-current', 'Autoscale current', app['autoscale']['current']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-autoscale-min', 'Autoscale min', app['autoscale']['min']) }}
+                {{ ghost_display_field('app-autoscale-max', 'Autoscale max', app['autoscale']['max']) }}
+            </div>
         </div>
 
         <table class="table">
