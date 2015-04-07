@@ -1,4 +1,4 @@
-from flask import Flask, flash, make_response, render_template, request, redirect
+from flask import Flask, flash, make_response, render_template, request
 
 from flask_bootstrap import Bootstrap
 
@@ -160,11 +160,11 @@ def map_form_to_app(form, app):
         module['path'] = form_module.module_path.data
         module['scope'] = form_module.module_scope.data
         if form_module.module_build_pack.data:
-            module['build_pack'] = b64encode(form_module.module_build_pack.data)
+            module['build_pack'] = b64encode(form_module.module_build_pack.data.replace('\r\n', '\n'))
         if form_module.module_pre_deploy.data:
-            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data)
+            module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.replace('\r\n', '\n'))
         if form_module.module_post_deploy.data:
-            module['post_deploy'] = b64encode(form_module.module_post_deploy.data)
+            module['post_deploy'] = b64encode(form_module.module_post_deploy.data.replace('\r\n', '\n'))
         app['modules'].append(module)
 
 def empty_fieldlist(fieldlist):
@@ -424,10 +424,6 @@ def create_app():
 
     Bootstrap(app)
 
-    @app.route('/web/')
-    def web_index():
-        return redirect('/web/apps')
-
     @app.route('/web/apps')
     def web_app_list():
         return render_template('app_list.html', apps=get_ghost_apps())
@@ -522,7 +518,7 @@ def create_app():
             traceback.print_exc()
             modules = ['Failed to retrieve Application Modules']
 
-        form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules if module['scope'] == 'code']
+        form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
 
         # Perform validation
         if form.validate_on_submit():
