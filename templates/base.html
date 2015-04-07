@@ -58,7 +58,7 @@
             clone.find("h3").text(entry_label + " " + (count+1));
             clone.find("input").each(function() {
                 var old_id = $(this).attr('id');
-                var new_id = old_id.replace('-0-', '-' + count + '-');
+                var new_id = old_id.replace('-0', '-' + count);
                 $(this).attr("id", new_id);
                 $(this).attr("name", new_id);
                 $(this).val(null);

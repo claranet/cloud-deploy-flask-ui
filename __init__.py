@@ -112,7 +112,22 @@ def map_form_to_app(form, app):
     app['build_infos']['subnet_id'] = form.build_infos.form.subnet_id.data
     app['build_infos']['associate_EIP'] = form.build_infos.form.associate_eip.data
 
-    # TODO: Extract app data
+    # Extract environment_infos data
+    app['environment_infos'] = {}
+    app['environment_infos']['security_groups'] = []
+    for form_security_group in form.environment_infos.form.security_groups:
+        if form_security_group.data:
+            security_group = form_security_group.data
+            app['environment_infos']['security_groups'].append(security_group)
+    app['environment_infos']['subnet_ids'] = []
+    for form_subnet_id in form.environment_infos.form.subnet_ids:
+        if form_subnet_id.data:
+            subnet_id = form_subnet_id.data
+            app['environment_infos']['subnet_ids'].append(subnet_id)
+    app['environment_infos']['instance_profile'] = form.environment_infos.form.instance_profile.data
+    app['environment_infos']['key_name'] = form.environment_infos.form.key_name.data
+
+    # TODO: Extract resources app data
 
     # Extract features data
     app['features'] = []
@@ -180,7 +195,26 @@ def map_app_to_form(app, form):
     form.build_infos.form.subnet_id.data = build_infos.get('subnet_id', '')
     form.build_infos.form.associate_eip.data = build_infos.get('associate_EIP', '')
 
-    # TODO: handle missing data (ressources and environment_infos)
+    # Populate form with environment_infos data if available
+    environment_infos = app.get('environment_infos', {})
+    if 'security_groups' in environment_infos and len(environment_infos['security_groups']) > 0:
+        # Remove default entry
+        empty_fieldlist(form.environment_infos.form.security_groups)
+        for security_group in environment_infos.get('security_groups', []):
+            form.environment_infos.form.security_groups.append_entry()
+            form_security_group = form.environment_infos.form.security_groups.entries[-1]
+            form_security_group.data = security_group
+    if 'subnet_ids' in environment_infos and len(environment_infos['subnet_ids']) > 0:
+        # Remove default entry
+        empty_fieldlist(form.environment_infos.form.subnet_ids)
+        for subnet_id in environment_infos.get('subnet_ids', []):
+            form.environment_infos.form.subnet_ids.append_entry()
+            form_subnet_id = form.environment_infos.form.subnet_ids.entries[-1]
+            form_subnet_id.data = subnet_id
+    form.environment_infos.form.instance_profile.data = environment_infos.get('instance_profile', '')
+    form.environment_infos.form.key_name.data = environment_infos.get('key_name', '')
+
+    # TODO: handle missing data (ressources)
 
     # Populate form with features data if available
     if 'features' in app and len(app['features']) > 0:
@@ -330,8 +364,7 @@ class BaseAppForm(Form):
     #resources = FieldList(FormField(ResourceForm), min_entries=1)
 
     # Environment properties
-    # TODO: implement environment_infos
-    #environment_infos = FormField(EnvironmentInfosForm)
+    environment_infos = FormField(EnvironmentInfosForm)
 
     # AWS properties
     region = SelectField('AWS Region', validators=[DataRequiredValidator()], choices=get_aws_regions())

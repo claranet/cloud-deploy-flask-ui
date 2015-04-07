@@ -56,6 +56,17 @@
                 {{ ghost_display_field('app-build_infos-associate_EIP', 'Associate EIP', app.get('build_infos', {})['associate_EIP']) }}
             </div>
         </div>
+        <div class="panel-heading">Environment Infos</div>
+        <div class="panel-body">
+            <div class="row">
+                {{ ghost_display_field('app-environment_infos-security_groups', 'Security Groups', ', '.join(app.get('environment_infos', {})['security_groups'])) }}
+                {{ ghost_display_field('app-environment_infos-subnet_ids', 'Subnets', ', '.join(app.get('environment_infos', {})['subnet_ids'])) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-environment_infos-instance_profile', 'Instance Profile', app.get('environment_infos', {})['instance_profile']) }}
+                {{ ghost_display_field('app-environment_infos-key_name', 'Key Name', app.get('environment_infos', {})['key_name']) }}
+            </div>
+        </div>
 
         <table class="table">
             <caption>Features</caption>
