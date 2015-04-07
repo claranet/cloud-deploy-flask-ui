@@ -19,6 +19,13 @@
         {{ wtf.form_field(form.autoscale.form.max, form_type='horizontal') }}
         {{ wtf.form_field(form.autoscale.form.name, form_type='horizontal') }}
 
+        <h2>Build infos</h2>
+        {{ wtf.form_field(form.build_infos.form.ssh_username, form_type='horizontal') }}
+        {{ wtf.form_field(form.build_infos.form.source_ami, form_type='horizontal') }}
+        {{ wtf.form_field(form.build_infos.form.ami_name, form_type='horizontal') }}
+        {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
+        {{ wtf.form_field(form.build_infos.form.associate_eip, form_type='horizontal') }}
+
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification') }}
         {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature') }}
 

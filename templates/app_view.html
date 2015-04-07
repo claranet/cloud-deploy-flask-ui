@@ -19,6 +19,9 @@
                 {{ ghost_display_field('app-env', 'Environment', app['env']) }}
                 {{ ghost_display_field('app-role', 'Role', app['role']) }}
             </div>
+        </div>
+        <div class="panel-heading">AWS</div>
+        <div class="panel-body">
             <div class="row">
                 {{ ghost_display_field('app-aws-region', 'AWS Region', app['region']) }}
                 {{ ghost_display_field('app-aws-instance-type', 'AWS Instance Type', app['instance_type']) }}
@@ -27,6 +30,9 @@
                 {{ ghost_display_field('app-aws-vpc', 'AWS VPC', app['vpc_id']) }}
                 {{ ghost_display_field('app-aws-ami', 'AWS AMI', app['ami']) }}
             </div>
+        </div>
+        <div class="panel-heading">Autoscale</div>
+        <div class="panel-body">
             <div class="row">
                 {{ ghost_display_field('app-autoscale-name', 'Autoscale', app['autoscale']['name']) }}
                 {{ ghost_display_field('app-autoscale-current', 'Autoscale current', app['autoscale']['current']) }}
@@ -34,6 +40,20 @@
             <div class="row">
                 {{ ghost_display_field('app-autoscale-min', 'Autoscale min', app['autoscale']['min']) }}
                 {{ ghost_display_field('app-autoscale-max', 'Autoscale max', app['autoscale']['max']) }}
+            </div>
+        </div>
+        <div class="panel-heading">Build Infos</div>
+        <div class="panel-body">
+            <div class="row">
+                {{ ghost_display_field('app-build_infos-ssh_username', 'SSH username', app.get('build_infos', {})['ssh_username']) }}
+                {{ ghost_display_field('app-build_infos-source_ami', 'Source AMI', app.get('build_infos', {})['source_ami']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-build_infos-ami_name', 'AMI Name', app.get('build_infos', {})['ami_name']) }}
+                {{ ghost_display_field('app-build_infos-subnet_id', 'Subnet ID', app.get('build_infos', {})['subnet_id']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-build_infos-associate_EIP', 'Associate EIP', app.get('build_infos', {})['associate_EIP']) }}
             </div>
         </div>
 

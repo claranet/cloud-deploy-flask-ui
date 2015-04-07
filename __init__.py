@@ -98,13 +98,21 @@ def map_form_to_app(form, app):
             log_notification = form_log_notification.data
             app['log_notifications'].append(log_notification)
 
+    # Extract autoscale data
     app['autoscale'] = {}
     app['autoscale']['min'] = form.autoscale.form.min.data
     app['autoscale']['max'] = form.autoscale.form.max.data
     app['autoscale']['name'] = form.autoscale.form.name.data
 
+    # Extract build_infos data
+    app['build_infos'] = {}
+    app['build_infos']['ssh_username'] = form.build_infos.form.ssh_username.data
+    app['build_infos']['source_ami'] = form.build_infos.form.source_ami.data
+    app['build_infos']['ami_name'] = form.build_infos.form.ami_name.data
+    app['build_infos']['subnet_id'] = form.build_infos.form.subnet_id.data
+    app['build_infos']['associate_EIP'] = form.build_infos.form.associate_eip.data
+
     # TODO: Extract app data
-    #app['build_infos'] = {}
 
     # Extract features data
     app['features'] = []
@@ -158,12 +166,21 @@ def map_app_to_form(app, form):
             form_log_notification = form.log_notifications.entries[-1]
             form_log_notification.data = log_notification
 
+    # Populate form with autoscale data if available
     autoscale = app.get('autoscale', {})
     form.autoscale.form.min.data = autoscale.get('min', 0)
     form.autoscale.form.max.data = autoscale.get('max', 1)
     form.autoscale.form.name.data = autoscale.get('name', '')
 
-    # TODO: handle missing data (build_infos, etc.)
+    # Populate form with build_infos data if available
+    build_infos = app.get('build_infos', {})
+    form.build_infos.form.ssh_username.data = build_infos.get('ssh_username', '')
+    form.build_infos.form.source_ami.data = build_infos.get('source_ami', '')
+    form.build_infos.form.ami_name.data = build_infos.get('ami_name', '')
+    form.build_infos.form.subnet_id.data = build_infos.get('subnet_id', '')
+    form.build_infos.form.associate_eip.data = build_infos.get('associate_EIP', '')
+
+    # TODO: handle missing data (ressources and environment_infos)
 
     # Populate form with features data if available
     if 'features' in app and len(app['features']) > 0:
@@ -225,7 +242,6 @@ class BuildInfosForm(Form):
         )
     ])
     associate_eip = StringField('Associated EIP', validators=[
-        DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['associate_EIP']['regex']
         )
@@ -307,8 +323,7 @@ class BaseAppForm(Form):
     autoscale = FormField(AutoscaleForm)
 
     # Build properties
-    # TODO: implement build_infos
-    #build_infos = FormField(BuildInfosForm)
+    build_infos = FormField(BuildInfosForm)
 
     # Resources properties
     # TODO: implement resources
