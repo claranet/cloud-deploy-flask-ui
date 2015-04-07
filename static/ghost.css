@@ -17,3 +17,6 @@ body {
   width: auto;
 }
 
+.form-group {
+  margin-bottom: 2px;
+}
