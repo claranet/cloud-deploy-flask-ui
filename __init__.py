@@ -14,7 +14,6 @@ import requests
 import json
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
-from forms import map_app_to_form, map_form_to_app
 
 # FIXME: Static conf to externalize with Flask-Appconfig
 auth = ('api', 'api')
@@ -44,8 +43,8 @@ def create_app():
     app = Flask(__name__)
 
     app.config.update(
-        SECRET_KEY = 'a random string',
-        WTF_CSRF_SECRET_KEY = 'a random string'
+        SECRET_KEY='a random string',
+        WTF_CSRF_SECRET_KEY='a random string'
     )
 
     Bootstrap(app)
@@ -61,7 +60,7 @@ def create_app():
         # Perform validation
         if form.validate_on_submit():
             app = {}
-            map_form_to_app(form, app)
+            form.map_to_app(app)
 
             try:
                 message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=auth).content
@@ -109,7 +108,7 @@ def create_app():
 
             # Update Application
             app = {}
-            map_form_to_app(form, app)
+            form.map_to_app(app)
 
             try:
                 message = requests.patch(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=auth).content
@@ -126,7 +125,7 @@ def create_app():
             try:
                 app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
 
-                map_app_to_form(app, form)
+                form.map_from_app(app)
             except:
                 traceback.print_exc()
 

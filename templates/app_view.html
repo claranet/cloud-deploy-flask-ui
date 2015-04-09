@@ -34,12 +34,12 @@
         <div class="panel-heading">Autoscale</div>
         <div class="panel-body">
             <div class="row">
-                {{ ghost_display_field('app-autoscale-name', 'Autoscale', app['autoscale']['name']) }}
-                {{ ghost_display_field('app-autoscale-current', 'Autoscale current', app['autoscale']['current']) }}
+                {{ ghost_display_field('app-autoscale-name', 'Name', app.get('autoscale', {})['name']) }}
+                {{ ghost_display_field('app-autoscale-current', 'Initial Value', app.get('autoscale', {})['current']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('app-autoscale-min', 'Autoscale min', app['autoscale']['min']) }}
-                {{ ghost_display_field('app-autoscale-max', 'Autoscale max', app['autoscale']['max']) }}
+                {{ ghost_display_field('app-autoscale-min', 'Min Value', app.get('autoscale', {})['min']) }}
+                {{ ghost_display_field('app-autoscale-max', 'Max Value', app.get('autoscale', {})['max']) }}
             </div>
         </div>
         <div class="panel-heading">Build Infos</div>
