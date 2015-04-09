@@ -104,7 +104,7 @@
                 {% for module in app['modules'] %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
-                        <td>{{ module['initialized'] and '&#10004;' or '' | safe }}</td>
+                        <td>{{ module['initialized'] and '&#10004;' | safe or '' }}</td>
                         <td>{{ module['name'] }}</td>
                         <td>{{ module['git_repo'] }}</td>
                         <td>{{ module['path'] }}</td>
