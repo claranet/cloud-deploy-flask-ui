@@ -262,7 +262,7 @@ class BaseAppForm(Form):
     role = SelectField('Role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
 
     # Notification properties
-    log_notifications = FieldList(StringField('', validators=[
+    log_notifications = FieldList(StringField('email', validators=[
         RegexpValidator(
             ghost_app_schema['log_notifications']['schema']['regex']
         )

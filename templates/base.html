@@ -51,8 +51,8 @@
     {{ super() }}
     <script>
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
-            var count = $("div[data-" + entry_id_prefix + "]").size();
-            var clone = $("div[data-" + entry_id_prefix + "]:first").clone();
+            var count = $("tr[data-" + entry_id_prefix + "]").size();
+            var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
 
             clone.attr("id", entry_id_prefix + "_"+(count+1));
             clone.find("input").each(function() {
@@ -66,11 +66,11 @@
                 field_label.attr("for", new_id);
             });
 
-            clone.appendTo("div#" + group_id_prefix + "_list");
+            clone.appendTo("table#" + group_id_prefix + "_list");
         }
 
         function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
-            var count = $("div[data-" + entry_id_prefix + "]").size();
+            var count = $("tr[data-" + entry_id_prefix + "]").size();
             var entry = $(entry_del_link).parent().parent();
             if (count > 1) {
                 entry.remove();
@@ -95,34 +95,44 @@
 {% endblock %}
 
 {% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
-    <div id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
-        <h4 style="counter-increment: group_entry; }">
-            <span class="index">{{ entry_label }}</span>
+    <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
+        <th scope="row" class="col-md-2">
+            <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
+        </th>
+        <td class="col-md-9">
+            {% if entry.type == 'FormField' %}
+                {% for field in entry if not field.type == 'CSRFTokenField' %}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder='TODO') }}
+                {% endfor %}
+            {% elif entry.type == 'TextAreaField' %}
+                {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+            {% else %}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder='TODO') }}
+            {% endif %}
+        </td>
+        <td class="col-md-1">
             <a class="btn btn-default" title="Delete {{ entry_label }}"
                 onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">X</a>
-        </h4>
-        {% if entry.type == 'FormField' %}
-            {% for field in entry if not field.type == 'CSRFTokenField' %}
-                {{ wtf.form_field(field, form_type='horizontal', placeholder='TODO') }}
-            {% endfor %}
-        {% elif entry.type == 'TextAreaField' %}
-            {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-        {% else %}
-            {{ wtf.form_field(entry, form_type='horizontal', placeholder='TODO') }}
-        {% endif %}
-    </div>
+        </td>
+    </tr>
 {%- endmacro %}
 
 {% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
-    <h3 style="counter-reset: group_entry;">
-        {{ group_label }}
-        <a class="btn btn-default" title="Add {{ entry_label }}"
-            onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">+</a>
-    </h3>
-    <div id="{{ group_id_prefix }}_list">
-        {% for entry in fieldlist %}
-            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index) }}
-        {% endfor %}
+    <div class="panel panel-default">
+        <div class="panel-heading" style="counter-reset: group_entry;">
+            {{ group_label }}
+            <a class="btn btn-default" title="Add {{ entry_label }}"
+                onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">
+                +
+            </a>
+        </div>
+        <table class="table" id="{{ group_id_prefix }}_list">
+            <tbody>
+            {% for entry in fieldlist %}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index) }}
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 {%- endmacro %}
 
