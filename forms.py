@@ -98,7 +98,6 @@ def map_form_to_app_build_infos(form, app):
     app['build_infos']['source_ami'] = form.build_infos.form.source_ami.data
     app['build_infos']['ami_name'] = form.build_infos.form.ami_name.data
     app['build_infos']['subnet_id'] = form.build_infos.form.subnet_id.data
-    app['build_infos']['associate_EIP'] = form.build_infos.form.associate_eip.data
 
 
 def map_form_to_app_resources(form, app):
@@ -212,7 +211,6 @@ def map_app_to_form_build_infos(app, form):
     form.build_infos.form.source_ami.data = build_infos.get('source_ami', '')
     form.build_infos.form.ami_name.data = build_infos.get('ami_name', '')
     form.build_infos.form.subnet_id.data = build_infos.get('subnet_id', '')
-    form.build_infos.form.associate_eip.data = build_infos.get('associate_EIP', '')
 
 
 def map_app_to_form_environment_infos(app, form):
@@ -322,11 +320,6 @@ class BuildInfosForm(Form):
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
-        )
-    ])
-    associate_eip = StringField('Associated EIP', validators=[
-        RegexpValidator(
-            ghost_app_schema['build_infos']['schema']['associate_EIP']['regex']
         )
     ])
 

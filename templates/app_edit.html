@@ -24,7 +24,6 @@
         {{ wtf.form_field(form.build_infos.form.source_ami, form_type='horizontal') }}
         {{ wtf.form_field(form.build_infos.form.ami_name, form_type='horizontal') }}
         {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
-        {{ wtf.form_field(form.build_infos.form.associate_eip, form_type='horizontal') }}
 
         <h2>Environment Infos</h2>
         {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group') }}

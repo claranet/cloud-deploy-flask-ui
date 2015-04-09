@@ -52,9 +52,6 @@
                 {{ ghost_display_field('app-build_infos-ami_name', 'AMI Name', app.get('build_infos', {})['ami_name']) }}
                 {{ ghost_display_field('app-build_infos-subnet_id', 'Subnet ID', app.get('build_infos', {})['subnet_id']) }}
             </div>
-            <div class="row">
-                {{ ghost_display_field('app-build_infos-associate_EIP', 'Associate EIP', app.get('build_infos', {})['associate_EIP']) }}
-            </div>
         </div>
         <div class="panel-heading">Environment Infos</div>
         <div class="panel-body">
