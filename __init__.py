@@ -72,6 +72,15 @@ def create_app():
 
             return render_template('action_completed.html', message=message)
 
+        app_id = request.args['clone_from']
+        if app_id:
+            try:
+                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+                
+                form.map_from_app(app)
+            except:
+                traceback.print_exc()
+
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=False)
 
@@ -124,7 +133,7 @@ def create_app():
         if not form.etag.data:
             try:
                 app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
-
+                
                 form.map_from_app(app)
             except:
                 traceback.print_exc()

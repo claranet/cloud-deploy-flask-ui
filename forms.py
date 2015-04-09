@@ -423,8 +423,6 @@ class BaseAppForm(Form):
         """
         Map app data from app to form
         """
-        # Store App etag in form
-        self.etag.data = app['_etag']
     
         # Populate form with app data
         self.name.data = app.get('name', '')
@@ -503,6 +501,15 @@ class EditAppForm(BaseAppForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
 
     submit = SubmitField('Update Application')
+    
+    def map_from_app(self, app):
+        """
+        Map app data from app to form
+        """
+        # Store app etag in form
+        self.etag.data = app.get('_etag', '')
+        
+        super(AutoscaleForm, self).map_from_app(app)
 
 
 class CommandAppForm(Form):
