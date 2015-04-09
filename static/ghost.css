@@ -20,3 +20,7 @@ body {
 .form-group {
   margin-bottom: 2px;
 }
+
+span.index:after {
+  content: " " counter(group_entry);
+}

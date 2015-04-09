@@ -50,12 +50,11 @@
 {% block scripts %}
     {{ super() }}
     <script>
-        function ghost_add_entry_to_list(group_id, entry_id, entry_label) {
-            var count = $("div[data-" + entry_id + "]").size();
-            var clone = $("div[data-" + entry_id + "]:first").clone();
+        function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
+            var count = $("div[data-" + entry_id_prefix + "]").size();
+            var clone = $("div[data-" + entry_id_prefix + "]:first").clone();
 
-            clone.attr("id", entry_id + "_"+(count+1));
-            clone.find("h3").text(entry_label + " " + (count+1));
+            clone.attr("id", entry_id_prefix + "_"+(count+1));
             clone.find("input").each(function() {
                 var old_id = $(this).attr('id');
                 var new_id = old_id.replace('-0', '-' + count);
@@ -67,7 +66,18 @@
                 field_label.attr("for", new_id);
             });
 
-            clone.appendTo("div#" + group_id + "_list");
+            clone.appendTo("div#" + group_id_prefix + "_list");
+        }
+
+        function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
+            var count = $("div[data-" + entry_id_prefix + "]").size();
+            var entry = $(entry_del_link).parent().parent();
+            if (count > 1) {
+                entry.remove();
+            } else {
+                // Do not remove element, just clear inputs
+                entry.find("input").val(null);
+            }
         }
 
         function dropHandler(dropEvent) {
@@ -84,28 +94,35 @@
     </script>
 {% endblock %}
 
-{% macro ghost_fieldlist(fieldlist, group_id, group_label, entry_id, entry_label) -%}
-    <h2>{{ group_label }}</h2>
-    <div id="{{ group_id }}_list">
-        {% for entry in fieldlist %}
-            <div id="{{ entry_id }}_{{ loop.index }}" data-{{ entry_id }}>
-                <h3>{{ entry_label }} {{ loop.index }}</h3>
-                {% if entry.type == 'FormField' %}
-                    {% for field in entry if not field.type == 'CSRFTokenField' %}
-                        {{ wtf.form_field(field, form_type='horizontal', placeholder='TODO') }}
-                    {% endfor %}
-                {% else %}
-                    {{ wtf.form_field(entry, form_type='horizontal', placeholder='TODO') }}
-                {% endif %}
-            </div>
-        {% endfor %}
+{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
+    <div id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
+        <h4 style="counter-increment: group_entry; }">
+            <span class="index">{{ entry_label }}</span>
+            <a class="btn btn-default" title="Delete {{ entry_label }}"
+                onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">X</a>
+        </h4>
+        {% if entry.type == 'FormField' %}
+            {% for field in entry if not field.type == 'CSRFTokenField' %}
+                {{ wtf.form_field(field, form_type='horizontal', placeholder='TODO') }}
+            {% endfor %}
+        {% elif entry.type == 'TextAreaField' %}
+            {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+        {% else %}
+            {{ wtf.form_field(entry, form_type='horizontal', placeholder='TODO') }}
+        {% endif %}
     </div>
+{%- endmacro %}
 
-    <div id="add_{{ entry_id }}_button" class="form-group">
-        <div class="col-lg-offset-2 col-lg-10 "> 
-            <input class="btn btn-default" id="add-{{ entry_id }}" name="add-{{ entry_id }}" type="button"
-                value="Add {{ entry_label }}" onclick="javascript:ghost_add_entry_to_list('{{ group_id }}', '{{ entry_id }}', '{{ entry_label }}')">
-        </div>
+{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
+    <h3 style="counter-reset: group_entry;">
+        {{ group_label }}
+        <a class="btn btn-default" title="Add {{ entry_label }}"
+            onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">+</a>
+    </h3>
+    <div id="{{ group_id_prefix }}_list">
+        {% for entry in fieldlist %}
+            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index) }}
+        {% endfor %}
     </div>
 {%- endmacro %}
 

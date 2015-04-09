@@ -27,35 +27,14 @@
         {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
 
         <h2>Environment Infos</h2>
-        {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group') }}
-        {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID') }}
         {{ wtf.form_field(form.environment_infos.form.instance_profile, form_type='horizontal') }}
         {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal') }}
+        {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group') }}
+        {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID') }}
 
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification') }}
         {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature') }}
-
-        <h2>Modules</h2>
-        <div id="modules_list">
-            {% for module in form.modules %}
-                <div id="module_{{ loop.index }}" data-module>
-                    <h3>Module {{ loop.index }}</h3>
-                    {{ wtf.form_field(module.module_name, form_type='horizontal', placeholder='Module Name') }}
-                    {{ wtf.form_field(module.module_git_repo, form_type='horizontal', placeholder='https://github.com/test/test') }}
-                    {{ wtf.form_field(module.module_path, form_type='horizontal', placeholder='/var/www/test') }}
-                    {{ wtf.form_field(module.module_scope, form_type='horizontal') }}
-                    {{ wtf.form_field(module.module_build_pack, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-                    {{ wtf.form_field(module.module_pre_deploy, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-                    {{ wtf.form_field(module.module_post_deploy, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-                </div>
-            {% endfor %}
-        </div>
-
-        <div id="add_module_button" class="form-group">
-            <div class="col-lg-offset-2 col-lg-10 "> 
-                <input class="btn btn-default" id="add-module" name="add-module" type="button" value="Add Module" onclick="javascript:ghost_add_entry_to_list('modules', 'module', 'Module')">
-            </div>
-        </div>
+        {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
