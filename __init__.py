@@ -82,7 +82,7 @@ def create_app():
             app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
 
             # Decode module scripts
-            for module in app['modules']:
+            for module in app.get('modules', []):
                 if 'build_pack' in module:
                     module['build_pack'] = b64decode(module['build_pack'])
                 if 'pre_deploy' in module:
@@ -139,11 +139,10 @@ def create_app():
         # Get Application Modules
         try:
             modules = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()['modules']
+            form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
         except:
             traceback.print_exc()
-            modules = ['Failed to retrieve Application Modules']
-
-        form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
+            form.module_name.choices = [('', 'Failed to retrieve Application Modules')]
 
         # Perform validation
         if form.validate_on_submit():
