@@ -19,6 +19,9 @@
                 {{ ghost_display_field('app-env', 'Environment', app['env']) }}
                 {{ ghost_display_field('app-role', 'Role', app['role']) }}
             </div>
+            <div class="row">
+                {{ ghost_display_field('app-log_notifications', 'Log Notifications', ', '.join(app.get('log_notifications', []))) }}
+            </div>
         </div>
         <div class="panel-heading">AWS</div>
         <div class="panel-body">
