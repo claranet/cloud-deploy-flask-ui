@@ -509,7 +509,7 @@ class EditAppForm(BaseAppForm):
         # Store app etag in form
         self.etag.data = app.get('_etag', '')
         
-        super(AutoscaleForm, self).map_from_app(app)
+        super(EditAppForm, self).map_from_app(app)
 
 
 class CommandAppForm(Form):
