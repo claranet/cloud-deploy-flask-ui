@@ -72,7 +72,7 @@ def create_app():
 
             return render_template('action_completed.html', message=message)
 
-        app_id = request.args['clone_from']
+        app_id = request.args.get('clone_from', None)
         if app_id:
             try:
                 app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
