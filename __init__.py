@@ -1,6 +1,8 @@
-from flask import Flask, flash, make_response, render_template, request
+from flask import Flask, flash, make_response, render_template, request, Response
 
 from flask_bootstrap import Bootstrap
+
+from flask.ext.login import LoginManager, UserMixin, current_user, login_required, login_user
 
 from eve import RFC1123_DATE_FORMAT
 
@@ -14,17 +16,18 @@ import requests
 import json
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
+from encodings.base64_codec import base64_decode
+from flask_login import UserMixin
 
 # FIXME: Static conf to externalize with Flask-Appconfig
-auth = ('api', 'api')
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 url_apps = 'http://localhost:5000/apps'
 url_jobs = 'http://localhost:5000/jobs'
 
 # Helpers
-def get_ghost_apps():
+def get_ghost_apps(auth):
     try:
-        apps = requests.get(url_apps, headers=headers, auth=auth).json()['_items']
+        apps = requests.get(url_apps, headers=headers, auth=auth).json().get('_items', [])
         for app in apps:
             try:
                 app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
@@ -37,7 +40,6 @@ def get_ghost_apps():
 
     return apps
 
-
 # Web UI App
 def create_app():
     app = Flask(__name__)
@@ -49,9 +51,39 @@ def create_app():
 
     Bootstrap(app)
 
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager._login_disabled = False
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return Response('Please provide proper credentials', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+    @login_manager.request_loader
+    def load_user_from_request(request):
+        basic_auth = request.headers.get('Authorization')
+
+        if basic_auth:
+            try:
+                basic_auth = base64_decode(basic_auth.replace('Basic ', '', 1))[0].split(':')
+                user = UserMixin()
+                user.id = basic_auth[0]
+                user.auth = tuple(basic_auth)
+                return user
+            except:
+                traceback.print_exc()
+                pass
+
+        return None
+
+    @app.before_request
+    @login_required
+    def before_request():
+        pass
+
     @app.route('/web/apps')
     def web_app_list():
-        return render_template('app_list.html', apps=get_ghost_apps())
+        return render_template('app_list.html', apps=get_ghost_apps(current_user.auth))
 
     @app.route('/web/apps/create', methods=['GET', 'POST'])
     def web_app_create():
@@ -63,7 +95,7 @@ def create_app():
             form.map_to_app(app)
 
             try:
-                message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=auth).content
+                message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=current_user.auth).content
                 print(message)
                 flash('Application created.')
             except:
@@ -75,7 +107,7 @@ def create_app():
         app_id = request.args.get('clone_from', None)
         if app_id:
             try:
-                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
                 
                 form.map_from_app(app)
             except:
@@ -88,7 +120,7 @@ def create_app():
     def web_app_view(app_id):
         try:
             # Get App data
-            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
 
             # Decode module scripts
             for module in app.get('modules', []):
@@ -120,7 +152,7 @@ def create_app():
             form.map_to_app(app)
 
             try:
-                message = requests.patch(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=auth).content
+                message = requests.patch(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=current_user.auth).content
                 print(message)
                 flash('Application updated.')
             except:
@@ -132,7 +164,7 @@ def create_app():
         # Get App data on first access
         if not form.etag.data:
             try:
-                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()
+                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
                 
                 form.map_from_app(app)
             except:
@@ -147,7 +179,7 @@ def create_app():
 
         # Get Application Modules
         try:
-            modules = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()['modules']
+            modules = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()['modules']
             form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
         except:
             traceback.print_exc()
@@ -168,7 +200,7 @@ def create_app():
                 job['modules'] = modules
 
             try:
-                message = requests.post(url=url_jobs, data=json.dumps(job), headers=headers, auth=auth).content
+                message = requests.post(url=url_jobs, data=json.dumps(job), headers=headers, auth=current_user.auth).content
                 print(message)
                 flash('Job created.')
             except:
@@ -190,7 +222,7 @@ def create_app():
             local_headers['If-Match'] = form.etag.data
 
             try:
-                message = requests.delete(url=url_apps + '/' + app_id, headers=local_headers, auth=auth).content
+                message = requests.delete(url=url_apps + '/' + app_id, headers=local_headers, auth=current_user.auth).content
                 print(message)
                 flash('Application deleted.')
             except:
@@ -201,7 +233,7 @@ def create_app():
 
         # Get Application etag
         try:
-            form.etag.data = requests.get(url_apps + '/' + app_id, headers=headers, auth=auth).json()['_etag']
+            form.etag.data = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()['_etag']
         except:
             traceback.print_exc()
 
