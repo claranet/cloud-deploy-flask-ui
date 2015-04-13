@@ -69,7 +69,12 @@ def create_app():
                 user = UserMixin()
                 user.id = basic_auth[0]
                 user.auth = tuple(basic_auth)
-                return user
+                
+                # Try to list apps to verify credentials
+                response = requests.get(url_apps, headers=headers, auth=user.auth)
+                
+                if response.status_code == 200:
+                    return user
             except:
                 traceback.print_exc()
                 pass
