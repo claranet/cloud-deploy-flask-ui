@@ -40,6 +40,21 @@ def get_ghost_apps(auth):
 
     return apps
 
+def get_ghost_jobs(auth):
+    try:
+        jobs = requests.get(url_jobs, headers=headers, auth=auth).json().get('_items', [])
+        for job in jobs:
+            try:
+                job['_created'] = datetime.strptime(job['_created'], RFC1123_DATE_FORMAT)
+                job['_updated'] = datetime.strptime(job['_updated'], RFC1123_DATE_FORMAT)
+            except:
+                traceback.print_exc()
+    except:
+        traceback.print_exc()
+        jobs = ['Failed to retrieve Jobs']
+
+    return jobs
+
 # Web UI App
 def create_app():
     app = Flask(__name__)
@@ -250,6 +265,21 @@ def create_app():
 
         # Display default template in GET case
         return render_template('app_delete.html', form=form)
+
+    @app.route('/web/jobs')
+    def web_job_list():
+        return render_template('job_list.html', jobs=get_ghost_jobs(current_user.auth))
+
+    @app.route('/web/jobs/<job_id>', methods=['GET'])
+    def web_job_view(job_id):
+        try:
+            # Get Job data
+            job = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth).json()
+
+        except:
+            traceback.print_exc()
+
+        return render_template('job_view.html', job=job)
 
     return app
 

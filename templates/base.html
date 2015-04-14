@@ -32,6 +32,7 @@
                             <li><a href="/web/apps/create">Create App</a></li>
                         </ul>
                     </li>
+                    <li><a href="/web/jobs">Jobs</a></li>
                     <li><a href="#about">About (TODO)</a></li>
                 </ul>
             </div>
@@ -146,7 +147,11 @@
     {%- endif %}
 {%- endmacro %}
 
-{% macro ghost_display_field(id, name, value) -%}
+{% macro ghost_display_field(id, name, value, href=None) -%}
     <label class="control-label col-md-3" for="{{ id }}">{{ name }}</label>
-    <div class="col-md-3" id="{{ id }}">{{ value }}</div>
+    <div class="col-md-3" id="{{ id }}">
+        {%- if href -%}<a href="{{ href }}">{%- endif -%}
+        {{ value }}
+        {%- if href -%}</a>{%- endif -%}
+    </div>
 {%- endmacro %}
