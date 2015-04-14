@@ -2,8 +2,10 @@ from flask_wtf import Form
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired as DataRequiredValidator
-from wtforms.validators import Regexp as RegexpValidator
+from wtforms.validators import Email as EmailValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
+from wtforms.validators import Optional as OptionalValidator
+from wtforms.validators import Regexp as RegexpValidator
 
 import aws_data
 
@@ -151,12 +153,14 @@ class BuildInfosForm(Form):
 
 class EnvironmentInfosForm(Form):
     security_groups = FieldList(StringField('Security Group', validators=[
+        OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['security_groups']['schema']['regex']
         )
     ]), min_entries=1)
     
     subnet_ids = FieldList(StringField('Subnet ID', validators=[
+        OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['subnet_ids']['schema']['regex']
         )
@@ -263,6 +267,7 @@ class BaseAppForm(Form):
 
     # Notification properties
     log_notifications = FieldList(StringField('email', validators=[
+        OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['log_notifications']['schema']['regex']
         )
