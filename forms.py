@@ -25,6 +25,8 @@ def empty_fieldlist(fieldlist):
 
 def get_wtforms_selectfield_values(allowed_schema_values):
     """
+    Returns a list of (value, label) tuples
+    
     >>> get_wtforms_selectfield_values([])
     []
     >>> get_wtforms_selectfield_values(['value'])
@@ -328,23 +330,20 @@ class BaseAppForm(Form):
 
     def map_to_app_log_notifications(self, app):
         """
-        Map log notifications data from form to app
+        Maps log notifications data from form to app
         
+        >>> from web_ui.tests import create_test_app_context; create_test_app_context()
+
         >>> form = BaseAppForm()
         >>> app = {}
         >>> form.map_to_app_log_notifications(app)
         >>> app
-        {'log_notifications':[]}
-        
-        >>> form.log_notifications[0] = StringField()
-        >>> form.map_to_app_log_notifications(app)
-        >>> app
-        {'log_notifications':[]}
+        {'log_notifications': []}
         
         >>> form.log_notifications[0].data = "test@test.fr"
         >>> form.map_to_app_log_notifications(app)
         >>> app
-        {'log_notifications':['test@test.fr']}
+        {'log_notifications': ['test@test.fr']}
         """
         app['log_notifications'] = []
         for form_log_notification in self.log_notifications:
