@@ -15,9 +15,7 @@ import sys
 import requests
 import json
 
-from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
-from encodings.base64_codec import base64_decode
-from flask_login import UserMixin
+from .forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 
 # FIXME: Static conf to externalize with Flask-Appconfig
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -80,7 +78,7 @@ def create_app():
 
         if basic_auth:
             try:
-                basic_auth = base64_decode(basic_auth.replace('Basic ', '', 1))[0].split(':')
+                basic_auth = b64decode(basic_auth.replace('Basic ', '', 1)).split(':')
                 user = UserMixin()
                 user.id = basic_auth[0]
                 user.auth = tuple(basic_auth)
