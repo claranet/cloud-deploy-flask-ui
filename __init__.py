@@ -149,8 +149,10 @@ def create_app():
             local_headers = headers.copy()
             local_headers['If-Match'] = form.etag.data
 
-            # App name cannot be changed
+            # Remove read-only fields that cannot be changed
             del form.name
+            del form.env
+            del form.role
 
             # Update Application
             app = {}
