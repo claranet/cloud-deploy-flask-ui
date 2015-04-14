@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Jobs List' %}
+
+{% block page_content %}
+    <h1>Available Jobs</h1>
+    <table class="table">
+        <caption>Jobs are sorted by last modification date</caption>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Job ID</th>
+                <th>Technical ID</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th>Application ID</th>
+                <th>Command</th>
+                <th>Status</th>
+                <th>User</th>
+                <th>Options</th>
+                <th>Modules</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs | sort(reverse=True, attribute='_updated') %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td style="white-space:nowrap;">
+                    <a href="/web/jobs/{{ job['_id'] }}">{{ job['job_id'] or '-' }}</a>
+                </td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
+                </td>
+                <td style="white-space:nowrap;">{{ job['_created'] }}</td>
+                <td style="white-space:nowrap;">{{ job['_updated'] }}</td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/apps/{{ job['app_id'] }}">{{ job['app_id'] }}</a>
+                </td>
+                <td style="white-space:nowrap;">{{ job['command'] }}</td>
+                <td style="white-space:nowrap;">{{ job['status'] }}</td>
+                <td style="white-space:nowrap;">{{ job['user'] }}</td>
+                <td style="white-space:nowrap;">
+                    {% for option in job['options'] %}
+                        {{ option }}<br>
+                    {% endfor %}
+                </td>
+                <td style="white-space:nowrap;">
+                    {% for module in job['modules'] %}
+                        {{ module['name'] }}:{{ module['rev'] }}<br>
+                    {% endfor %}
+                </td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" disabled>Delete</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

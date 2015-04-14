@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Job Details' %}
+
+{% block page_content %}
+    <h1>Job Details</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ job['name'] }}</div>
+        <div class="panel-body">
+            <div class="row">
+                {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-') }}
+                {{ ghost_display_field('job-id', 'Technical ID', job['_id']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('job-created', 'Created', job['_created']) }}
+                {{ ghost_display_field('job-updated', 'Modified', job['_updated']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('job-env', 'Application', job['app_id'], '/web/apps/' + job['app_id']) }}</a>
+                {{ ghost_display_field('job-role', 'Command', job['command']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('job-env', 'Status', job['status']) }}
+                {{ ghost_display_field('job-role', 'User', job['user']) }}
+            </div>
+        </div>
+
+        <table class="table">
+            <caption>Options</caption>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for option in job['options'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ option }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="table">
+            <caption>Modules</caption>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Rev</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for module in job['modules'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ module['name'] }}</td>
+                        <td>{{ module['rev'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Actions</div>
+        <div class="panel-body">
+            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" disabled>Delete</button></a>
+        </div>
+    </div>
+{% endblock %}
