@@ -177,6 +177,10 @@ def create_app():
             except:
                 traceback.print_exc()
 
+        # Remove alternative options from select fields that cannot be changed
+        form.env.choices = [(form.env.data, form.env.data)]
+        form.role.choices = [(form.role.data, form.role.data)]
+
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=True)
 
