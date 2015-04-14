@@ -13,11 +13,11 @@
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, disabled=edit, placeholder='Application Name') }}
+                    {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
                     {{ wtf.form_field(form.region, form_type='horizontal') }}
                     {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
-                    {{ wtf.form_field(form.env, readonly=edit, disabled=edit, form_type='horizontal') }}
-                    {{ wtf.form_field(form.role, readonly=edit, disabled=edit, form_type='horizontal') }}
+                    {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
+                    {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.vpc_id, form_type='horizontal') }}
                 </div>
             </div>

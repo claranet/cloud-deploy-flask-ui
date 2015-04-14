@@ -305,8 +305,10 @@ class BaseAppForm(Form):
         """
         if self.name:
             app['name'] = self.name.data
-        app['env'] = self.env.data
-        app['role'] = self.role.data
+        if self.env:
+            app['env'] = self.env.data
+        if self.role:
+            app['role'] = self.role.data
         app['region'] = self.region.data
         app['instance_type'] = self.instance_type.data
         app['vpc_id'] = self.vpc_id.data
