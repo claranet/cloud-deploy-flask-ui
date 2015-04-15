@@ -17,6 +17,8 @@ import json
 
 from .forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 
+API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
+
 # FIXME: Static conf to externalize with Flask-Appconfig
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 url_apps = 'http://localhost:5000/apps'
@@ -25,7 +27,7 @@ url_jobs = 'http://localhost:5000/jobs'
 # Helpers
 def get_ghost_apps(auth):
     try:
-        apps = requests.get(url_apps, headers=headers, auth=auth).json().get('_items', [])
+        apps = requests.get(url_apps + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth).json().get('_items', [])
         for app in apps:
             try:
                 app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
@@ -40,7 +42,7 @@ def get_ghost_apps(auth):
 
 def get_ghost_jobs(auth):
     try:
-        jobs = requests.get(url_jobs, headers=headers, auth=auth).json().get('_items', [])
+        jobs = requests.get(url_jobs + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth).json().get('_items', [])
         for job in jobs:
             try:
                 job['_created'] = datetime.strptime(job['_created'], RFC1123_DATE_FORMAT)
