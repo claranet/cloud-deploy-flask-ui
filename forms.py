@@ -57,10 +57,7 @@ def get_aws_vpc_ids():
         #FIXME: make the region selectable
         c = boto.vpc.connect_to_region('eu-west-1')
         vpcs = c.get_all_vpcs()
-        vpc_ids = []
-        for vpc in vpcs:
-            vpc_ids.append(vpc.id)
-        return [(value, value) for value in vpc_ids]
+        return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name') + ')') for vpc in vpcs]
     except:
         traceback.print_exc()
         return [('vpc-0', 'vpc-0 (dummy)')]
