@@ -2,7 +2,6 @@ from flask_wtf import Form
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired as DataRequiredValidator
-from wtforms.validators import Email as EmailValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
@@ -55,6 +54,7 @@ def get_ghost_mod_scopes():
 
 def get_aws_vpc_ids():
     try:
+        #FIXME: make the region selectable
         c = boto.vpc.connect_to_region('eu-west-1')
         vpcs = c.get_all_vpcs()
         vpc_ids = []
@@ -293,7 +293,7 @@ class BaseAppForm(Form):
 
     instance_type = SelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=get_aws_instance_types())
 
-    vpc_id = SelectField('AWS VPC', choices=get_aws_vpc_ids(), validators=[
+    vpc_id = SelectField('AWS VPC', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['vpc_id']['regex']
@@ -305,6 +305,14 @@ class BaseAppForm(Form):
 
     # Modules
     modules = FieldList(FormField(ModuleForm), min_entries=1)
+
+
+    def __init__(self, *args, **kwargs):
+        super(BaseAppForm, self).__init__(*args, **kwargs)
+        
+        # Refresh VPC list
+        self.vpc_id.choices = get_aws_vpc_ids()
+
 
     def map_to_app(self, app):
         """
