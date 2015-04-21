@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Application Deletion' %}
+{% set page_title = 'Job Deletion' %}
 
 {% block page_content %}
     <h1>{{ page_title }}</h1>
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
-        <h2>Delete {{ app['name'] }}?</h2>
-        
+        <h2>Delete {{ job['job_id'] }}?</h2>
+
         {{ wtf.form_field(form.confirmation, form_type='horizontal') }}
 
         {{ wtf.form_field(form.submit, form_type='horizontal') }}

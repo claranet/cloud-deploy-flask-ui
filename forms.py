@@ -535,3 +535,9 @@ class DeleteAppForm(Form):
     confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()], choices=[('yes', 'Yes'), ('no', 'No')])
 
     submit = SubmitField('Delete Application')
+
+class DeleteJobForm(Form):
+    etag = HiddenField(validators=[DataRequiredValidator()])
+    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()], choices=[('yes', 'Yes'), ('no', 'No')])
+
+    submit = SubmitField('Delete Job')

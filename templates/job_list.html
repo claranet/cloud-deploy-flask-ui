@@ -51,7 +51,7 @@
                     {% endfor %}
                 </td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" disabled>Delete</button></a>
+                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {{ job['status'] in ['done' 'failed'] and '' or 'disabled' }}>Delete</button></a>
                 </td>
             </tr>
             {% endfor %}

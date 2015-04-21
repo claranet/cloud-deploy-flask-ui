@@ -16,6 +16,7 @@ import requests
 import json
 
 from .forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
+from .forms import DeleteJobForm
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 
@@ -259,12 +260,13 @@ def create_app():
 
         # Get Application etag
         try:
-            form.etag.data = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()['_etag']
+            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
+            form.etag.data = app['_etag']
         except:
             traceback.print_exc()
 
         # Display default template in GET case
-        return render_template('app_delete.html', form=form)
+        return render_template('app_delete.html', form=form, app=app)
 
     @app.route('/web/jobs')
     def web_job_list():
@@ -283,6 +285,36 @@ def create_app():
 
     return app
 
+    @app.route('/web/jobs/<jobs_id>/delete', methods=['GET', 'POST'])
+    def web_job_delete(job_id):
+        form = DeleteJobForm()
+
+        # Perform validation
+        if form.validate_on_submit and form.confirmation.data == 'yes':
+            local_headers = headers.copy()
+            local_headers['If-Match'] = form.etag.data
+
+            try:
+                message = requests.delete(url=url_jobs + '/' + job_id, headers=local_headers, auth=current_user.auth).content
+                print(message)
+                flash('Job deleted.')
+            except:
+                traceback.print_exc()
+                message = 'Failed to delete Job (%s)' % (sys.exc_info()[1])
+
+            return render_template('action_completed.html', message=message)
+
+        # Get Application etag
+        try:
+            job = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth).json()
+            
+            if job.get('status', '') in ['done', 'failed']:
+                form.etag.data = job['_etag']
+        except:
+            traceback.print_exc()
+
+        # Display default template in GET case
+        return render_template('job_delete.html', form=form, job=job)
 
 def run_web_ui():
     app = create_app()
