@@ -283,9 +283,7 @@ def create_app():
 
         return render_template('job_view.html', job=job)
 
-    return app
-
-    @app.route('/web/jobs/<jobs_id>/delete', methods=['GET', 'POST'])
+    @app.route('/web/jobs/<job_id>/delete', methods=['GET', 'POST'])
     def web_job_delete(job_id):
         form = DeleteJobForm()
 
@@ -315,6 +313,8 @@ def create_app():
 
         # Display default template in GET case
         return render_template('job_delete.html', form=form, job=job)
+
+    return app
 
 def run_web_ui():
     app = create_app()
