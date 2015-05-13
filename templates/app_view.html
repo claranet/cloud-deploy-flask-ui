@@ -67,6 +67,13 @@
                 {{ ghost_display_field('app-environment_infos-key_name', 'Key Name', app.get('environment_infos', {})['key_name']) }}
             </div>
         </div>
+        <div class="panel-heading">Root Block Device</div>
+        <div class="panel-body">
+            <div class="row">
+                {{ ghost_display_field('app-environment_infos-root_block_device_size', 'Size', app.get('environment_infos', {}).get('root_block_device', {})['size']) }}
+                {{ ghost_display_field('app-environment_infos-root_block_device_name', 'Name', app.get('environment_infos', {}).get('root_block_device', {})['name']) }}
+            </div>
+        </div>
 
         <table class="table">
             <caption>Features</caption>

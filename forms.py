@@ -168,6 +168,16 @@ class EnvironmentInfosForm(Form):
     instance_profile = StringField('Instance Profile', validators=[])
     
     key_name = StringField('Key Name', validators=[])
+    
+    root_block_device_size = IntegerField('Size', validators=[
+        NumberRangeValidator(min=0)
+    ]);
+    
+    root_block_device_name = StringField('Name', validators=[
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
+        )
+    ])
 
     # Disable CSRF in environment_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -194,6 +204,9 @@ class EnvironmentInfosForm(Form):
         
         self.instance_profile.data = environment_infos.get('instance_profile', '')
         self.key_name.data = environment_infos.get('key_name', '')
+        
+        self.root_block_device_size.data = environment_infos.get('root_block_device', {}).get('size', '')
+        self.root_block_device_name.data = environment_infos.get('root_block_device', {}).get('name', '')
 
 class ResourceForm(Form):
     # Disable CSRF in resource forms as they are subforms
@@ -394,7 +407,10 @@ class BaseAppForm(Form):
         
         app['environment_infos']['instance_profile'] = self.environment_infos.form.instance_profile.data
         app['environment_infos']['key_name'] = self.environment_infos.form.key_name.data
-    
+        
+        app['environment_infos']['root_block_device'] = {}
+        app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
+        app['environment_infos']['root_block_device']['name'] = self.environment_infos.form.root_block_device_name.data
     
     def map_to_app_features(self, app):
         """
