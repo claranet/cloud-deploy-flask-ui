@@ -169,7 +169,7 @@ class EnvironmentInfosForm(Form):
     
     key_name = StringField('Key Name', validators=[])
     
-    root_block_device_size = IntegerField('Size', validators=[
+    root_block_device_size = IntegerField('Size (GiB)', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ]);
