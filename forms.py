@@ -170,10 +170,12 @@ class EnvironmentInfosForm(Form):
     key_name = StringField('Key Name', validators=[])
     
     root_block_device_size = IntegerField('Size', validators=[
+        OptionalValidator(),
         NumberRangeValidator(min=0)
     ]);
     
     root_block_device_name = StringField('Name', validators=[
+        OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
         )
@@ -409,8 +411,10 @@ class BaseAppForm(Form):
         app['environment_infos']['key_name'] = self.environment_infos.form.key_name.data
         
         app['environment_infos']['root_block_device'] = {}
-        app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
-        app['environment_infos']['root_block_device']['name'] = self.environment_infos.form.root_block_device_name.data
+        if self.environment_infos.form.root_block_device_size.data:
+            app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
+        if self.environment_infos.form.root_block_device_name.data:
+            app['environment_infos']['root_block_device']['name'] = self.environment_infos.form.root_block_device_name.data
     
     def map_to_app_features(self, app):
         """
