@@ -39,14 +39,18 @@
                 <td style="white-space:nowrap;">{{ app['instance_type'] }}</td>
                 <td style="white-space:nowrap;">{{ app['vpc_id'] }}</td>
                 <td style="white-space:nowrap;">
-                    {% for feature in app['features'] %}
-                        {{ feature['name'] }}:{{ feature['version'] }}<br>
-                    {% endfor %}
+                    {%- if app['features'] | length > 0 -%}
+                        <abbr title="{{ app['features'] | map(attribute='name') | join(', ') }}">
+                            {{- app['features'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
+                        </abbr>
+                    {%- endif %}
                 </td>
                 <td style="white-space:nowrap;">
-                    {% for module in app['modules'] %}
-                        {{ module['name'] }}<br>
-                    {% endfor %}
+                    {%- if app['modules'] | length > 0 -%}
+                        <abbr title="{{ app['modules'] | map(attribute='name') | join(', ') }}">
+                            {{- app['modules'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
+                        </abbr>
+                    {%- endif %}
                 </td>
                 <td style="white-space:nowrap;">
                     <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default">Run Command</button></a>
