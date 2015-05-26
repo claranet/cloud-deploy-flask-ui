@@ -67,7 +67,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Actions</div>
         <div class="panel-body">
-            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {{ job['status'] in ['done', 'failed'] and '' or 'disabled' }}>Delete</button></a>
+            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
         </div>
     </div>
 {% endblock %}
