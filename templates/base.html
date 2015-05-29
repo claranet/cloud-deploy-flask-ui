@@ -50,7 +50,12 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js"></script>
     <script>
+        $(document).ready(function() {
+            $('textarea').autosize();
+        });
+
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
             var count = $("tr[data-" + entry_id_prefix + "]").size();
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
