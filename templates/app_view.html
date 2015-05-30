@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Application Details' %}
+{% set page_title = 'Application %s' % app['name'] %}
 
 {% block page_content %}
-    <h1>Application Details</h1>
+    <h1>{{ page_title }}</h1>
 
     <div class="panel panel-default">
         <div class="panel-heading">Actions</div>
@@ -16,7 +16,7 @@
     </div>
 
     <div class="panel panel-default">
-        <div class="panel-heading">{{ app['name'] }}</div>
+        <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
                 {{ ghost_display_field('app-name', 'Name', app['name']) }}

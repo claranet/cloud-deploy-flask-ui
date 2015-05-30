@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Job Details' %}
+{% set page_title = 'Job %s' % (job['job_id'] or job['_id'] or '-')  %}
 
 {% block page_content %}
-    <h1>Job Details</h1>
+    <h1>{{ page_title }}</h1>
 
     <div class="panel panel-default">
         <div class="panel-heading">Actions</div>
@@ -13,7 +13,7 @@
     </div>
 
     <div class="panel panel-default">
-        <div class="panel-heading">{{ job['name'] }}</div>
+        <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
                 {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-') }}
