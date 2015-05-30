@@ -252,11 +252,16 @@ def create_app():
             job['command'] = form.command.data
             job['app_id'] = app_id
 
-            module = {}
+            modules = []
+
             if form.module_name.data:
-                module['name'] = form.module_name.data
-                modules = []
+                module = {
+                          'name': form.module_name.data,
+                          'rev': form.module_rev.data or 'HEAD'
+                          }
                 modules.append(module)
+
+            if modules:
                 job['modules'] = modules
 
             message = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
