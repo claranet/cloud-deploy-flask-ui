@@ -4,6 +4,14 @@
 
 {% block page_content %}
     <h1>Job Details</h1>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Actions</div>
+        <div class="panel-body">
+            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
+        </div>
+    </div>
+
     <div class="panel panel-default">
         <div class="panel-heading">{{ job['name'] }}</div>
         <div class="panel-body">
@@ -62,12 +70,5 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-
-    <div class="panel panel-default">
-        <div class="panel-heading">Actions</div>
-        <div class="panel-body">
-            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
-        </div>
     </div>
 {% endblock %}
