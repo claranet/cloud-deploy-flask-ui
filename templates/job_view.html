@@ -16,7 +16,7 @@
                 {{ ghost_display_field('job-updated', 'Modified', job['_updated']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-env', 'Application', job['app_id'], '/web/apps/' + job['app_id']) }}</a>
+                {{ ghost_display_field('job-env', 'Application', job.get('app_id', ''), '/web/apps/' + job.get('app_id', '')) }}</a>
                 {{ ghost_display_field('job-role', 'Command', job['command']) }}
             </div>
             <div class="row">

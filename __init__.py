@@ -4,6 +4,8 @@ from flask_bootstrap import Bootstrap
 
 from flask.ext.login import LoginManager, UserMixin, current_user, login_required, login_user
 
+from werkzeug.exceptions import default_exceptions
+
 from eve import RFC1123_DATE_FORMAT
 
 import aws_data
@@ -26,9 +28,31 @@ url_apps = 'http://localhost:5000/apps'
 url_jobs = 'http://localhost:5000/jobs'
 
 # Helpers
+def do_request(method, url, data, headers, success_message, failure_message):
+    try:
+        result = method(url=url, data=data, headers=headers, auth=current_user.auth)
+        status_code = result.status_code
+        message = result.content
+        if status_code in [200, 201, 204]:
+            flash(success_message, 'success')
+        else:
+            flash(failure_message, 'warning')
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(failure_message, 'danger')
+    print message
+    return message
+
+def handle_response_status_code(status_code):
+    if status_code >= 300:
+        raise default_exceptions[status_code]
+
 def get_ghost_apps(auth):
     try:
-        apps = requests.get(url_apps + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth).json().get('_items', [])
+        result = requests.get(url_apps + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth)
+        handle_response_status_code(result.status_code)
+        apps = result.json().get('_items', [])
         for app in apps:
             try:
                 app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
@@ -37,13 +61,17 @@ def get_ghost_apps(auth):
                 traceback.print_exc()
     except:
         traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
         apps = ['Failed to retrieve Apps']
 
     return apps
 
 def get_ghost_jobs(auth):
     try:
-        jobs = requests.get(url_jobs + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth).json().get('_items', [])
+        result = requests.get(url_jobs + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth)
+        handle_response_status_code(result.status_code)
+        jobs = result.json().get('_items', [])
         for job in jobs:
             try:
                 job['_created'] = datetime.strptime(job['_created'], RFC1123_DATE_FORMAT)
@@ -52,6 +80,8 @@ def get_ghost_jobs(auth):
                 traceback.print_exc()
     except:
         traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
         jobs = ['Failed to retrieve Jobs']
 
     return jobs
@@ -93,7 +123,8 @@ def create_app():
                     return user
             except:
                 traceback.print_exc()
-                pass
+                message = 'Failure: %s' % (sys.exc_info()[1])
+                flash(message, 'danger')
 
         return None
 
@@ -115,24 +146,21 @@ def create_app():
             app = {}
             form.map_to_app(app)
 
-            try:
-                message = requests.post(url=url_apps, data=json.dumps(app), headers=headers, auth=current_user.auth).content
-                print(message)
-                flash('Application created.')
-            except:
-                traceback.print_exc()
-                message = 'Failed to create Application (%s)' % (sys.exc_info()[1])
+            message = do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers, success_message='Application created', failure_message='Application creation failed')
 
             return render_template('action_completed.html', message=message)
 
         app_id = request.args.get('clone_from', None)
         if app_id:
             try:
-                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
-                
+                result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+                app = result.json()
+                handle_response_status_code(result.status_code)
                 form.map_from_app(app)
             except:
                 traceback.print_exc()
+                message = 'Failure: %s' % (sys.exc_info()[1])
+                flash(message, 'danger')
 
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=False)
@@ -141,8 +169,10 @@ def create_app():
     def web_app_view(app_id):
         try:
             # Get App data
-            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
-
+            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+            app = result.json()
+            handle_response_status_code(result.status_code)
+            
             # Decode module scripts
             for module in app.get('modules', []):
                 if 'build_pack' in module:
@@ -153,6 +183,8 @@ def create_app():
                     module['post_deploy'] = b64decode(module['post_deploy'])
         except:
             traceback.print_exc()
+            message = 'Failure: %s' % (sys.exc_info()[1])
+            flash(message, 'danger')
 
         return render_template('app_view.html', app=app)
 
@@ -174,24 +206,21 @@ def create_app():
             app = {}
             form.map_to_app(app)
 
-            try:
-                message = requests.patch(url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, auth=current_user.auth).content
-                print(message)
-                flash('Application updated.')
-            except:
-                traceback.print_exc()
-                message = 'Failed to update App (%s)' % (sys.exc_info()[1])
+            message = do_request(requests.patch, url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, success_message='Application updated', failure_message='Application update failed')
 
             return render_template('action_completed.html', message=message)
 
         # Get App data on first access
         if not form.etag.data:
             try:
-                app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
-                
+                result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+                handle_response_status_code(result.status_code)
+                app = result.json()
                 form.map_from_app(app)
             except:
                 traceback.print_exc()
+                message = 'Failure: %s' % (sys.exc_info()[1])
+                flash(message, 'danger')
 
         # Remove alternative options from select fields that cannot be changed
         form.env.choices = [(form.env.data, form.env.data)]
@@ -206,10 +235,14 @@ def create_app():
 
         # Get Application Modules
         try:
-            modules = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()['modules']
+            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+            handle_response_status_code(result.status_code)
+            modules = result.json()['modules']
             form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
         except:
             traceback.print_exc()
+            message = 'Failure: %s' % (sys.exc_info()[1])
+            flash(message, 'danger')
             form.module_name.choices = [('', 'Failed to retrieve Application Modules')]
 
         # Perform validation
@@ -226,13 +259,7 @@ def create_app():
                 modules.append(module)
                 job['modules'] = modules
 
-            try:
-                message = requests.post(url=url_jobs, data=json.dumps(job), headers=headers, auth=current_user.auth).content
-                print(message)
-                flash('Job created.')
-            except:
-                traceback.print_exc()
-                message = 'Failed to create Job (%s)' % (sys.exc_info()[1])
+            message = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
 
             return render_template('action_completed.html', message=message)
 
@@ -248,22 +275,20 @@ def create_app():
             local_headers = headers.copy()
             local_headers['If-Match'] = form.etag.data
 
-            try:
-                message = requests.delete(url=url_apps + '/' + app_id, headers=local_headers, auth=current_user.auth).content
-                print(message)
-                flash('Application deleted.')
-            except:
-                traceback.print_exc()
-                message = 'Failed to delete App (%s)' % (sys.exc_info()[1])
+            message = do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
 
             return render_template('action_completed.html', message=message)
 
         # Get Application etag
         try:
-            app = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth).json()
+            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+            app = result.json()
+            handle_response_status_code(result.status_code)
             form.etag.data = app['_etag']
         except:
             traceback.print_exc()
+            message = 'Failure: %s' % (sys.exc_info()[1])
+            flash(message, 'danger')
 
         # Display default template in GET case
         return render_template('app_delete.html', form=form, app=app)
@@ -276,10 +301,13 @@ def create_app():
     def web_job_view(job_id):
         try:
             # Get Job data
-            job = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth).json()
-
+            result = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth)
+            job = result.json()
+            handle_response_status_code(result.status_code)
         except:
             traceback.print_exc()
+            message = 'Failure: %s' % (sys.exc_info()[1])
+            flash(message, 'danger')
 
         return render_template('job_view.html', job=job)
 
@@ -292,24 +320,21 @@ def create_app():
             local_headers = headers.copy()
             local_headers['If-Match'] = form.etag.data
 
-            try:
-                message = requests.delete(url=url_jobs + '/' + job_id, headers=local_headers, auth=current_user.auth).content
-                print(message)
-                flash('Job deleted.')
-            except:
-                traceback.print_exc()
-                message = 'Failed to delete Job (%s)' % (sys.exc_info()[1])
+            message = do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
 
             return render_template('action_completed.html', message=message)
 
-        # Get Application etag
+        # Get job etag
         try:
-            job = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth).json()
-            
+            result = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth)
+            job = result.json()
+            handle_response_status_code(result.status_code)
             if job.get('status', '') in ['done', 'failed']:
                 form.etag.data = job['_etag']
         except:
             traceback.print_exc()
+            message = 'Failure: %s' % (sys.exc_info()[1])
+            flash(message, 'danger')
 
         # Display default template in GET case
         return render_template('job_delete.html', form=form, job=job)
