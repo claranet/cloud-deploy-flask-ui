@@ -3,6 +3,10 @@
 {% set page_title = 'Action completed' %}
 
 {% block page_content %}
+    <a href='{{request.referer}}'><button class="btn btn-default">Back</button></a>
+    <a href='/web/apps'><button class="btn btn-default">Applications List</button></a>
+    <a href='/web/jobs'><button class="btn btn-default">Jobs List</button></a>
+    <h2>Message:</h2>
+    <hr/>
     <div>{{ message }}</div>
-    <a href='/web/apps'>Back to Applications List</a>
 {% endblock %}
