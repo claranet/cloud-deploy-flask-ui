@@ -1,20 +1,25 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Application %s' % app['name'] %}
+{% set page_title = 'Application: %s' % app['name'] %}
+
+{% block page_header %}
+    <ul class="nav nav-stacked">
+        <li>
+            <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default">Run Command</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-default">Edit</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-default">Clone</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-default">Delete</button></a>
+        </li>
+    </ul>
+{% endblock %}
 
 {% block page_content %}
-    <h1>{{ page_title }}</h1>
-
-    <div class="panel panel-default">
-        <div class="panel-heading">Actions</div>
-        <div class="panel-body">
-            <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default">Run Command</button></a>
-            <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-default">Edit</button></a>
-            <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-default">Clone</button></a>
-            <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-default">Delete</button></a>
-        </div>
-    </div>
-
     <div class="panel panel-default">
         <div class="panel-heading">Properties</div>
         <div class="panel-body">

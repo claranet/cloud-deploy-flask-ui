@@ -44,8 +44,18 @@
 {% endblock %}
 
 {% block content %}
-    {{ util.flashed_messages() }}
+    <div class="sidebar">
+        <h1 style="overflow: hidden; text-overflow: ellipsis" title="{{ page_title }}">{{ page_title }}</h1>
+
+        {% block page_header %}
+        {% endblock %}
+
+        {{ util.flashed_messages() }}
+    </div>
+
+
     <div class="container" role="main">
+
         {% block page_content %}
         {% endblock %}
     </div>

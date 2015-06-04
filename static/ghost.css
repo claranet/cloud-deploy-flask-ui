@@ -24,3 +24,13 @@ body {
 span.index:after {
   content: " " counter(group_entry);
 }
+
+.sidebar-outer {
+    position: relative;
+}
+@media (min-width: 1770px) {
+    .sidebar {
+        position: fixed;
+        width: 372px
+    }
+}

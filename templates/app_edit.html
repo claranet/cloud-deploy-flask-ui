@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 
-{% set page_title = edit and 'Update' or 'Create' ' an Application' %}
+{% set page_title = edit and ('Update %s' % form.name.data) or 'Create an Application' %}
+
+{% block page_header %}
+    <ul class="nav nav-stacked">
+        <li>
+        </li>
+    </ul>
+{% endblock %}
 
 {% block page_content %}
-    <h1>{{ edit and 'Update' or 'New' }} Application</h1>
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
@@ -73,11 +79,11 @@
                 </div>
             </div>
         </div>
-        
+
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification') }}
         {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature') }}
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 
-        {{ wtf.form_field(form.submit, form_type='horizontal') }}
+        {{ wtf.form_field(form.submit) }}
     </form>
 {% endblock %}
