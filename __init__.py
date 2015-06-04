@@ -310,6 +310,26 @@ def create_app():
     def web_job_list():
         query = request.args.get('where', None)
         jobs = get_ghost_jobs(current_user.auth, query)
+        apps_name_cache = {}
+        apps_env_cache = {}
+        for job in jobs:
+            app_id = job['app_id']
+            app_name = apps_name_cache.get(app_id, None)
+            app_env = apps_env_cache.get(app_id, None)
+            if app_name is None:
+                try:
+                    # Get App data
+                    result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+                    handle_response_status_code(result.status_code)
+                    app = result.json()
+                    apps_name_cache[app_id] = app_name = app['name']
+                    apps_env_cache[app_id] = app_env = app['env']
+                except:
+                    apps_name_cache[app_id] = app_name = 'N/A'
+                    apps_env_cache[app_id] = app_env = 'N/A'
+            job['app_name'] = app_name
+            job['app_env'] = app_env
+
         return render_template('job_list.html', jobs=jobs)
 
     @app.route('/web/jobs/<job_id>', methods=['GET'])
