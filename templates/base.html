@@ -33,7 +33,10 @@
                         </ul>
                     </li>
                     <li><a href="/web/jobs">Jobs</a></li>
-                    <li><a href="#about">About (TODO)</a></li>
+                    <!-- li><a href="#about">About</a></li -->
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" class="">{% if current_user.is_authenticated() %}Hi {{ current_user.id }}!{% endif %}</a></li>
                 </ul>
             </div>
         </div>
