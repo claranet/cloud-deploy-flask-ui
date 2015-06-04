@@ -48,9 +48,12 @@ def handle_response_status_code(status_code):
     if status_code >= 300:
         raise default_exceptions[status_code]
 
-def get_ghost_apps(auth):
+def get_ghost_apps(auth, query=None):
     try:
-        result = requests.get(url_apps + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth)
+        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
+        if query:
+            url += "&where=" + query
+        result = requests.get(url, headers=headers, auth=auth)
         handle_response_status_code(result.status_code)
         apps = result.json().get('_items', [])
         for app in apps:
@@ -67,9 +70,12 @@ def get_ghost_apps(auth):
 
     return apps
 
-def get_ghost_jobs(auth):
+def get_ghost_jobs(auth, query=None):
     try:
-        result = requests.get(url_jobs + API_QUERY_SORT_UPDATED_DESCENDING, headers=headers, auth=auth)
+        url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING
+        if query:
+            url += "&where=" + query
+        result = requests.get(url, headers=headers, auth=auth)
         handle_response_status_code(result.status_code)
         jobs = result.json().get('_items', [])
         for job in jobs:
@@ -135,7 +141,9 @@ def create_app():
 
     @app.route('/web/apps')
     def web_app_list():
-        return render_template('app_list.html', apps=get_ghost_apps(current_user.auth))
+        query = request.args.get('where', None)
+        apps = get_ghost_apps(current_user.auth, query)
+        return render_template('app_list.html', apps=apps)
 
     @app.route('/web/apps/create', methods=['GET', 'POST'])
     def web_app_create():
@@ -300,7 +308,9 @@ def create_app():
 
     @app.route('/web/jobs')
     def web_job_list():
-        return render_template('job_list.html', jobs=get_ghost_jobs(current_user.auth))
+        query = request.args.get('where', None)
+        jobs = get_ghost_jobs(current_user.auth, query)
+        return render_template('job_list.html', jobs=jobs)
 
     @app.route('/web/jobs/<job_id>', methods=['GET'])
     def web_job_view(job_id):
