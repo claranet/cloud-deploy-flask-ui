@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Application Command' %}
+{% set page_title = 'Run Command on Application %s (%s)' % (app['name'], app['env']) %}
 
 {% block page_content %}
     <h1>{{ page_title }}</h1>

@@ -245,8 +245,8 @@ def create_app():
         try:
             result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
             handle_response_status_code(result.status_code)
-            modules = result.json()['modules']
-            form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in modules]
+            app = result.json()
+            form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
         except:
             traceback.print_exc()
             message = 'Failure: %s' % (sys.exc_info()[1])
@@ -277,7 +277,7 @@ def create_app():
             return render_template('action_completed.html', message=message)
 
         # Display default template in GET case
-        return render_template('app_command.html', form=form)
+        return render_template('app_command.html', form=form, app=app)
 
     @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
     def web_app_delete(app_id):
