@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Jobs List' %}
+{% set page_title = 'Jobs' %}
 
 {% block page_header %}
-    <caption>Jobs are sorted by last modification date</caption>
+    <caption>Sorted by last modification date</caption>
 {% endblock %}"
 
 {% block page_content %}
@@ -13,8 +13,7 @@
                 <th>#</th>
                 <th>Job ID</th>
                 <th>Technical ID</th>
-                <th>Created</th>
-                <th>Modified</th>
+                <th>Created / Modified</th>
                 <th>Application</th>
                 <th>Command</th>
                 <th>Status</th>
@@ -34,8 +33,7 @@
                 <td style="white-space:nowrap;">
                     <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
                 </td>
-                <td style="white-space:nowrap;">{{ job['_created'] }}</td>
-                <td style="white-space:nowrap;">{{ job['_updated'] }}</td>
+                <td style="white-space:nowrap;">{{ job['_created'] }} <br> {{ job['_updated'] }}</td>
                 <td style="white-space:nowrap;">
                     <a href="/web/apps/{{ job['app_id'] }}">{{ job['app_name'] }} ({{ job['app_env'] }})</a>
                 </td>

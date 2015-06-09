@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Applications List' %}
+{% set page_title = 'Applications' %}
 
 {% block page_header %}
-    <caption>Applications are sorted by last modification date</caption>
+    <caption>Sorted by last modification date</caption>
 
     <ul class="nav nav-stacked">
         <li>
-            <a href="/web/apps/create"><button class="btn btn-default">Create</button></a>
+            <a href="/web/apps/create"><button class="btn btn-default">Create an Application</button></a>
         </li>
     </ul>
 {% endblock %}"
@@ -20,12 +20,8 @@
                 <th>Name / ID</th>
                 <th>Created / Modified</th>
                 <th>Environment</th>
-                <th>Role</th>
-                <th>AWS Region</th>
-                <th>AWS Instance Type</th>
-                <th>AWS VPC</th>
-                <th>Features</th>
-                <th>Modules</th>
+                <th>Role&nbsp;/<br>Feat.&nbsp;/<br>Mod.</th>
+                <th>AWS Region&nbsp;/<br>VPC&nbsp;/<br>Instance Type</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -38,25 +34,35 @@
                     <br>
                     {{ app['_id'] }}
                 </td>
-                <td style="white-space:nowrap;">{{ app['_created'] }} <br> {{ app['_updated'] }}</td>
-                <td>{{ app['env'] }}</td>
-                <td>{{ app['role'] }}</td>
-                <td style="white-space:nowrap;">{{ app['region'] }}</td>
-                <td style="white-space:nowrap;">{{ app['instance_type'] }}</td>
-                <td style="white-space:nowrap;">{{ app['vpc_id'] }}</td>
                 <td style="white-space:nowrap;">
-                    {%- if app['features'] | length > 0 -%}
-                        <abbr title="{{ app['features'] | map(attribute='name') | join(', ') }}">
-                            {{- app['features'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
-                        </abbr>
-                    {%- endif %}
+                    {{ app['_created'] }}
+                    <br>
+                    {{ app['_updated'] }}
+                </td>
+                <td>{{ app['env'] }}</td>
+                <td>
+                    {{ app['role'] }}
+                    <div style="white-space:nowrap;">
+                        {%- if app['features'] | length > 0 -%}
+                            <abbr title="{{ app['features'] | map(attribute='name') | join(', ') }}">
+                                {{- app['features'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
+                            </abbr>
+                        {%- endif %}
+                    </div>
+                    <div style="white-space:nowrap;">
+                        {%- if app['modules'] | length > 0 -%}
+                            <abbr title="{{ app['modules'] | map(attribute='name') | join(', ') }}">
+                                {{- app['modules'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
+                            </abbr>
+                        {%- endif %}
+                    </div>
                 </td>
                 <td style="white-space:nowrap;">
-                    {%- if app['modules'] | length > 0 -%}
-                        <abbr title="{{ app['modules'] | map(attribute='name') | join(', ') }}">
-                            {{- app['modules'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
-                        </abbr>
-                    {%- endif %}
+                    {{ app['region'] }}
+                    <br>
+                    {{ app['instance_type'] }}
+                    <br>
+                    {{ app['vpc_id'] }}
                 </td>
                 <td style="white-space:nowrap;">
                     <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default">Run Command</button></a>

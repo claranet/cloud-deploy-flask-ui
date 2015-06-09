@@ -25,6 +25,10 @@ span.index:after {
   content: " " counter(group_entry);
 }
 
+.sidebar {
+    padding-left: 10px;
+    padding-right: 10px;
+ }
 .sidebar-outer {
     position: relative;
 }
