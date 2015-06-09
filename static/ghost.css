@@ -38,3 +38,9 @@ span.index:after {
         width: 372px
     }
 }
+
+@media (max-width: 1769px) {
+    .nav-stacked>li {
+        float: left;
+    }
+}

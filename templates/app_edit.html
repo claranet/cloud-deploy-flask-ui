@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% set page_title = edit and ('Update %s' % form.name.data) or 'Create an Application' %}
+{% set page_title = edit and ('Edit %s (%s)' % (form.name.data, form.env.data)) or 'Create an Application' %}
 
 {% block page_header %}
     <ul class="nav nav-stacked">
