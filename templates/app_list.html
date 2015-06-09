@@ -38,6 +38,8 @@
                     {{ app['_created'] }}
                     <br>
                     {{ app['_updated'] }}
+                    <br>
+                    by&nbsp;{{ app.get('user', '-') }}
                 </td>
                 <td>{{ app['env'] }}</td>
                 <td>
