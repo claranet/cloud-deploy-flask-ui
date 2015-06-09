@@ -11,8 +11,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Job ID</th>
-                <th>Technical ID</th>
+                <th>ID&nbsp;/ Technical ID</th>
                 <th>Created / Modified</th>
                 <th>Application</th>
                 <th>Command</th>
@@ -28,12 +27,14 @@
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td style="white-space:nowrap;">
-                    <a href="/web/jobs/{{ job['_id'] }}">{{ job['job_id'] or '-' }}</a>
-                </td>
-                <td style="white-space:nowrap;">
+                    <a href="/web/jobs/{{ job['_id'] }}">{{ job['job_id'] or '-' }}
+                    <br>
                     <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
                 </td>
-                <td style="white-space:nowrap;">{{ job['_created'] }} <br> {{ job['_updated'] }}</td>
+                <td style="white-space:nowrap;">
+                    {{ job['_created'] }}
+                    <br>
+                    {{ job['_updated'] }}</td>
                 <td style="white-space:nowrap;">
                     <a href="/web/apps/{{ job['app_id'] }}">{{ job['app_name'] }} ({{ job['app_env'] }})</a>
                 </td>
