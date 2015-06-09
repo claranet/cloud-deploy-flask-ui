@@ -4,6 +4,12 @@
 
 {% block page_header %}
     <caption>Applications are sorted by last modification date</caption>
+
+    <ul class="nav nav-stacked">
+        <li>
+            <a href="/web/apps/create"><button class="btn btn-default">Create</button></a>
+        </li>
+    </ul>
 {% endblock %}"
 
 {% block page_content %}
@@ -12,8 +18,7 @@
             <tr>
                 <th>#</th>
                 <th>Name / ID</th>
-                <th>Created</th>
-                <th>Modified</th>
+                <th>Created / Modified</th>
                 <th>Environment</th>
                 <th>Role</th>
                 <th>AWS Region</th>
@@ -33,8 +38,7 @@
                     <br>
                     {{ app['_id'] }}
                 </td>
-                <td style="white-space:nowrap;">{{ app['_created'] }}</td>
-                <td style="white-space:nowrap;">{{ app['_updated'] }}</td>
+                <td style="white-space:nowrap;">{{ app['_created'] }} <br> {{ app['_updated'] }}</td>
                 <td>{{ app['env'] }}</td>
                 <td>{{ app['role'] }}</td>
                 <td style="white-space:nowrap;">{{ app['region'] }}</td>
