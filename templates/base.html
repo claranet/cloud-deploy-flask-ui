@@ -49,12 +49,10 @@
 
         {% block page_header %}
         {% endblock %}
-
-        {{ util.flashed_messages() }}
     </div>
 
-
     <div class="container" role="main">
+        {{ util.flashed_messages() }}
 
         {% block page_content %}
         {% endblock %}
