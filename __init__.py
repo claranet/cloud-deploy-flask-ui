@@ -256,7 +256,6 @@ def create_app():
         # Perform validation
         if form.validate_on_submit():
             job = {}
-            job['user'] = 'web'
             job['command'] = form.command.data
             job['app_id'] = app_id
 
