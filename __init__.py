@@ -1,12 +1,10 @@
 from flask import Flask, flash, make_response, render_template, request, Response
-
+from flask.ext.socketio import SocketIO
 from flask_bootstrap import Bootstrap
-
 from flask.ext.login import LoginManager, UserMixin, current_user, login_required, login_user
-
 from werkzeug.exceptions import default_exceptions
-
 from eve import RFC1123_DATE_FORMAT
+from websocket import create_ws
 
 import aws_data
 
@@ -377,4 +375,7 @@ def create_app():
 
 def run_web_ui():
     app = create_app()
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.config['SECRET_KEY'] = 'secret!'
+    app.config['DEBUG'] = True
+    ws = create_ws(app)
+    ws.run(app, host='0.0.0.0', port=3000)
