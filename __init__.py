@@ -372,10 +372,3 @@ def create_app():
         return render_template('job_delete.html', form=form, job=job)
 
     return app
-
-def run_web_ui():
-    app = create_app()
-    app.config['SECRET_KEY'] = 'secret!'
-    app.config['DEBUG'] = True
-    ws = create_ws(app)
-    ws.run(app, host='0.0.0.0', port=3000)
