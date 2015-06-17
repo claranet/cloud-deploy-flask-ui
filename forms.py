@@ -99,9 +99,9 @@ class AutoscaleForm(Form):
     def map_from_app(self, app):
         # Populate form with autoscale data if available
         autoscale = app.get('autoscale', {})
-        self.min.data = autoscale.get('min', 0)
-        self.max.data = autoscale.get('max', 1)
-        self.current.data = autoscale.get('current', 0)
+        self.min.data = autoscale.get('min', '')
+        self.max.data = autoscale.get('max', '')
+        self.current.data = autoscale.get('current', '')
         self.name.data = autoscale.get('name', '')
 
     def map_to_app(self, app):
@@ -110,9 +110,12 @@ class AutoscaleForm(Form):
         """
         app['autoscale'] = {}
         app['autoscale']['name'] = self.name.data
-        app['autoscale']['min'] = self.min.data
-        app['autoscale']['max'] = self.max.data
-        app['autoscale']['current'] = self.current.data
+        if self.min.data:
+            app['autoscale']['min'] = self.min.data
+        if self.max.data:
+            app['autoscale']['max'] = self.max.data
+        if self.current.data:
+            app['autoscale']['current'] = self.current.data
 
 
 class BuildInfosForm(Form):
