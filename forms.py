@@ -78,11 +78,19 @@ def get_aws_instance_types():
 class AutoscaleForm(Form):
     name = StringField('Name', validators=[])
     
-    min = IntegerField('Min', validators=[NumberRangeValidator(min=0)])
+    min = IntegerField('Min', validators=[
+        OptionalValidator(),
+        NumberRangeValidator(min=0)
+    ])
     
-    max = IntegerField('Max', validators=[NumberRangeValidator(min=1)])
+    max = IntegerField('Max', validators=[
+        OptionalValidator(),
+        NumberRangeValidator(min=1)
+    ])
     
-    current = IntegerField('Initial', validators=[])
+    current = IntegerField('Initial', validators=[
+        OptionalValidator()
+    ])
 
     # Disable CSRF in autoscale forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
