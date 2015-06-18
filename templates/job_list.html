@@ -48,7 +48,11 @@
                 </td>
                 <td style="white-space:nowrap;">
                     {% for module in job['modules'] %}
-                        {{ module['name'] }}:{{ module['rev'] }}:{{ module['deploy_id'] or '-' }}<br>
+                        Name:&nbsp;{{ module['name'] }}
+                        <br>
+                        Revision:&nbsp;{{ module['rev'] }}
+                        <br>
+                        Deploy ID:&nbsp;{{ module['deploy_id'] or '-' }}<br>
                     {% endfor %}
                 </td>
                 <td style="white-space:nowrap;">
