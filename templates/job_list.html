@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for job in jobs | sort(reverse=True, attribute='_updated') %}
+            {% for job in jobs | sort(reverse=True, attribute='_created') %}
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td style="white-space:nowrap;">
