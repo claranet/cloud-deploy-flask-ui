@@ -556,8 +556,9 @@ class EditAppForm(BaseAppForm):
 
 class CommandAppForm(Form):
     command = SelectField('Command', validators=[DataRequiredValidator()], choices=get_ghost_job_commands())
-    module_name = SelectField('Module name', validators=[])
-    module_rev = StringField('Module revision', validators=[])
+    module_name = SelectField('Module name<br>(deploy or rollback only)', validators=[])
+    module_rev = StringField('Module revision<br>(deploy only)', validators=[])
+    module_deploy_id = StringField('Module deploy ID<br>(rollback only)', validators=[])
 
     submit = SubmitField('Run Application Command')
 

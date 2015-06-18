@@ -13,8 +13,10 @@
         {{ form.hidden_tag() }}
 
         {{ wtf.form_field(form.command, form_type='horizontal') }}
+        <br>
         {{ wtf.form_field(form.module_name, form_type='horizontal') }}
         {{ wtf.form_field(form.module_rev, form_type='horizontal') }}
+        {{ wtf.form_field(form.module_deploy_id, form_type='horizontal') }}
 
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>

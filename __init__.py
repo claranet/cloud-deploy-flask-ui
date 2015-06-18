@@ -260,10 +260,13 @@ def create_app():
             modules = []
 
             if form.module_name.data:
-                module = {
-                          'name': form.module_name.data,
-                          'rev': form.module_rev.data or 'HEAD'
-                          }
+                module = {}
+                if form.command.data in ['deploy', 'rollback']:
+                    module['name'] = form.module_name.data
+                if form.command.data == 'deploy':
+                    module['rev'] = form.module_rev.data or 'HEAD'
+                if form.command.data == 'rollback':
+                    module['deploy_id'] = form.module_deploy_id.data
                 modules.append(module)
 
             if modules:
