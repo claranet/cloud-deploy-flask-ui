@@ -257,20 +257,28 @@ def create_app():
             job['command'] = form.command.data
             job['app_id'] = app_id
 
+            # Process modules
             modules = []
 
             if form.module_name.data:
                 module = {}
-                if form.command.data in ['deploy', 'rollback']:
-                    module['name'] = form.module_name.data
                 if form.command.data == 'deploy':
+                    module['name'] = form.module_name.data
                     module['rev'] = form.module_rev.data or 'HEAD'
-                if form.command.data == 'rollback':
-                    module['deploy_id'] = form.module_deploy_id.data
                 modules.append(module)
 
             if modules:
                 job['modules'] = modules
+
+            # Process options
+            options = []
+
+            if form.command.data == 'rollback':
+                # In case of rollback, option[0] must be the deploy ID
+                options.append(form.module_deploy_id.data)
+
+            if len(options) > 0:
+                job['options'] = options
 
             message = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
 
