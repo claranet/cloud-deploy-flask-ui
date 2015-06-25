@@ -15,8 +15,8 @@ import sys
 import requests
 import json
 
-from .forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
-from .forms import DeleteJobForm
+from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
+from forms import DeleteJobForm
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 
@@ -26,13 +26,26 @@ url_apps = 'http://localhost:5000/apps'
 url_jobs = 'http://localhost:5000/jobs'
 
 # Helpers
+def format_success_message(success_message, result):
+    """
+    >>> result = {"_updated": "Thu, 25 Jun 2015 16:35:27 GMT", "_links": {"self": {"href": "jobs/558c2dcf745f423d9babf52d", "title": "job"}}, "_created": "Thu, 25 Jun 2015 16:35:27 GMT", "_status": "OK", "_id": "558c2dcf745f423d9babf52d", "_etag": "6297ef1e01d45784fa7086191306c4986d4ba8a0"}
+    >>> format_success_message("success_message", result)
+    "success_message: <a href='/web/jobs/558c2dcf745f423d9babf52d' title='job'>jobs/558c2dcf745f423d9babf52d</a>"
+    """
+    formatted_message = success_message
+    links = result.get('_links', [])
+    if 'self' in links:
+        link = links['self']
+        formatted_message += ": <a href='/web/{href}' title='{title}'>{href}</a>".format(href=link.get('href', ''), title=link.get('title', ''))
+    return formatted_message
+
 def do_request(method, url, data, headers, success_message, failure_message):
     try:
         result = method(url=url, data=data, headers=headers, auth=current_user.auth)
         status_code = result.status_code
         message = result.content
         if status_code in [200, 201, 204]:
-            flash(success_message, 'success')
+            flash(format_success_message(success_message, result.json(), 'success'))
         else:
             flash(failure_message, 'warning')
     except:
