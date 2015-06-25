@@ -45,7 +45,7 @@ def do_request(method, url, data, headers, success_message, failure_message):
         status_code = result.status_code
         message = result.content
         if status_code in [200, 201, 204]:
-            flash(format_success_message(success_message, result.json(), 'success'))
+            flash(format_success_message(success_message, result.json()), 'success')
         else:
             flash(failure_message, 'warning')
     except:
