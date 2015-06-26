@@ -6,8 +6,6 @@ from werkzeug.exceptions import default_exceptions
 from eve import RFC1123_DATE_FORMAT
 from websocket import create_ws
 
-import aws_data
-
 from base64 import b64decode
 from datetime import datetime
 import traceback

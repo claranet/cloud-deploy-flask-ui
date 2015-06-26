@@ -6,11 +6,11 @@ from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
 
-import aws_data
-
 from base64 import b64encode, b64decode
 import traceback
 import boto.vpc
+import boto.ec2
+import aws_data
 
 from apps import apps_schema as ghost_app_schema
 from jobs import jobs_schema as ghost_job_schema
@@ -57,21 +57,31 @@ def get_aws_vpc_ids():
         #FIXME: make the region selectable
         c = boto.vpc.connect_to_region('eu-west-1')
         vpcs = c.get_all_vpcs()
-        return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
     except:
         traceback.print_exc()
-        return [('vpc-0', 'vpc-0 (dummy)')]
+        vpcs = aws_data.dummy_vpcs
+    return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
 
-def get_aws_regions():
-    return [
-        ('eu-west-1', 'eu-west-1 (Ireland)'),
-        ('us-east-1', 'us-east-1 (North Virginia)')
-    ]
+def get_aws_ec2_regions():
+    regions = sorted(boto.ec2.regions(), key=lambda region: region.name)
+    return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
 
 
-def get_aws_instance_types():
-    return [(value, value) for value in aws_data.instance_type]
+def get_aws_ec2_instance_types():
+    try:
+        #FIXME: make the region selectable
+        c = boto.ec2.connect_to_region('eu-west-1')
+        types = c.get_all_instance_types()
+    except:
+        traceback.print_exc()
+        types = aws_data.instance_types
+    return [(instance_type.name,
+         '{name} (cores:{cores} , memory:{memory}, disk:{disk})'.format(name=instance_type.name,
+                                                                       cores=instance_type.cores,
+                                                                       memory=instance_type.memory,
+                                                                       disk=instance_type.disk)
+         ) for instance_type in types]
 
 
 # Forms
@@ -312,9 +322,9 @@ class BaseAppForm(Form):
     environment_infos = FormField(EnvironmentInfosForm)
 
     # AWS properties
-    region = SelectField('AWS Region', validators=[DataRequiredValidator()], choices=get_aws_regions())
+    region = SelectField('AWS Region', validators=[DataRequiredValidator()], choices=[])
 
-    instance_type = SelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=get_aws_instance_types())
+    instance_type = SelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=[])
 
     vpc_id = SelectField('AWS VPC', choices=[], validators=[
         DataRequiredValidator(),
@@ -333,9 +343,10 @@ class BaseAppForm(Form):
     def __init__(self, *args, **kwargs):
         super(BaseAppForm, self).__init__(*args, **kwargs)
         
-        # Refresh VPC list
+        # Refresh AWS lists
+        self.region.choices = get_aws_ec2_regions()
+        self.instance_type.choices = get_aws_ec2_instance_types()
         self.vpc_id.choices = get_aws_vpc_ids()
-
 
     def map_to_app(self, app):
         """
