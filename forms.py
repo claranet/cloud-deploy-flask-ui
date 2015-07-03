@@ -25,7 +25,7 @@ def empty_fieldlist(fieldlist):
 def get_wtforms_selectfield_values(allowed_schema_values):
     """
     Returns a list of (value, label) tuples
-    
+
     >>> get_wtforms_selectfield_values([])
     []
     >>> get_wtforms_selectfield_values(['value'])
@@ -106,17 +106,17 @@ class OptionalVolumeForm(Form):
 # Forms
 class AutoscaleForm(Form):
     name = StringField('Name', validators=[])
-    
+
     min = IntegerField('Min', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
-    
+
     max = IntegerField('Max', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=1)
     ])
-    
+
     current = IntegerField('Initial', validators=[
         OptionalValidator()
     ])
@@ -149,23 +149,23 @@ class AutoscaleForm(Form):
 
 class BuildInfosForm(Form):
     ssh_username = StringField('SSH Username', validators=[DataRequiredValidator()])
-    
+
     source_ami = StringField('Source AWS AMI', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
         )
     ])
-    
+
     ami_name = StringField('AWS AMI Name', validators=[DataRequiredValidator()])
-    
+
     subnet_id = StringField('AWS Subnet', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
         )
     ])
-    
+
     # Disable CSRF in build_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(BuildInfosForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
@@ -197,23 +197,23 @@ class EnvironmentInfosForm(Form):
             ghost_app_schema['environment_infos']['schema']['security_groups']['schema']['regex']
         )
     ]), min_entries=1)
-    
+
     subnet_ids = FieldList(StringField('Subnet ID', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['subnet_ids']['schema']['regex']
         )
     ]), min_entries=1)
-    
+
     instance_profile = StringField('Instance Profile', validators=[])
-    
+
     key_name = StringField('Key Name', validators=[])
-    
+
     root_block_device_size = IntegerField('Size (GiB)', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ]);
-    
+
     root_block_device_name = StringField('Name', validators=[
         OptionalValidator(),
         RegexpValidator(
@@ -222,7 +222,7 @@ class EnvironmentInfosForm(Form):
     ])
 
     optional_volumes = FieldList(FormField(OptionalVolumeForm, validators=[]), min_entries=1)
- 
+
 
     # Disable CSRF in environment_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -238,7 +238,7 @@ class EnvironmentInfosForm(Form):
                 self.security_groups.append_entry()
                 form_security_group = self.security_groups.entries[-1]
                 form_security_group.data = security_group
-        
+
         # Populate form with subnet data if available
         if 'subnet_ids' in environment_infos and len(environment_infos['subnet_ids']) > 0:
             empty_fieldlist(self.subnet_ids)
@@ -246,12 +246,19 @@ class EnvironmentInfosForm(Form):
                 self.subnet_ids.append_entry()
                 form_subnet_id = self.subnet_ids.entries[-1]
                 form_subnet_id.data = subnet_id
-        
+
         self.instance_profile.data = environment_infos.get('instance_profile', '')
         self.key_name.data = environment_infos.get('key_name', '')
-        
+
         self.root_block_device_size.data = environment_infos.get('root_block_device', {}).get('size', '')
         self.root_block_device_name.data = environment_infos.get('root_block_device', {}).get('name', '')
+
+        if 'optional_volumes' in environment_infos and len(environment_infos['optional_volumes']) > 0:
+            empty_fieldlist(self.optional_volumes)
+            for opt_vol in environment_infos.get('optional_volumes', []):
+                self.optional_volumes.append_entry()
+                form_opt_vol = self.optional_volumes.entries[-1].form
+                form_opt_vol.map_from_app(opt_vol)
 
 class ResourceForm(Form):
     # Disable CSRF in resource forms as they are subforms
@@ -364,7 +371,7 @@ class BaseAppForm(Form):
 
     def __init__(self, *args, **kwargs):
         super(BaseAppForm, self).__init__(*args, **kwargs)
-        
+
         # Refresh AWS lists
         self.region.choices = get_aws_ec2_regions()
         self.instance_type.choices = get_aws_ec2_instance_types()
@@ -383,7 +390,7 @@ class BaseAppForm(Form):
         app['region'] = self.region.data
         app['instance_type'] = self.instance_type.data
         app['vpc_id'] = self.vpc_id.data
-    
+
         self.map_to_app_log_notifications(app)
         self.map_to_app_autoscale(app)
         self.map_to_app_build_infos(app)
@@ -395,7 +402,7 @@ class BaseAppForm(Form):
     def map_to_app_log_notifications(self, app):
         """
         Maps log notifications data from form to app
-        
+
         >>> from web_ui.tests import create_test_app_context; create_test_app_context()
 
         >>> form = BaseAppForm()
@@ -403,7 +410,7 @@ class BaseAppForm(Form):
         >>> form.map_to_app_log_notifications(app)
         >>> app
         {'log_notifications': []}
-        
+
         >>> form.log_notifications[0].data = "test@test.fr"
         >>> form.map_to_app_log_notifications(app)
         >>> app
@@ -414,26 +421,26 @@ class BaseAppForm(Form):
             if form_log_notification.data:
                 log_notification = form_log_notification.data
                 app['log_notifications'].append(log_notification)
-    
+
     def map_to_app_autoscale(self, app):
         """
         Map autoscale data from form to app
         """
         self.autoscale.form.map_to_app(app)
-    
+
     def map_to_app_build_infos(self, app):
         """
         Map build infos data from form to app
         """
         self.build_infos.form.map_to_app(app)
-    
+
     def map_to_app_resources(self, app):
         """
         Map resources data from form to app
         """
         # TODO: Extract resources app data
         pass
-    
+
     def map_to_app_environment_infos(self, app):
         """
         Map environment infos data from form to app
@@ -444,16 +451,16 @@ class BaseAppForm(Form):
             if form_security_group.data:
                 security_group = form_security_group.data
                 app['environment_infos']['security_groups'].append(security_group)
-        
+
         app['environment_infos']['subnet_ids'] = []
         for form_subnet_id in self.environment_infos.form.subnet_ids:
             if form_subnet_id.data:
                 subnet_id = form_subnet_id.data
                 app['environment_infos']['subnet_ids'].append(subnet_id)
-        
+
         app['environment_infos']['instance_profile'] = self.environment_infos.form.instance_profile.data
         app['environment_infos']['key_name'] = self.environment_infos.form.key_name.data
-        
+
         app['environment_infos']['root_block_device'] = {}
         if self.environment_infos.form.root_block_device_size.data:
             app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
@@ -473,7 +480,7 @@ class BaseAppForm(Form):
                 opt_vol['iops'] = form_opt_vol.iops.data
             app['environment_infos']['optional_volumes'].append(opt_vol)
 
-    
+
     def map_to_app_features(self, app):
         """
         Map features data from form to app
@@ -487,8 +494,8 @@ class BaseAppForm(Form):
                     feature['version'] = form_feature.feature_version.data
             if feature:
                 app['features'].append(feature)
-    
-    
+
+
     def map_to_app_modules(self, app):
         """
         Map modules data from form to app
@@ -512,7 +519,8 @@ class BaseAppForm(Form):
         """
         Map app data from app to form
         """
-    
+        import pdb;pdb.set_trace()
+
         # Populate form with app data
         self.name.data = app.get('name', '')
         self.env.data = app.get('env', '')
@@ -520,14 +528,14 @@ class BaseAppForm(Form):
         self.region.data = app.get('region', '')
         self.instance_type.data = app.get('instance_type', '')
         self.vpc_id.data = app.get('vpc_id', '')
-    
+
         self.map_from_app_notifications(app)
         self.map_from_app_autoscale(app)
         self.map_from_app_build_infos(app)
         self.map_from_app_environment_infos(app)
         self.map_from_app_features(app)
         self.map_from_app_modules(app)
-        
+
         # TODO: handle resources app data
 
     def map_from_app_autoscale(self, app):
@@ -590,14 +598,14 @@ class EditAppForm(BaseAppForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
 
     submit = SubmitField('Update Application')
-    
+
     def map_from_app(self, app):
         """
         Map app data from app to form
         """
         # Store app etag in form
         self.etag.data = app.get('_etag', '')
-        
+
         super(EditAppForm, self).map_from_app(app)
 
 
