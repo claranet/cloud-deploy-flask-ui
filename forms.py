@@ -52,7 +52,7 @@ def get_ghost_mod_scopes():
     return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['scope']['allowed'])
 
 def get_ghost_optional_volumes():
-    return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['optional_volumes']['schema']['volume_type']['allowed'])
+    return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type']['allowed'])
 
 
 def get_aws_vpc_ids():
@@ -86,6 +86,22 @@ def get_aws_ec2_instance_types():
                                                                        disk=instance_type.disk)
          ) for instance_type in types]
 
+
+class OptionalVolumeForm(Form):
+    device_name = StringField('DeviceName', validators=[])
+    volume_type = SelectField('VolumeType', validators=[], choices=get_ghost_optional_volumes())
+    volume_size = IntegerField('VolumeSize', validators=[])
+    iops = IntegerField('IOPS', validators=[OptionalValidator()])
+
+    # Disable CSRF in optional_volume forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(OptionalVolumeForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, optional_volume):
+        self.device_name.data = optional_volume.get('device_name', '')
+        self.volume_type.data = optional_volume.get('volume_type', '')
+        self.volume_size.data = optional_volume.get('volume_size', '')
+        self.iops.data = optional_volume.get('iops', '')
 
 # Forms
 class AutoscaleForm(Form):
@@ -265,22 +281,6 @@ class FeatureForm(Form):
     def map_from_app(self, feature):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
-
-class OptionalVolumeForm(Form):
-    device_name = StringField('DeviceName', validators=[])
-    volume_type = SelectField('VolumeType', validators=[], choices=get_ghost_optional_volumes())
-    volume_size = IntegerField('VolumeSize', validators=[])
-    iops = IntegerField('IOPS', validators=[OptionalValidator()])
-
-    # Disable CSRF in optional_volume forms as they are subforms
-    def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(OptionalVolumeForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
-
-    def map_from_app(self, optional_volume):
-        self.device_name.data = optional_volume.get('device_name', '')
-        self.volume_type.data = optional_volume.get('volume_type', '')
-        self.volume_size.data = optional_volume.get('volume_size', '')
-        self.iops.data = optional_volume.get('iops', '')
 
 
 class ModuleForm(Form):
