@@ -76,6 +76,7 @@
                     {{ wtf.form_field(form.environment_infos.form.root_block_device_name, form_type='horizontal') }}
                     {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group') }}
                     {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID') }}
+                    {{ ghost_fieldlist(form.environment_infos.form.optional_volumes, 'optional_volumes', 'Optional Volumes', 'optional_volume', 'Optional Volume') }}
                 </div>
             </div>
         </div>
