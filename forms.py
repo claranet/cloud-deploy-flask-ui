@@ -90,7 +90,7 @@ def get_aws_ec2_instance_types():
 class OptionalVolumeForm(Form):
     device_name = StringField('DeviceName', validators=[])
     volume_type = SelectField('VolumeType', validators=[], choices=get_ghost_optional_volumes())
-    volume_size = IntegerField('VolumeSize', validators=[])
+    volume_size = IntegerField('VolumeSize', validators=[OptionalValidator()])
     iops = IntegerField('IOPS', validators=[OptionalValidator()])
 
     # Disable CSRF in optional_volume forms as they are subforms
@@ -472,13 +472,13 @@ class BaseAppForm(Form):
             opt_vol = {}
             if form_opt_vol.device_name.data:
                 opt_vol['device_name'] = form_opt_vol.device_name.data
-            if form_opt_vol.volume_type.data:
-                opt_vol['volume_type'] = form_opt_vol.volume_type.data
-            if form_opt_vol.volume_size.data:
-                opt_vol['volume_size'] = form_opt_vol.volume_size.data
-            if form_opt_vol.iops.data:
-                opt_vol['iops'] = form_opt_vol.iops.data
-            app['environment_infos']['optional_volumes'].append(opt_vol)
+                if form_opt_vol.volume_type.data:
+                    opt_vol['volume_type'] = form_opt_vol.volume_type.data
+                if form_opt_vol.volume_size.data:
+                    opt_vol['volume_size'] = form_opt_vol.volume_size.data
+                if form_opt_vol.iops.data:
+                    opt_vol['iops'] = form_opt_vol.iops.data
+                app['environment_infos']['optional_volumes'].append(opt_vol)
 
 
     def map_to_app_features(self, app):
@@ -519,7 +519,6 @@ class BaseAppForm(Form):
         """
         Map app data from app to form
         """
-        import pdb;pdb.set_trace()
 
         # Populate form with app data
         self.name.data = app.get('name', '')
