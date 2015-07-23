@@ -72,7 +72,7 @@
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
 
             clone.attr("id", entry_id_prefix + "_"+(count+1));
-            clone.find("input, select").each(function() {
+            clone.find("input, select, textarea").each(function() {
                 var old_id = $(this).attr('id');
                 var new_id = old_id.replace('-0', '-' + count);
                 $(this).attr("id", new_id);
@@ -93,7 +93,7 @@
                 entry.remove();
             } else {
                 // Do not remove element, just clear inputs
-                entry.find("input, select").val(null);
+                entry.find("input, select, textarea").val(null);
             }
         }
 
