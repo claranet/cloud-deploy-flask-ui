@@ -12,8 +12,8 @@ import boto.vpc
 import boto.ec2
 import aws_data
 
-from apps import apps_schema as ghost_app_schema
-from jobs import jobs_schema as ghost_job_schema
+from models.apps import apps_schema as ghost_app_schema
+from models.jobs import jobs_schema as ghost_job_schema
 
 
 # Helpers
