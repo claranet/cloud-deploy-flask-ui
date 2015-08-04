@@ -78,7 +78,7 @@ def get_aws_ec2_instance_types(region):
     #except:
     #    traceback.print_exc()
 
-    types = aws_data.instance_types
+    types = aws_data.instance_types[region]
     return [(instance_type.name,
          '{name} (cores:{cores} , memory:{memory}, disk:{disk})'.format(name=instance_type.name,
                                                                        cores=instance_type.cores,
