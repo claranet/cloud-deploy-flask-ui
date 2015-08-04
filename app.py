@@ -1,7 +1,6 @@
-from flask import Flask, flash, make_response, render_template, request, Response
-from flask.ext.socketio import SocketIO
+from flask import Flask, flash, render_template, request, Response
 from flask_bootstrap import Bootstrap
-from flask.ext.login import LoginManager, UserMixin, current_user, login_required, login_user
+from flask.ext.login import LoginManager, UserMixin, current_user, login_required
 from werkzeug.exceptions import default_exceptions
 from eve import RFC1123_DATE_FORMAT
 
