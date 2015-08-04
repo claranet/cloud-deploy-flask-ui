@@ -67,6 +67,36 @@
             $('textarea').autosize();
         });
 
+        function ghost_update_ec2_instancetypes(region) {
+          $.ajax("/web/aws/regions/" + region + "/ec2/instancetypes").done(function(data) {
+              // Update instance types select input options
+              $('#instance_type').find('option').remove();
+              $.each(data,function(key, value) {
+                $('#instance_type').append('<option value=' + key + '>' + value + '</option>');
+              });
+          }).fail(function() {
+              alert("Failed to retrieve EC2 instance types for region " + region);
+          });
+        }
+
+        function ghost_update_ec2_vpcs(region) {
+          $.ajax("/web/aws/regions/" + region + "/vpc/ids").done(function(data) {
+              // Update VPCs select input options
+              $('#vpc_id').find('option').remove();
+              $.each(data,function(key, value) {
+                $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
+              });
+          }).fail(function() {
+              alert("Failed to retrieve EC2 VPCs for region " + region);
+          });
+        }
+
+        $('select#region').change(function() {
+            ghost_update_ec2_instancetypes($(this).val())
+            ghost_update_ec2_vpcs($(this).val())
+        });
+
+
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
             var count = $("tr[data-" + entry_id_prefix + "]").size();
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();

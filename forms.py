@@ -51,18 +51,17 @@ def get_ghost_job_commands():
 def get_ghost_mod_scopes():
     return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['scope']['allowed'])
 
+
 def get_ghost_optional_volumes():
     return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type']['allowed'])
 
 
-def get_aws_vpc_ids():
+def get_aws_vpc_ids(region):
     try:
-        #FIXME: make the region selectable
-        c = boto.vpc.connect_to_region('eu-west-1')
+        c = boto.vpc.connect_to_region(region)
         vpcs = c.get_all_vpcs()
     except:
         traceback.print_exc()
-        vpcs = aws_data.dummy_vpcs
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
 
@@ -71,14 +70,15 @@ def get_aws_ec2_regions():
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
 
 
-def get_aws_ec2_instance_types():
-    try:
-        #FIXME: make the region selectable
-        c = boto.ec2.connect_to_region('eu-west-1')
-        types = c.get_all_instance_types()
-    except:
-        traceback.print_exc()
-        types = aws_data.instance_types
+def get_aws_ec2_instance_types(region):
+    # Uncomment when implemented on AWS side
+    #try:
+    #    c = boto.ec2.connect_to_region(region)
+    #    types = c.get_all_instance_types()
+    #except:
+    #    traceback.print_exc()
+
+    types = aws_data.instance_types
     return [(instance_type.name,
          '{name} (cores:{cores} , memory:{memory}, disk:{disk})'.format(name=instance_type.name,
                                                                        cores=instance_type.cores,
@@ -369,14 +369,6 @@ class BaseAppForm(Form):
     modules = FieldList(FormField(ModuleForm), min_entries=1)
 
 
-    def __init__(self, *args, **kwargs):
-        super(BaseAppForm, self).__init__(*args, **kwargs)
-
-        # Refresh AWS lists
-        self.region.choices = get_aws_ec2_regions()
-        self.instance_type.choices = get_aws_ec2_instance_types()
-        self.vpc_id.choices = get_aws_vpc_ids()
-
     def map_to_app(self, app):
         """
         Map app data from form to app
@@ -592,11 +584,26 @@ class BaseAppForm(Form):
 class CreateAppForm(BaseAppForm):
     submit = SubmitField('Create Application')
 
+    def __init__(self, *args, **kwargs):
+        super(CreateAppForm, self).__init__(*args, **kwargs)
+
+        # Refresh AWS lists
+        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions()
+        self.instance_type.choices = [('', 'Please select region first')]
+        self.vpc_id.choices = [('', 'Please select region first')]
+
 
 class EditAppForm(BaseAppForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
 
     submit = SubmitField('Update Application')
+
+    def __init__(self, *args, **kwargs):
+        super(EditAppForm, self).__init__(*args, **kwargs)
+
+        # Refresh AWS lists
+        self.region.choices = get_aws_ec2_regions()
+
 
     def map_from_app(self, app):
         """

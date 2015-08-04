@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, request, Response
+from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, current_user, login_required
 from werkzeug.exceptions import default_exceptions
@@ -13,6 +13,7 @@ import json
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import DeleteJobForm
+from forms import get_aws_ec2_instance_types, get_aws_vpc_ids
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 
@@ -99,6 +100,7 @@ def get_ghost_jobs(auth, query=None):
 
     return jobs
 
+
 # Web UI App
 def create_app():
     app = Flask(__name__)
@@ -128,10 +130,10 @@ def create_app():
                 user = UserMixin()
                 user.id = basic_auth[0]
                 user.auth = tuple(basic_auth)
-                
+
                 # Try to list apps to verify credentials
                 response = requests.get(url_apps, headers=headers, auth=user.auth)
-                
+
                 if response.status_code == 200:
                     return user
             except:
@@ -146,6 +148,14 @@ def create_app():
     def before_request():
         pass
 
+    @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
+    def web_ec2_instance_types_list(region_id):
+        return jsonify(get_aws_ec2_instance_types(region_id))
+
+    @app.route('/web/aws/regions/<region_id>/vpc/ids')
+    def web_vpcs_list(region_id):
+        return jsonify(get_aws_vpc_ids(region_id))
+
     @app.route('/web/apps')
     def web_app_list():
         query = request.args.get('where', None)
@@ -156,6 +166,26 @@ def create_app():
     def web_app_create():
         form = CreateAppForm()
 
+        clone_from_app = None
+        clone_from_app_id = request.args.get('clone_from', None)
+        if clone_from_app_id:
+            try:
+                result = requests.get(url_apps + '/' + clone_from_app_id, headers=headers, auth=current_user.auth)
+                clone_from_app = result.json()
+                handle_response_status_code(result.status_code)
+            except:
+                traceback.print_exc()
+                message = 'Failure: %s' % (sys.exc_info()[1])
+                flash(message, 'danger')
+
+        # Dynamic selections update
+        if form.is_submitted() and form.region.data:
+            form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
+            form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+        elif not form.is_submitted() and clone_from_app:
+            form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
+            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
+
         # Perform validation
         if form.validate_on_submit():
             app = {}
@@ -165,17 +195,8 @@ def create_app():
 
             return render_template('action_completed.html', message=message)
 
-        app_id = request.args.get('clone_from', None)
-        if app_id:
-            try:
-                result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
-                app = result.json()
-                handle_response_status_code(result.status_code)
-                form.map_from_app(app)
-            except:
-                traceback.print_exc()
-                message = 'Failure: %s' % (sys.exc_info()[1])
-                flash(message, 'danger')
+        if clone_from_app:
+            form.map_from_app(clone_from_app)
 
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=False)
@@ -206,6 +227,11 @@ def create_app():
     @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
     def web_app_edit(app_id):
         form = EditAppForm()
+
+        # Dynamic selections update
+        if form.is_submitted() and form.region.data:
+            form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
+            form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
 
         # Perform validation
         if form.validate_on_submit():
@@ -240,6 +266,9 @@ def create_app():
         # Remove alternative options from select fields that cannot be changed
         form.env.choices = [(form.env.data, form.env.data)]
         form.role.choices = [(form.role.data, form.role.data)]
+
+        form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
+        form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
 
         # Display default template in GET case
         return render_template('app_edit.html', form=form, edit=True)
