@@ -79,9 +79,9 @@
         });
 
         function ghost_update_ec2_instancetypes(region) {
+          $('#instance_type').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/ec2/instancetypes").done(function(data) {
               // Update instance types select input options
-              $('#instance_type').find('option').remove();
               $.each(data,function(key, value) {
                 $('#instance_type').append('<option value=' + key + '>' + value + '</option>');
               });
@@ -91,9 +91,9 @@
         }
 
         function ghost_update_ec2_vpcs(region) {
+          $('#vpc_id').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/vpc/ids").done(function(data) {
               // Update VPCs select input options
-              $('#vpc_id').find('option').remove();
               $.each(data,function(key, value) {
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
