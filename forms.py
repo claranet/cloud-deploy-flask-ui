@@ -157,8 +157,6 @@ class BuildInfosForm(Form):
         )
     ])
 
-    ami_name = StringField('AWS AMI Name', validators=[DataRequiredValidator()])
-
     subnet_id = StringField('AWS Subnet', validators=[
         DataRequiredValidator(),
         RegexpValidator(
@@ -177,7 +175,6 @@ class BuildInfosForm(Form):
         build_infos = app.get('build_infos', {})
         self.ssh_username.data = build_infos.get('ssh_username', '')
         self.source_ami.data = build_infos.get('source_ami', '')
-        self.ami_name.data = build_infos.get('ami_name', '')
         self.subnet_id.data = build_infos.get('subnet_id', '')
 
     def map_to_app(self, app):
@@ -187,7 +184,6 @@ class BuildInfosForm(Form):
         app['build_infos'] = {}
         app['build_infos']['ssh_username'] = self.ssh_username.data
         app['build_infos']['source_ami'] = self.source_ami.data
-        app['build_infos']['ami_name'] = self.ami_name.data
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 class EnvironmentInfosForm(Form):
