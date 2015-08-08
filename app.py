@@ -249,18 +249,17 @@ def web_deployment_rollback(deployment_id):
     # Get Deployment
     deployment = get_ghost_deployment(deployment_id)
 
-    app_id = deployment['app_id']
-    form = CommandAppForm(app_id)
+    app = deployment['app_id']
+    form = CommandAppForm(app['_id'])
 
     form.command.data = 'rollback'
     form.module_deploy_id.data = deployment_id
 
     # Perform validation
     if form.validate_on_submit():
-        message = create_ghost_job(app_id, form, headers)
+        message = create_ghost_job(app['_id'], form, headers)
 
         return render_template('action_completed.html', message=message)
 
     # Display default template in GET case
-    app = get_ghost_app(app_id)
     return render_template('app_command.html', form=form, app=app)
