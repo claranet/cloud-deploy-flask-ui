@@ -24,6 +24,7 @@
         </thead>
         <tbody>
             {% for job in jobs | sort(reverse=True, attribute='_created') %}
+                {% set app = job['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td style="white-space:nowrap;">
@@ -34,7 +35,7 @@
                     <br>
                     {{ job['_updated'] }}</td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/apps/{{ job['app_id'] }}">{{ job['app_name'] }} ({{ job['app_env'] }})</a>
+                    <a href="/web/apps/{{ app.get('_id', '') }}">{{ app.get('name') }} ({{ app.get('env') }})</a>
                 </td>
                 <td style="white-space:nowrap;">{{ job['command'] }}</td>
                 <td style="white-space:nowrap;">{{ job['status'] }}</td>

@@ -22,8 +22,8 @@
                 {{ ghost_display_field('deployment-id', 'Deployment', deployment['_id']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-app', 'Application', deployment.get('app_id', ''), '/web/apps/' + deployment.get('app_id', '')) }}</a>
-                {{ ghost_display_field('deployment-job', 'Job', deployment.get('job_id', ''), '/web/jobs/' + deployment.get('job_id', '')) }}</a>
+                {{ ghost_display_field('deployment-app', 'Application', deployment.get('app_id', {}).get('_id', ''), '/web/apps/' + deployment.get('app_id', {}).get('_id', '')) }}</a>
+                {{ ghost_display_field('deployment-job', 'Job', deployment.get('job_id', {}).get('_id', ''), '/web/jobs/' + deployment.get('job_id', {}).get('_id', '')) }}</a>
             </div>
             <div class="row">
                 {{ ghost_display_field('deployment-job__created', 'Created', deployment['job__created']) }}

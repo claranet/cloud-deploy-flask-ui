@@ -114,7 +114,7 @@ def delete_ghost_app(app_id, local_headers):
 
 def get_ghost_jobs(query=None):
     try:
-        url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING
+        url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
         if query:
             url += "&where=" + query
         result = requests.get(url, headers=headers, auth=current_user.auth)
@@ -181,7 +181,7 @@ def delete_ghost_job(job_id, local_headers):
 
 def get_ghost_deployments(query=None):
     try:
-        url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING
+        url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"app_id": 1, "job_id": 1}'
         if query:
             url += "&where=" + query
         result = requests.get(url, headers=headers, auth=current_user.auth)
@@ -210,28 +210,3 @@ def get_ghost_deployment(deployment_id):
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
     return deployment
-
-def retrieve_related_items_data(collection, related_item_id_field, related_item_prefix, related_items_url, fields):
-    related_items_cache = {}
-    for item in collection:
-        related_item_id = item[related_item_id_field]
-        related_item = related_items_cache.get(related_item_id, None)
-        if related_item is None:
-            try:
-                result = requests.get(related_items_url + '/' + related_item_id, headers=headers, auth=current_user.auth)
-                handle_response_status_code(result.status_code)
-                related_item = result.json()
-                related_items_cache[related_item_id] = related_item
-            except:
-                related_items_cache[related_item_id] = {}
-        if related_item:
-            for field in fields:
-                item[related_item_prefix + field] = related_item.get(field, None)
-
-
-def retrieve_app_data(collection):
-    retrieve_related_items_data(collection, 'app_id', 'app_', url_apps, ['name', 'env'])
-
-
-def retrieve_job_data(collection):
-    retrieve_related_items_data(collection, 'job_id', 'job_', url_jobs, ['user', '_created', '_updated'])

@@ -23,22 +23,24 @@
         </thead>
         <tbody>
             {% for deployment in deployments | sort(reverse=True, attribute='_created') %}
+                {% set app = deployment['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
+                {% set job = deployment['job_id'] or {'_id': 'N/A', 'user': 'N/A', '_created': 'N/A', '_created': '_updated'} %}
             <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td style="white-space:nowrap;">
                     <a href="/web/deployments/{{ deployment['_id'] }}">{{ deployment['_id'] }}</a>
                 </td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/apps/{{ deployment['app_id'] }}">{{ deployment['app_name'] }} ({{ deployment['app_env'] }})</a>
+                    <a href="/web/apps/{{ app.get('_id', '') }}">{{ app.get('name') }} ({{ app.get('env') }})</a>
                 </td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/jobs/{{ deployment['job_id'] }}">{{ deployment['job_id'] }}</a>
+                    <a href="/web/jobs/{{ job.get('_id', '') }}">{{ job.get('_id', '') }}</a>
                     <br>
-                    {{ deployment['job_user'] }}
+                    {{ job['user'] }}
                     <br>
-                    {{ deployment['job__created'] }}
+                    {{ job['_created'] }}
                     <br>
-                    {{ deployment['job__updated'] }}
+                    {{ job['_updated'] }}
                 </td>
                 <td style="white-space:nowrap;">
                     {{ deployment['module'] }}

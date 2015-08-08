@@ -6,8 +6,8 @@ from base64 import b64decode
 import traceback
 import sys
 
-from ghost_client import get_ghost_apps, get_ghost_app, retrieve_app_data, create_ghost_app, update_ghost_app, delete_ghost_app
-from ghost_client import get_ghost_jobs, get_ghost_job, retrieve_job_data, create_ghost_job, delete_ghost_job
+from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
+from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
 
@@ -198,7 +198,6 @@ def web_app_delete(app_id):
 def web_job_list():
     query = request.args.get('where', None)
     jobs = get_ghost_jobs(query)
-    retrieve_app_data(jobs)
 
     return render_template('job_list.html', jobs=jobs)
 
@@ -234,8 +233,6 @@ def web_job_delete(job_id):
 def web_deployments_list():
     query = request.args.get('where', None)
     deployments = get_ghost_deployments(query)
-    retrieve_app_data(deployments)
-    retrieve_job_data(deployments)
 
     return render_template('deployment_list.html', deployments=deployments)
 
