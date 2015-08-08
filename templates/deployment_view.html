@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Deployment %s' % (deployment['_id'] or '-')  %}
+
+{% block page_header %}
+    <ul class="nav nav-stacked">
+        <li>
+            <a href="/web/deployments/{{ deployment['_id'] }}/rollback"><button class="btn btn-default">Rollback</button></a>
+        </li>
+    </ul>
+{% endblock %}"
+                <th>Revision</th>
+                <th>Commit</th>
+                <th>Timestamp</th>
+                
+                
+{% block page_content %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Properties</div>
+        <div class="panel-body">
+            <div class="row">
+                {{ ghost_display_field('deployment-id', 'Deployment', deployment['_id']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-app', 'Application', deployment.get('app_id', ''), '/web/apps/' + deployment.get('app_id', '')) }}</a>
+                {{ ghost_display_field('deployment-job', 'Job', deployment.get('job_id', ''), '/web/jobs/' + deployment.get('job_id', '')) }}</a>
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-job__created', 'Created', deployment['job__created']) }}
+                {{ ghost_display_field('deployment-job__updated', 'Modified', deployment['job__updated']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-job_user', 'user', deployment['job_user']) }}</a>
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-module', 'Module', deployment['module']) }}
+                {{ ghost_display_field('deployment-module_path', 'Module Path', deployment['module_path']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-package', 'Package', deployment['package']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-revision', 'Revision', deployment['revision']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-commit', 'Commit', deployment['commit']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-commit_message', 'Message', deployment['commit_message']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('deployment-timestamp', 'Timestamp', deployment['timestamp']) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,3 +1,5 @@
+from flask import flash
+from flask.ext.login import current_user
 from flask_wtf import Form
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
@@ -6,14 +8,18 @@ from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
 
-from base64 import b64encode, b64decode
+from base64 import b64encode
+import requests
 import traceback
+import sys
 import boto.vpc
 import boto.ec2
 import aws_data
 
 from models.apps import apps_schema as ghost_app_schema
 from models.jobs import jobs_schema as ghost_job_schema
+
+from ghost_client import url_apps, headers, handle_response_status_code
 
 
 # Helpers
@@ -305,11 +311,11 @@ class ModuleForm(Form):
         self.module_path.data = module.get('path', '')
         self.module_scope.data = module.get('scope', '')
         if 'build_pack' in module:
-            self.module_build_pack.data = b64decode(module['build_pack'])
+            self.module_build_pack.data = module['build_pack']
         if 'pre_deploy' in module:
-            self.module_pre_deploy.data = b64decode(module['pre_deploy'])
+            self.module_pre_deploy.data = module['pre_deploy']
         if 'post_deploy' in module:
-            self.module_post_deploy.data = b64decode(module['post_deploy'])
+            self.module_post_deploy.data = module['post_deploy']
 
 
 class BaseAppForm(Form):
@@ -618,6 +624,21 @@ class CommandAppForm(Form):
     module_deploy_id = StringField('Deploy ID<br>(rollback only)', validators=[])
 
     submit = SubmitField('Run Application Command')
+
+    def __init__(self, app_id, *args, **kwargs):
+        super(CommandAppForm, self).__init__(*args, **kwargs)
+
+        # Get Application Modules
+        try:
+            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+            handle_response_status_code(result.status_code)
+            app = result.json()
+            self.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
+        except:
+            traceback.print_exc()
+            message = 'Failure: %s' % (sys.exc_info()[1])
+            flash(message, 'danger')
+            self.module_name.choices = [('', 'Failed to retrieve Application Modules')]
 
 
 class DeleteAppForm(Form):

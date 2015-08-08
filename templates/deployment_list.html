@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Deployments' %}
+
+{% block page_header %}
+    <caption>Sorted by timestamp descending</caption>
+{% endblock %}"
+
+{% block page_content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Deployment</th>
+                <th>Application</th>
+                <th>Job</th>
+                <th>Module / Path / Package</th>
+                <th>Revision</th>
+                <th>Commit</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for deployment in deployments | sort(reverse=True, attribute='_created') %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td style="white-space:nowrap;">
+                    <a href="/web/deployments/{{ deployment['_id'] }}">{{ deployment['_id'] }}</a>
+                </td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/apps/{{ deployment['app_id'] }}">{{ deployment['app_name'] }} ({{ deployment['app_env'] }})</a>
+                </td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/jobs/{{ deployment['job_id'] }}">{{ deployment['job_id'] }}</a>
+                    <br>
+                    {{ deployment['job_user'] }}
+                    <br>
+                    {{ deployment['job__created'] }}
+                    <br>
+                    {{ deployment['job__updated'] }}
+                </td>
+                <td style="white-space:nowrap;">
+                    {{ deployment['module'] }}
+                    <br>
+                    {{ deployment['module_path'] }}
+                    <br>
+                    {{ deployment['package'] }}
+                </td>
+                <td style="white-space:nowrap;">{{ deployment['revision'] }}</td>
+                <td style="white-space:nowrap;">
+                    <abbr title="{{ deployment['commit_message'] }}">{{ deployment['commit'] }}</abbr>
+                </td>
+                <td style="white-space:nowrap;">{{ deployment['timestamp'] }}</td>
+                <td style="white-space:nowrap;">
+                    <a href="/web/deployments/{{ deployment['_id'] }}/rollback"><button class="btn btn-default">Rollback</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

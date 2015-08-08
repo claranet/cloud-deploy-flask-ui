@@ -1,423 +1,269 @@
 from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, current_user, login_required
-from werkzeug.exceptions import default_exceptions
-from eve import RFC1123_DATE_FORMAT
 
 from base64 import b64decode
-from datetime import datetime
 import traceback
 import sys
-import requests
-import json
+
+from ghost_client import get_ghost_apps, get_ghost_app, retrieve_app_data, create_ghost_app, update_ghost_app, delete_ghost_app
+from ghost_client import get_ghost_jobs, get_ghost_job, retrieve_job_data, create_ghost_job, delete_ghost_job
+from ghost_client import get_ghost_deployments, get_ghost_deployment
+from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids
 
-API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
-
-# FIXME: Static conf to externalize with Flask-Appconfig
-headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-url_apps = 'http://localhost:5000/apps'
-url_jobs = 'http://localhost:5000/jobs'
-
-# Helpers
-def format_success_message(success_message, result):
-    """
-    >>> result = {"_updated": "Thu, 25 Jun 2015 16:35:27 GMT", "_links": {"self": {"href": "jobs/558c2dcf745f423d9babf52d", "title": "job"}}, "_created": "Thu, 25 Jun 2015 16:35:27 GMT", "_status": "OK", "_id": "558c2dcf745f423d9babf52d", "_etag": "6297ef1e01d45784fa7086191306c4986d4ba8a0"}
-    >>> format_success_message("success_message", result)
-    "success_message: <a href='/web/jobs/558c2dcf745f423d9babf52d' title='job'>jobs/558c2dcf745f423d9babf52d</a>"
-    """
-    formatted_message = success_message
-    links = result.get('_links', [])
-    if 'self' in links:
-        link = links['self']
-        formatted_message += ": <a href='/web/{href}' title='{title}'>{href}</a>".format(href=link.get('href', ''), title=link.get('title', ''))
-    return formatted_message
-
-def do_request(method, url, data, headers, success_message, failure_message):
-    try:
-        result = method(url=url, data=data, headers=headers, auth=current_user.auth)
-        status_code = result.status_code
-        message = result.content
-        if status_code in [200, 201, 204]:
-            flash(format_success_message(success_message, result.json()), 'success')
-        else:
-            flash(failure_message, 'warning')
-    except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
-        flash(failure_message, 'danger')
-    print message
-    return message
-
-def handle_response_status_code(status_code):
-    if status_code >= 300:
-        raise default_exceptions[status_code]
-
-def get_ghost_apps(auth, query=None):
-    try:
-        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        if query:
-            url += "&where=" + query
-        result = requests.get(url, headers=headers, auth=auth)
-        handle_response_status_code(result.status_code)
-        apps = result.json().get('_items', [])
-        for app in apps:
-            try:
-                app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
-                app['_updated'] = datetime.strptime(app['_updated'], RFC1123_DATE_FORMAT)
-            except:
-                traceback.print_exc()
-    except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
-        flash(message, 'danger')
-        apps = ['Failed to retrieve Apps']
-
-    return apps
-
-def get_ghost_jobs(auth, query=None):
-    try:
-        url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING
-        if query:
-            url += "&where=" + query
-        result = requests.get(url, headers=headers, auth=auth)
-        handle_response_status_code(result.status_code)
-        jobs = result.json().get('_items', [])
-        for job in jobs:
-            try:
-                job['_created'] = datetime.strptime(job['_created'], RFC1123_DATE_FORMAT)
-                job['_updated'] = datetime.strptime(job['_updated'], RFC1123_DATE_FORMAT)
-            except:
-                traceback.print_exc()
-    except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
-        flash(message, 'danger')
-        jobs = ['Failed to retrieve Jobs']
-
-    return jobs
-
-
 # Web UI App
-def create_app():
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    app.config.update(
-        SECRET_KEY='a random string',
-        WTF_CSRF_SECRET_KEY='a random string'
-    )
+app.config.update(
+    SECRET_KEY='a random string',
+    WTF_CSRF_SECRET_KEY='a random string'
+)
 
-    Bootstrap(app)
+Bootstrap(app)
 
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-    login_manager._login_disabled = False
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager._login_disabled = False
 
-    @login_manager.unauthorized_handler
-    def unauthorized():
-        return Response('Please provide proper credentials', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+@login_manager.unauthorized_handler
+def unauthorized():
+    return Response('Please provide proper credentials', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
-    @login_manager.request_loader
-    def load_user_from_request(request):
-        basic_auth = request.headers.get('Authorization')
+@login_manager.request_loader
+def load_user_from_request(request):
+    basic_auth = request.headers.get('Authorization')
 
-        if basic_auth:
-            try:
-                basic_auth = b64decode(basic_auth.replace('Basic ', '', 1)).split(':')
-                user = UserMixin()
-                user.id = basic_auth[0]
-                user.auth = tuple(basic_auth)
-
-                # Try to list apps to verify credentials
-                response = requests.get(url_apps, headers=headers, auth=user.auth)
-
-                if response.status_code == 200:
-                    return user
-            except:
-                traceback.print_exc()
-                message = 'Failure: %s' % (sys.exc_info()[1])
-                flash(message, 'danger')
-
-        return None
-
-    @app.before_request
-    @login_required
-    def before_request():
-        pass
-
-    @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
-    def web_ec2_instance_types_list(region_id):
-        return jsonify(get_aws_ec2_instance_types(region_id))
-
-    @app.route('/web/aws/regions/<region_id>/vpc/ids')
-    def web_vpcs_list(region_id):
-        return jsonify(get_aws_vpc_ids(region_id))
-
-    @app.route('/web/apps')
-    def web_app_list():
-        query = request.args.get('where', None)
-        apps = get_ghost_apps(current_user.auth, query)
-        return render_template('app_list.html', apps=apps)
-
-    @app.route('/web/apps/create', methods=['GET', 'POST'])
-    def web_app_create():
-        form = CreateAppForm()
-
-        clone_from_app = None
-        clone_from_app_id = request.args.get('clone_from', None)
-        if clone_from_app_id:
-            try:
-                result = requests.get(url_apps + '/' + clone_from_app_id, headers=headers, auth=current_user.auth)
-                clone_from_app = result.json()
-                handle_response_status_code(result.status_code)
-            except:
-                traceback.print_exc()
-                message = 'Failure: %s' % (sys.exc_info()[1])
-                flash(message, 'danger')
-
-        # Dynamic selections update
-        if form.is_submitted() and form.region.data:
-            form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-            form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
-        elif not form.is_submitted() and clone_from_app:
-            form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
-            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
-
-        # Perform validation
-        if form.validate_on_submit():
-            app = {}
-            form.map_to_app(app)
-
-            message = do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers, success_message='Application created', failure_message='Application creation failed')
-
-            return render_template('action_completed.html', message=message)
-
-        if clone_from_app:
-            form.map_from_app(clone_from_app)
-
-        # Display default template in GET case
-        return render_template('app_edit.html', form=form, edit=False)
-
-    @app.route('/web/apps/<app_id>', methods=['GET'])
-    def web_app_view(app_id):
+    if basic_auth:
         try:
-            # Get App data
-            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
-            app = result.json()
-            handle_response_status_code(result.status_code)
-            
-            # Decode module scripts
-            for module in app.get('modules', []):
-                if 'build_pack' in module:
-                    module['build_pack'] = b64decode(module['build_pack'])
-                if 'pre_deploy' in module:
-                    module['pre_deploy'] = b64decode(module['pre_deploy'])
-                if 'post_deploy' in module:
-                    module['post_deploy'] = b64decode(module['post_deploy'])
+            basic_auth = b64decode(basic_auth.replace('Basic ', '', 1)).split(':')
+            user = UserMixin()
+            user.id = basic_auth[0]
+            user.auth = tuple(basic_auth)
+
+            # Try to list apps to verify credentials
+            response = test_ghost_auth(user)
+
+            if response.status_code == 200:
+                return user
         except:
             traceback.print_exc()
             message = 'Failure: %s' % (sys.exc_info()[1])
             flash(message, 'danger')
 
-        return render_template('app_view.html', app=app)
+    return None
 
-    @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
-    def web_app_edit(app_id):
-        form = EditAppForm()
+@app.before_request
+@login_required
+def before_request():
+    pass
 
-        # Dynamic selections update
-        if form.is_submitted() and form.region.data:
-            form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-            form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+@app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
+def web_ec2_instance_types_list(region_id):
+    return jsonify(get_aws_ec2_instance_types(region_id))
 
-        # Perform validation
-        if form.validate_on_submit():
-            local_headers = headers.copy()
-            local_headers['If-Match'] = form.etag.data
+@app.route('/web/aws/regions/<region_id>/vpc/ids')
+def web_vpcs_list(region_id):
+    return jsonify(get_aws_vpc_ids(region_id))
 
-            # Remove read-only fields that cannot be changed
-            del form.name
-            del form.env
-            del form.role
+@app.route('/web/apps')
+def web_app_list():
+    query = request.args.get('where', None)
+    apps = get_ghost_apps(current_user.auth, query)
+    return render_template('app_list.html', apps=apps)
 
-            # Update Application
-            app = {}
-            form.map_to_app(app)
+@app.route('/web/apps/create', methods=['GET', 'POST'])
 
-            message = do_request(requests.patch, url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, success_message='Application updated', failure_message='Application update failed')
+def web_app_create():
+    form = CreateAppForm()
 
-            return render_template('action_completed.html', message=message)
+    clone_from_app = None
+    clone_from_app_id = request.args.get('clone_from', None)
+    if clone_from_app_id:
+        clone_from_app = get_ghost_app(clone_from_app_id)
 
-        # Get App data on first access
-        if not form.etag.data:
-            try:
-                result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
-                handle_response_status_code(result.status_code)
-                app = result.json()
-                form.map_from_app(app)
-            except:
-                traceback.print_exc()
-                message = 'Failure: %s' % (sys.exc_info()[1])
-                flash(message, 'danger')
+    # Dynamic selections update
+    if form.is_submitted() and form.region.data:
+        form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
+        form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+    elif not form.is_submitted() and clone_from_app:
+        form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
+        form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
 
-        # Remove alternative options from select fields that cannot be changed
-        form.env.choices = [(form.env.data, form.env.data)]
-        form.role.choices = [(form.role.data, form.role.data)]
+    # Perform validation
+    if form.validate_on_submit():
+        app = {}
+        form.map_to_app(app)
 
+        message = create_ghost_app(app)
+
+        return render_template('action_completed.html', message=message)
+
+    if clone_from_app:
+        form.map_from_app(clone_from_app)
+
+    # Display default template in GET case
+    return render_template('app_edit.html', form=form, edit=False)
+
+@app.route('/web/apps/<app_id>', methods=['GET'])
+def web_app_view(app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+
+    return render_template('app_view.html', app=app)
+
+@app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
+
+def web_app_edit(app_id):
+    form = EditAppForm()
+
+    # Dynamic selections update
+    if form.is_submitted() and form.region.data:
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
 
-        # Display default template in GET case
-        return render_template('app_edit.html', form=form, edit=True)
+    # Perform validation
+    if form.validate_on_submit():
+        local_headers = headers.copy()
+        local_headers['If-Match'] = form.etag.data
 
-    @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
-    def web_app_command(app_id):
-        form = CommandAppForm()
+        # Remove read-only fields that cannot be changed
+        del form.name
+        del form.env
+        del form.role
 
-        # Get Application Modules
-        try:
-            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
-            handle_response_status_code(result.status_code)
-            app = result.json()
-            form.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
-        except:
-            traceback.print_exc()
-            message = 'Failure: %s' % (sys.exc_info()[1])
-            flash(message, 'danger')
-            form.module_name.choices = [('', 'Failed to retrieve Application Modules')]
+        # Update Application
+        app = {}
+        form.map_to_app(app)
 
-        # Perform validation
-        if form.validate_on_submit():
-            job = {}
-            job['command'] = form.command.data
-            job['app_id'] = app_id
+        message = update_ghost_app(app_id, local_headers, app)
 
-            # Process modules
-            modules = []
+        return render_template('action_completed.html', message=message)
 
-            if form.module_name.data:
-                module = {}
-                if form.command.data == 'deploy':
-                    module['name'] = form.module_name.data
-                    module['rev'] = form.module_rev.data or 'HEAD'
-                modules.append(module)
+    # Get App data on first access
+    if not form.etag.data:
+        app = get_ghost_app(app_id)
+        form.map_from_app(app)
 
-            if modules:
-                job['modules'] = modules
+    # Remove alternative options from select fields that cannot be changed
+    form.env.choices = [(form.env.data, form.env.data)]
+    form.role.choices = [(form.role.data, form.role.data)]
 
-            # Process options
-            options = []
+    form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
+    form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
 
-            if form.command.data == 'rollback':
-                # In case of rollback, option[0] must be the deploy ID
-                options.append(form.module_deploy_id.data)
+    # Display default template in GET case
+    return render_template('app_edit.html', form=form, edit=True)
 
-            if len(options) > 0:
-                job['options'] = options
+@app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
+def web_app_command(app_id):
+    form = CommandAppForm(app_id)
 
-            message = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
+    # Perform validation
+    if form.validate_on_submit():
+        message = create_ghost_job(app_id, form, headers)
 
-            return render_template('action_completed.html', message=message)
+        return render_template('action_completed.html', message=message)
 
-        # Display default template in GET case
-        return render_template('app_command.html', form=form, app=app)
+    # Display default template in GET case
+    app = get_ghost_app(app_id)
+    return render_template('app_command.html', form=form, app=app)
 
-    @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
-    def web_app_delete(app_id):
-        form = DeleteAppForm()
+@app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
 
-        # Perform validation
-        if form.validate_on_submit and form.confirmation.data == 'yes':
-            local_headers = headers.copy()
-            local_headers['If-Match'] = form.etag.data
+def web_app_delete(app_id):
+    form = DeleteAppForm()
 
-            message = do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
+    # Perform validation
+    if form.validate_on_submit and form.confirmation.data == 'yes':
+        local_headers = headers.copy()
+        local_headers['If-Match'] = form.etag.data
 
-            return render_template('action_completed.html', message=message)
+        message = delete_ghost_app(app_id, local_headers)
 
-        # Get Application etag
-        try:
-            result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
-            app = result.json()
-            handle_response_status_code(result.status_code)
-            form.etag.data = app['_etag']
-        except:
-            traceback.print_exc()
-            message = 'Failure: %s' % (sys.exc_info()[1])
-            flash(message, 'danger')
+        return render_template('action_completed.html', message=message)
 
-        # Display default template in GET case
-        return render_template('app_delete.html', form=form, app=app)
+    # Get Application etag
+    app = get_ghost_app(app_id)
+    form.etag.data = app.get('_etag', '')
 
-    @app.route('/web/jobs')
-    def web_job_list():
-        query = request.args.get('where', None)
-        jobs = get_ghost_jobs(current_user.auth, query)
-        apps_name_cache = {}
-        apps_env_cache = {}
-        for job in jobs:
-            app_id = job['app_id']
-            app_name = apps_name_cache.get(app_id, None)
-            app_env = apps_env_cache.get(app_id, None)
-            if app_name is None:
-                try:
-                    # Get App data
-                    result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
-                    handle_response_status_code(result.status_code)
-                    app = result.json()
-                    apps_name_cache[app_id] = app_name = app['name']
-                    apps_env_cache[app_id] = app_env = app['env']
-                except:
-                    apps_name_cache[app_id] = app_name = 'N/A'
-                    apps_env_cache[app_id] = app_env = 'N/A'
-            job['app_name'] = app_name
-            job['app_env'] = app_env
+    # Display default template in GET case
+    return render_template('app_delete.html', form=form, app=app)
 
-        return render_template('job_list.html', jobs=jobs)
+@app.route('/web/jobs')
 
-    @app.route('/web/jobs/<job_id>', methods=['GET'])
-    def web_job_view(job_id):
-        try:
-            # Get Job data
-            result = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth)
-            job = result.json()
-            handle_response_status_code(result.status_code)
-        except:
-            traceback.print_exc()
-            message = 'Failure: %s' % (sys.exc_info()[1])
-            flash(message, 'danger')
+def web_job_list():
+    query = request.args.get('where', None)
+    jobs = get_ghost_jobs(current_user.auth, query)
+    retrieve_app_data(jobs)
 
-        return render_template('job_view.html', job=job)
+    return render_template('job_list.html', jobs=jobs)
 
-    @app.route('/web/jobs/<job_id>/delete', methods=['GET', 'POST'])
-    def web_job_delete(job_id):
-        form = DeleteJobForm()
+@app.route('/web/jobs/<job_id>', methods=['GET'])
+def web_job_view(job_id):
+    job = get_ghost_job(job_id)
 
-        # Perform validation
-        if form.validate_on_submit and form.confirmation.data == 'yes':
-            local_headers = headers.copy()
-            local_headers['If-Match'] = form.etag.data
+    return render_template('job_view.html', job=job)
 
-            message = do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
+@app.route('/web/jobs/<job_id>/delete', methods=['GET', 'POST'])
 
-            return render_template('action_completed.html', message=message)
+def web_job_delete(job_id):
+    form = DeleteJobForm()
 
-        # Get job etag
-        try:
-            result = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth)
-            job = result.json()
-            handle_response_status_code(result.status_code)
-            if job.get('status', '') in ['done', 'failed']:
-                form.etag.data = job['_etag']
-        except:
-            traceback.print_exc()
-            message = 'Failure: %s' % (sys.exc_info()[1])
-            flash(message, 'danger')
+    # Perform validation
+    if form.validate_on_submit and form.confirmation.data == 'yes':
+        local_headers = headers.copy()
+        local_headers['If-Match'] = form.etag.data
 
-        # Display default template in GET case
-        return render_template('job_delete.html', form=form, job=job)
+        message = delete_ghost_job(job_id, local_headers)
 
-    return app
+        return render_template('action_completed.html', message=message)
+
+    # Get job etag
+    job = get_ghost_job(job_id)
+    if job and job.get('status', '') in ['done', 'failed']:
+        form.etag.data = job['_etag']
+
+    # Display default template in GET case
+    return render_template('job_delete.html', form=form, job=job)
+
+@app.route('/web/deployments')
+def web_deployments_list():
+    query = request.args.get('where', None)
+    deployments = get_ghost_deployments(current_user.auth, query)
+    retrieve_app_data(deployments)
+    retrieve_job_data(deployments)
+
+    return render_template('deployment_list.html', deployments=deployments)
+
+@app.route('/web/deployments/<deployment_id>', methods=['GET'])
+def web_deployments_view(deployment_id):
+    # Get Deployment
+    deployment = get_ghost_deployment(deployment_id)
+
+    return render_template('deployment_view.html', deployment=deployment)
+
+@app.route('/web/deployments/<deployment_id>/rollback', methods=['GET', 'POST'])
+
+def web_deployment_rollback(deployment_id):
+    # Get Deployment
+    deployment = get_ghost_deployment(deployment_id)
+
+    app_id = deployment['app_id']
+    form = CommandAppForm(app_id)
+
+    form.command.data = 'rollback'
+    form.module_deploy_id.data = deployment_id
+
+    # Perform validation
+    if form.validate_on_submit():
+        message = create_ghost_job(app_id, form, headers)
+
+        return render_template('action_completed.html', message=message)
+
+    # Display default template in GET case
+    app = get_ghost_app(app_id)
+    return render_template('app_command.html', form=form, app=app)
