@@ -9,12 +9,11 @@
         </li>
     </ul>
 {% endblock %}"
-                <th>Revision</th>
-                <th>Commit</th>
-                <th>Timestamp</th>
-                
-                
+
 {% block page_content %}
+    {% set app = deployment['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
+    {% set job = deployment['job_id'] or {'_id': 'N/A', 'user': 'N/A', '_created': 'N/A', '_created': '_updated'} %}
+
     <div class="panel panel-default">
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
@@ -22,15 +21,15 @@
                 {{ ghost_display_field('deployment-id', 'Deployment', deployment['_id']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-app', 'Application', deployment.get('app_id', {}).get('_id', ''), '/web/apps/' + deployment.get('app_id', {}).get('_id', '')) }}</a>
-                {{ ghost_display_field('deployment-job', 'Job', deployment.get('job_id', {}).get('_id', ''), '/web/jobs/' + deployment.get('job_id', {}).get('_id', '')) }}</a>
+                {{ ghost_display_field('deployment-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id']) }}</a>
+                {{ ghost_display_field('deployment-job', 'Job', job['_id'], '/web/jobs/' + job['_id']) }}</a>
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-job__created', 'Created', deployment['job__created']) }}
-                {{ ghost_display_field('deployment-job__updated', 'Modified', deployment['job__updated']) }}
+                {{ ghost_display_field('deployment-job__created', 'Created', job['_created']) }}
+                {{ ghost_display_field('deployment-job__updated', 'Modified', job['_updated']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-job_user', 'user', deployment['job_user']) }}</a>
+                {{ ghost_display_field('deployment-job_user', 'user', job['user']) }}</a>
             </div>
             <div class="row">
                 {{ ghost_display_field('deployment-module', 'Module', deployment['module']) }}

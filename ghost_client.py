@@ -136,7 +136,8 @@ def get_ghost_jobs(query=None):
 
 def get_ghost_job(job_id):
     try:
-        result = requests.get(url_jobs + '/' + job_id, headers=headers, auth=current_user.auth)
+        url = url_jobs + '/' + job_id + '?embedded={"app_id": 1}'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
         job = result.json()
         handle_response_status_code(result.status_code)
     except:
@@ -202,7 +203,8 @@ def get_ghost_deployments(query=None):
 
 def get_ghost_deployment(deployment_id):
     try:
-        result = requests.get(url_deployments + '/' + deployment_id, headers=headers, auth=current_user.auth)
+        url = url_deployments + '/' + deployment_id + '?embedded={"app_id": 1, "job_id": 1}'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         deployment = result.json()
     except:

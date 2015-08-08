@@ -31,10 +31,10 @@
                     <a href="/web/deployments/{{ deployment['_id'] }}">{{ deployment['_id'] }}</a>
                 </td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/apps/{{ app.get('_id', '') }}">{{ app.get('name') }} ({{ app.get('env') }})</a>
+                    <a href="/web/apps/{{ app['_id'] }}">{{ app['name'] }} ({{ app['env'] }})</a>
                 </td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/jobs/{{ job.get('_id', '') }}">{{ job.get('_id', '') }}</a>
+                    <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
                     <br>
                     {{ job['user'] }}
                     <br>

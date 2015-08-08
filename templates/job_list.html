@@ -35,7 +35,7 @@
                     <br>
                     {{ job['_updated'] }}</td>
                 <td style="white-space:nowrap;">
-                    <a href="/web/apps/{{ app.get('_id', '') }}">{{ app.get('name') }} ({{ app.get('env') }})</a>
+                    <a href="/web/apps/{{ app['_id'] }}">{{ app['name'] }} ({{ app['env'] }})</a>
                 </td>
                 <td style="white-space:nowrap;">{{ job['command'] }}</td>
                 <td style="white-space:nowrap;">{{ job['status'] }}</td>

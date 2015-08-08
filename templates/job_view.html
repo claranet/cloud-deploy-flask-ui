@@ -11,6 +11,8 @@
 {% endblock %}"
 
 {% block page_content %}
+    {% set app = job['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
+
     <div class="panel panel-default">
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
@@ -23,8 +25,8 @@
                 {{ ghost_display_field('job-updated', 'Modified', job['_updated']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-env', 'Application', job.get('app_id', ''), '/web/apps/' + job.get('app_id', '')) }}</a>
-                {{ ghost_display_field('job-role', 'Command', job['command']) }}
+                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id']) }}</a>
+                {{ ghost_display_field('job-command', 'Command', job['command']) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-env', 'Status', job['status']) }}
