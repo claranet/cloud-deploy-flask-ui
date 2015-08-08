@@ -108,6 +108,18 @@
             ghost_update_ec2_vpcs($(this).val())
         });
 
+        function ghost_update_command_deploy_revision(module) {
+          $.ajax("command/module/" + module).done(function(data) {
+              // Update revision input default
+              $('#module_rev').val(data);
+          }).fail(function() {
+              alert("Failed to retrieve last deployed revision for module " + module);
+          });
+        }
+
+        $('select#module_name').change(function() {
+            ghost_update_command_deploy_revision($(this).val())
+        });
 
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
             var count = $("tr[data-" + entry_id_prefix + "]").size();

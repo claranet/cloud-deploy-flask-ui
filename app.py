@@ -76,7 +76,6 @@ def web_app_list():
     return render_template('app_list.html', apps=apps)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
-
 def web_app_create():
     form = CreateAppForm()
 
@@ -116,7 +115,6 @@ def web_app_view(app_id):
     return render_template('app_view.html', app=app)
 
 @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
-
 def web_app_edit(app_id):
     form = EditAppForm()
 
@@ -171,15 +169,17 @@ def web_app_command(app_id):
     # Display default template in GET case
     app = get_ghost_app(app_id)
 
-    # Use last deployment revision by default
-    deployments = get_ghost_deployments('{"app_id": "%s"}' % app_id)
-    if deployments and len(deployments) > 0:
-        form.module_rev.data = deployments[0]['revision']
-
     return render_template('app_command.html', form=form, app=app)
 
-@app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
+@app.route('/web/apps/<app_id>/command/module/<module>', methods=['GET', 'POST'])
+def web_app_module_last_revision(app_id, module):
+    last_revision = ''
+    deployments = get_ghost_deployments('{"app_id": "%s", "module": "%s"}' % (app_id, module))
+    if deployments and len(deployments) > 0:
+        last_revision = deployments[0].get('revision', '')
+    return last_revision
 
+@app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
 def web_app_delete(app_id):
     form = DeleteAppForm()
 
@@ -200,7 +200,6 @@ def web_app_delete(app_id):
     return render_template('app_delete.html', form=form, app=app)
 
 @app.route('/web/jobs')
-
 def web_job_list():
     query = request.args.get('where', None)
     jobs = get_ghost_jobs(query)
@@ -214,7 +213,6 @@ def web_job_view(job_id):
     return render_template('job_view.html', job=job)
 
 @app.route('/web/jobs/<job_id>/delete', methods=['GET', 'POST'])
-
 def web_job_delete(job_id):
     form = DeleteJobForm()
 
@@ -250,7 +248,6 @@ def web_deployments_view(deployment_id):
     return render_template('deployment_view.html', deployment=deployment)
 
 @app.route('/web/deployments/<deployment_id>/rollback', methods=['GET', 'POST'])
-
 def web_deployment_rollback(deployment_id):
     # Get Deployment
     deployment = get_ghost_deployment(deployment_id)
