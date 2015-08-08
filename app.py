@@ -170,6 +170,12 @@ def web_app_command(app_id):
 
     # Display default template in GET case
     app = get_ghost_app(app_id)
+
+    # Use last deployment revision by default
+    deployments = get_ghost_deployments('{"app_id": "%s"}' % app_id)
+    if deployments and len(deployments) > 0:
+        form.module_rev.data = deployments[0]['revision']
+
     return render_template('app_command.html', form=form, app=app)
 
 @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
