@@ -60,12 +60,12 @@ def test_ghost_auth(user):
     return requests.get(url_apps, headers=headers, auth=user.auth)
 
 
-def get_ghost_apps(auth, query=None):
+def get_ghost_apps(query=None):
     try:
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
         if query:
             url += "&where=" + query
-        result = requests.get(url, headers=headers, auth=auth)
+        result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         apps = result.json().get('_items', [])
         for app in apps:
@@ -112,12 +112,12 @@ def delete_ghost_app(app_id, local_headers):
     return do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
 
 
-def get_ghost_jobs(auth, query=None):
+def get_ghost_jobs(query=None):
     try:
         url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING
         if query:
             url += "&where=" + query
-        result = requests.get(url, headers=headers, auth=auth)
+        result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         jobs = result.json().get('_items', [])
         for job in jobs:
@@ -179,12 +179,12 @@ def delete_ghost_job(job_id, local_headers):
     return do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
 
 
-def get_ghost_deployments(auth, query=None):
+def get_ghost_deployments(query=None):
     try:
         url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING
         if query:
             url += "&where=" + query
-        result = requests.get(url, headers=headers, auth=auth)
+        result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         deployments = result.json().get('_items', [])
         for deployment in deployments:

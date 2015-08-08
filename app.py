@@ -1,6 +1,6 @@
 from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
-from flask.ext.login import LoginManager, UserMixin, current_user, login_required
+from flask.ext.login import LoginManager, UserMixin, login_required
 
 from base64 import b64decode
 import traceback
@@ -72,7 +72,7 @@ def web_vpcs_list(region_id):
 @app.route('/web/apps')
 def web_app_list():
     query = request.args.get('where', None)
-    apps = get_ghost_apps(current_user.auth, query)
+    apps = get_ghost_apps(query)
     return render_template('app_list.html', apps=apps)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
@@ -197,7 +197,7 @@ def web_app_delete(app_id):
 
 def web_job_list():
     query = request.args.get('where', None)
-    jobs = get_ghost_jobs(current_user.auth, query)
+    jobs = get_ghost_jobs(query)
     retrieve_app_data(jobs)
 
     return render_template('job_list.html', jobs=jobs)
@@ -233,7 +233,7 @@ def web_job_delete(job_id):
 @app.route('/web/deployments')
 def web_deployments_list():
     query = request.args.get('where', None)
-    deployments = get_ghost_deployments(current_user.auth, query)
+    deployments = get_ghost_deployments(query)
     retrieve_app_data(deployments)
     retrieve_job_data(deployments)
 
