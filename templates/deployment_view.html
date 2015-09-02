@@ -45,7 +45,7 @@
                 {{ ghost_display_field('deployment-commit', 'Commit', deployment['commit']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-commit_message', 'Message', deployment['commit_message']) }}
+                {{ ghost_display_field('deployment-commit_message', 'Message', deployment['commit_message'], None, 9) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('deployment-timestamp', 'Timestamp', deployment['timestamp']) }}

@@ -217,9 +217,9 @@
     {%- endif %}
 {%- endmacro %}
 
-{% macro ghost_display_field(id, name, value, href=None) -%}
+{% macro ghost_display_field(id, name, value, href=None, cols=3) -%}
     <label class="control-label col-md-3" for="{{ id }}">{{ name }}</label>
-    <div class="col-md-3" id="{{ id }}">
+    <div class="col-md-{{ cols }}" id="{{ id }}">
         {%- if href -%}<a href="{{ href }}">{%- endif -%}
         {{ value }}
         {%- if href -%}</a>{%- endif -%}
