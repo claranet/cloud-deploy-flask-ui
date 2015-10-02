@@ -102,10 +102,42 @@
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
         }
+        
+        function ghost_update_sgs(region) {
+          $('[id^=environment_infos-security_groups]').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/sg/ids").done(function(data) {
+              // Update SGs select input options
+              $.each(data, function(key, value) {
+                  $.each($('[id^=environment_infos-security_groups]'), function(index) {
+                    $(this).append('<option value=' + key + '>' + value + '</option>');
+                  });
+              });
+          }).fail(function() {
+              alert("Failed to retrieve Segurity Groups for region " + region);
+          });
+        }
 
+        function ghost_update_subnets(region, vpc_id) {
+          $('[id^=environment_infos-subnet]').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/subnet/ids").done(function(data) {
+              // Update Subnets select input options
+              $.each(data, function(key, value) {
+                  $.each($('[id^=environment_infos-subnet]'), function(index) {
+                    $(this).append('<option value=' + key + '>' + value + '</option>');
+                  });
+              });
+          }).fail(function() {
+              alert("Failed to retrieve Subnet for region " + region + " and VPC id "  + vpc_id);
+          });
+        }
+        
         $('select#region').change(function() {
-            ghost_update_ec2_instancetypes($(this).val())
-            ghost_update_ec2_vpcs($(this).val())
+            ghost_update_ec2_instancetypes($(this).val());
+            ghost_update_ec2_vpcs($(this).val());
+            ghost_update_sgs($(this).val());
+        });
+        $('select#vpc_id').change(function() {
+            ghost_update_subnets($('select#region').val(), $(this).val());
         });
 
         function ghost_update_command_deploy_revision(module) {

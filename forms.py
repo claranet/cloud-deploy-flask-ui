@@ -66,6 +66,21 @@ def get_aws_vpc_ids(region):
         traceback.print_exc()
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
+def get_aws_sg_ids(region):
+    try:
+        c = boto.ec2.connect_to_region(region)
+        sgs = c.get_all_security_groups()
+    except:
+        traceback.print_exc()
+    return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]
+
+def get_aws_subnet_ids(region, vpc_id):
+    try:
+        c = boto.vpc.connect_to_region(region)
+        subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
+    except:
+        traceback.print_exc()
+    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
 def get_aws_ec2_regions():
     regions = sorted(boto.ec2.regions(), key=lambda region: region.name)
@@ -189,14 +204,14 @@ class BuildInfosForm(Form):
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 class EnvironmentInfosForm(Form):
-    security_groups = FieldList(StringField('Security Group', validators=[
+    security_groups = FieldList(SelectField('Security Group', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['security_groups']['schema']['regex']
         )
     ]), min_entries=1)
 
-    subnet_ids = FieldList(StringField('Subnet ID', validators=[
+    subnet_ids = FieldList(SelectField('Subnet ID', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['subnet_ids']['schema']['regex']
