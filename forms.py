@@ -174,7 +174,7 @@ class BuildInfosForm(Form):
         )
     ])
 
-    subnet_id = StringField('AWS Subnet', validators=[
+    subnet_id = SelectField('AWS Subnet', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
@@ -604,6 +604,9 @@ class CreateAppForm(BaseAppForm):
         self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions()
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
+        self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
+        self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
+        self.environment_infos.subnet_ids[0].choices = [('', 'Please select VPC first')]
 
 
 class EditAppForm(BaseAppForm):
