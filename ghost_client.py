@@ -14,7 +14,7 @@ API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
 
 # FIXME: Static conf to externalize with Flask-Appconfig
-headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 url_apps = 'http://localhost:5000/apps'
 url_jobs = 'http://localhost:5000/jobs'
 url_deployments = 'http://localhost:5000/deployments'
