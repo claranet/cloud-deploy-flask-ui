@@ -5,7 +5,7 @@
 {% block page_header %}
     <ul class="nav nav-stacked">
         <li>
-            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
+            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
         </li>
     </ul>
 {% endblock %}"
@@ -13,7 +13,7 @@
 {% block page_content %}
     {% set app = job['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
 
-    <div class="panel panel-default">
+    <div class="panel panel-default jobview">
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
@@ -80,20 +80,20 @@
         </table>
     </div>
     <!-- Job log -->
-    <div class="panel panel-default">
+    <div class="panel panel-default jobview">
         <div class="panel-heading">Logs</div>
         <div id='log' class="panel-body"></div>
     </div>
     <script type="text/javascript"
         src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <!-- Get log content -->
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect();
         socket.on('connect', function() {
-            socket.emit('job_logging', {log_id: '{{ job['log_id'] }}' });
-    });
-    socket.on('job', function(data) {
-        $('#log').append(data + '<br>');
-    });
-    </script>
- 
+            socket.emit('job_logging', {log_id: "{{ job['log_id'] }}" });
+        });
+        socket.on('job', function(data) {
+            $('#log').append(data + '<br>');
+        });
+    </script> 
 {% endblock %}

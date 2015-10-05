@@ -68,6 +68,16 @@ span.index:after {
     background-color: #5cb85c;
 }
 
+/*JobView*/
+.jobview #log {
+    font-family: monospace;
+    color: white;
+    background: black;
+    height: 700px;
+    overflow: scroll;
+    position: relative;
+}
+
 /**
 ** Responsive
 **/
