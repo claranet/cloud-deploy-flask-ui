@@ -32,6 +32,45 @@ span.index:after {
 .sidebar-outer {
     position: relative;
 }
+
+.panel .row {
+  margin: 0;
+}
+
+/** 
+** OCR https://github.com/STuFF/ghostExt
+**  
+**/
+.apptable {
+    border: 3px solid #eee;
+}
+
+/*JobList*/
+.joblist tr td {
+    white-space: nowrap;
+}
+.joblist tr.env-prod {
+    background-color: rgba(217, 83, 79, 0.1);
+
+}
+.joblist tr.env-preprod {
+    background-color: rgba(51, 122, 183, 0.1);
+}
+
+.joblist th.status {
+    background-color: #333;
+    color: white;
+}
+.joblist th.status-failed {
+    background-color: #c9302c;
+}
+.joblist th.status-done {
+    background-color: #5cb85c;
+}
+
+/**
+** Responsive
+**/
 @media (min-width: 1770px) {
     .sidebar {
         position: fixed;
