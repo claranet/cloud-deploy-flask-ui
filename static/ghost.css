@@ -41,30 +41,32 @@ span.index:after {
 ** OCR https://github.com/STuFF/ghostExt
 **  
 **/
+
+/*AppList*/
 .apptable {
     border: 3px solid #eee;
 }
 
-/*JobList*/
-.joblist tr td {
+.tablelist tr td{
     white-space: nowrap;
 }
-.joblist tr.env-prod {
-    background-color: rgba(217, 83, 79, 0.1);
+
+.tablelist tr.env-prod {
+    background-color: #ede7f6;
 
 }
-.joblist tr.env-preprod {
-    background-color: rgba(51, 122, 183, 0.1);
+.tablelist tr.env-preprod {
+    background-color: #e0f2f1;
 }
 
-.joblist th.status {
+.tablelist th.status {
     background-color: #333;
     color: white;
 }
-.joblist th.status-failed {
+.tablelist th.status-failed {
     background-color: #c9302c;
 }
-.joblist th.status-done {
+.tablelist th.status-done {
     background-color: #5cb85c;
 }
 
