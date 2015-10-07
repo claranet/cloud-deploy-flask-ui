@@ -2,7 +2,9 @@ body {
   padding-top: 70px;
   padding-bottom: 30px;
 }
-
+.container[role=main] {
+    width: 100%;
+}
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
@@ -37,16 +39,15 @@ span.index:after {
   margin: 0;
 }
 
-/** 
-** OCR https://github.com/STuFF/ghostExt
-**  
-**/
-
 /*AppList*/
 .apptable {
     border: 3px solid #eee;
 }
+#createApp {
+    display: inline;
+}
 
+/*Generic List*/
 .tablelist tr td{
     white-space: nowrap;
 }
@@ -83,13 +84,6 @@ span.index:after {
 /**
 ** Responsive
 **/
-@media (min-width: 1770px) {
-    .sidebar {
-        position: fixed;
-        width: 372px
-    }
-}
-
 @media (max-width: 1769px) {
     .nav-stacked>li {
         float: left;
