@@ -47,14 +47,14 @@
                     <div>
                         {%- if app['features'] | length > 0 -%}
                             <abbr title="{{ app['features'] | map(attribute='name') | join(', ') }}">
-                                {{- app['features'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
+                                {{- app['features'] | map(attribute='name') | join(', ') | truncate(42, True) -}}
                             </abbr>
                         {%- endif %}
                     </div>
                     <div>
                         {%- if app['modules'] | length > 0 -%}
                             <abbr title="{{ app['modules'] | map(attribute='name') | join(', ') }}">
-                                {{- app['modules'] | map(attribute='name') | join(', ') | truncate(5, True) -}}
+                                {{- app['modules'] | map(attribute='name') | join(', ') | truncate(42, True) -}}
                             </abbr>
                         {%- endif %}
                     </div>
