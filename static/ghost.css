@@ -5,6 +5,11 @@ body {
 .container[role=main] {
     width: 100%;
 }
+.navbar-fixed-top {
+    -webkit-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+    -moz-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+    box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+}
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
@@ -75,7 +80,7 @@ span.index:after {
 .jobview #log {
     font-family: monospace;
     color: white;
-    background: black;
+    background: #222222;
     height: 700px;
     overflow: scroll;
     position: relative;
