@@ -66,10 +66,10 @@ def get_aws_vpc_ids(region):
         traceback.print_exc()
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
-def get_aws_sg_ids(region):
+def get_aws_sg_ids(region, vpc_id):
     try:
         c = boto.ec2.connect_to_region(region)
-        sgs = c.get_all_security_groups()
+        sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
         traceback.print_exc()
     return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]

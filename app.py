@@ -69,9 +69,9 @@ def web_ec2_instance_types_list(region_id):
 def web_vpcs_list(region_id):
     return jsonify(get_aws_vpc_ids(region_id))
 
-@app.route('/web/aws/regions/<region_id>/sg/ids')
-def web_sgs_list(region_id):
-    return jsonify(get_aws_sg_ids(region_id))
+@app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/sg/ids')
+def web_sgs_list(region_id, vpc_id):
+    return jsonify(get_aws_sg_ids(region_id, vpc_id))
 
 @app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
 def web_subnets_list(region_id, vpc_id):
@@ -100,7 +100,7 @@ def web_app_create():
         for subnet in form.environment_infos.subnet_ids:
             subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(form.region.data)
+            sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
     elif not form.is_submitted() and clone_from_app:
         form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
         form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
@@ -108,7 +108,7 @@ def web_app_create():
         for subnet in form.environment_infos.subnet_ids:
             subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(clone_from_app['region'])
+            sg.choices = get_aws_sg_ids(clone_from_app['region'], clone_from_app['vpc_id'])
 
     # Perform validation
     if form.validate_on_submit():
@@ -144,7 +144,7 @@ def web_app_edit(app_id):
         for subnet in form.environment_infos.subnet_ids:
             subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(form.region.data)
+            sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -179,7 +179,7 @@ def web_app_edit(app_id):
     for subnet in form.environment_infos.subnet_ids:
         subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
     for sg in  form.environment_infos.security_groups:
-        sg.choices = get_aws_sg_ids(form.region.data)    
+        sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)    
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=True)

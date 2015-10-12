@@ -103,9 +103,9 @@
           });
         }
         
-        function ghost_update_sgs(region) {
+        function ghost_update_sgs(region, vpc_id) {
           $('[id^=environment_infos-security_groups]').find('option').remove();
-          $.ajax("/web/aws/regions/" + region + "/sg/ids").done(function(data) {
+          $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/sg/ids").done(function(data) {
               // Update SGs select input options
               $.each(data, function(key, value) {
                   $.each($('[id^=environment_infos-security_groups]'), function(index) {
@@ -137,9 +137,9 @@
         $('select#region').change(function() {
             ghost_update_ec2_instancetypes($(this).val());
             ghost_update_ec2_vpcs($(this).val());
-            ghost_update_sgs($(this).val());
         });
         $('select#vpc_id').change(function() {
+            ghost_update_sgs($('select#region').val(), $(this).val());
             ghost_update_subnets($('select#region').val(), $(this).val());
         });
 
