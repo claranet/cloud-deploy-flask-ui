@@ -198,6 +198,20 @@
             reader.readAsText(dropEvent.dataTransfer.files[0],"UTF-8");
         }
     </script>
+    <script type="text/javascript">
+        var positionElementInPage = $('.sidebar').offset().top - 40;
+        $(window).scroll(
+            function() {
+                if ($(window).scrollTop() >= positionElementInPage) {
+                    // fixed
+                    $('.sidebar').addClass('navbar-fixed-top');
+                } else {
+                    // relative
+                    $('.sidebar').removeClass('navbar-fixed-top');
+                }
+            }
+        );
+    </script>
 {% endblock %}
 
 {% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
