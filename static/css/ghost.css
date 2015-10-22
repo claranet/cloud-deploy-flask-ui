@@ -76,6 +76,10 @@ span.index:after {
     background-color: #5cb85c;
 }
 
+.action-btns li a, .action-btns li {
+    display: inline-block;
+}
+
 /*JobView*/
 .jobview #log {
     font-family: monospace;
