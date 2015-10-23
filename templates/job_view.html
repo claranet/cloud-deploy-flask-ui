@@ -3,7 +3,7 @@
 {% set page_title = 'Job %s' % (job['job_id'] or job['_id'] or '-')  %}
 
 {% block page_header %}
-    <ul class="nav nav-stacked">
+    <ul class="nav nav-stacked action-btns">
         <li>
             <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
@@ -81,8 +81,14 @@
     </div>
     <!-- Job log -->
     <div class="panel panel-default jobview">
-        <div class="panel-heading">Logs</div>
-        <div id='log' class="panel-body"></div>
+        <div class="panel-heading logactions">
+            <span>Console Output</span>
+            <p>
+                <a href="#" id="logScrollTop"><button class="btn btn-default" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
+                <a href="#" id="logScrollBottom"><button class="btn btn-default" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
+            </p>
+        </div>
+        <div id="log" class="panel-body"></div>
     </div>
     <script type="text/javascript"
         src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
@@ -96,4 +102,18 @@
             $('#log').append(data + '<br>');
         });
     </script> 
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        $('#logScrollTop').click(function(evt) {
+            evt.preventDefault();
+            $('#log').animate({ scrollTop: 0 }, "slow");
+        });
+        $('#logScrollBottom').click(function(evt) {
+            evt.preventDefault();
+            $('#log').animate({ scrollTop: $('#log').get(0).scrollHeight }, "slow");
+        });
+    </script>
 {% endblock %}

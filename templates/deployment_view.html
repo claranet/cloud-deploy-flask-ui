@@ -3,7 +3,7 @@
 {% set page_title = 'Deployment %s' % (deployment['_id'] or '-')  %}
 
 {% block page_header %}
-    <ul class="nav nav-stacked">
+    <ul class="nav nav-stacked action-btns">
         <li>
             <a href="/web/deployments/{{ deployment['_id'] }}/rollback"><button class="btn btn-warning"><span class="glyphicon glyphicon-refresh"> Rollback</button></a>
         </li>

@@ -10,6 +10,11 @@ body {
     -moz-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
     box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
 }
+.navbar-fixed-top.no-shadow {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
@@ -48,6 +53,7 @@ span.index:after {
 .sidebar.navbar-fixed-top {
     top: 50px;
     background: white;
+    z-index: 999;
 }
 .sidebar.navbar-fixed-top h1 {
     font-size: 20px;
@@ -60,9 +66,6 @@ span.index:after {
 /*AppList*/
 .apptable {
     border: 3px solid #eee;
-}
-#createApp {
-    display: inline;
 }
 
 /*Generic List*/
@@ -95,12 +98,19 @@ span.index:after {
 
 /*JobView*/
 .jobview #log {
+    clear: both;
     font-family: monospace;
     color: white;
     background: #222222;
-    height: 700px;
+    height: 420px;
     overflow: scroll;
     position: relative;
+}
+.jobview .logactions {
+    padding-bottom: 20px;
+}
+.jobview .logactions p {
+    float: right;
 }
 
 /**
