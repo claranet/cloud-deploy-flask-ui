@@ -17,67 +17,64 @@
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
-                {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-') }}
-                {{ ghost_display_field('job-id', 'Technical ID', job['_id']) }}
+                {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-', cols=2) }}
+                {{ ghost_display_field('job-created', 'Created', job['_created'], cols=2) }}
+                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id'], cols=2) }}</a>
             </div>
             <div class="row">
-                {{ ghost_display_field('job-created', 'Created', job['_created']) }}
-                {{ ghost_display_field('job-updated', 'Modified', job['_updated']) }}
+                {{ ghost_display_field('job-id', 'Technical ID', job['_id'], cols=2) }}
+                {{ ghost_display_field('job-updated', 'Modified', job['_updated'], cols=2) }}
+                {{ ghost_display_field('job-command', 'Command', job['command'], cols=2) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id']) }}</a>
-                {{ ghost_display_field('job-command', 'Command', job['command']) }}
-            </div>
-            <div class="row">
-                {{ ghost_display_field('job-status', 'Status', job['status']) }}
+                {{ ghost_display_field('job-status', 'Status', job['status'], cols=2) }}
+                {{ ghost_display_field('job-role', 'User', job['user'], cols=2) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-message', 'Message', job['message'], None, 9) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-role', 'User', job['user']) }}
+                <table class="table col-md-6">
+                    <caption>Options</caption>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for option in job['options'] %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ option }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        
+                <table class="table col-md-6">
+                    <caption>Modules</caption>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Rev</th>
+                            <th>Deploy ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for module in job['modules'] %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ module['name'] }}</td>
+                                <td>{{ module['rev'] }}</td>
+                                <td>{{ module['deploy_id'] or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <table class="table">
-            <caption>Options</caption>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for option in job['options'] %}
-                    <tr>
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ option }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <table class="table">
-            <caption>Modules</caption>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Rev</th>
-                    <th>Deploy ID</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for module in job['modules'] %}
-                    <tr>
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ module['name'] }}</td>
-                        <td>{{ module['rev'] }}</td>
-                        <td>{{ module['deploy_id'] or '-' }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
     <!-- Job log -->
     <div class="panel panel-default jobview">
