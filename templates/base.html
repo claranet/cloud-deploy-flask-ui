@@ -239,12 +239,12 @@
         <td class="col-md-9">
             {% if entry.type == 'FormField' %}
                 {% for field in entry if not field.type == 'CSRFTokenField' %}
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder='TODO') }}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder='') }}
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
             {% else %}
-                {{ wtf.form_field(entry, form_type='horizontal', placeholder='TODO') }}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder='') }}
             {% endif %}
         </td>
         <td class="col-md-1">

@@ -80,6 +80,11 @@ span.index:after {
 }
 #left-menu .subnav li {
     list-style-type: decimal;
+    color:  #31B0D5;
+}
+#left-menu .subnav.env li {
+    list-style-type: disc;
+    color:  #31B0D5;
 }
 .anchor {
   display: block;
