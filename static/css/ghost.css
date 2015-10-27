@@ -75,7 +75,8 @@ span.index:after {
 #left-menu {
     width: 10%;
     height: 100%;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 #left-menu .subnav li {
     list-style-type: decimal;
