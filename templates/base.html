@@ -230,13 +230,13 @@
     </script>
 {% endblock %}
 
-{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
+{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type) -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
         <th scope="row" class="col-md-2">
             <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
             <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
         </th>
-        <td class="col-md-9">
+        <td class="col-md-9 {{ form_type }}">
             {% if entry.type == 'FormField' %}
                 {% for field in entry if not field.type == 'CSRFTokenField' %}
                     {{ wtf.form_field(field, form_type='horizontal', placeholder='') }}
@@ -248,8 +248,10 @@
             {% endif %}
         </td>
         <td class="col-md-1">
-            <a class="btn btn-default" title="Delete {{ entry_label }}"
-                onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">X</a>
+            <a class="btn btn-danger" title="Delete {{ entry_label }}"
+                onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
         </td>
     </tr>
 {%- endmacro %}
@@ -264,19 +266,19 @@
 </ul>
 {%- endmacro %}
 
-{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
+{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type) -%}
     <div class="panel panel-default">
         <div class="panel-heading" style="counter-reset: group_entry;">
             {{ group_label }}
-            <a class="btn btn-default" title="Add {{ entry_label }}"
+            <a class="btn btn-success" title="Add {{ entry_label }}"
                 onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">
-                +
+                <span class="glyphicon glyphicon-plus"></span>
             </a>
         </div>
         <table class="table" id="{{ group_id_prefix }}_list">
             <tbody>
             {% for entry in fieldlist %}
-                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index) }}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type) }}
             {% endfor %}
             </tbody>
         </table>

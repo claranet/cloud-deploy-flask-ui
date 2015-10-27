@@ -93,6 +93,15 @@ span.index:after {
   visibility: hidden;
 }
 
+/*AppEdit*/
+td.inline .form-group {
+    width: 50%;
+    float: left;    
+}
+td.inline {
+    clear: both;
+}
+
 /*AppList*/
 .apptable {
     border: 3px solid #eee;
