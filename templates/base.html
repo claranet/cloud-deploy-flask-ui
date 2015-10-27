@@ -200,25 +200,40 @@
     </script>
     <script type="text/javascript">
         var positionElementInPage = $('.sidebar').offset().top - 40;
-        $(window).scroll(
-            function() {
-                if ($(window).scrollTop() >= positionElementInPage) {
-                    // fixed
-                    $('.sidebar').addClass('navbar-fixed-top');
-                    $('#header').addClass('no-shadow');
-                } else {
-                    // relative
-                    $('.sidebar').removeClass('navbar-fixed-top');
-                    $('#header').removeClass('no-shadow');
-                }
+        function updateMenusPositions() {
+            if ($(window).scrollTop() >= positionElementInPage) {
+                // fixed
+                $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
+                $('.sidebar').addClass('navbar-fixed-top');
+                $('#header').addClass('no-shadow');
+            } else {
+                // relative
+                $('.sidebar').removeClass('navbar-fixed-top');
+                $('.sidebar').next().css('margin-top', '0');
+                $('#header').removeClass('no-shadow');
             }
-        );
+            if ($("#left-menu").length > 0) {
+                var headingHeight = $('.sidebar').next().offset().top;
+                $('#left-menu').css('height', ($(window).height()-headingHeight) + 'px');
+                $('#left-menu').css('top', headingHeight + 'px');
+            }
+        }
+        $(window).scroll(function() {
+            updateMenusPositions();
+        });
+        $(window).on('resize', function() {
+            updateMenusPositions();
+        });
+        $(document).ready(function() {
+            updateMenusPositions();
+        });
     </script>
 {% endblock %}
 
 {% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
         <th scope="row" class="col-md-2">
+            <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
             <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
         </th>
         <td class="col-md-9">
@@ -237,6 +252,16 @@
                 onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">X</a>
         </td>
     </tr>
+{%- endmacro %}
+
+{% macro ghost_menulist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
+<ul class="subnav">
+    {% for entry in fieldlist %}
+    <li>
+        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}">{{ entry.data['module_name'] }}</a>
+    </li>
+    {% endfor %}
+</ul>
 {%- endmacro %}
 
 {% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}

@@ -7,12 +7,37 @@
         <li>
         </li>
     </ul>
+    <ul class="nav navbar-fixed-left" id="left-menu">
+        <li>
+            <a href="#properties">Properties</a>
+        </li>
+        <li>
+            <a href="#autoscale">Autoscale</a>
+        </li>
+        <li>
+            <a href="#build-infos">Build-infos</a>
+        </li>
+        <li>
+            <a href="#env-infos">Environment Infos</a>
+        </li>
+        <li>
+            <a href="#root-block">Root Block Device</a>
+        </li>
+        <li>
+            <a href="#features">Features</a>
+        </li>
+        <li>
+            <a href="#modules">Modules</a>
+            {{ ghost_menulist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
+        </li>
+    </ul>
 {% endblock %}
 
 {% block page_content %}
-    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+    <form class="form-horizontal app-panel" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
+        <a name="properties" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Main properties
@@ -29,6 +54,7 @@
             </div>
         </div>
 
+        <a name="autoscale" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Autoscale
@@ -43,6 +69,7 @@
             </div>
         </div>
 
+        <a name="build-infos" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Build Infos
@@ -56,6 +83,7 @@
             </div>
         </div>
 
+        <a name="env-infos" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Environment Infos
@@ -66,6 +94,7 @@
                     {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal') }}
                 </div>
             </div>
+            <a name="root-block" class="anchor">&nbsp;</a>
             <div class="panel-heading">
                 Root Block Device
             </div>
@@ -81,7 +110,9 @@
         </div>
 
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification') }}
+        <a name="features" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature') }}
+        <a name="modules" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 
         {{ wtf.form_field(form.submit) }}

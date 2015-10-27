@@ -49,7 +49,7 @@ span.index:after {
   margin: 0;
 }
 
-/*fixed Sidebar*/
+/*fixed top sidebar*/
 .sidebar.navbar-fixed-top {
     top: 50px;
     background: white;
@@ -61,6 +61,30 @@ span.index:after {
 }
 .sidebar.navbar-fixed-top .action-btns li a, .action-btns li {
     padding: 5px;
+}
+
+/*fixed left-menu*/
+.navbar-fixed-left {
+    left: 0;
+    top:  200px;
+    position: fixed;
+}
+.app-panel {
+    margin-left: 10%;
+}
+#left-menu {
+    width: 10%;
+    height: 100%;
+    overflow: auto;
+}
+#left-menu .subnav li {
+    list-style-type: decimal;
+}
+.anchor {
+  display: block;
+  height: 140px; /*same height as header*/
+  margin-top: -140px; /*same height as header*/
+  visibility: hidden;
 }
 
 /*AppList*/

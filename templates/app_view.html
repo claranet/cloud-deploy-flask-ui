@@ -17,10 +17,37 @@
             <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
     </ul>
+    <ul class="nav navbar-fixed-left" id="left-menu">
+        <li>
+            <a href="#properties">Properties</a>
+        </li>
+        <li>
+            <a href="#aws">AWS</a>
+        </li>
+        <li>
+            <a href="#autoscale">Autoscale</a>
+        </li>
+        <li>
+            <a href="#build-infos">Build-infos</a>
+        </li>
+        <li>
+            <a href="#env-infos">Environment Infos</a>
+        </li>
+        <li>
+            <a href="#root-block">Root Block Device</a>
+        </li>
+        <li>
+            <a href="#features">Features</a>
+        </li>
+        <li>
+            <a href="#modules">Modules</a>
+        </li>
+    </ul>
 {% endblock %}
 
 {% block page_content %}
-    <div class="panel panel-default">
+    <div class="panel panel-default app-panel">
+        <a name="properties" class="anchor">&nbsp;</a>
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
@@ -39,6 +66,8 @@
                 {{ ghost_display_field('app-log_notifications', 'Log Notifications', ', '.join(app.get('log_notifications', []))) }}
             </div>
         </div>
+
+        <a name="aws" class="anchor">&nbsp;</a>
         <div class="panel-heading">AWS</div>
         <div class="panel-body">
             <div class="row">
@@ -50,6 +79,8 @@
                 {{ ghost_display_field('app-aws-ami', 'AWS AMI', app['ami']) }}
             </div>
         </div>
+
+        <a name="autoscale" class="anchor">&nbsp;</a>
         <div class="panel-heading">Autoscale</div>
         <div class="panel-body">
             <div class="row">
@@ -61,6 +92,8 @@
                 {{ ghost_display_field('app-autoscale-max', 'Max Value', app.get('autoscale', {})['max']) }}
             </div>
         </div>
+
+        <a name="build-infos" class="anchor">&nbsp;</a>
         <div class="panel-heading">Build Infos</div>
         <div class="panel-body">
             <div class="row">
@@ -72,6 +105,8 @@
                 {{ ghost_display_field('app-build_infos-subnet_id', 'Subnet ID', app.get('build_infos', {})['subnet_id']) }}
             </div>
         </div>
+
+        <a name="env-infos" class="anchor">&nbsp;</a>
         <div class="panel-heading">Environment Infos</div>
         <div class="panel-body">
             <div class="row">
@@ -83,6 +118,8 @@
                 {{ ghost_display_field('app-environment_infos-key_name', 'Key Name', app.get('environment_infos', {})['key_name']) }}
             </div>
         </div>
+
+        <a name="root-block" class="anchor">&nbsp;</a>
         <div class="panel-heading">Root Block Device</div>
         <div class="panel-body">
             <div class="row">
@@ -91,6 +128,7 @@
             </div>
         </div>
 
+        <a name="features" class="anchor">&nbsp;</a>
         <table class="table">
             <caption>Features</caption>
             <thead>
@@ -111,6 +149,7 @@
             </tbody>
         </table>
 
+        <a name="modules" class="anchor">&nbsp;</a>
         <table class="table">
             <caption>Modules</caption>
             <thead>
