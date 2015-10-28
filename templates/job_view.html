@@ -81,8 +81,9 @@
         <div class="panel-heading logactions">
             <span>Console Output</span>
             <p>
-                <a href="#" id="logScrollTop"><button class="btn btn-default" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
-                <a href="#" id="logScrollBottom"><button class="btn btn-default" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
+                <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
+                <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
+                <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
             </p>
         </div>
         <div id="log" class="panel-body"></div>
@@ -104,13 +105,42 @@
 {% block scripts %}
     {{ super() }}
     <script type="text/javascript">
+    (function() {
+        var scrollActivated = true;
+        var textScrolling =  'AutoScroll enabled';
+        var textNoScrolling =  'AutoScroll disabled';
+
         $('#logScrollTop').click(function(evt) {
             evt.preventDefault();
+            scrollActivated = false;
+            $('#logScrollBottom button').removeClass('active');
+            $('#scrollstate').html(textNoScrolling);
             $('#log').animate({ scrollTop: 0 }, "slow");
         });
         $('#logScrollBottom').click(function(evt) {
             evt.preventDefault();
+            scrollActivated = !scrollActivated;
+            if (scrollActivated) {
+                $('#logScrollBottom button').addClass('active');
+                $('#scrollstate').html(textScrolling);
+            } else {
+                $('#logScrollBottom button').removeClass('active');
+                $('#scrollstate').html(textNoScrolling);
+            }
             $('#log').animate({ scrollTop: $('#log').get(0).scrollHeight }, "slow");
         });
+
+        if (scrollActivated) {
+            $('#logScrollBottom button').addClass('active');
+            $('#scrollstate').html(textScrolling);
+        }
+
+        setInterval(function () {
+            if (scrollActivated) {
+                $('#log').scrollTop(999999999999);
+            }
+        }, 1000);
+
+    })();
     </script>
 {% endblock %}
