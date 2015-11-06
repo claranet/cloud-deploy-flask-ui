@@ -1,4 +1,4 @@
-from flask import flash
+from flask import flash, Markup
 from flask.ext.login import current_user
 from werkzeug.exceptions import default_exceptions
 from eve import RFC1123_DATE_FORMAT
@@ -24,14 +24,14 @@ def format_success_message(success_message, result):
     """
     >>> result = {"_updated": "Thu, 25 Jun 2015 16:35:27 GMT", "_links": {"self": {"href": "jobs/558c2dcf745f423d9babf52d", "title": "job"}}, "_created": "Thu, 25 Jun 2015 16:35:27 GMT", "_status": "OK", "_id": "558c2dcf745f423d9babf52d", "_etag": "6297ef1e01d45784fa7086191306c4986d4ba8a0"}
     >>> format_success_message("success_message", result)
-    "success_message: <a href='/web/jobs/558c2dcf745f423d9babf52d' title='job'>jobs/558c2dcf745f423d9babf52d</a>"
+    Markup(u"success_message: <a href='/web/jobs/558c2dcf745f423d9babf52d' title='job'>jobs/558c2dcf745f423d9babf52d</a>")
     """
     formatted_message = success_message
     links = result.get('_links', [])
     if 'self' in links:
         link = links['self']
         formatted_message += ": <a href='/web/{href}' title='{title}'>{href}</a>".format(href=link.get('href', ''), title=link.get('title', ''))
-    return formatted_message
+    return Markup(formatted_message)
 
 def do_request(method, url, data, headers, success_message, failure_message):
     try:
