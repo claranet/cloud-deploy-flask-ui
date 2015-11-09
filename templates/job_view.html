@@ -92,7 +92,7 @@
             socket.emit('job_logging', {log_id: '{{ job['log_id'] }}' });
     });
     socket.on('job', function(data) {
-        $('#log').append(data + '<br>');
+        $('#log').append(data);
     });
     </script>
  
