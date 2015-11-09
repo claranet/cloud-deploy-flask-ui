@@ -88,12 +88,14 @@
         src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect({transports: ['websocket']});
+        var last_pos = 0;
         socket.on('connect', function() {
-            socket.emit('job_logging', {log_id: '{{ job['log_id'] }}' });
-    });
-    socket.on('job', function(data) {
-        $('#log').append(data);
-    });
+            socket.emit('job_logging', {log_id: '{{ job['log_id'] }}', last_pos: last_pos });
+        });
+        socket.on('job', function(data) {
+            last_pos = data['last_pos'];
+            $('#log').append(data['html']);
+        });
     </script>
  
 {% endblock %}
