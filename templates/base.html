@@ -163,6 +163,9 @@
             reader.readAsText(dropEvent.dataTransfer.files[0],"UTF-8");
         }
     </script>
+
+    {% block page_scripts %}
+    {% endblock %}
 {% endblock %}
 
 {% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
