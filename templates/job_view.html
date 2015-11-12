@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Job %s' % (job['job_id'] or job['_id'] or '-')  %}
+{% set page_title = 'Job %s' % (job['_id'] or '-')  %}
 
 {% block page_header %}
     <ul class="nav nav-stacked">
@@ -17,8 +17,7 @@
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
-                {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-') }}
-                {{ ghost_display_field('job-id', 'Technical ID', job['_id']) }}
+                {{ ghost_display_field('job-id', 'Job ID', job['_id']) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-created', 'Created', job['_created']) }}

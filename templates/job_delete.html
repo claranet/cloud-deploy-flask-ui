@@ -7,7 +7,7 @@
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
-        <h2>Delete {{ job['job_id'] }}?</h2>
+        <h2>Delete {{ job['_id'] }}?</h2>
 
         {{ wtf.form_field(form.confirmation, form_type='horizontal') }}
 
