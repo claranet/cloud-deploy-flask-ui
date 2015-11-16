@@ -165,7 +165,12 @@ class AutoscaleForm(Form):
 
 
 class BuildInfosForm(Form):
-    ssh_username = StringField('SSH Username', validators=[DataRequiredValidator()])
+    ssh_username = StringField('SSH Username', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
+        )
+    ])
 
     source_ami = StringField('Source AWS AMI', validators=[
         DataRequiredValidator(),
@@ -218,9 +223,19 @@ class EnvironmentInfosForm(Form):
         )
     ]), min_entries=1)
 
-    instance_profile = StringField('Instance Profile', validators=[])
+    instance_profile = StringField('Instance Profile', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
+        )
+    ])
 
-    key_name = StringField('Key Name', validators=[])
+    key_name = StringField('Key Name', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['key_name']['regex']
+        )
+    ])
 
     root_block_device_size = IntegerField('Size (GiB)', validators=[
         OptionalValidator(),
@@ -304,9 +319,19 @@ class FeatureForm(Form):
 
 
 class ModuleForm(Form):
-    module_name = StringField('Name', validators=[DataRequiredValidator()])
+    module_name = StringField('Name', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['modules']['schema']['schema']['name']['regex']
+        )
+    ])
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
-    module_path = StringField('Path', validators=[DataRequiredValidator()])
+    module_path = StringField('Path', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['modules']['schema']['schema']['path']['regex']
+        )
+    ])
     module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
     module_build_pack = TextAreaField('Build Pack', validators=[])
     module_pre_deploy = TextAreaField('Pre Deploy', validators=[])
