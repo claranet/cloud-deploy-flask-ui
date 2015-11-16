@@ -109,13 +109,14 @@
         var scrollActivated = true;
         var textScrolling =  'AutoScroll enabled';
         var textNoScrolling =  'AutoScroll disabled';
+        var $log = $('#log');
 
         $('#logScrollTop').click(function(evt) {
             evt.preventDefault();
             scrollActivated = false;
             $('#logScrollBottom button').removeClass('active');
             $('#scrollstate').html(textNoScrolling);
-            $('#log').animate({ scrollTop: 0 }, "slow");
+            $log.animate({ scrollTop: 0 }, "slow");
         });
         $('#logScrollBottom').click(function(evt) {
             evt.preventDefault();
@@ -127,7 +128,7 @@
                 $('#logScrollBottom button').removeClass('active');
                 $('#scrollstate').html(textNoScrolling);
             }
-            $('#log').animate({ scrollTop: $('#log').get(0).scrollHeight }, "slow");
+            $log.animate({ scrollTop: $log.get(0).scrollHeight }, "slow");
         });
 
         if (scrollActivated) {
@@ -137,7 +138,7 @@
 
         setInterval(function () {
             if (scrollActivated) {
-                $('#log').scrollTop(999999999999);
+                $('#log').scrollTop($log.get(0).scrollHeight);
             }
         }, 1000);
 
