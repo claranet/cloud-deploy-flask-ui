@@ -86,6 +86,10 @@ span.index:after {
     list-style-type: disc;
     color:  #31B0D5;
 }
+#left-menu li.quick-submit {
+    padding: 20px 0;
+    text-align: center;
+}
 .anchor {
   display: block;
   height: 140px; /*same height as header*/
