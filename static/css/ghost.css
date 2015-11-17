@@ -124,8 +124,13 @@ td.inline {
     background-color: #ffcdd2;
 
 }
+.tablelist tr.env-staging,
 .tablelist tr.env-preprod {
     background-color: #e0f2f1;
+}
+.tablelist tr.env-dev,
+.tablelist tr.env-demo {
+    background-color: #fff9c4;
 }
 
 .tablelist th.status {
