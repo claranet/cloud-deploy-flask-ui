@@ -170,7 +170,7 @@ class BuildInfosForm(Form):
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
         )
-    ])
+    ], default='admin')
 
     source_ami = StringField('Source AWS AMI', validators=[
         DataRequiredValidator(),
