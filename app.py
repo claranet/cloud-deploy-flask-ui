@@ -13,7 +13,7 @@ from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import DeleteJobForm
-from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids
+from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids
 
 # Web UI App
 app = Flask(__name__)
@@ -76,6 +76,10 @@ def web_sgs_list(region_id, vpc_id):
 @app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
 def web_subnets_list(region_id, vpc_id):
     return jsonify(get_aws_subnet_ids(region_id, vpc_id))
+
+@app.route('/web/aws/regions/<region_id>/ami/ids')
+def web_amis_list(region_id):
+    return jsonify(get_aws_ami_ids(region_id))
 
 @app.route('/web/apps')
 def web_app_list():

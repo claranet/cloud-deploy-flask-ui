@@ -134,9 +134,24 @@
           });
         }
         
+        function ghost_update_amis(region) {
+          $('[id^=build_infos-source_ami]').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/ami/ids").done(function(data) {
+              // Update AMIs select input options
+              $.each(data, function(key, value) {
+                  $.each($('[id^=build_infos-source_ami]'), function(index) {
+                    $(this).append('<option value=' + key + '>' + value + '</option>');
+                  });
+              });
+          }).fail(function() {
+              alert("Failed to retrieve AMIs");
+          });
+        }
+
         $('select#region').change(function() {
             ghost_update_ec2_instancetypes($(this).val());
             ghost_update_ec2_vpcs($(this).val());
+            ghost_update_amis($(this).val());
         });
         $('select#vpc_id').change(function() {
             ghost_update_sgs($('select#region').val(), $(this).val());

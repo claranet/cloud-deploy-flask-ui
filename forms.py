@@ -74,6 +74,19 @@ def get_aws_sg_ids(region, vpc_id):
         traceback.print_exc()
     return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]
 
+def get_aws_ami_ids(region):
+    try:
+        c = boto.ec2.connect_to_region(region)
+        amis = c.get_all_images(
+            filters={
+                'image_type': 'machine',
+                'is-public': 'false'
+            }
+        )
+    except:
+        traceback.print_exc()
+    return [(ami.id, ami.id + ' (' + ami.name + ')') for ami in amis]
+
 def get_aws_subnet_ids(region, vpc_id):
     try:
         c = boto.vpc.connect_to_region(region)
@@ -167,7 +180,7 @@ class AutoscaleForm(Form):
 class BuildInfosForm(Form):
     ssh_username = StringField('SSH Username', validators=[DataRequiredValidator()])
 
-    source_ami = StringField('Source AWS AMI', validators=[
+    source_ami = SelectField('Source AWS AMI', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
