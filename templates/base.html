@@ -98,6 +98,7 @@
               $.each(data,function(key, value) {
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#vpc_id').change();
           }).fail(function() {
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
