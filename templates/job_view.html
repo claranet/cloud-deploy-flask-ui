@@ -19,7 +19,7 @@
             <div class="row">
                 {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-', cols=2) }}
                 {{ ghost_display_field('job-created', 'Created', job['_created'], cols=2) }}
-                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id'], cols=2) }}</a>
+                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id'], cols=2) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-id', 'Technical ID', job['_id'], cols=2) }}
@@ -27,16 +27,8 @@
                 {{ ghost_display_field('job-command', 'Command', job['command'], cols=2) }}
             </div>
             <div class="row">
-<<<<<<< HEAD
                 {{ ghost_display_field('job-status', 'Status', job['status'], cols=2) }}
                 {{ ghost_display_field('job-role', 'User', job['user'], cols=2) }}
-=======
-                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id']) }}
-                {{ ghost_display_field('job-command', 'Command', job['command']) }}
-            </div>
-            <div class="row">
-                {{ ghost_display_field('job-status', 'Status', job['status']) }}
->>>>>>> dev
             </div>
             <div class="row">
                 {{ ghost_display_field('job-message', 'Message', job['message'], None, 9) }}
