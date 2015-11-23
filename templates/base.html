@@ -246,7 +246,7 @@
     </script>
 {% endblock %}
 
-{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type) -%}
+{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='') -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
         <th scope="row" class="col-md-2">
             <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
@@ -255,12 +255,12 @@
         <td class="col-md-9 {{ form_type }}">
             {% if entry.type == 'FormField' %}
                 {% for field in entry if not field.type == 'CSRFTokenField' %}
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder='') }}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
             {% else %}
-                {{ wtf.form_field(entry, form_type='horizontal', placeholder='') }}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
             {% endif %}
         </td>
         <td class="col-md-1">
@@ -276,13 +276,13 @@
 <ul class="subnav">
     {% for entry in fieldlist %}
     <li>
-        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}">{{ entry.data['module_name'] }}</a>
+        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}">{{ entry.data['module_name'] or 'New module' }}</a>
     </li>
     {% endfor %}
 </ul>
 {%- endmacro %}
 
-{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type) -%}
+{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='') -%}
     <div class="panel panel-default">
         <div class="panel-heading" style="counter-reset: group_entry;">
             {{ group_label }}
@@ -294,7 +294,7 @@
         <table class="table" id="{{ group_id_prefix }}_list">
             <tbody>
             {% for entry in fieldlist %}
-                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type) }}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder) }}
             {% endfor %}
             </tbody>
         </table>

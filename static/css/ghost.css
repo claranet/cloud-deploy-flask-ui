@@ -86,6 +86,10 @@ span.index:after {
     list-style-type: disc;
     color:  #31B0D5;
 }
+#left-menu li.quick-submit {
+    padding: 20px 0;
+    text-align: center;
+}
 .anchor {
   display: block;
   height: 140px; /*same height as header*/
@@ -120,8 +124,13 @@ td.inline {
     background-color: #ffcdd2;
 
 }
+.tablelist tr.env-staging,
 .tablelist tr.env-preprod {
     background-color: #e0f2f1;
+}
+.tablelist tr.env-dev,
+.tablelist tr.env-demo {
+    background-color: #fff9c4;
 }
 
 .tablelist th.status {
@@ -154,6 +163,11 @@ td.inline {
 }
 .jobview .logactions p {
     float: right;
+}
+
+/*Command*/
+.command_options {
+    margin: 10px 0;
 }
 
 /**

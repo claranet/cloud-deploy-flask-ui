@@ -38,17 +38,23 @@
             </ul>
         </li>
         <li>
+            <a href="#notifs">Notifications</a>
+        </li>
+        <li>
             <a href="#features">Features</a>
         </li>
         <li>
             <a href="#modules">Modules</a>
             {{ ghost_menulist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
         </li>
+        <li class="quick-submit">
+            <button class="btn btn-info btn-xs"><span class="glyphicon glyphicon-ok"></span> {{ form.submit.label.text }}</button>
+        </li>
     </ul>
 {% endblock %}
 
 {% block page_content %}
-    <form class="form-horizontal app-panel" method="POST" enctype="multipart/form-data">
+    <form class="form-horizontal app-panel" id="app-form" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
         <a name="properties" class="anchor">&nbsp;</a>
@@ -139,7 +145,8 @@
             </div>
         </div>
 
-        {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification') }}
+        <a name="notifs" class="anchor">&nbsp;</a>
+        {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification', html_placeholder='ghost-devops@morea.fr') }}
         <a name="features" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
         <a name="modules" class="anchor">&nbsp;</a>
@@ -147,4 +154,16 @@
 
         {{ wtf.form_field(form.submit) }}
     </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+    (function() {
+        $('.quick-submit').click(function (evt) {
+            evt.preventDefault();
+            $('#app-form #submit').click();
+        });
+    })();
+    </script>
 {% endblock %}
