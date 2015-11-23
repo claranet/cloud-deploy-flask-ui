@@ -116,7 +116,7 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            {{ wtf.form_field(form.environment_infos.form.instance_profile, form_type='horizontal', placeholder='arn:aws:iam::xxxxxx') }}
+                            {{ wtf.form_field(form.environment_infos.form.instance_profile, form_type='horizontal', placeholder='The name or the Amazon Resource Name (arn:aws:iam::xxxxxx) of the instance profile associated with the IAM role for the instance') }}
                             {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal', placeholder='my_key') }}
                         </div>
                     </div>
