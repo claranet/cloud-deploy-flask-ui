@@ -27,8 +27,16 @@
                 {{ ghost_display_field('job-command', 'Command', job['command'], cols=2) }}
             </div>
             <div class="row">
+<<<<<<< HEAD
                 {{ ghost_display_field('job-status', 'Status', job['status'], cols=2) }}
                 {{ ghost_display_field('job-role', 'User', job['user'], cols=2) }}
+=======
+                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id']) }}
+                {{ ghost_display_field('job-command', 'Command', job['command']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('job-status', 'Status', job['status']) }}
+>>>>>>> dev
             </div>
             <div class="row">
                 {{ ghost_display_field('job-message', 'Message', job['message'], None, 9) }}
@@ -88,18 +96,24 @@
         </div>
         <div id="log" class="panel-body"></div>
     </div>
+{% endblock %}
+
+{% block page_scripts %}
     <script type="text/javascript"
-        src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-    <!-- Get log content -->
+        src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-        var socket = io.connect();
-        socket.on('connect', function() {
-            socket.emit('job_logging', {log_id: "{{ job['log_id'] }}" });
+        $(document).ready(function() {
+            var socket = io.connect({transports: ['websocket']});
+            var last_pos = 0;
+            socket.on('connect', function() {
+                socket.emit('job_logging', {log_id: '{{ job['log_id'] }}', last_pos: last_pos });
+            });
+            socket.on('job', function(data) {
+                last_pos = data['last_pos'];
+                $('#log').append(data['html']);
+            });
         });
-        socket.on('job', function(data) {
-            $('#log').append(data + '<br>');
-        });
-    </script> 
+    </script>
 {% endblock %}
 
 {% block scripts %}

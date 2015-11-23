@@ -37,7 +37,7 @@
                     <!-- li><a href="#about">About</a></li -->
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" class="">{% if current_user.is_authenticated() %}Hi {{ current_user.id }}!{% endif %}</a></li>
+                    <li><a href="#" class="">{% if current_user.is_authenticated %}Hi {{ current_user.id }}!{% endif %}</a></li>
                 </ul>
             </div>
         </div>
@@ -214,6 +214,7 @@
             reader.readAsText(dropEvent.dataTransfer.files[0],"UTF-8");
         }
     </script>
+
     <script type="text/javascript">
         var positionElementInPage = $('.sidebar').offset().top - 20;
         function updateMenusPositions() {
@@ -244,6 +245,10 @@
             updateMenusPositions();
         });
     </script>
+
+    {% block page_scripts %}
+    {% endblock %}
+
 {% endblock %}
 
 {% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='') -%}
