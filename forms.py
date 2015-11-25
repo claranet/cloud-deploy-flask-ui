@@ -66,6 +66,34 @@ def get_aws_vpc_ids(region):
         traceback.print_exc()
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
+def get_aws_sg_ids(region, vpc_id):
+    try:
+        c = boto.ec2.connect_to_region(region)
+        sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
+    except:
+        traceback.print_exc()
+    return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]
+
+def get_aws_ami_ids(region):
+    try:
+        c = boto.ec2.connect_to_region(region)
+        amis = c.get_all_images(
+            filters={
+                'image_type': 'machine',
+                'is-public': 'false'
+            }
+        )
+    except:
+        traceback.print_exc()
+    return [(ami.id, ami.id + ' (' + ami.name + ')') for ami in amis]
+
+def get_aws_subnet_ids(region, vpc_id):
+    try:
+        c = boto.vpc.connect_to_region(region)
+        subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
+    except:
+        traceback.print_exc()
+    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
 def get_aws_ec2_regions():
     regions = sorted(boto.ec2.regions(), key=lambda region: region.name)
@@ -150,16 +178,21 @@ class AutoscaleForm(Form):
 
 
 class BuildInfosForm(Form):
-    ssh_username = StringField('SSH Username', validators=[DataRequiredValidator()])
+    ssh_username = StringField('SSH Username', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
+        )
+    ], default='admin')
 
-    source_ami = StringField('Source AWS AMI', validators=[
+    source_ami = SelectField('Source AWS AMI', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
         )
     ])
 
-    subnet_id = StringField('AWS Subnet', validators=[
+    subnet_id = SelectField('AWS Subnet', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
@@ -189,23 +222,33 @@ class BuildInfosForm(Form):
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 class EnvironmentInfosForm(Form):
-    security_groups = FieldList(StringField('Security Group', validators=[
+    security_groups = FieldList(SelectField('Security Group', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['security_groups']['schema']['regex']
         )
     ]), min_entries=1)
 
-    subnet_ids = FieldList(StringField('Subnet ID', validators=[
+    subnet_ids = FieldList(SelectField('Subnet ID', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['subnet_ids']['schema']['regex']
         )
     ]), min_entries=1)
 
-    instance_profile = StringField('Instance Profile', validators=[])
+    instance_profile = StringField('Instance Profile', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
+        )
+    ])
 
-    key_name = StringField('Key Name', validators=[])
+    key_name = StringField('Key Name', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['environment_infos']['schema']['key_name']['regex']
+        )
+    ])
 
     root_block_device_size = IntegerField('Size (GiB)', validators=[
         OptionalValidator(),
@@ -289,9 +332,19 @@ class FeatureForm(Form):
 
 
 class ModuleForm(Form):
-    module_name = StringField('Name', validators=[DataRequiredValidator()])
+    module_name = StringField('Name', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['modules']['schema']['schema']['name']['regex']
+        )
+    ])
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
-    module_path = StringField('Path', validators=[DataRequiredValidator()])
+    module_path = StringField('Path', validators=[
+        DataRequiredValidator(),
+        RegexpValidator(
+            ghost_app_schema['modules']['schema']['schema']['path']['regex']
+        )
+    ])
     module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
     module_build_pack = TextAreaField('Build Pack', validators=[])
     module_pre_deploy = TextAreaField('Pre Deploy', validators=[])
@@ -589,6 +642,10 @@ class CreateAppForm(BaseAppForm):
         self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions()
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
+        self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
+        self.build_infos.source_ami.choices = [('', 'Please select region first')]
+        self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
+        self.environment_infos.subnet_ids[0].choices = [('', 'Please select VPC first')]
 
 
 class EditAppForm(BaseAppForm):
@@ -615,9 +672,9 @@ class EditAppForm(BaseAppForm):
 
 class CommandAppForm(Form):
     command = SelectField('Command', validators=[DataRequiredValidator()], choices=get_ghost_job_commands())
-    module_name = SelectField('Module name<br>(deploy only)', validators=[])
-    module_rev = StringField('Module revision<br>(deploy only)', validators=[])
-    module_deploy_id = StringField('Deploy ID<br>(rollback only)', validators=[])
+    module_name = SelectField('Module name', validators=[])
+    module_rev = StringField('Module revision', validators=[])
+    module_deploy_id = StringField('Deploy ID', validators=[])
 
     submit = SubmitField('Run Application Command')
 

@@ -6,11 +6,11 @@
 
 {% block styles %}
     {{super()}}
-    <link rel="stylesheet" href="{{url_for('.static', filename='ghost.css')}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}">
 {% endblock %}
 
 {% block navbar %}
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav id="header" class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -66,7 +66,7 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js"></script>
     <script>
         $(document).ready(function() {
             $('textarea').autosize();
@@ -98,14 +98,65 @@
               $.each(data,function(key, value) {
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#vpc_id').change();
           }).fail(function() {
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
         }
+        
+        function ghost_update_sgs(region, vpc_id) {
+          $('[id^=environment_infos-security_groups]').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/sg/ids").done(function(data) {
+              // Update SGs select input options
+              $.each(data, function(key, value) {
+                  $.each($('[id^=environment_infos-security_groups]'), function(index) {
+                    $(this).append('<option value=' + key + '>' + value + '</option>');
+                  });
+              });
+          }).fail(function() {
+              alert("Failed to retrieve Segurity Groups for region " + region);
+          });
+        }
+
+        function ghost_update_subnets(region, vpc_id) {
+          $('[id^=environment_infos-subnet]').find('option').remove();
+          $('#build_infos-subnet_id').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/subnet/ids").done(function(data) {
+              // Update Subnets select input options
+              $.each(data, function(key, value) {
+                  $('#build_infos-subnet_id').append('<option value=' + key + '>' + value + '</option>');
+                  $.each($('[id^=environment_infos-subnet]'), function(index) {
+                    $(this).append('<option value=' + key + '>' + value + '</option>');
+                  });
+                  
+              });
+          }).fail(function() {
+              alert("Failed to retrieve Subnet for region " + region + " and VPC id "  + vpc_id);
+          });
+        }
+        
+        function ghost_update_amis(region) {
+          $('[id^=build_infos-source_ami]').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/ami/ids").done(function(data) {
+              // Update AMIs select input options
+              $.each(data, function(key, value) {
+                  $.each($('[id^=build_infos-source_ami]'), function(index) {
+                    $(this).append('<option value=' + key + '>' + value + '</option>');
+                  });
+              });
+          }).fail(function() {
+              alert("Failed to retrieve AMIs");
+          });
+        }
 
         $('select#region').change(function() {
-            ghost_update_ec2_instancetypes($(this).val())
-            ghost_update_ec2_vpcs($(this).val())
+            ghost_update_ec2_instancetypes($(this).val());
+            ghost_update_ec2_vpcs($(this).val());
+            ghost_update_amis($(this).val());
+        });
+        $('select#vpc_id').change(function() {
+            ghost_update_sgs($('select#region').val(), $(this).val());
+            ghost_update_subnets($('select#region').val(), $(this).val());
         });
 
         function ghost_update_command_deploy_revision(module) {
@@ -164,46 +215,91 @@
         }
     </script>
 
+    <script type="text/javascript">
+        var positionElementInPage = $('.sidebar').offset().top - 20;
+        function updateMenusPositions() {
+            if ($(window).scrollTop() >= positionElementInPage) {
+                // fixed
+                $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
+                $('.sidebar').addClass('navbar-fixed-top');
+                $('#header').addClass('no-shadow');
+            } else {
+                // relative
+                $('.sidebar').removeClass('navbar-fixed-top');
+                $('.sidebar').next().css('margin-top', '0');
+                $('#header').removeClass('no-shadow');
+            }
+            if ($("#left-menu").length > 0) {
+                var headingHeight = $('.sidebar').next().offset().top;
+                $('#left-menu').css('height', ($(window).height()-headingHeight) + 'px');
+                $('#left-menu').css('top', headingHeight + 'px');
+            }
+        }
+        $(window).scroll(function() {
+            updateMenusPositions();
+        });
+        $(window).on('resize', function() {
+            updateMenusPositions();
+        });
+        $(document).ready(function() {
+            updateMenusPositions();
+        });
+    </script>
+
     {% block page_scripts %}
     {% endblock %}
+
 {% endblock %}
 
-{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index) -%}
+{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='') -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
         <th scope="row" class="col-md-2">
+            <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
             <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
         </th>
-        <td class="col-md-9">
+        <td class="col-md-9 {{ form_type }}">
             {% if entry.type == 'FormField' %}
                 {% for field in entry if not field.type == 'CSRFTokenField' %}
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder='TODO') }}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
             {% else %}
-                {{ wtf.form_field(entry, form_type='horizontal', placeholder='TODO') }}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
             {% endif %}
         </td>
         <td class="col-md-1">
-            <a class="btn btn-default" title="Delete {{ entry_label }}"
-                onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">X</a>
+            <a class="btn btn-danger" title="Delete {{ entry_label }}"
+                onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
         </td>
     </tr>
 {%- endmacro %}
 
-{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
+{% macro ghost_menulist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
+<ul class="subnav">
+    {% for entry in fieldlist %}
+    <li>
+        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}">{{ entry.data['module_name'] or 'New module' }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='') -%}
     <div class="panel panel-default">
         <div class="panel-heading" style="counter-reset: group_entry;">
             {{ group_label }}
-            <a class="btn btn-default" title="Add {{ entry_label }}"
+            <a class="btn btn-success" title="Add {{ entry_label }}"
                 onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">
-                +
+                <span class="glyphicon glyphicon-plus"></span>
             </a>
         </div>
         <table class="table" id="{{ group_id_prefix }}_list">
             <tbody>
             {% for entry in fieldlist %}
-                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index) }}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder) }}
             {% endfor %}
             </tbody>
         </table>
@@ -221,8 +317,8 @@
 {%- endmacro %}
 
 {% macro ghost_display_field(id, name, value, href=None, cols=3) -%}
-    <label class="control-label col-md-3" for="{{ id }}">{{ name }}</label>
-    <div class="col-md-{{ cols }}" id="{{ id }}">
+    <label class="control-label col-md-{{ cols-1 }}" for="{{ id }}">{{ name }}</label>
+    <div class="col-md-{{ cols+1 }}" id="{{ id }}">
         {%- if href -%}<a href="{{ href }}">{%- endif -%}
         {{ value }}
         {%- if href -%}</a>{%- endif -%}

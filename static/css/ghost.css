@@ -1,0 +1,180 @@
+body {
+  padding-top: 70px;
+  padding-bottom: 30px;
+}
+.container[role=main] {
+    width: 100%;
+}
+.navbar-fixed-top {
+    -webkit-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+    -moz-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+    box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+}
+.navbar-fixed-top.no-shadow {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.theme-showcase > p > .btn {
+  margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+  width: auto;
+}
+
+.form-group {
+  margin-bottom: 2px;
+}
+
+span.index:after {
+  content: " " counter(group_entry);
+}
+
+.sidebar {
+    padding-left: 10px;
+    padding-right: 10px;
+ }
+.sidebar-outer {
+    position: relative;
+}
+
+.panel .row {
+  margin: 0;
+}
+
+/*fixed top sidebar*/
+.sidebar.navbar-fixed-top {
+    top: 50px;
+    background: white;
+    z-index: 999;
+}
+.sidebar.navbar-fixed-top h1 {
+    font-size: 20px;
+    margin: 5px 0 0 0;
+}
+.sidebar.navbar-fixed-top .action-btns li a, .action-btns li {
+    padding: 5px;
+}
+
+/*fixed left-menu*/
+.navbar-fixed-left {
+    left: 0;
+    top:  200px;
+    position: fixed;
+}
+.app-panel {
+    margin-left: 10%;
+}
+#left-menu {
+    width: 10%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#left-menu .subnav li {
+    list-style-type: decimal;
+    color:  #31B0D5;
+}
+#left-menu .subnav.env li {
+    list-style-type: disc;
+    color:  #31B0D5;
+}
+#left-menu li.quick-submit {
+    padding: 20px 0;
+    text-align: center;
+}
+.anchor {
+  display: block;
+  height: 140px; /*same height as header*/
+  margin-top: -140px; /*same height as header*/
+  visibility: hidden;
+}
+
+/*AppEdit*/
+td.inline .form-group {
+    width: 50%;
+    float: left;    
+}
+td.inline {
+    clear: both;
+}
+
+/*AppList*/
+.apptable {
+    border: 3px solid #eee;
+}
+.table.col-md-6 {
+    width: 50%;
+    max-width: 50%;
+}
+
+/*Generic List*/
+.tablelist tr td{
+    white-space: nowrap;
+}
+
+.tablelist tr.env-prod {
+    background-color: #ffcdd2;
+
+}
+.tablelist tr.env-staging,
+.tablelist tr.env-preprod {
+    background-color: #e0f2f1;
+}
+.tablelist tr.env-dev,
+.tablelist tr.env-demo {
+    background-color: #fff9c4;
+}
+
+.tablelist th.status {
+    background-color: #333;
+    color: white;
+}
+.tablelist th.status-failed {
+    background-color: #c9302c;
+}
+.tablelist th.status-done {
+    background-color: #5cb85c;
+}
+
+.action-btns li a, .action-btns li {
+    display: inline-block;
+}
+
+/*JobView*/
+.jobview #log {
+    clear: both;
+    font-family: monospace;
+    color: white;
+    background: #222222;
+    height: 250px;
+    overflow: scroll;
+    position: relative;
+}
+.jobview .logactions {
+    padding-bottom: 10px;
+}
+.jobview .logactions p {
+    float: right;
+}
+
+/*Command*/
+.command_options {
+    margin: 10px 0;
+}
+
+/**
+** Responsive
+**/
+@media (max-width: 1769px) {
+    .nav-stacked>li {
+        float: left;
+    }
+}

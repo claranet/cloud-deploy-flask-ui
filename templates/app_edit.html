@@ -7,12 +7,57 @@
         <li>
         </li>
     </ul>
+    <ul class="nav navbar-fixed-left" id="left-menu">
+        <li>
+            <a href="#properties">Properties</a>
+        </li>
+        <li>
+            <a href="#autoscale">Autoscale</a>
+        </li>
+        <li>
+            <a href="#build-infos">Build-infos</a>
+        </li>
+        <li>
+            <a href="#env-infos">Environment Infos</a>
+            <ul class="subnav env">
+                <li>
+                    <a href="#instance">Instance</a>
+                </li>
+                <li>
+                    <a href="#root-block">Root Block Device</a>
+                </li>
+                <li>
+                    <a href="#sgs">Security Groups</a>
+                </li>
+                <li>
+                    <a href="#subnets">Subnets</a>
+                </li>
+                <li>
+                    <a href="#volumes">Optional Volumes</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#notifs">Notifications</a>
+        </li>
+        <li>
+            <a href="#features">Features</a>
+        </li>
+        <li>
+            <a href="#modules">Modules</a>
+            {{ ghost_menulist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
+        </li>
+        <li class="quick-submit">
+            <button class="btn btn-info btn-xs"><span class="glyphicon glyphicon-ok"></span> {{ form.submit.label.text }}</button>
+        </li>
+    </ul>
 {% endblock %}
 
 {% block page_content %}
-    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+    <form class="form-horizontal app-panel" id="app-form" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
+        <a name="properties" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Main properties
@@ -29,61 +74,95 @@
             </div>
         </div>
 
+        <a name="autoscale" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Autoscale
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {{ wtf.form_field(form.autoscale.form.name, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.min, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.current, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.max, form_type='horizontal') }}
+                    {{ wtf.form_field(form.autoscale.form.name, form_type='horizontal', placeholder='Name') }}
+                    {{ wtf.form_field(form.autoscale.form.min, form_type='horizontal', placeholder='1') }}
+                    {{ wtf.form_field(form.autoscale.form.current, form_type='horizontal', placeholder='2') }}
+                    {{ wtf.form_field(form.autoscale.form.max, form_type='horizontal', placeholder='3') }}
                 </div>
             </div>
         </div>
 
+        <a name="build-infos" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Build Infos
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {{ wtf.form_field(form.build_infos.form.ssh_username, form_type='horizontal') }}
+                    {{ wtf.form_field(form.build_infos.form.ssh_username, form_type='horizontal', placeholder='admin') }}
                     {{ wtf.form_field(form.build_infos.form.source_ami, form_type='horizontal') }}
                     {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
                 </div>
             </div>
         </div>
 
+        <a name="env-infos" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
                 Environment Infos
             </div>
             <div class="panel-body">
-                <div class="row">
-                    {{ wtf.form_field(form.environment_infos.form.instance_profile, form_type='horizontal') }}
-                    {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal') }}
+                <div class="panel panel-default">
+                    <a name="instance" class="anchor">&nbsp;</a>
+                    <div class="panel-heading">
+                        Instance
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            {{ wtf.form_field(form.environment_infos.form.instance_profile, form_type='horizontal', placeholder='The name or the Amazon Resource Name (arn:aws:iam::xxxxxx) of the instance profile associated with the IAM role for the instance') }}
+                            {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal', placeholder='my_key') }}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="panel-heading">
-                Root Block Device
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    {{ wtf.form_field(form.environment_infos.form.root_block_device_size, form_type='horizontal') }}
-                    {{ wtf.form_field(form.environment_infos.form.root_block_device_name, form_type='horizontal') }}
-                    {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group') }}
-                    {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID') }}
-                    {{ ghost_fieldlist(form.environment_infos.form.optional_volumes, 'optional_volumes', 'Optional Volumes', 'optional_volume', 'Optional Volume') }}
+
+                <div class="panel panel-default">
+                    <a name="root-block" class="anchor">&nbsp;</a>
+                    <div class="panel-heading">
+                        Root Block Device
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            {{ wtf.form_field(form.environment_infos.form.root_block_device_size, form_type='horizontal', placeholder='30') }}
+                            {{ wtf.form_field(form.environment_infos.form.root_block_device_name, form_type='horizontal', placeholder='') }}
+                        </div>
+                    </div>
                 </div>
+
+                <a name="sgs" class="anchor">&nbsp;</a>
+                {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group') }}
+                <a name="subnets" class="anchor">&nbsp;</a>
+                {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID') }}
+                <a name="volumes" class="anchor">&nbsp;</a>
+                {{ ghost_fieldlist(form.environment_infos.form.optional_volumes, 'optional_volumes', 'Optional Volumes', 'optional_volume', 'Optional Volume') }}
+
             </div>
         </div>
 
-        {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification') }}
-        {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature') }}
+        <a name="notifs" class="anchor">&nbsp;</a>
+        {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification', html_placeholder='ghost-devops@morea.fr') }}
+        <a name="features" class="anchor">&nbsp;</a>
+        {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
+        <a name="modules" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 
         {{ wtf.form_field(form.submit) }}
     </form>
+{% endblock %}
+
+{% block page_scripts %}
+    <script type="text/javascript">
+    (function() {
+        $('.quick-submit').click(function (evt) {
+            evt.preventDefault();
+            $('#app-form #submit').click();
+        });
+    })();
+    </script>
 {% endblock %}

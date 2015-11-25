@@ -7,7 +7,7 @@
 {% endblock %}"
 
 {% block page_content %}
-    <table class="table">
+    <table class="table tablelist">
         <thead>
             <tr>
                 <th>#</th>
@@ -25,27 +25,27 @@
         <tbody>
             {% for job in jobs | sort(reverse=True, attribute='_created') %}
                 {% set app = job['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
-            <tr>
-                <th scope="row">{{ loop.index }}</th>
-                <td style="white-space:nowrap;">
+            <tr class="env-{{ app['env'] }}">
+                <th scope="row" class="status status-{{ job['status'] }}">{{ loop.index }}</th>
+                <td>
                     <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
                 </td>
-                <td style="white-space:nowrap;">
+                <td>
                     {{ job['_created'] }}
                     <br>
                     {{ job['_updated'] }}</td>
-                <td style="white-space:nowrap;">
+                <td>
                     <a href="/web/apps/{{ app['_id'] }}">{{ app['name'] }} ({{ app['env'] }})</a>
                 </td>
-                <td style="white-space:nowrap;">{{ job['command'] }}</td>
-                <td style="white-space:nowrap;">{{ job['status'] }}</td>
-                <td style="white-space:nowrap;">{{ job['user'] }}</td>
-                <td style="white-space:nowrap;">
+                <td>{{ job['command'] }}</td>
+                <td>{{ job['status'] }}</td>
+                <td>{{ job['user'] }}</td>
+                <td>
                     {% for option in job['options'] %}
                         {{ option }}<br>
                     {% endfor %}
                 </td>
-                <td style="white-space:nowrap;">
+                <td>
                     {% for module in job['modules'] %}
                         Name:&nbsp;{{ module['name'] }}
                         <br>
@@ -54,8 +54,8 @@
                         Deploy ID:&nbsp;{{ module['deploy_id'] or '-' }}<br>
                     {% endfor %}
                 </td>
-                <td style="white-space:nowrap;">
-                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
+                <td>
+                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
                 </td>
             </tr>
             {% endfor %}

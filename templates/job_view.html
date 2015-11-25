@@ -3,9 +3,9 @@
 {% set page_title = 'Job %s' % (job['_id'] or '-')  %}
 
 {% block page_header %}
-    <ul class="nav nav-stacked">
+    <ul class="nav nav-stacked action-btns">
         <li>
-            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-default" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}>Delete</button></a>
+            <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in ['done', 'failed'] -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
     </ul>
 {% endblock %}"
@@ -13,75 +13,79 @@
 {% block page_content %}
     {% set app = job['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
 
-    <div class="panel panel-default">
+    <div class="panel panel-default jobview">
         <div class="panel-heading">Properties</div>
         <div class="panel-body">
             <div class="row">
-                {{ ghost_display_field('job-id', 'Job ID', job['_id']) }}
+                {{ ghost_display_field('job-id', 'Job ID', job['_id'], cols=2) }}
+                {{ ghost_display_field('job-created', 'Created', job['_created'], cols=2) }}
+                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id'], cols=2) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-created', 'Created', job['_created']) }}
-                {{ ghost_display_field('job-updated', 'Modified', job['_updated']) }}
+                {{ ghost_display_field('job-status', 'Status', job['status'], cols=2) }}
+                {{ ghost_display_field('job-updated', 'Modified', job['_updated'], cols=2) }}
+                {{ ghost_display_field('job-command', 'Command', job['command'], cols=2) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id']) }}
-                {{ ghost_display_field('job-command', 'Command', job['command']) }}
-            </div>
-            <div class="row">
-                {{ ghost_display_field('job-status', 'Status', job['status']) }}
+                {{ ghost_display_field('job-role', 'User', job['user'], cols=2) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-message', 'Message', job['message'], None, 9) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('job-role', 'User', job['user']) }}
+                <table class="table col-md-6">
+                    <caption>Options</caption>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for option in job['options'] %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ option }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        
+                <table class="table col-md-6">
+                    <caption>Modules</caption>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Rev</th>
+                            <th>Deploy ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for module in job['modules'] %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ module['name'] }}</td>
+                                <td>{{ module['rev'] }}</td>
+                                <td>{{ module['deploy_id'] or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <table class="table">
-            <caption>Options</caption>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for option in job['options'] %}
-                    <tr>
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ option }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <table class="table">
-            <caption>Modules</caption>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Rev</th>
-                    <th>Deploy ID</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for module in job['modules'] %}
-                    <tr>
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ module['name'] }}</td>
-                        <td>{{ module['rev'] }}</td>
-                        <td>{{ module['deploy_id'] or '-' }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
     <!-- Job log -->
-    <div class="panel panel-default">
-        <div class="panel-heading">Logs</div>
-        <div id='log' class="panel-body"></div>
+    <div class="panel panel-default jobview">
+        <div class="panel-heading logactions">
+            <span>Console Output</span>
+            <p>
+                <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
+                <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
+                <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
+            </p>
+        </div>
+        <div id="log" class="panel-body"></div>
     </div>
 {% endblock %}
 
@@ -100,5 +104,46 @@
                 $('#log').append(data['html']);
             });
         });
+    </script>
+
+    <script type="text/javascript">
+    (function() {
+        var scrollActivated = true;
+        var textScrolling =  'AutoScroll enabled';
+        var textNoScrolling =  'AutoScroll disabled';
+        var $log = $('#log');
+
+        $('#logScrollTop').click(function(evt) {
+            evt.preventDefault();
+            scrollActivated = false;
+            $('#logScrollBottom button').removeClass('active');
+            $('#scrollstate').html(textNoScrolling);
+            $log.animate({ scrollTop: 0 }, "slow");
+        });
+        $('#logScrollBottom').click(function(evt) {
+            evt.preventDefault();
+            scrollActivated = !scrollActivated;
+            if (scrollActivated) {
+                $('#logScrollBottom button').addClass('active');
+                $('#scrollstate').html(textScrolling);
+            } else {
+                $('#logScrollBottom button').removeClass('active');
+                $('#scrollstate').html(textNoScrolling);
+            }
+            $log.animate({ scrollTop: $log.get(0).scrollHeight }, "slow");
+        });
+
+        if (scrollActivated) {
+            $('#logScrollBottom button').addClass('active');
+            $('#scrollstate').html(textScrolling);
+        }
+
+        setInterval(function () {
+            if (scrollActivated) {
+                $('#log').scrollTop($log.get(0).scrollHeight);
+            }
+        }, 1000);
+
+    })();
     </script>
 {% endblock %}

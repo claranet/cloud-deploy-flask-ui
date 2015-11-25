@@ -13,7 +13,7 @@ from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import DeleteJobForm
-from forms import get_aws_ec2_instance_types, get_aws_vpc_ids
+from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids
 
 # Web UI App
 app = Flask(__name__)
@@ -69,6 +69,18 @@ def web_ec2_instance_types_list(region_id):
 def web_vpcs_list(region_id):
     return jsonify(get_aws_vpc_ids(region_id))
 
+@app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/sg/ids')
+def web_sgs_list(region_id, vpc_id):
+    return jsonify(get_aws_sg_ids(region_id, vpc_id))
+
+@app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
+def web_subnets_list(region_id, vpc_id):
+    return jsonify(get_aws_subnet_ids(region_id, vpc_id))
+
+@app.route('/web/aws/regions/<region_id>/ami/ids')
+def web_amis_list(region_id):
+    return jsonify(get_aws_ami_ids(region_id))
+
 @app.route('/web/apps')
 def web_app_list():
     query = request.args.get('where', None)
@@ -88,9 +100,21 @@ def web_app_create():
     if form.is_submitted() and form.region.data:
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+        form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        for subnet in form.environment_infos.subnet_ids:
+            subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        for sg in  form.environment_infos.security_groups:
+            sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
     elif not form.is_submitted() and clone_from_app:
         form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
         form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
+        form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+        for subnet in form.environment_infos.subnet_ids:
+            subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+        for sg in  form.environment_infos.security_groups:
+            sg.choices = get_aws_sg_ids(clone_from_app['region'], clone_from_app['vpc_id'])
 
     # Perform validation
     if form.validate_on_submit():
@@ -122,6 +146,12 @@ def web_app_edit(app_id):
     if form.is_submitted() and form.region.data:
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+        form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        for subnet in form.environment_infos.subnet_ids:
+            subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        for sg in  form.environment_infos.security_groups:
+            sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -152,6 +182,12 @@ def web_app_edit(app_id):
 
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
     form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+    form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
+    form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+    for subnet in form.environment_infos.subnet_ids:
+        subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+    for sg in  form.environment_infos.security_groups:
+        sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)    
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=True)
