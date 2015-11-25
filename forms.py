@@ -59,6 +59,7 @@ def get_ghost_optional_volumes():
 
 
 def get_aws_vpc_ids(region):
+    vpcs = []
     try:
         c = boto.vpc.connect_to_region(region)
         vpcs = c.get_all_vpcs()
@@ -67,6 +68,7 @@ def get_aws_vpc_ids(region):
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
 def get_aws_sg_ids(region, vpc_id):
+    sgs = []
     try:
         c = boto.ec2.connect_to_region(region)
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
@@ -75,6 +77,7 @@ def get_aws_sg_ids(region, vpc_id):
     return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]
 
 def get_aws_ami_ids(region):
+    amis = []
     try:
         c = boto.ec2.connect_to_region(region)
         amis = c.get_all_images(
@@ -88,6 +91,7 @@ def get_aws_ami_ids(region):
     return [(ami.id, ami.id + ' (' + ami.name + ')') for ami in amis]
 
 def get_aws_subnet_ids(region, vpc_id):
+    subs = []
     try:
         c = boto.vpc.connect_to_region(region)
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
@@ -96,12 +100,17 @@ def get_aws_subnet_ids(region, vpc_id):
     return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
 def get_aws_ec2_regions():
-    regions = sorted(boto.ec2.regions(), key=lambda region: region.name)
+    regions = []
+    try:
+        regions = sorted(boto.ec2.regions(), key=lambda region: region.name)
+    except:
+        traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
 
 
 def get_aws_ec2_instance_types(region):
     # Uncomment when implemented on AWS side
+    #types = []
     #try:
     #    c = boto.ec2.connect_to_region(region)
     #    types = c.get_all_instance_types()
