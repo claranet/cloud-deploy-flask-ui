@@ -21,3 +21,15 @@
     <hr/>
     <div>{{ message }}</div>
 {% endblock %}
+
+{% block page_scripts %}
+    <script type="text/javascript" charset="utf-8">
+    (function() {
+        // After successful job creation, redirect to job view
+        var path = $('.alert-success a').attr('href');
+        if (path && path.startsWith('/web/jobs/')) {
+            window.location.replace(path);
+        }
+    })();
+    </script>
+{% endblock %}
