@@ -157,6 +157,7 @@ td.inline {
     height: 250px;
     overflow: scroll;
     position: relative;
+    resize: both;
 }
 .jobview .logactions {
     padding-bottom: 10px;
