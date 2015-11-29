@@ -11,7 +11,7 @@
 {% endblock %}"
 
 {% block page_content %}
-    {% set app = job['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
+    {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
 
     <div class="panel panel-default jobview">
         <div class="panel-heading">Properties</div>
@@ -19,7 +19,7 @@
             <div class="row">
                 {{ ghost_display_field('job-id', 'Job ID', job['job_id'] or '-', cols=3, labelcols=1) }}
                 {{ ghost_display_field('job-created', 'Created', job['_created'], cols=3, labelcols=1) }}
-                {{ ghost_display_field('job-app', 'Application', app['name'] + ' (' + app['env'] + ')', '/web/apps/' + app['_id'], cols=3, labelcols=1) }}
+                {{ ghost_display_field('job-app', 'Application', app['name'] + (app['_id'] and ' (' + app['env'] + ')' or ''), app['_id'] and '/web/apps/' + app['_id'] or None, cols=3, labelcols=1) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-id', 'Technical ID', job['_id'], cols=3, labelcols=1) }}
@@ -51,7 +51,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-        
+
                 <table class="table col-md-6">
                     <caption>Modules</caption>
                     <thead>
