@@ -68,7 +68,7 @@
                                 <th scope="row">{{ loop.index }}</th>
                                 <td>{{ module['name'] }}</td>
                                 <td>{{ module['rev'] }}</td>
-                                <td>{{ module['deploy_id'] or '-' }}</td>
+                                <td><a {% if module['deploy_id'] %}href="/web/deployments/{{ module['deploy_id'] }}"{% endif %}>{{ module['deploy_id'] or '-' }}</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
