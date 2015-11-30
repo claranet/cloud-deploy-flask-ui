@@ -11,8 +11,8 @@
 {% endblock %}"
 
 {% block page_content %}
-    {% set app = deployment['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
-    {% set job = deployment['job_id'] or {'_id': 'N/A', 'user': 'N/A', '_created': 'N/A', '_created': '_updated'} %}
+    {% set app = deployment['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+    {% set job = deployment['job_id'] or {'_id': '', 'user': '-', '_created': '-', '_updated': '-'} %}
 
     <div class="panel panel-default">
         <div class="panel-heading">Properties</div>
@@ -45,7 +45,7 @@
                 {{ ghost_display_field('deployment-commit', 'Commit', deployment['commit']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-commit_message', 'Message', deployment['commit_message'], None, 9) }}
+                {{ ghost_display_field('deployment-commit_message', 'Message', deployment['commit_message'], cols=10, labelcols=2) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('deployment-timestamp', 'Timestamp', deployment['timestamp']) }}

@@ -23,18 +23,18 @@
         </thead>
         <tbody>
             {% for deployment in deployments | sort(reverse=True, attribute='_created') %}
-                {% set app = deployment['app_id'] or {'_id': 'N/A', 'name': 'N/A', 'env': 'N/A'} %}
-                {% set job = deployment['job_id'] or {'_id': 'N/A', 'user': 'N/A', '_created': 'N/A', '_created': '_updated'} %}
+                {% set app = deployment['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+                {% set job = deployment['job_id'] or {'_id': '', 'user': '-', '_created': '-', '_updated': '-'} %}
             <tr class="env-{{ app['env'] }}">
                 <th scope="row">{{ loop.index }}</th>
                 <td>
                     <a href="/web/deployments/{{ deployment['_id'] }}">{{ deployment['_id'] }}</a>
                 </td>
                 <td>
-                    <a href="/web/apps/{{ app['_id'] }}">{{ app['name'] }} ({{ app['env'] }})</a>
+                    <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
                 </td>
                 <td>
-                    <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
+                    <a {% if job['_id'] %}href="/web/jobs/{{ job['_id'] }}"{% endif %}>{{ job['_id'] }}</a>
                     <br>
                     {{ job['user'] }}
                     <br>
