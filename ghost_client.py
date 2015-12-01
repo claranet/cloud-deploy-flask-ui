@@ -167,8 +167,6 @@ def create_ghost_job(app_id, form, headers):
     if form.command.data == 'buildimage':
         if form.instance_type.data:
             job['instance_type'] = form.instance_type.data
-        #else:
-        #    job['instance_type'] = 't2.micro'
 
     # Process options
     options = []
