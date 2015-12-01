@@ -684,6 +684,7 @@ class CommandAppForm(Form):
     module_name = SelectField('Module name', validators=[])
     module_rev = StringField('Module revision', validators=[])
     module_deploy_id = StringField('Deploy ID', validators=[])
+    instance_type = SelectField('Instance Type', validators=[], choices=[])
 
     submit = SubmitField('Run Application Command')
 

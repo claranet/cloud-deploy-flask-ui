@@ -18,6 +18,7 @@
             <div class="wrap module_name">{{ wtf.form_field(form.module_name, form_type='horizontal') }}</div>
             <div class="wrap module_rev">{{ wtf.form_field(form.module_rev, form_type='horizontal') }}</div>
             <div class="wrap module_deploy_id">{{ wtf.form_field(form.module_deploy_id, form_type='horizontal') }}</div>
+            <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
         </div>
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
@@ -33,6 +34,8 @@
                 $('.wrap.module_rev').show();
             } else if ($('#command').val() == 'rollback') {
                 $('.wrap.module_deploy_id').show();
+            } else if ($('#command').val() == 'buildimage') {
+                $('.wrap.instance_type').show();
             }
         }
 
