@@ -55,8 +55,8 @@
                     {% endfor %}
                 </td>
                 <td>
-                    <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-danger" {%- if job['status'] not in ['init'] -%}disabled{%-endif-%}><span class="glyphicon glyphicon-ban-circle"></span> Cancel</button></a>
-                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in ['cancelled', 'done', 'failed'] -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
+                    <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-danger" {%- if job['status'] not in cancellable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-ban-circle"></span> Cancel</button></a>
+                    <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in deletable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
                 </td>
             </tr>
             {% endfor %}
