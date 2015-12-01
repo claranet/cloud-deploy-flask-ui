@@ -269,7 +269,7 @@ def web_job_delete(job_id):
 
     # Get job etag
     job = get_ghost_job(job_id)
-    if job and job.get('status', '') in jobs.DELETABLE_JOB_STATUSES:
+    if job and job.get('status', '') in DELETABLE_JOB_STATUSES:
         form.etag.data = job['_etag']
 
     # Display default template in GET case
