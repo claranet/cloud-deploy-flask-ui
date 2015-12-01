@@ -180,7 +180,7 @@ def delete_ghost_job(job_id, local_headers):
     return do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
 
 def cancel_ghost_job(job_id, local_headers):
-    return do_request(requests.delete, url=url_jobs + '/' + job_id + '/queues', data=None, headers=local_headers, success_message='Job cancelled', failure_message='Job cancellation failed')
+    return do_request(requests.delete, url=url_jobs + '/' + job_id + '/enqueueings', data=None, headers=local_headers, success_message='Job cancelled', failure_message='Job cancellation failed')
 
 
 def get_ghost_deployments(query=None):
