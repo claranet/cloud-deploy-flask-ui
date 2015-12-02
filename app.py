@@ -198,7 +198,6 @@ def web_app_command(app_id):
 
     # Select default instance type from app
     app = get_ghost_app(app_id)
-    form.map_from_app(app)
     form.instance_type.choices = get_aws_ec2_instance_types(app["region"])
 
     # Perform validation
@@ -207,6 +206,7 @@ def web_app_command(app_id):
 
         return render_template('action_completed.html', message=message)
 
+    form.map_from_app(app)
 
     return render_template('app_command.html', form=form, app=app)
 
