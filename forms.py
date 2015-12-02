@@ -684,6 +684,7 @@ class CommandAppForm(Form):
     module_name = SelectField('Module name', validators=[])
     module_rev = StringField('Module revision', validators=[])
     module_deploy_id = StringField('Deploy ID', validators=[])
+    instance_type = SelectField('Instance Type', validators=[], choices=[])
 
     submit = SubmitField('Run Application Command')
 
@@ -693,6 +694,13 @@ class CommandAppForm(Form):
         # Get Application Modules
         app = get_ghost_app(app_id)
         self.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
+
+    def map_from_app(self, app):
+        """
+        Map app data from app to form
+        """
+        self.instance_type.data = app.get('instance_type', '')
+
 
 
 class DeleteAppForm(Form):

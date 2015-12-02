@@ -197,14 +197,17 @@ def web_app_edit(app_id):
 def web_app_command(app_id):
     form = CommandAppForm(app_id)
 
+    # Select default instance type from app
+    app = get_ghost_app(app_id)
+    form.instance_type.choices = get_aws_ec2_instance_types(app["region"])
+
     # Perform validation
     if form.validate_on_submit():
         message = create_ghost_job(app_id, form, headers)
 
         return render_template('action_completed.html', message=message)
 
-    # Display default template in GET case
-    app = get_ghost_app(app_id)
+    form.map_from_app(app)
 
     return render_template('app_command.html', form=form, app=app)
 

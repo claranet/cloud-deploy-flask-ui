@@ -182,6 +182,11 @@ def create_ghost_job(app_id, form, headers):
     if modules:
         job['modules'] = modules
 
+    # Process BuildImage options
+    if form.command.data == 'buildimage':
+        if form.instance_type.data:
+            job['instance_type'] = form.instance_type.data
+
     # Process options
     options = []
     if form.command.data == 'rollback':
