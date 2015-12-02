@@ -5,6 +5,7 @@ from flask.ext.login import LoginManager, UserMixin, login_required
 from base64 import b64decode
 import traceback
 import sys
+from sh import git
 
 from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES
 
@@ -62,6 +63,10 @@ def load_user_from_request(request):
 @login_required
 def before_request():
     pass
+
+@app.context_processor
+def current_revision():
+    return dict(current_revision=git('rev-parse', 'HEAD').strip())
 
 @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(region_id):
