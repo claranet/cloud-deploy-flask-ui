@@ -163,10 +163,12 @@
                     <th>Build Pack</th>
                     <th>Pre Deploy</th>
                     <th>Post Deploy</th>
+                    <th>Last Deployment</th>
                 </tr>
             </thead>
             <tbody>
                 {% for module in app['modules'] %}
+                    {% set last_deployment = module['last_deployment'] or {} %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ module['initialized'] and '&#10004;' | safe or '' }}</td>
@@ -177,6 +179,11 @@
                         <td>{{ ghost_script(module.get('build_pack', '')) }}</td>
                         <td>{{ ghost_script(module.get('pre_deploy', '')) }}</td>
                         <td>{{ ghost_script(module.get('post_deploy', '')) }}</td>
+                        <td>
+                            <a {% if last_deployment['_id'] %}href="/web/deployments/{{ last_deployment['_id'] }}"{% endif %}>{{ last_deployment['_id'] or '-' }}</a>
+                            <br>
+                            {{ last_deployment['_created'] or '-' }}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

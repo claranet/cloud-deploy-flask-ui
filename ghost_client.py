@@ -102,6 +102,25 @@ def get_ghost_app(app_id):
         flash(message, 'danger')
     return app
 
+def retrieve_ghost_app_modules_last_deployments(app):
+    try:
+        # Retrieve the last deployment for each module of the app
+        for module in app.get('modules', []):
+            url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING
+            url += '&max_results=1'
+            url += '&where={"app_id":"' + app['_id'] + '", "module":"' + module['name'] + '"}'
+            result = requests.get(url, headers=headers, auth=current_user.auth)
+            handle_response_status_code(result.status_code)
+            if result.json()['_items'] and len(result.json()['_items']) > 0:
+                deployment = result.json()['_items'][0]
+                deployment['_created'] = datetime.utcfromtimestamp(deployment['timestamp']).strftime(RFC1123_DATE_FORMAT)
+                module['last_deployment'] = deployment
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+    return app
+
 def create_ghost_app(app):
     return do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers, success_message='Application created', failure_message='Application creation failed')
 
