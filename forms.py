@@ -695,6 +695,13 @@ class CommandAppForm(Form):
         app = get_ghost_app(app_id)
         self.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
 
+    def map_from_app(self, app):
+        """
+        Map app data from app to form
+        """
+        self.instance_type.data = app.get('instance_type', '')
+
+
 
 class DeleteAppForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])

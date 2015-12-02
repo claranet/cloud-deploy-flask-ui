@@ -196,9 +196,9 @@ def web_app_edit(app_id):
 def web_app_command(app_id):
     form = CommandAppForm(app_id)
 
-    # Display default template in GET case
+    # Select default instance type from app
     app = get_ghost_app(app_id)
-
+    form.map_from_app(app)
     form.instance_type.choices = get_aws_ec2_instance_types(app["region"])
 
     # Perform validation
