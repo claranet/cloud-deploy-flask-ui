@@ -6,13 +6,15 @@ from base64 import b64decode
 import traceback
 import sys
 
+from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES
+
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app, retrieve_ghost_app_modules_last_deployments
-from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, delete_ghost_job
+from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
-from forms import DeleteJobForm
+from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids
 
 # Web UI App
@@ -244,13 +246,17 @@ def web_job_list():
     query = request.args.get('where', None)
     jobs = get_ghost_jobs(query)
 
-    return render_template('job_list.html', jobs=jobs)
+    return render_template('job_list.html', jobs=jobs,
+                           deletable_job_statuses=DELETABLE_JOB_STATUSES,
+                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES)
 
 @app.route('/web/jobs/<job_id>', methods=['GET'])
 def web_job_view(job_id):
     job = get_ghost_job(job_id)
 
-    return render_template('job_view.html', job=job)
+    return render_template('job_view.html', job=job,
+                           deletable_job_statuses=DELETABLE_JOB_STATUSES,
+                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES)
 
 @app.route('/web/jobs/<job_id>/delete', methods=['GET', 'POST'])
 def web_job_delete(job_id):
@@ -267,11 +273,32 @@ def web_job_delete(job_id):
 
     # Get job etag
     job = get_ghost_job(job_id)
-    if job and job.get('status', '') in ['done', 'failed']:
+    if job and job.get('status', '') in DELETABLE_JOB_STATUSES:
         form.etag.data = job['_etag']
 
     # Display default template in GET case
     return render_template('job_delete.html', form=form, job=job)
+
+@app.route('/web/jobs/<job_id>/cancel', methods=['GET', 'POST'])
+def web_job_cancel(job_id):
+    form = CancelJobForm()
+
+    # Perform validation
+    if form.validate_on_submit and form.confirmation.data == 'yes':
+        local_headers = headers.copy()
+        local_headers['If-Match'] = form.etag.data
+
+        message = cancel_ghost_job(job_id, local_headers)
+
+        return render_template('action_completed.html', message=message)
+
+    # Get job etag
+    job = get_ghost_job(job_id)
+    if job and job.get('status', '') in CANCELLABLE_JOB_STATUSES:
+        form.etag.data = job['_etag']
+
+    # Display default template in GET case
+    return render_template('job_cancel.html', form=form, job=job)
 
 @app.route('/web/deployments')
 def web_deployments_list():
