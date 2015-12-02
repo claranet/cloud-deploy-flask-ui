@@ -7,7 +7,7 @@
 
     <ul class="nav nav-stacked action-btns">
         <li>
-            <a href="/web/apps/create" id="createApp"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</button></a>
+            <a href="/web/apps/create" id="createApp"><button class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</button></a>
         </li>
     </ul>
 {% endblock %}"
@@ -67,10 +67,10 @@
                     {{ app['vpc_id'] }}
                 </td>
                 <td>
-                    <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default" title="Run Command"><span class="glyphicon glyphicon-console"></span></button></a>
-                    <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-warning" title="Edit"><span class="glyphicon glyphicon-edit"></span></button></a>
-                    <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-info" title="Clone"><span class="glyphicon glyphicon-duplicate"></span></button></a>
-                    <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-danger" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></a>
+                    <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-raised btn-default" title="Run Command"><span class="glyphicon glyphicon-console"></span></button></a>
+                    <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-raised btn-warning" title="Edit"><span class="glyphicon glyphicon-edit"></span></button></a>
+                    <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-raised btn-info" title="Clone"><span class="glyphicon glyphicon-duplicate"></span></button></a>
+                    <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-raised btn-danger" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></a>
                 </td>
             </tr>
             {% endfor %}

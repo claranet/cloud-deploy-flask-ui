@@ -6,6 +6,8 @@
 
 {% block styles %}
     {{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-material-design.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/ripples.min.css')}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}">
 {% endblock %}
 
@@ -67,7 +69,11 @@
 {% block scripts %}
     {{ super() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js"></script>
+    <script src="{{url_for('.static', filename='js/ripples.min.js')}}"></script>
+    <script src="{{url_for('.static', filename='js/material.min.js')}}"></script>
     <script>
+        $.material.init()
+        
         $(document).ready(function() {
             $('textarea').autosize();
         });
