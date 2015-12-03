@@ -691,17 +691,17 @@ class CommandAppForm(Form):
     def __init__(self, app_id, *args, **kwargs):
         super(CommandAppForm, self).__init__(*args, **kwargs)
 
-        # Get Application Modules
+        # Get the Ghost application
         app = get_ghost_app(app_id)
+
+        # Get the modules of the Ghost application
         self.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
 
-    def map_from_app(self, app):
-        """
-        Map app data from app to form
-        """
+        # Get the instance types in the Ghost application's region
+        self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
+
+        # Use the instance type of the Ghost application as default
         self.instance_type.data = app.get('instance_type', '')
-
-
 
 class DeleteAppForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])
