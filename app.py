@@ -87,6 +87,8 @@ def web_amis_list(region_id):
 def web_app_list():
     query = request.args.get('where', None)
     apps = get_ghost_apps(query)
+    if request.is_xhr:
+        return render_template('app_list_content.html', apps=apps)
     return render_template('app_list.html', apps=apps)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
