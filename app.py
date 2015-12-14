@@ -7,6 +7,7 @@ import traceback
 import sys
 
 from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES
+from models.apps import apps_schema as ghost_app_schema
 
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app, retrieve_ghost_app_modules_last_deployments
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
@@ -62,6 +63,10 @@ def load_user_from_request(request):
 @login_required
 def before_request():
     pass
+
+@app.context_processor
+def env_list():
+    return dict(env_list=ghost_app_schema['env']['allowed'])
 
 @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(region_id):
