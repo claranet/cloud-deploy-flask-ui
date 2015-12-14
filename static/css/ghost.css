@@ -124,10 +124,10 @@ td.inline {
 }
 
 .tablelist tr.env-prod {
-    background-color: #F2DEDE;
+    background-color: #D9EDF7;
 }
 .tablelist tr.env-prod:hover {
-    background-color: #EBCCCC;
+    background-color: #C4E3F3;
 }
 .tablelist tr.env-staging,
 .tablelist tr.env-preprod {
@@ -146,10 +146,10 @@ td.inline {
     background-color: #FAF2CC;
 }
 .tablelist tr.env-test {
-    background-color: #D9EDF7;
+    background-color: #efebe9;
 }
 .tablelist tr.env-test:hover {
-    background-color: #C4E3F3;
+    background-color: #d7ccc8;
 }
 
 .tablelist th.status {
