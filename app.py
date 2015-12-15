@@ -108,11 +108,6 @@ def web_app_create():
             subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         for sg in  form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
-    elif not form.is_submitted() and clone_from_app:
-        form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
-        form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
-        form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
-        form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
 
     # Perform validation
     if form.validate_on_submit():
@@ -126,6 +121,10 @@ def web_app_create():
     if clone_from_app:
         form.map_from_app(clone_from_app)
         if not form.is_submitted():
+            form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
+            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
+            form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
+            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
             for subnet in form.environment_infos.subnet_ids:
                 subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
             for sg in  form.environment_infos.security_groups:
