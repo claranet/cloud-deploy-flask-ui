@@ -66,7 +66,7 @@ def before_request():
 
 @app.context_processor
 def env_list():
-    return dict(env_list=ghost_app_schema['env']['allowed'])
+    return dict(env_list=ghost_app_schema['env']['allowed'], role_list=ghost_app_schema['role']['allowed'])
 
 @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(region_id):
