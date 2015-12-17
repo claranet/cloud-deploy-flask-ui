@@ -67,11 +67,11 @@ def before_request():
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
 finally:
-    CURRENT_REVISION = 's151201'
+    CURRENT_REVISION = dict(current_revision='s151217')
 
 @app.context_processor
 def current_revision():
-    return dict(current_revision=CURRENT_REVISION)
+    return CURRENT_REVISION
 
 @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(region_id):
