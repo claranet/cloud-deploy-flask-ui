@@ -66,7 +66,7 @@ def before_request():
 
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
-finally:
+except:
     CURRENT_REVISION = dict(current_revision='s151217')
 
 @app.context_processor
