@@ -121,16 +121,32 @@ td.inline {
 }
 
 .tablelist tr.env-prod {
-    background-color: #ffcdd2;
-
+    background-color: #f3e5f5;
+}
+.tablelist tr.env-prod:hover {
+    background-color: #e1bee7;
 }
 .tablelist tr.env-staging,
 .tablelist tr.env-preprod {
-    background-color: #e0f2f1;
+    background-color: #D9EDF7;
+}
+.tablelist tr.env-staging:hover,
+.tablelist tr.env-preprod:hover {
+    background-color: #C4E3F3;
 }
 .tablelist tr.env-dev,
 .tablelist tr.env-demo {
-    background-color: #fff9c4;
+    background-color: #FCF8E3;
+}
+.tablelist tr.env-dev:hover,
+.tablelist tr.env-demo:hover {
+    background-color: #FAF2CC;
+}
+.tablelist tr.env-test {
+    background-color: #efebe9;
+}
+.tablelist tr.env-test:hover {
+    background-color: #d7ccc8;
 }
 
 .tablelist th.status {

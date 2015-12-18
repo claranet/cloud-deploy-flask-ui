@@ -6,7 +6,7 @@
 
 {% block styles %}
     {{super()}}
-    <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
 {% endblock %}
 
 {% block navbar %}
@@ -66,7 +66,7 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js?v={{current_revision}}"></script>
     <script>
         $(document).ready(function() {
             $('textarea').autosize();
