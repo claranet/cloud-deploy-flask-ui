@@ -132,11 +132,11 @@
         function searchInList() {
             var searchValue = $('#global-search input').val();
             if (searchValue == '' || !searchValue) {
-                window.location.href = '?'
+                window.location.href = '?';
             } else {
-                var params = {  }
+                var params = {  };
                 params["where"] = '{"name":{"$regex":".*'+searchValue+'.*"}}';
-                params["g-search"] = searchValue
+                params["g-search"] = searchValue;
                 var newUrl = "?" + $.param(params);
                 window.location.href = newUrl;
             }
