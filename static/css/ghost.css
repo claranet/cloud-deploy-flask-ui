@@ -65,29 +65,20 @@ span.index:after {
 .sidebar.navbar-fixed-top .action-btns li .input-group {
     padding: 5px;
 }
-.navbar-nav.filter-group {
-    background-color: #757575;    
-    border-radius: 5px;
-}
  .navbar-nav>li.filter> a,
  .navbar-nav>li.filter> .input-group {
-    background-color: #757575;    
-    color: #fff;
     padding: 10px;
 }
- .navbar-nav>.open.filter>a,  .navbar-nav>.open.filter>a:focus,  .navbar-nav>.open.filter>a:hover {
-    background-color: #616161;
-}
  .navbar-nav>li.filter> .input-group {
-    width: 100px;
+    width: 300px;
     padding: 9px;
 }
  .navbar-nav>li.filter> .input-group input {
     height: 22px;
-    padding: 6px;
+    padding: 4px;
 }
  .navbar-nav>li.filter> .input-group.expanded {
-    width: 300px;
+    width: 500px;
 }
 
 /*fixed left-menu*/
