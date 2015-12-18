@@ -67,7 +67,7 @@ span.index:after {
 }
  .navbar-nav>li.filter> a,
  .navbar-nav>li.filter> .input-group {
-    padding: 10px;
+    padding: 11px;
 }
  .navbar-nav>li.filter> .input-group {
     width: 300px;
@@ -80,7 +80,9 @@ span.index:after {
  .navbar-nav>li.filter> .input-group.expanded {
     width: 500px;
 }
-
+ .navbar-nav>li.filter .dropdown-menu {
+     min-width: auto;
+ }
 /*fixed left-menu*/
 .navbar-fixed-left {
     left: 0;
