@@ -121,18 +121,18 @@ td.inline {
 }
 
 .tablelist tr.env-prod {
-    background-color: #D9EDF7;
+    background-color: #f3e5f5;
 }
 .tablelist tr.env-prod:hover {
-    background-color: #C4E3F3;
+    background-color: #e1bee7;
 }
 .tablelist tr.env-staging,
 .tablelist tr.env-preprod {
-    background-color: #DFF0D8;
+    background-color: #D9EDF7;
 }
 .tablelist tr.env-staging:hover,
 .tablelist tr.env-preprod:hover {
-    background-color: #D0E9C6;
+    background-color: #C4E3F3;
 }
 .tablelist tr.env-dev,
 .tablelist tr.env-demo {
