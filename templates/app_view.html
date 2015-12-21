@@ -128,6 +128,23 @@
             </div>
         </div>
 
+        <a name="root-block" class="anchor">&nbsp;</a>
+        <div class="panel-heading">Lifecycle Hooks</div>
+        <div class="panel-body">
+            <div class="row">
+                <label class="control-label col-md-1" for="lifecycle_hooks-pre_bootstrap">pre_bootstrap</label>
+                <div class="col-md-11" id="lifecycle_hooks-pre_bootstrap">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('pre_bootstrap', '')) }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-1" for="lifecycle_hooks-post_bootstrap">post_bootstrap</label>
+                <div class="col-md-11" id="lifecycle_hooks-post_bootstrap">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('post_bootstrap', '')) }}
+                </div>
+            </div>
+        </div>
+
         <a name="features" class="anchor">&nbsp;</a>
         <table class="table">
             <caption>Features</caption>

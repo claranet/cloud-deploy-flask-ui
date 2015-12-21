@@ -41,6 +41,9 @@
             <a href="#notifs">Notifications</a>
         </li>
         <li>
+            <a href="#lifecycle-hooks">Lifecycle Hooks</a>
+        </li>
+        <li>
             <a href="#features">Features</a>
         </li>
         <li>
@@ -147,8 +150,23 @@
 
         <a name="notifs" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification', html_placeholder='ghost-devops@morea.fr') }}
+
+        <a name="lifecycle-hooks" class="anchor">&nbsp;</a>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Lifecycle hooks
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    {{ wtf.form_field(form.lifecycle_hooks.form.pre_bootstrap, form_type='horizontal') }}
+                    {{ wtf.form_field(form.lifecycle_hooks.form.post_bootstrap, form_type='horizontal') }}
+                </div>
+            </div>
+        </div>
+
         <a name="features" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
+
         <a name="modules" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 

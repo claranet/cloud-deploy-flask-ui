@@ -319,6 +319,22 @@ class ResourceForm(Form):
         # TODO: implement resource form
         pass
 
+class LifecycleHooksForm(Form):
+    pre_bootstrap = TextAreaField('Pre Bootstrap', validators=[])
+    post_bootstrap = TextAreaField('Post Bootstrap', validators=[])
+
+    # Disable CSRF in module forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(LifecycleHooksForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, app):
+        if 'lifecycle_hooks' in app:
+            lifecycle_hooks = app['lifecycle_hooks']
+            if 'pre_bootstrap' in lifecycle_hooks:
+                self.pre_bootstrap.data = lifecycle_hooks['pre_bootstrap']
+            if 'pre_bootstrap' in lifecycle_hooks:
+                self.post_bootstrap.data = lifecycle_hooks['post_bootstrap']
+
 class FeatureForm(Form):
     feature_name = StringField('Name', validators=[
         RegexpValidator(
@@ -422,6 +438,8 @@ class BaseAppForm(Form):
         )
     ])
 
+    lifecycle_hooks = FormField(LifecycleHooksForm)
+
     # Features
     features = FieldList(FormField(FeatureForm), min_entries=1)
 
@@ -448,6 +466,7 @@ class BaseAppForm(Form):
         self.map_to_app_build_infos(app)
         self.map_to_app_resources(app)
         self.map_to_app_environment_infos(app)
+        self.map_to_app_lifecycle_hooks(app)
         self.map_to_app_features(app)
         self.map_to_app_modules(app)
 
@@ -533,6 +552,18 @@ class BaseAppForm(Form):
                 app['environment_infos']['optional_volumes'].append(opt_vol)
 
 
+    def map_to_app_lifecycle_hooks(self, app):
+        """
+        Map lifecycle hooks data from form to app
+        """
+        app['lifecycle_hooks'] = {}
+        form_lifecycle_hooks = self.lifecycle_hooks
+        if form_lifecycle_hooks.pre_bootstrap.data:
+            app['lifecycle_hooks']['pre_bootstrap'] = b64encode(form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
+        if form_lifecycle_hooks.post_bootstrap.data:
+            app['lifecycle_hooks']['post_bootstrap'] = b64encode(form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
+
+
     def map_to_app_features(self, app):
         """
         Map features data from form to app
@@ -584,6 +615,7 @@ class BaseAppForm(Form):
         self.map_from_app_autoscale(app)
         self.map_from_app_build_infos(app)
         self.map_from_app_environment_infos(app)
+        self.map_from_app_lifecycle_hooks(app)
         self.map_from_app_features(app)
         self.map_from_app_modules(app)
 
@@ -606,6 +638,12 @@ class BaseAppForm(Form):
         Map environment infos data from app to form
         """
         return self.environment_infos.form.map_from_app(app)
+
+    def map_from_app_lifecycle_hooks(self, app):
+        """
+        Map lifecycle hooks data from app to form
+        """
+        return self.lifecycle_hooks.form.map_from_app(app)
 
     def map_from_app_features(self, app):
         """
