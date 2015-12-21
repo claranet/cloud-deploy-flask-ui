@@ -560,8 +560,13 @@ class BaseAppForm(Form):
         form_lifecycle_hooks = self.lifecycle_hooks
         if form_lifecycle_hooks.pre_bootstrap.data:
             app['lifecycle_hooks']['pre_bootstrap'] = b64encode(form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
+        else:
+            app['lifecycle_hooks']['pre_bootstrap'] = ''
+
         if form_lifecycle_hooks.post_bootstrap.data:
             app['lifecycle_hooks']['post_bootstrap'] = b64encode(form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
+        else:
+            app['lifecycle_hooks']['post_bootstrap'] = ''
 
 
     def map_to_app_features(self, app):
