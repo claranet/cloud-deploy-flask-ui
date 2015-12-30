@@ -60,11 +60,13 @@ def test_ghost_auth(user):
     return requests.get(url_apps, headers=headers, auth=user.auth)
 
 
-def get_ghost_apps(query=None):
+def get_ghost_apps(query=None, page=None):
     try:
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
         if query:
             url += "&where=" + query
+        if page:
+            url += "&page="  + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         apps = result.json().get('_items', [])

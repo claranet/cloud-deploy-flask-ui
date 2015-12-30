@@ -1,6 +1,7 @@
 from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, login_required
+from settings import __dict__ as eve_settings
 
 from base64 import b64decode
 import traceback
@@ -101,10 +102,11 @@ def web_amis_list(region_id):
 @app.route('/web/apps')
 def web_app_list():
     query = request.args.get('where', None)
-    apps = get_ghost_apps(query)
+    page = request.args.get('page', None)
+    apps = get_ghost_apps(query, page)
     if request.is_xhr:
-        return render_template('app_list_content.html', apps=apps)
-    return render_template('app_list.html', apps=apps)
+        return render_template('app_list_content.html', apps=apps, page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+    return render_template('app_list.html', apps=apps, page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():

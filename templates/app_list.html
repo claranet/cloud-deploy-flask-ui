@@ -61,6 +61,9 @@
         </thead>
         <tbody>
             {% include 'app_list_content.html' %}
+            <tr id="loadmoreajaxloader">
+                <td colspan="7" style="display:none;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></td>
+            </tr>
         </tbody>
     </table>
 {% endblock %}

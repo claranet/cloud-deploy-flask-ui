@@ -136,6 +136,9 @@ td.inline {
 }
 
 /*Generic List*/
+#loadmoreajaxloader td {
+    text-align: center;
+}
 .tablelist tr td{
     white-space: nowrap;
 }
