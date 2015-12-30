@@ -67,6 +67,7 @@
     {{ super() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js?v={{current_revision}}"></script>
     <script type="text/javascript">
+    if ($('table.tablelist').length > 0) {
         var currentPage = 1;
         var withQuery = $(location).attr('search') && $(location).attr('search') != "";
         $(window).scroll(function()
@@ -86,13 +87,15 @@
                             $('tr#loadmoreajaxloader').before(html);
                             $('tr#loadmoreajaxloader td').hide();
                         } else {
-                            $('tr#loadmoreajaxloader td').html('<span>No more elements to show.</span>');
+                            $('tr#loadmoreajaxloader td').html('<a href="#"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>');
                             $(window).unbind('scroll');
+                            $('tr#loadmoreajaxloader td').show();
                         }
                     }
                 });
             }
         });
+    }
     </script>
     <script>
         $(document).ready(function() {
