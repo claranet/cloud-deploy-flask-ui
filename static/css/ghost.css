@@ -62,7 +62,27 @@ span.index:after {
 .sidebar.navbar-fixed-top .action-btns li a, .action-btns li {
     padding: 5px;
 }
-
+.sidebar.navbar-fixed-top .action-btns li .input-group {
+    padding: 5px;
+}
+ .navbar-nav>li.filter> a,
+ .navbar-nav>li.filter> .input-group {
+    padding: 11px;
+}
+ .navbar-nav>li.filter> .input-group {
+    width: 300px;
+    padding: 9px;
+}
+ .navbar-nav>li.filter> .input-group input {
+    height: 22px;
+    padding: 4px;
+}
+ .navbar-nav>li.filter> .input-group.expanded {
+    width: 500px;
+}
+ .navbar-nav>li.filter .dropdown-menu {
+     min-width: auto;
+ }
 /*fixed left-menu*/
 .navbar-fixed-left {
     left: 0;
@@ -121,16 +141,32 @@ td.inline {
 }
 
 .tablelist tr.env-prod {
-    background-color: #ffcdd2;
-
+    background-color: #f3e5f5;
+}
+.tablelist tr.env-prod:hover {
+    background-color: #e1bee7;
 }
 .tablelist tr.env-staging,
 .tablelist tr.env-preprod {
-    background-color: #e0f2f1;
+    background-color: #D9EDF7;
+}
+.tablelist tr.env-staging:hover,
+.tablelist tr.env-preprod:hover {
+    background-color: #C4E3F3;
 }
 .tablelist tr.env-dev,
 .tablelist tr.env-demo {
-    background-color: #fff9c4;
+    background-color: #FCF8E3;
+}
+.tablelist tr.env-dev:hover,
+.tablelist tr.env-demo:hover {
+    background-color: #FAF2CC;
+}
+.tablelist tr.env-test {
+    background-color: #efebe9;
+}
+.tablelist tr.env-test:hover {
+    background-color: #d7ccc8;
 }
 
 .tablelist th.status {
@@ -145,7 +181,7 @@ td.inline {
 }
 
 .action-btns li a, .action-btns li {
-    display: inline-block;
+    float: left;
 }
 
 /*JobView*/

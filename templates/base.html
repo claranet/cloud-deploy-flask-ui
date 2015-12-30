@@ -6,7 +6,7 @@
 
 {% block styles %}
     {{super()}}
-    <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
 {% endblock %}
 
 {% block navbar %}
@@ -34,7 +34,6 @@
                     </li>
                     <li><a href="/web/jobs">Jobs</a></li>
                     <li><a href="/web/deployments">Deployments</a></li>
-                    <!-- li><a href="#about">About</a></li -->
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#" class="">{% if current_user.is_authenticated %}Hi {{ current_user.id }}!{% endif %}</a></li>
@@ -66,7 +65,7 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js?v={{current_revision}}"></script>
     <script>
         $(document).ready(function() {
             $('textarea').autosize();

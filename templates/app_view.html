@@ -37,6 +37,9 @@
             <a href="#root-block">Root Block Device</a>
         </li>
         <li>
+            <a href="#lifecycle-hooks">Lifecycle Hooks</a>
+        </li>
+        <li>
             <a href="#features">Features</a>
         </li>
         <li>
@@ -125,6 +128,23 @@
             <div class="row">
                 {{ ghost_display_field('app-environment_infos-root_block_device_size', 'Size (GiB)', app.get('environment_infos', {}).get('root_block_device', {})['size']) }}
                 {{ ghost_display_field('app-environment_infos-root_block_device_name', 'Name', app.get('environment_infos', {}).get('root_block_device', {})['name']) }}
+            </div>
+        </div>
+
+        <a name="lifecycle-hooks" class="anchor">&nbsp;</a>
+        <div class="panel-heading">Lifecycle Hooks</div>
+        <div class="panel-body">
+            <div class="row">
+                <label class="control-label col-md-1" for="lifecycle_hooks-pre_bootstrap">pre_bootstrap</label>
+                <div class="col-md-11" id="lifecycle_hooks-pre_bootstrap">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('pre_bootstrap', '')) }}
+                </div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-1" for="lifecycle_hooks-post_bootstrap">post_bootstrap</label>
+                <div class="col-md-11" id="lifecycle_hooks-post_bootstrap">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('post_bootstrap', '')) }}
+                </div>
             </div>
         </div>
 

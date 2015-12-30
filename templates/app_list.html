@@ -9,6 +9,40 @@
         <li>
             <a href="/web/apps/create" id="createApp"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</button></a>
         </li>
+        <li>
+            <ul class="nav navbar-nav filter-group">
+                <li role="presentation" class="dropdown filter first">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="/web/apps" role="button" aria-expanded="false">
+                        {{ request.args.get('g-env') or 'Env' }} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="?">- All -</a></li>
+                        {% for env in env_list: %}
+                        <li><a href="?where=env=={{ env }}&g-env={{ env }}">{{ env }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li role="presentation" class="dropdown filter">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="/web/apps" role="button" aria-expanded="false">
+                        {{ request.args.get('g-role') or 'Role' }} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="?">- All -</a></li>
+                        {% for role in role_list: %}
+                        <li><a href="?where=role=={{ role }}&g-role={{ role }}">{{ role }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="filter">
+                    <div class="input-group" id="global-search">
+                        <input type="text" class="form-control" placeholder="Search..." value="{{ request.args.get('g-search') or '' }}"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-xs" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </span>
+                    </div><!-- /input-group -->
+                </li>
+            </ul>
+        </li>
     </ul>
 {% endblock %}"
 
@@ -20,8 +54,8 @@
                 <th>Name / ID</th>
                 <th>Created / Modified</th>
                 <th>Environment</th>
-                <th>Role&nbsp;/<br>Features&nbsp;/<br>Modules</th>
-                <th>AWS Region&nbsp;/<br>VPC&nbsp;/<br>Instance Type</th>
+                <th>Role / Features / Modules</th>
+                <th>AWS Region / Instance Type / VPC</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -29,4 +63,56 @@
             {% include 'app_list_content.html' %}
         </tbody>
     </table>
+{% endblock %}
+{% block page_scripts %}
+    <script>
+        var getUrlParameter = function getUrlParameter(sParam, sDefault) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+        
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+        
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+            return sDefault;
+        };
+        
+        function searchInList() {
+            var searchValue = $('#global-search input').val();
+            if (searchValue == '' || !searchValue) {
+                window.location.href = '?';
+            } else {
+                var params = {  };
+                params["where"] = '{"name":{"$regex":".*'+searchValue+'.*"}}';
+                params["g-search"] = searchValue;
+                var newUrl = "?" + $.param(params);
+                window.location.href = newUrl;
+            }
+        }
+        
+        $(document).ready(function() {
+            $('#global-search').focusin(function () {
+                $('#global-search').addClass('expanded');
+            });
+            $('#global-search').focusout(function () {
+                $('#global-search').removeClass('expanded');
+            });
+            $('#global-search button').click(function (evt) {
+                evt.preventDefault();
+                searchInList();
+            });
+            $('#global-search input').keypress(function (e) {
+                if (e.which == 13) {
+                    searchInList();
+                    return false;  
+                }
+            });
+            $('#global-search input').val(getUrlParameter('search'));
+        });
+    </script>
 {% endblock %}

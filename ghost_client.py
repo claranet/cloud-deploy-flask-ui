@@ -88,6 +88,14 @@ def get_ghost_app(app_id):
         app = result.json()
         handle_response_status_code(result.status_code)
 
+        # Decode lifecycle hooks scripts
+        lifecycle_hooks = app.get('lifecycle_hooks', None)
+        if lifecycle_hooks is not None:
+            if 'pre_bootstrap' in lifecycle_hooks:
+                lifecycle_hooks['pre_bootstrap'] = b64decode(lifecycle_hooks['pre_bootstrap'])
+            if 'post_bootstrap' in lifecycle_hooks:
+                lifecycle_hooks['post_bootstrap'] = b64decode(lifecycle_hooks['post_bootstrap'])
+
         # Decode module scripts
         for module in app.get('modules', []):
             if 'build_pack' in module:
