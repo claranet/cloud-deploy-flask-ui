@@ -219,11 +219,13 @@ def cancel_ghost_job(job_id, local_headers):
     return do_request(requests.delete, url=url_jobs + '/' + job_id + '/enqueueings', data=None, headers=local_headers, success_message='Job cancelled', failure_message='Job cancellation failed')
 
 
-def get_ghost_deployments(query=None):
+def get_ghost_deployments(query=None, page=None):
     try:
         url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"app_id": 1, "job_id": 1}'
         if query:
             url += "&where=" + query
+        if page:
+            url += "&page="  + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         deployments = result.json().get('_items', [])
