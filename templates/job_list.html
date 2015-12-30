@@ -4,6 +4,42 @@
 
 {% block page_header %}
     <caption>Sorted by creation date</caption>
+    <ul class="nav nav-stacked action-btns">
+        <li>
+        <ul class="nav navbar-nav filter-group">
+            <li role="presentation" class="dropdown filter first">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="/web/jobs" role="button" aria-expanded="false">
+                    {{ request.args.get('g-status') or 'Status' }} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="?">- All -</a></li>
+                    {% for status in statuses: %}
+                    <li><a href="?where=status=={{ status }}&g-status={{ status }}">{{ status }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li role="presentation" class="dropdown filter">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="/web/jobs" role="button" aria-expanded="false">
+                    {{ request.args.get('g-command') or 'Command' }} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="?">- All -</a></li>
+                    {% for command in command_list: %}
+                    <li><a href="?where=command=={{ command }}&g-command={{ command }}">{{ command }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="filter">
+                <div class="input-group" id="global-search">
+                    <input type="text" class="form-control" placeholder="Search user..." value="{{ request.args.get('g-search') or '' }}"/>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-xs" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                    </span>
+                </div><!-- /input-group -->
+            </li>
+        </ul>
+        </li>
+    </ul>
 {% endblock %}"
 
 {% block page_content %}
@@ -62,4 +98,56 @@
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+{% block page_scripts %}
+    <script>
+        var getUrlParameter = function getUrlParameter(sParam, sDefault) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+        
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+        
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+            return sDefault;
+        };
+        
+        function searchInList() {
+            var searchValue = $('#global-search input').val();
+            if (searchValue == '' || !searchValue) {
+                window.location.href = '?';
+            } else {
+                var params = {  };
+                params["where"] = '{"user":{"$regex":".*'+searchValue+'.*"}}';
+                params["g-search"] = searchValue;
+                var newUrl = "?" + $.param(params);
+                window.location.href = newUrl;
+            }
+        }
+        
+        $(document).ready(function() {
+            $('#global-search').focusin(function () {
+                $('#global-search').addClass('expanded');
+            });
+            $('#global-search').focusout(function () {
+                $('#global-search').removeClass('expanded');
+            });
+            $('#global-search button').click(function (evt) {
+                evt.preventDefault();
+                searchInList();
+            });
+            $('#global-search input').keypress(function (e) {
+                if (e.which == 13) {
+                    searchInList();
+                    return false;  
+                }
+            });
+            $('#global-search input').val(getUrlParameter('search'));
+        });
+    </script>
 {% endblock %}
