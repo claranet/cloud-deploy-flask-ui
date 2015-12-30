@@ -105,8 +105,10 @@ def web_app_list():
     page = request.args.get('page', None)
     apps = get_ghost_apps(query, page)
     if request.is_xhr:
-        return render_template('app_list_content.html', apps=apps, page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
-    return render_template('app_list.html', apps=apps, page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
+        return render_template('app_list_content.html', apps=apps,
+                               page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+    return render_template('app_list.html', apps=apps,
+                           page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
@@ -260,11 +262,19 @@ def web_app_delete(app_id):
 @app.route('/web/jobs')
 def web_job_list():
     query = request.args.get('where', None)
+    page = request.args.get('page', None)
     jobs = get_ghost_jobs(query)
+
+    if request.is_xhr:
+        return render_template('job_list_content.html',jobs=jobs,
+                           deletable_job_statuses=DELETABLE_JOB_STATUSES,
+                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
+                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
 
     return render_template('job_list.html', jobs=jobs,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
-                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES)
+                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
+                           page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
 
 @app.route('/web/jobs/<job_id>', methods=['GET'])
 def web_job_view(job_id):

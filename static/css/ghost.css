@@ -136,6 +136,9 @@ td.inline {
 }
 
 /*Generic List*/
+.top-right {
+    float: right;
+}
 #loadmoreajaxloader td {
     text-align: center;
 }

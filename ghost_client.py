@@ -141,11 +141,13 @@ def delete_ghost_app(app_id, local_headers):
     return do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
 
 
-def get_ghost_jobs(query=None):
+def get_ghost_jobs(query=None, page=None):
     try:
         url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
         if query:
             url += "&where=" + query
+        if page:
+            url += "&page="  + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         jobs = result.json().get('_items', [])

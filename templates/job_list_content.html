@@ -1,0 +1,37 @@
+{% for job in jobs | sort(reverse=True, attribute='_created') %}
+    {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+<tr class="env-{{ app['env'] }}">
+    <th scope="row" class="status status-{{ job['status'] }}">{{ (page-1) * pageSize + loop.index }}</th>
+    <td>
+        <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
+    </td>
+    <td>
+        {{ job['_created'] }}
+        <br>
+        {{ job['_updated'] }}</td>
+    <td>
+        <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
+    </td>
+    <td>{{ job['command'] }}</td>
+    <td>{{ job['status'] }}</td>
+    <td>{{ job['user'] }}</td>
+    <td>
+        {% for option in job['options'] %}
+            {{ option }}<br>
+        {% endfor %}
+    </td>
+    <td>
+        {% for module in job['modules'] %}
+            Name:&nbsp;{{ module['name'] }}
+            <br>
+            Revision:&nbsp;{{ module['rev'] }}
+            <br>
+            Deploy ID:&nbsp;{{ module['deploy_id'] or '-' }}<br>
+        {% endfor %}
+    </td>
+    <td>
+        <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-danger" {%- if job['status'] not in cancellable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-ban-circle"></span> Cancel</button></a>
+        <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-danger" {%- if job['status'] not in deletable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
+    </td>
+</tr>
+{% endfor %}
