@@ -102,13 +102,13 @@ def web_amis_list(region_id):
 @app.route('/web/apps')
 def web_app_list():
     query = request.args.get('where', None)
-    page = request.args.get('page', None)
+    page = request.args.get('page', '1')
     apps = get_ghost_apps(query, page)
     if request.is_xhr:
         return render_template('app_list_content.html', apps=apps,
                                page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
     return render_template('app_list.html', apps=apps,
-                           page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
@@ -262,7 +262,7 @@ def web_app_delete(app_id):
 @app.route('/web/jobs')
 def web_job_list():
     query = request.args.get('where', None)
-    page = request.args.get('page', None)
+    page = request.args.get('page', '1')
     jobs = get_ghost_jobs(query, page)
 
     if request.is_xhr:
@@ -274,7 +274,7 @@ def web_job_list():
     return render_template('job_list.html', jobs=jobs,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
                            cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                           page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
 
 @app.route('/web/jobs/<job_id>', methods=['GET'])
 def web_job_view(job_id):
@@ -329,7 +329,7 @@ def web_job_cancel(job_id):
 @app.route('/web/deployments')
 def web_deployments_list():
     query = request.args.get('where', None)
-    page = request.args.get('page', None)
+    page = request.args.get('page', '1')
     deployments = get_ghost_deployments(query, page)
 
     if request.is_xhr:
@@ -337,7 +337,7 @@ def web_deployments_list():
                                page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
 
     return render_template('deployment_list.html', deployments=deployments,
-                           page=1, pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
 
 @app.route('/web/deployments/<deployment_id>', methods=['GET'])
 def web_deployments_view(deployment_id):
