@@ -8,6 +8,7 @@ import sys
 from sh import git
 
 from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES
+from models.apps import apps_schema as ghost_app_schema
 
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app, retrieve_ghost_app_modules_last_deployments
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
@@ -64,14 +65,18 @@ def load_user_from_request(request):
 def before_request():
     pass
 
+@app.context_processor
+def env_list():
+    return dict(env_list=ghost_app_schema['env']['allowed'], role_list=ghost_app_schema['role']['allowed'])
+
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
-finally:
-    CURRENT_REVISION = 's151201'
+except:
+    CURRENT_REVISION = dict(current_revision='s160104')
 
 @app.context_processor
 def current_revision():
-    return dict(current_revision=CURRENT_REVISION)
+    return CURRENT_REVISION
 
 @app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(region_id):
@@ -118,15 +123,6 @@ def web_app_create():
             subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         for sg in  form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
-    elif not form.is_submitted() and clone_from_app:
-        form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
-        form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
-        form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
-        form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
-        for subnet in form.environment_infos.subnet_ids:
-            subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
-        for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(clone_from_app['region'], clone_from_app['vpc_id'])
 
     # Perform validation
     if form.validate_on_submit():
@@ -139,6 +135,15 @@ def web_app_create():
 
     if clone_from_app:
         form.map_from_app(clone_from_app)
+        if not form.is_submitted():
+            form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
+            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
+            form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
+            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+            for subnet in form.environment_infos.subnet_ids:
+                subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+            for sg in  form.environment_infos.security_groups:
+                sg.choices = get_aws_sg_ids(clone_from_app['region'], clone_from_app['vpc_id'])
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=False)
@@ -209,17 +214,14 @@ def web_app_edit(app_id):
 def web_app_command(app_id):
     form = CommandAppForm(app_id)
 
-    # Select default instance type from app
-    app = get_ghost_app(app_id)
-    form.instance_type.choices = get_aws_ec2_instance_types(app["region"])
-
     # Perform validation
     if form.validate_on_submit():
         message = create_ghost_job(app_id, form, headers)
 
         return render_template('action_completed.html', message=message)
 
-    form.map_from_app(app)
+    # Display default template in GET case
+    app = get_ghost_app(app_id)
 
     return render_template('app_command.html', form=form, app=app)
 
