@@ -269,6 +269,9 @@ def web_job_list():
 def web_job_view(job_id):
     job = get_ghost_job(job_id)
 
+    if request.is_xhr:
+        return jsonify(job)
+
     return render_template('job_view.html', job=job,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
                            cancellable_job_statuses=CANCELLABLE_JOB_STATUSES)
