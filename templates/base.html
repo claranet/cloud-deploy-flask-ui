@@ -6,6 +6,7 @@
 
 {% block styles %}
     {{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-select.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-material-design.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ripples.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
@@ -68,6 +69,7 @@
 {% block scripts %}
     {{ super() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/bootstrap-select.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/ripples.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/material.min.js')}}?v={{current_revision}}"></script>
     <script>
@@ -75,6 +77,9 @@
         
         $(document).ready(function() {
             $('textarea').autosize();
+            $('select').selectpicker({
+                style: 'btn-info',
+            });
         });
 
         var $loading = $('#ajaxSpinnerImage').hide();
