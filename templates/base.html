@@ -101,6 +101,9 @@
                 {
                     if (html) {
                         $('tr#loadmoreajaxloader').before(html);
+                        $('table.tablelist tbody tr').each(function() {
+                            $(this).find('th').html($(this).index() + 1);
+                        });
                         $('tr#loadmoreajaxloader td').hide();
                         if ($('body').innerHeight() < $(window).height()) { //fetchfing next page to fill the document 
                             fetchNextPage();

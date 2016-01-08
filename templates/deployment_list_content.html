@@ -2,7 +2,7 @@
     {% set app = deployment['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
     {% set job = deployment['job_id'] or {'_id': '', 'user': '-', '_created': '-', '_updated': '-'} %}
 <tr class="env-{{ app['env'] }}">
-    <th scope="row">{{ (page-1) * pageSize + loop.index }}</th>
+    <th scope="row">{{ loop.index }}</th>
     <td>
         <a href="/web/deployments/{{ deployment['_id'] }}">{{ deployment['_id'] }}</a>
     </td>

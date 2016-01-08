@@ -1,7 +1,6 @@
 from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, login_required
-from settings import __dict__ as eve_settings
 
 from base64 import b64decode
 import traceback
@@ -109,9 +108,9 @@ def web_app_list():
     apps = get_ghost_apps(query, page)
     if request.is_xhr:
         return render_template('app_list_content.html', apps=apps,
-                               page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+                               page=int(page))
     return render_template('app_list.html', apps=apps,
-                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page))
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
@@ -272,12 +271,12 @@ def web_job_list():
         return render_template('job_list_content.html', jobs=jobs,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
                            cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page))
 
     return render_template('job_list.html', jobs=jobs,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
                            cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page))
 
 @app.route('/web/jobs/<job_id>', methods=['GET'])
 def web_job_view(job_id):
@@ -340,10 +339,10 @@ def web_deployments_list():
 
     if request.is_xhr:
         return render_template('deployment_list_content.html', deployments=deployments,
-                               page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+                               page=int(page))
 
     return render_template('deployment_list.html', deployments=deployments,
-                           page=int(page), pageSize=eve_settings['PAGINATION_DEFAULT'])
+                           page=int(page))
 
 @app.route('/web/deployments/<deployment_id>', methods=['GET'])
 def web_deployments_view(deployment_id):
