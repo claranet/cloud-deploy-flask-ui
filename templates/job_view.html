@@ -113,7 +113,7 @@
             var currentStatus = "{{ job['status'] }}";
 
             if (currentStatus == 'init'
-             || currentStatus == 'running') {
+             || currentStatus == 'started') {
                 setInterval(function() {
                     $.ajax({
                         url: $(location).attr('href'),
