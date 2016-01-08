@@ -44,7 +44,11 @@ span.index:after {
 .sidebar-outer {
     position: relative;
 }
-
+#ajaxSpinnerContainer {
+    position: absolute;
+    top: 5px;
+    left: 49%;
+}
 .panel .row {
   margin: 0;
 }
