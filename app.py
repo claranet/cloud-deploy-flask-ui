@@ -8,7 +8,7 @@ import traceback
 import sys
 from sh import git
 
-from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES
+from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_STATUSES, jobs_schema as ghost_jobs_schema
 from models.apps import apps_schema as ghost_app_schema
 
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app, retrieve_ghost_app_modules_last_deployments
@@ -68,7 +68,10 @@ def before_request():
 
 @app.context_processor
 def env_list():
-    return dict(env_list=ghost_app_schema['env']['allowed'], role_list=ghost_app_schema['role']['allowed'])
+    return dict(env_list=ghost_app_schema['env']['allowed'],
+                role_list=ghost_app_schema['role']['allowed'],
+                statuses=JOB_STATUSES,
+                command_list=ghost_jobs_schema['command']['allowed'])
 
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
@@ -279,6 +282,9 @@ def web_job_list():
 @app.route('/web/jobs/<job_id>', methods=['GET'])
 def web_job_view(job_id):
     job = get_ghost_job(job_id)
+
+    if request.is_xhr:
+        return jsonify(job)
 
     return render_template('job_view.html', job=job,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,

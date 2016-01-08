@@ -189,7 +189,9 @@ td.inline {
 .action-btns li a, .action-btns li {
     float: left;
 }
-
+.action-btns ul.dropdown-menu li {
+    width: 100%;
+}
 /*JobView*/
 .jobview #log {
     clear: both;
