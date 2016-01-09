@@ -93,9 +93,11 @@
         function fetchNextPage() {
             $('tr#loadmoreajaxloader td').show();
             currentPage = currentPage + 1;
+            // Don't use 'href' attr, because it can contains the 'hash' attribute
+            var currentURI = $(location).attr('origin') + $(location).attr('pathname') + $(location).attr('search');
             var loadMoreUrl = withQuery
-                ? $(location).attr('href') + '&page=' + currentPage
-                : $(location).attr('href') + '?page=' + currentPage;
+                ? currentURI + '&page=' + currentPage
+                : currentURI + '?page=' + currentPage;
             $.ajax({
                 url: loadMoreUrl,
                 success: function(html)
