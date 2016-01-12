@@ -72,6 +72,9 @@ span.index:after {
 .sidebar.navbar-fixed-top .action-btns li .input-group {
     padding: 5px;
 }
+ul.nav.navbar-nav {
+    height: 50px;
+}
  .navbar-nav>li.filter> a,
  .navbar-nav>li.filter> .input-group {
     padding: 11px;
@@ -195,6 +198,9 @@ td.inline {
 
 .action-btns li a, .action-btns li {
     float: left;
+}
+.action-btns li a:hover {
+    background: transparent;
 }
 .action-btns ul.dropdown-menu li {
     width: 100%;
