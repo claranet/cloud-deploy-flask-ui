@@ -7,7 +7,7 @@ import traceback
 import sys
 from sh import git
 
-from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES
+from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_STATUSES, jobs_schema as ghost_jobs_schema
 from models.apps import apps_schema as ghost_app_schema
 
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app, retrieve_ghost_app_modules_last_deployments
@@ -67,7 +67,10 @@ def before_request():
 
 @app.context_processor
 def env_list():
-    return dict(env_list=ghost_app_schema['env']['allowed'], role_list=ghost_app_schema['role']['allowed'])
+    return dict(env_list=ghost_app_schema['env']['allowed'],
+                role_list=ghost_app_schema['role']['allowed'],
+                statuses=JOB_STATUSES,
+                command_list=ghost_jobs_schema['command']['allowed'])
 
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
@@ -101,8 +104,13 @@ def web_amis_list(region_id):
 @app.route('/web/apps')
 def web_app_list():
     query = request.args.get('where', None)
-    apps = get_ghost_apps(query)
-    return render_template('app_list.html', apps=apps)
+    page = request.args.get('page', '1')
+    apps = get_ghost_apps(query, page)
+    if request.is_xhr:
+        return render_template('app_list_content.html', apps=apps,
+                               page=int(page))
+    return render_template('app_list.html', apps=apps,
+                           page=int(page))
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
@@ -256,15 +264,26 @@ def web_app_delete(app_id):
 @app.route('/web/jobs')
 def web_job_list():
     query = request.args.get('where', None)
-    jobs = get_ghost_jobs(query)
+    page = request.args.get('page', '1')
+    jobs = get_ghost_jobs(query, page)
+
+    if request.is_xhr:
+        return render_template('job_list_content.html', jobs=jobs,
+                           deletable_job_statuses=DELETABLE_JOB_STATUSES,
+                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
+                           page=int(page))
 
     return render_template('job_list.html', jobs=jobs,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
-                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES)
+                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
+                           page=int(page))
 
 @app.route('/web/jobs/<job_id>', methods=['GET'])
 def web_job_view(job_id):
     job = get_ghost_job(job_id)
+
+    if request.is_xhr:
+        return jsonify(job)
 
     return render_template('job_view.html', job=job,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
@@ -315,9 +334,15 @@ def web_job_cancel(job_id):
 @app.route('/web/deployments')
 def web_deployments_list():
     query = request.args.get('where', None)
-    deployments = get_ghost_deployments(query)
+    page = request.args.get('page', '1')
+    deployments = get_ghost_deployments(query, page)
 
-    return render_template('deployment_list.html', deployments=deployments)
+    if request.is_xhr:
+        return render_template('deployment_list_content.html', deployments=deployments,
+                               page=int(page))
+
+    return render_template('deployment_list.html', deployments=deployments,
+                           page=int(page))
 
 @app.route('/web/deployments/<deployment_id>', methods=['GET'])
 def web_deployments_view(deployment_id):

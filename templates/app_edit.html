@@ -181,6 +181,20 @@
             evt.preventDefault();
             $('#app-form #submit').click();
         });
+        $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
+            var path = $(this).val();
+            if (path == '/' || path == '/tmp' || path == '/var' || path == '/etc') {
+                $(this).popover({
+                    content: '<span><i class="glyphicon glyphicon-warning-sign">&nbsp;</i>Module path should not be "/", "/tmp", "/etc" or "/var"</span>',
+                    html: true,
+                    placement: 'top'
+                });
+                $(this).popover('show');
+            } else {
+                $(this).popover('hide');
+                $(this).popover('destroy');
+            }
+        });
     })();
     </script>
 {% endblock %}

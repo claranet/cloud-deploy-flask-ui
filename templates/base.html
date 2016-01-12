@@ -5,6 +5,24 @@
 {% block title %}Morea GHOST - {{ page_title }}{% endblock %}
 
 {% block styles %}
+    <link rel="apple-touch-icon" sizes="57x57" href="{{url_for('.static', filename='favicon/apple-icon-57x57.png')}}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{url_for('.static', filename='favicon/apple-icon-60x60.png')}}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{url_for('.static', filename='favicon/apple-icon-72x72.png')}}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{url_for('.static', filename='favicon/apple-icon-76x76.png')}}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{url_for('.static', filename='favicon/apple-icon-114x114.png')}}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{url_for('.static', filename='favicon/apple-icon-120x120.png')}}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{url_for('.static', filename='favicon/apple-icon-144x144.png')}}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{url_for('.static', filename='favicon/apple-icon-152x152.png')}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('.static', filename='favicon/apple-icon-180x180.png')}}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{{url_for('.static', filename='favicon/android-icon-192x192.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('.static', filename='favicon/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{url_for('.static', filename='favicon/favicon-96x96.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('.static', filename='favicon/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{url_for('.static', filename='favicon/manifest.json')}}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{{url_for('.static', filename='favicon/ms-icon-144x144.png')}})">
+    <meta name="theme-color" content="#ffffff">
+
     {{super()}}
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-select.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-material-design.min.css')}}?v={{current_revision}}">
@@ -22,7 +40,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="pull-left" href="/web/apps"><img alt="Morea GHOST" src="{{ url_for('static', filename='logo.png')}}" /></a>
+                <a class="pull-left" href="/web/apps"><img height="45" alt="Logo Morea" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -39,6 +57,7 @@
                     <li><a href="/web/deployments">Deployments</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li><img height="49" alt="Logo Ghost" src="{{ url_for('static', filename='logo_ghost.png')}}?v={{current_revision}}" /></li>
                     <li><a href="#" class="">{% if current_user.is_authenticated %}Hi {{ current_user.id }}!{% endif %}</a></li>
                 </ul>
             </div>
@@ -51,7 +70,7 @@
         <h1 style="overflow: hidden; text-overflow: ellipsis" title="{{ page_title }}">{{ page_title }}</h1>
 
         <div id="ajaxSpinnerContainer">
-            <img src="{{ url_for('static', filename='ajax-loader.gif')}}" id="ajaxSpinnerImage" title="working...">
+            <img src="{{ url_for('static', filename='ajax-loader.gif')}}" id="ajaxSpinnerImage" alt="Loading...">
         </div>
 
         {% block page_header %}
@@ -72,6 +91,55 @@
     <script src="{{url_for('.static', filename='js/bootstrap-select.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/ripples.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/material.min.js')}}?v={{current_revision}}"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var currentPage = 1;
+        var withQuery = $(location).attr('search') && $(location).attr('search') != "";
+
+        function fetchNextPage() {
+            $('tr#loadmoreajaxloader td').show();
+            currentPage = currentPage + 1;
+            // Don't use 'href' attr, because it can contains the 'hash' attribute
+            var currentURI = $(location).attr('origin') + $(location).attr('pathname') + $(location).attr('search');
+            var loadMoreUrl = withQuery
+                ? currentURI + '&page=' + currentPage
+                : currentURI + '?page=' + currentPage;
+            $.ajax({
+                url: loadMoreUrl,
+                success: function(html)
+                {
+                    if (html) {
+                        $('tr#loadmoreajaxloader').before(html);
+                        $('table.tablelist tbody tr').each(function() {
+                            $(this).find('th').html($(this).index() + 1);
+                        });
+                        $('tr#loadmoreajaxloader td').hide();
+                        if ($('body').innerHeight() < $(window).height()) { //fetchfing next page to fill the document 
+                            fetchNextPage();
+                        }
+                    } else {
+                        $('tr#loadmoreajaxloader td').html('<a href="#"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>');
+                        $(window).unbind('scroll');
+                        $('tr#loadmoreajaxloader td').show();
+                    }
+                }
+            });
+        }
+
+        if ($('table.tablelist').length > 0) {
+            $(window).scroll(function()
+            {
+                if ($(window).scrollTop() == $(document).height() - $(window).height()) //bottom of the window
+                {
+                    fetchNextPage();
+                }
+            });
+            if ($('body').innerHeight() < $(window).height()) { //fetchfing next page to fill the document 
+                fetchNextPage();
+            }
+        }
+    });
+    </script>
     <script>
         $.material.init()
         

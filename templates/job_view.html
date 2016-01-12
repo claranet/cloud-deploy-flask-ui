@@ -100,7 +100,7 @@
             var socket = io.connect({transports: ['websocket']});
             var last_pos = 0;
             socket.on('connect', function() {
-                socket.emit('job_logging', {log_id: '{{ job['log_id'] }}', last_pos: last_pos });
+                socket.emit('job_logging', {log_id: "{{ job['log_id'] }}", last_pos: last_pos });
             });
             socket.on('job', function(data) {
                 last_pos = data['last_pos'];
@@ -108,7 +108,27 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var currentStatus = "{{ job['status'] }}";
 
+            if (currentStatus == 'init'
+             || currentStatus == 'started') {
+                setInterval(function() {
+                    $.ajax({
+                        url: $(location).attr('href'),
+                        success: function(job) {
+                            if (job.status != currentStatus) {
+                                window.location.reload();
+                            } else {
+                                console.log('Waiting 5s before next check');
+                            }
+                        }
+                    });
+                }, 5000); //5s check
+            }
+        });
+    </script>
     <script type="text/javascript">
     (function() {
         var scrollActivated = true;
