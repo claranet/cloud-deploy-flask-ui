@@ -100,10 +100,10 @@ ul.nav.navbar-nav {
     position: fixed;
 }
 .app-panel {
-    margin-left: 10%;
+    margin-left: 15%;
 }
 #left-menu {
-    width: 10%;
+    width: 15%;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -226,6 +226,20 @@ td.inline {
 /*Command*/
 .command_options {
     margin: 10px 0;
+}
+
+/**
+** Material fixes
+**/
+
+.form-group {
+    margin: 0;
+}
+ul.filter-group {
+    margin-top: 10px;
+}
+li.quick-submit button.btn.btn-xs {
+    padding: 4px 6px;
 }
 
 /**
