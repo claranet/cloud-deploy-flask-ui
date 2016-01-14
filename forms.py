@@ -743,6 +743,10 @@ class CommandAppForm(Form):
         # Get the instance types in the Ghost application's region
         self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
 
+    def map_from_app(self, app):
+        """
+        Map app data from app to form
+        """
         # Use the instance type of the Ghost application as default
         self.instance_type.data = app.get('instance_type', '')
 

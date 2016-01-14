@@ -230,6 +230,7 @@ def web_app_command(app_id):
 
     # Display default template in GET case
     app = get_ghost_app(app_id)
+    form.map_from_app(app)
 
     return render_template('app_command.html', form=form, app=app)
 
