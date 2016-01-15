@@ -303,10 +303,12 @@
                 // fixed
                 $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
                 $('.sidebar').addClass('navbar-fixed-top');
+                $('.app-panel').addClass('fixed-top-menu');
                 $('#header').addClass('no-shadow');
             } else {
                 // relative
                 $('.sidebar').removeClass('navbar-fixed-top');
+                $('.app-panel').removeClass('fixed-top-menu');
                 $('.sidebar').next().css('margin-top', '0');
                 $('#header').removeClass('no-shadow');
             }
