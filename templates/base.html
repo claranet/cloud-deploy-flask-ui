@@ -299,7 +299,7 @@
     <script type="text/javascript">
         var positionElementInPage = $('.sidebar').offset().top - 20;
         function updateMenusPositions() {
-            if ($(window).scrollTop() >= positionElementInPage) {
+            if ($(window).scrollTop() >= positionElementInPage || $('.app-panel').length > 0) {
                 // fixed
                 $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
                 $('.sidebar').addClass('navbar-fixed-top');
@@ -318,12 +318,14 @@
                 $('#left-menu').css('top', headingHeight + 'px');
             }
         }
-        $(window).scroll(function() {
-            updateMenusPositions();
-        });
-        $(window).on('resize', function() {
-            updateMenusPositions();
-        });
+        if ($('.app-panel').length == 0) {
+            $(window).scroll(function() {
+                updateMenusPositions();
+            });
+            $(window).on('resize', function() {
+                updateMenusPositions();
+            });
+        }
         $(document).ready(function() {
             updateMenusPositions();
         });

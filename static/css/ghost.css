@@ -258,6 +258,7 @@ li.quick-submit button.btn.btn-xs {
 button.btn.dropdown-toggle {
     border: 1px solid #CCC;
     padding-left: 5px;
+    text-transform: inherit;
 }
 
 /**
