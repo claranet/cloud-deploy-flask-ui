@@ -165,13 +165,34 @@
               $.each(data,function(key, value) {
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
-              $('select#vpc_id').change();
           }).fail(function() {
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
         }
-        
-        function ghost_update_sgs(region, vpc_id) {
+
+        function ghost_update_ec2_keys(region) {
+          $('select#environment_infos-instance_profile').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/ec2/keypairs").done(function(data) {
+              $.each(data,function(key, value) {
+                $('select#environment_infos-instance_profile').append('<option value=' + key + '>' + value + '</option>');
+              });
+          }).fail(function() {
+              alert("Failed to retrieve EC2 KeyPairs for region " + region);
+          });
+        }
+
+        function ghost_update_iam_profiles(region) {
+          $('select#environment_infos-key_name').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/iam/profiles").done(function(data) {
+              $.each(data,function(key, value) {
+                $('select#environment_infos-key_name').append('<option value=' + key + '>' + value + '</option>');
+              });
+          }).fail(function() {
+              alert("Failed to retrieve IAM Instance Profiles for region " + region);
+          });
+        }
+
+        function ghost_update_vpc_sgs(region, vpc_id) {
           $('[id^=environment_infos-security_groups]').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/sg/ids").done(function(data) {
               // Update SGs select input options
@@ -185,7 +206,7 @@
           });
         }
 
-        function ghost_update_subnets(region, vpc_id) {
+        function ghost_update_vpc_subnets(region, vpc_id) {
           $('[id^=environment_infos-subnet]').find('option').remove();
           $('#build_infos-subnet_id').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/subnet/ids").done(function(data) {
@@ -202,7 +223,7 @@
           });
         }
         
-        function ghost_update_amis(region) {
+        function ghost_update_ec2_amis(region) {
           $('[id^=build_infos-source_ami]').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/ami/ids").done(function(data) {
               // Update AMIs select input options
@@ -217,13 +238,17 @@
         }
 
         $('select#region').change(function() {
-            ghost_update_ec2_instancetypes($(this).val());
-            ghost_update_ec2_vpcs($(this).val());
-            ghost_update_amis($(this).val());
+            var region = $(this).val();
+            ghost_update_ec2_instancetypes(region);
+            ghost_update_ec2_vpcs(region);
+            ghost_update_ec2_keys(region);
+            ghost_update_ec2_amis(region);
+            ghost_update_iam_profiles(region);
         });
         $('select#vpc_id').change(function() {
-            ghost_update_sgs($('select#region').val(), $(this).val());
-            ghost_update_subnets($('select#region').val(), $(this).val());
+            var vpcid = $(this).val();
+            ghost_update_vpc_sgs($('select#region').val(), vpcid);
+            ghost_update_vpc_subnets($('select#region').val(), vpcid);
         });
 
         function ghost_update_command_deploy_revision(module) {

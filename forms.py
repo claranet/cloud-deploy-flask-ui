@@ -10,6 +10,7 @@ from base64 import b64encode
 import traceback
 import boto.vpc
 import boto.ec2
+import boto.iam
 import aws_data
 
 from models.apps import apps_schema as ghost_app_schema
@@ -98,6 +99,24 @@ def get_aws_subnet_ids(region, vpc_id):
     except:
         traceback.print_exc()
     return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
+
+def get_aws_iam_instance_profiles(region):
+    profiles = []
+    try:
+        c = boto.iam.connect_to_region(region)
+        profiles = c.list_instance_profiles()
+    except:
+        traceback.print_exc()
+    return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles.instance_profiles]
+
+def get_aws_ec2_key_pairs(region):
+    keys = []
+    try:
+        c = boto.ec2.connect_to_region(region)
+        keys = c.get_all_key_pairs()
+    except:
+        traceback.print_exc()
+    return [(key.name, key.name + ' (' + key.fingerprint + ')') for key in keys]
 
 def get_aws_ec2_regions():
     regions = []
@@ -245,14 +264,14 @@ class EnvironmentInfosForm(Form):
         )
     ]), min_entries=1)
 
-    instance_profile = StringField('Instance Profile', validators=[
+    instance_profile = SelectField('Instance Profile', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
         )
     ])
 
-    key_name = StringField('Key Name', validators=[
+    key_name = SelectField('Key Name', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['key_name']['regex']
@@ -695,6 +714,8 @@ class CreateAppForm(BaseAppForm):
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
+        self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
+        self.environment_infos.key_name.choices = [('', 'Please select region first')]
         self.build_infos.source_ami.choices = [('', 'Please select region first')]
         self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
         self.environment_infos.subnet_ids[0].choices = [('', 'Please select VPC first')]
