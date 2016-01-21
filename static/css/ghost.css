@@ -235,14 +235,29 @@ td.inline {
 ** Material fixes
 **/
 
+body {
+    background-color: #f5f5f5;
+}
 .form-group {
     margin: 0;
 }
+label.control-label
+,.form-group label.control-label {
+    color: #555;
+}
+.navbar-nav>li.filter> .input-group input::-webkit-input-placeholder { font-size: 12px; }
+.navbar-nav>li.filter> .input-group input:-moz-placeholder { font-size: 12px; }
+.navbar-nav>li.filter> .input-group input::-moz-placeholder { font-size: 12px; }
+.navbar-nav>li.filter> .input-group input:-ms-input-placeholder { font-size: 12px; }
 ul.filter-group {
     margin-top: 10px;
 }
 li.quick-submit button.btn.btn-xs {
     padding: 4px 6px;
+}
+button.btn.dropdown-toggle {
+    border: 1px solid #CCC;
+    padding-left: 5px;
 }
 
 /**
