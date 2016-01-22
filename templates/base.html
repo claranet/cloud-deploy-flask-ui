@@ -165,16 +165,18 @@
               $.each(data,function(key, value) {
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#vpc_id').change();
           }).fail(function() {
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
         }
 
         function ghost_update_ec2_keys(region) {
-          $('select#environment_infos-instance_profile').find('option').remove();
+          $('select#environment_infos-key_name').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/ec2/keypairs").done(function(data) {
+              // Update Key Pairs select input options
               $.each(data,function(key, value) {
-                $('select#environment_infos-instance_profile').append('<option value=' + key + '>' + value + '</option>');
+                $('select#environment_infos-key_name').append('<option value=' + key + '>' + value + '</option>');
               });
           }).fail(function() {
               alert("Failed to retrieve EC2 KeyPairs for region " + region);
@@ -182,10 +184,11 @@
         }
 
         function ghost_update_iam_profiles(region) {
-          $('select#environment_infos-key_name').find('option').remove();
+          $('select#environment_infos-instance_profile').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/iam/profiles").done(function(data) {
+              // Update Instance Profiles select input options
               $.each(data,function(key, value) {
-                $('select#environment_infos-key_name').append('<option value=' + key + '>' + value + '</option>');
+                $('select#environment_infos-instance_profile').append('<option value=' + key + '>' + value + '</option>');
               });
           }).fail(function() {
               alert("Failed to retrieve IAM Instance Profiles for region " + region);
