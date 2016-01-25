@@ -134,7 +134,17 @@
         }
     });
     </script>
-    <script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('form input#submit').click(function(evt) {
+                if ($(this).is(':disabled')) {
+                    evt.preventDefault();
+                }
+                $(this).attr('disabled', 'disabled');
+            });
+        });
+    </script>
+    <script type="text/javascript">
         $(document).ready(function() {
             $('textarea').autosize();
         });
