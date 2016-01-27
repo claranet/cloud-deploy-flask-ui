@@ -1,6 +1,6 @@
 {% for app in apps | sort(reverse=True, attribute='_updated') %}
-<tr class="env-{{ app['env'] }}">
-    <th scope="row">{{ loop.index }}</th>
+<tr class="env-{{ app['env'] }} app-row">
+    <th scope="row"><span class="index"></span></th>
     <td>
         <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
         <br>

@@ -166,6 +166,9 @@ td.inline {
 #loadmoreajaxloader td {
     text-align: center;
 }
+.tablelist {
+    counter-reset: rowindex;
+}
 .tablelist tr td{
     white-space: nowrap;
 }
@@ -209,7 +212,13 @@ td.inline {
 .tablelist th.status-done {
     background-color: #5cb85c;
 }
-
+.tablelist th span.index:before {
+    counter-increment: rowindex;
+    content: counter(rowindex);
+}
+.tablelist th span.index:after {
+    content: "";
+}
 .action-btns li a, .action-btns li {
     float: left;
 }
