@@ -1,2 +1,13 @@
-{{ app['name'] }}
-
+{%- if hosts | length > 0 -%}
+<ul class="app-infos-wrap">
+{% for host in hosts %}
+    <li>
+        {{ host['id'] }}
+        {{ host['private_ip_address'] }}
+        {{ host['status'] }}
+    </li>
+{% endfor %}
+</ul>
+{%- else %}
+<p>No instance found for the app '{{ app['name'] }} / {{ app['env'] }} / {{ app['role'] }}'</p>
+{%- endif %}

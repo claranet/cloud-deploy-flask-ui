@@ -19,6 +19,7 @@ from ghost_client import headers, test_ghost_auth
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles
+from forms import find_ec2_instances
 
 # Web UI App
 app = Flask(__name__)
@@ -116,8 +117,8 @@ def web_amis_list(region_id):
 def web_app_infos(app_id):
     # Get App data
     app = get_ghost_app(app_id)
-
-    return render_template('app_infos.html', app=app)
+    hosts = find_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+    return render_template('app_infos.html', app=app, hosts=hosts)
 
 @app.route('/web/apps')
 def web_app_list():
