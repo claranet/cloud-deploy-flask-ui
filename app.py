@@ -112,6 +112,13 @@ def web_subnets_list(region_id, vpc_id):
 def web_amis_list(region_id):
     return jsonify(get_aws_ami_ids(region_id))
 
+@app.route('/web/aws/appinfos/<app_id>', methods=['GET'])
+def web_app_infos(app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+
+    return render_template('app_infos.html', app=app)
+
 @app.route('/web/apps')
 def web_app_list():
     query = request.args.get('where', None)

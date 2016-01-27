@@ -1,10 +1,10 @@
 {% for app in apps | sort(reverse=True, attribute='_updated') %}
 <tr class="env-{{ app['env'] }} app-row">
-    <th scope="row"><span class="index"></span></th>
+    <th scope="row"><a href="#" class="caret right"></a>&nbsp;<span class="index"></span></th>
     <td>
         <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
         <br>
-        {{ app['_id'] }}
+        <span class="app-uid">{{ app['_id'] }}</span>
     </td>
     <td>
         {{ app['_created'] }}
@@ -43,6 +43,11 @@
         <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-warning" title="Edit" data-toggle="tooltip"><span class="glyphicon glyphicon-edit"></span></button></a>
         <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-info" title="Clone" data-toggle="tooltip"><span class="glyphicon glyphicon-duplicate"></span></button></a>
         <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-danger" title="Delete" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button></a>
+    </td>
+</tr>
+<tr class="env-{{ app['env'] }} app-infos">
+    <td colspan="7">
+        <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
     </td>
 </tr>
 {% endfor %}

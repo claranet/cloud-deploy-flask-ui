@@ -50,7 +50,11 @@ body {
 span.index:after {
   content: " " counter(group_entry);
 }
-
+.caret.right {
+    border-left: 4px solid;
+    border-bottom: 4px solid transparent;
+    border-top: 4px solid transparent;
+}
 .sidebar {
     padding-left: 10px;
     padding-right: 10px;
@@ -157,6 +161,9 @@ td.inline {
 .table.col-md-6 {
     width: 50%;
     max-width: 50%;
+}
+.app-infos {
+    display: none;
 }
 
 /*Generic List*/

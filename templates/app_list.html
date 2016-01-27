@@ -117,6 +117,21 @@
                 }
             });
             $('#global-search input').val(getUrlParameter('search'));
+
+            $('.tablelist').on('click', 'th a.caret', function (evt) {
+                evt.preventDefault();
+                $(this).toggleClass('right');
+                var app_uid = $(this).parent().parent().find('.app-uid').text();
+                var th_infos = $(this).parent().parent().next();
+                th_infos.toggle('slow');
+                if (th_infos.find('.app-infos-wrap').length == 0) {
+                    $.ajax("/web/aws/appinfos/" + app_uid).done(function(data) {
+                        th_infos.find('td').html(data);
+                    }).fail(function() {
+                        alert("Failed to retrieve App AWS details for app '" + app_uid + "'");
+                    });
+                }
+            });
         });
     </script>
 {% endblock %}
