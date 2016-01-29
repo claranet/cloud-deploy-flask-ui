@@ -140,9 +140,9 @@ def find_ec2_instances(ghost_app, ghost_env, ghost_role, region):
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
         autoscale_instances = conn_as.get_all_autoscaling_instances(instance_ids=[instance.id])
         if not autoscale_instances or not autoscale_instances[0].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
-            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'online'})
+            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'running'})
         else:
-            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'offline'})
+            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'terminated'})
 
     return hosts
 

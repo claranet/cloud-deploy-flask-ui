@@ -165,6 +165,21 @@ td.inline {
 .app-infos {
     display: none;
 }
+.app-infos-wrap {
+    padding: 0;
+    margin: 0;
+}
+.app-infos-wrap li {
+    float: left;
+    list-style: none;
+    margin-right: 10px;
+}
+.app-infos-wrap li h5.running span.glyphicon {
+    color: #a5d6a7;
+}
+.app-infos-wrap li h5.stopped span.glyphicon {
+    color: #ef9a9a;
+}
 
 /*Generic List*/
 .top-right {

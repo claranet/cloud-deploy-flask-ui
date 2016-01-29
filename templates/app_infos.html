@@ -1,10 +1,28 @@
 {%- if hosts | length > 0 -%}
 <ul class="app-infos-wrap">
 {% for host in hosts %}
-    <li>
-        {{ host['id'] }}
-        {{ host['private_ip_address'] }}
-        {{ host['status'] }}
+    <li class="panel panel-default">
+        <div class="panel-heading">
+            <h5 class="panel-title {{ host['status'] }}"><span class="glyphicon glyphicon-hdd"></span> &nbsp; {{ host['id'] }}</h5>
+        </div>
+        <div class="panel-body">
+            <p>
+                <strong class="label label-default">Subnet</strong>
+                subnet-yyyy
+            </p>
+            <p>
+                <strong class="label label-default">Private IP</strong>
+                {{ host['private_ip_address'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Public IP</strong>
+                x.x.X.x
+            </p>
+            <p>
+                <strong class="label label-default">toto</strong>
+                tatata
+            </p>
+        </div>
     </li>
 {% endfor %}
 </ul>
