@@ -151,7 +151,10 @@
         });
     </script>
     <script type="text/javascript">
-        $.material.init()
+        $('input#submit').prepend('<span class="glyphicon glyphicon-ok"></span>');
+        $('input#submit').addClass('btn-raised btn-info');
+
+        $.material.init();
 
         $(document).ready(function() {
             $('textarea').autosize();
@@ -160,7 +163,6 @@
                 liveSearch: true,
                 dropupAuto:  false
             });
-            $('input#submit').addClass('btn-raised btn-info');
         });
 
         var $loading = $('#ajaxSpinnerImage').hide();
@@ -177,6 +179,7 @@
               $.each(data,function(key, value) {
                 $('#instance_type').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('#instance_type').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve EC2 instance types for region " + region);
           });
@@ -190,6 +193,7 @@
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
               $('select#vpc_id').change();
+              $('#vpc_id').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
@@ -202,6 +206,7 @@
               $.each(data,function(key, value) {
                 $('select#environment_infos-key_name').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#environment_infos-key_name').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve EC2 KeyPairs for region " + region);
           });
@@ -214,6 +219,7 @@
               $.each(data,function(key, value) {
                 $('select#environment_infos-instance_profile').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#environment_infos-instance_profile').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve IAM Instance Profiles for region " + region);
           });
@@ -228,6 +234,7 @@
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
               });
+              $('[id^=environment_infos-security_groups]').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve Segurity Groups for region " + region);
           });
@@ -243,8 +250,9 @@
                   $.each($('[id^=environment_infos-subnet]'), function(index) {
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
-                  
               });
+              $('[id^=environment_infos-subnet]').selectpicker('refresh');
+              $('#build_infos-subnet_id').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve Subnet for region " + region + " and VPC id "  + vpc_id);
           });
@@ -259,6 +267,7 @@
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
               });
+              $('[id^=build_infos-source_ami]').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve AMIs");
           });
