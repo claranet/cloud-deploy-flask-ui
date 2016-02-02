@@ -17,7 +17,7 @@ from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
-from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids
+from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles
 
 # Web UI App
 app = Flask(__name__)
@@ -85,6 +85,14 @@ def current_revision():
 def web_ec2_instance_types_list(region_id):
     return jsonify(get_aws_ec2_instance_types(region_id))
 
+@app.route('/web/aws/regions/<region_id>/ec2/keypairs')
+def web_ec2_key_pairs_list(region_id):
+    return jsonify(get_aws_ec2_key_pairs(region_id))
+
+@app.route('/web/aws/regions/<region_id>/iam/profiles')
+def web_iam_profiles_list(region_id):
+    return jsonify(get_aws_iam_instance_profiles(region_id))
+
 @app.route('/web/aws/regions/<region_id>/vpc/ids')
 def web_vpcs_list(region_id):
     return jsonify(get_aws_vpc_ids(region_id))
@@ -127,6 +135,8 @@ def web_app_create():
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.region.data)
         for subnet in form.environment_infos.subnet_ids:
             subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         for sg in  form.environment_infos.security_groups:
@@ -148,6 +158,8 @@ def web_app_create():
             form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
             form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
             form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+            form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app['region'])
+            form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app['region'])
             for subnet in form.environment_infos.subnet_ids:
                 subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
             for sg in  form.environment_infos.security_groups:
@@ -174,6 +186,8 @@ def web_app_edit(app_id):
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.region.data)
         for subnet in form.environment_infos.subnet_ids:
             subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         for sg in  form.environment_infos.security_groups:
@@ -210,6 +224,8 @@ def web_app_edit(app_id):
     form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
     form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
     form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+    form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
+    form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.region.data)
     for subnet in form.environment_infos.subnet_ids:
         subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
     for sg in  form.environment_infos.security_groups:
@@ -230,6 +246,7 @@ def web_app_command(app_id):
 
     # Display default template in GET case
     app = get_ghost_app(app_id)
+    form.map_from_app(app)
 
     return render_template('app_command.html', form=form, app=app)
 
