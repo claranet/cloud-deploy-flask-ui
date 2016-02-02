@@ -137,10 +137,10 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('form input#submit').click(function(evt) {
-                if ($(this).is(':disabled')) {
+                if ($(this).hasClass('disabled')) {
                     evt.preventDefault();
                 }
-                $(this).attr('disabled', 'disabled');
+                $(this).addClass('disabled');
             });
         });
     </script>
