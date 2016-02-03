@@ -60,13 +60,15 @@ def test_ghost_auth(user):
     return requests.get(url_apps, headers=headers, auth=user.auth)
 
 
-def get_ghost_apps(query=None, page=None):
+def get_ghost_apps(query=None, page=None, embed_deployments=False):
     try:
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
         if query:
-            url += "&where=" + query
+            url += '&where=' + query
         if page:
-            url += "&page="  + page
+            url += '&page=' + page
+        if embed_deployments:
+            url += '&embedded={"modules.last_deployment":1}'
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         apps = result.json().get('_items', [])
@@ -84,9 +86,12 @@ def get_ghost_apps(query=None, page=None):
 
     return apps
 
-def get_ghost_app(app_id):
+def get_ghost_app(app_id, embed_deployments=False):
     try:
-        result = requests.get(url_apps + '/' + app_id, headers=headers, auth=current_user.auth)
+        url = url_apps + '/' + app_id
+        if embed_deployments:
+            url += '?embedded={"modules.last_deployment":1}'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
         app = result.json()
         handle_response_status_code(result.status_code)
 
@@ -106,25 +111,13 @@ def get_ghost_app(app_id):
                 module['pre_deploy'] = b64decode(module['pre_deploy'])
             if 'post_deploy' in module:
                 module['post_deploy'] = b64decode(module['post_deploy'])
-    except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
-        flash(message, 'danger')
-    return app
 
-def retrieve_ghost_app_modules_last_deployments(app):
-    try:
-        # Retrieve the last deployment for each module of the app
-        for module in app.get('modules', []):
-            url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING
-            url += '&max_results=1'
-            url += '&where={"app_id":"' + app['_id'] + '", "module":"' + module['name'] + '"}'
-            result = requests.get(url, headers=headers, auth=current_user.auth)
-            handle_response_status_code(result.status_code)
-            if result.json()['_items'] and len(result.json()['_items']) > 0:
-                deployment = result.json()['_items'][0]
-                deployment['_created'] = datetime.utcfromtimestamp(deployment['timestamp']).strftime(RFC1123_DATE_FORMAT)
-                module['last_deployment'] = deployment
+            if 'last_deployment' in module:
+                try:
+                    module['last_deployment']['_created'] = datetime.utcfromtimestamp(module['last_deployment']['timestamp']).strftime(RFC1123_DATE_FORMAT)
+                except:
+                    traceback.print_exc()
+
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
