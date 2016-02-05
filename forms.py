@@ -140,7 +140,22 @@ def find_ec2_instances(ghost_app, ghost_env, ghost_role, region):
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
         autoscale_instances = conn_as.get_all_autoscaling_instances(instance_ids=[instance.id])
         if not autoscale_instances or not autoscale_instances[0].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
-            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'running'})
+            sg_string = None
+            image_name = conn.get_image(instance.image_id)
+            if image_name is not None:
+                image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image_name)
+            else:
+                image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name="deregistered")
+            for sg in instance.groups:
+                if sg_string == None:
+                    sg_string = "{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name)
+                else:
+                    sg_string = "{previous_sg}, {sg_id} ({sg_name})".format(previous_sg=sg_string, sg_id=sg.id, sg_name=sg.name)
+            
+            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, \
+                'status': instance.state, 'type': instance.instance_type, 'launch_time': instance.launch_time, \
+                'security_group':sg_string, 'subnet_id':instance.subnet_id, 'image_id':image_string, \
+                'instance_type':instance.instance_type, 'instance_profile':instance.instance_profile['arn'] })
         else:
             hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'terminated'})
 

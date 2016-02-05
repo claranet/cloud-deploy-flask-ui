@@ -163,7 +163,7 @@ td.inline {
     max-width: 50%;
 }
 .app-infos {
-    display: none;
+    width: 90%;
 }
 .app-infos-wrap {
     padding: 0;
