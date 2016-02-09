@@ -4,6 +4,13 @@ body {
 }
 .navbar.navbar-inverse {
     background-color: #222;
+    color: #9D9D9D
+}
+#navbar .nav.navbar-nav li a {
+    padding: 15px;
+}
+.nav.navbar-nav li a:hover {
+    color: #fff;
 }
 .container[role=main] {
     width: 100%;
