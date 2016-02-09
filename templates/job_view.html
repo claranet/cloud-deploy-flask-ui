@@ -79,13 +79,14 @@
         </div>
     </div>
     <!-- Job log -->
-    <div class="panel panel-default jobview">
+    <div class="panel panel-default jobview log-panel">
         <div class="panel-heading logactions">
             <span>Console Output</span>
             <p>
                 <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
                 <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
                 <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
+                <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode"><span class="glyphicon glyphicon-new-window"></span></button></a>
             </p>
         </div>
         <div id="log" class="panel-body"></div>
@@ -154,6 +155,11 @@
                 $('#scrollstate').html(textNoScrolling);
             }
             $log.animate({ scrollTop: $log.get(0).scrollHeight }, "slow");
+        });
+        $('#logFullscreen').click(function(evt) {
+            evt.preventDefault();
+            $('#logFullscreen button').toggleClass('active');
+            $('.log-panel').toggleClass('fullscreen');
         });
 
         if (scrollActivated) {

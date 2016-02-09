@@ -213,7 +213,21 @@ td.inline {
 .jobview .logactions p {
     float: right;
 }
-
+.log-panel.fullscreen {
+    position: fixed;
+    bottom: 0px;
+    top: 140px;
+    left: 10px;
+    right: 10px;
+}
+.log-panel.fullscreen #log {
+    position: absolute;
+    bottom: 0;
+    height: auto;
+    top: 40px;
+    left: 0;
+    right: 0;
+}
 /*Command*/
 .command_options {
     margin: 10px 0;
