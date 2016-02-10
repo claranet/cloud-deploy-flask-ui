@@ -231,6 +231,10 @@ td.inline {
 }
 .jobview .logactions p {
     float: right;
+    position: relative;
+    top: -10px;
+    margin: 0;
+    height: 30px;
 }
 .log-panel.fullscreen {
     position: fixed;
