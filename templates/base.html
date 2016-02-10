@@ -24,6 +24,9 @@
     <meta name="theme-color" content="#ffffff">
 
     {{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-select.min.css')}}?v={{current_revision}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-material-design.min.css')}}?v={{current_revision}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/ripples.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
 {% endblock %}
 
@@ -85,6 +88,9 @@
 {% block scripts %}
     {{ super() }}
     <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/bootstrap-select.min.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/ripples.min.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/material.min.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     $(document).ready(function() {
         var currentPage = 1;
@@ -145,8 +151,18 @@
         });
     </script>
     <script type="text/javascript">
+        $('input#submit').prepend('<span class="glyphicon glyphicon-ok"></span>');
+        $('input#submit').addClass('btn-raised btn-info');
+
+        $.material.init();
+
         $(document).ready(function() {
             $('textarea').autosize();
+            $('select:not([readonly])').selectpicker({
+                style: 'btn-default',
+                liveSearch: true,
+                dropupAuto:  false
+            });
         });
 
         var $loading = $('#ajaxSpinnerImage').hide();
@@ -163,6 +179,7 @@
               $.each(data,function(key, value) {
                 $('#instance_type').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('#instance_type').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve EC2 instance types for region " + region);
           });
@@ -176,6 +193,7 @@
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
               });
               $('select#vpc_id').change();
+              $('#vpc_id').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve EC2 VPCs for region " + region);
           });
@@ -188,6 +206,7 @@
               $.each(data,function(key, value) {
                 $('select#environment_infos-key_name').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#environment_infos-key_name').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve EC2 KeyPairs for region " + region);
           });
@@ -200,6 +219,7 @@
               $.each(data,function(key, value) {
                 $('select#environment_infos-instance_profile').append('<option value=' + key + '>' + value + '</option>');
               });
+              $('select#environment_infos-instance_profile').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve IAM Instance Profiles for region " + region);
           });
@@ -214,6 +234,7 @@
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
               });
+              $('[id^=environment_infos-security_groups]').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve Segurity Groups for region " + region);
           });
@@ -229,8 +250,9 @@
                   $.each($('[id^=environment_infos-subnet]'), function(index) {
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
-                  
               });
+              $('[id^=environment_infos-subnet]').selectpicker('refresh');
+              $('#build_infos-subnet_id').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve Subnet for region " + region + " and VPC id "  + vpc_id);
           });
@@ -245,6 +267,7 @@
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
               });
+              $('[id^=build_infos-source_ami]').selectpicker('refresh');
           }).fail(function() {
               alert("Failed to retrieve AMIs");
           });
@@ -323,14 +346,16 @@
     <script type="text/javascript">
         var positionElementInPage = $('.sidebar').offset().top - 20;
         function updateMenusPositions() {
-            if ($(window).scrollTop() >= positionElementInPage) {
+            if ($(window).scrollTop() >= positionElementInPage || $('.app-panel').length > 0) {
                 // fixed
                 $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
                 $('.sidebar').addClass('navbar-fixed-top');
+                $('.app-panel').addClass('fixed-top-menu');
                 $('#header').addClass('no-shadow');
             } else {
                 // relative
                 $('.sidebar').removeClass('navbar-fixed-top');
+                $('.app-panel').removeClass('fixed-top-menu');
                 $('.sidebar').next().css('margin-top', '0');
                 $('#header').removeClass('no-shadow');
             }
@@ -340,12 +365,14 @@
                 $('#left-menu').css('top', headingHeight + 'px');
             }
         }
-        $(window).scroll(function() {
-            updateMenusPositions();
-        });
-        $(window).on('resize', function() {
-            updateMenusPositions();
-        });
+        if ($('.app-panel').length == 0) {
+            $(window).scroll(function() {
+                updateMenusPositions();
+            });
+            $(window).on('resize', function() {
+                updateMenusPositions();
+            });
+        }
         $(document).ready(function() {
             updateMenusPositions();
         });

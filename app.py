@@ -75,7 +75,7 @@ def env_list():
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
 except:
-    CURRENT_REVISION = dict(current_revision='s151217')
+    CURRENT_REVISION = dict(current_revision='s160104')
 
 @app.context_processor
 def current_revision():

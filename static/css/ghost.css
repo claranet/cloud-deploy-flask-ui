@@ -2,6 +2,16 @@ body {
     padding-top: 70px;
     padding-bottom: 30px;
 }
+.navbar.navbar-inverse {
+    background-color: #222;
+    color: #9D9D9D
+}
+#navbar .nav.navbar-nav li a {
+    padding: 15px;
+}
+.nav.navbar-nav li a:hover {
+    color: #fff;
+}
 .container[role=main] {
     width: 100%;
 }
@@ -69,6 +79,9 @@ span.index:after {
 .sidebar.navbar-fixed-top .action-btns li .input-group {
     padding: 5px;
 }
+ul.nav.navbar-nav {
+    height: 50px;
+}
  .navbar-nav>li.filter> a,
  .navbar-nav>li.filter> .input-group {
     padding: 11px;
@@ -94,10 +107,10 @@ span.index:after {
     position: fixed;
 }
 .app-panel {
-    margin-left: 10%;
+    margin-left: 15%;
 }
 #left-menu {
-    width: 10%;
+    width: 15%;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -116,11 +129,14 @@ span.index:after {
 }
 .anchor {
   display: block;
-  height: 140px; /*same height as header*/
-  margin-top: -140px; /*same height as header*/
+  height: 150px; /*same height as header*/
+  margin-bottom: -150px; /*same height as header*/
   visibility: hidden;
 }
-
+.fixed-top-menu .anchor {
+    margin-top: -150px;
+    margin-bottom: 0;
+}
 /*AppEdit*/
 td.inline .form-group {
     width: 50%;
@@ -193,6 +209,9 @@ td.inline {
 .action-btns li a, .action-btns li {
     float: left;
 }
+.action-btns li a:hover {
+    background: transparent;
+}
 .action-btns ul.dropdown-menu li {
     width: 100%;
 }
@@ -231,6 +250,36 @@ td.inline {
 /*Command*/
 .command_options {
     margin: 10px 0;
+}
+
+/**
+** Material fixes
+**/
+
+body {
+    background-color: #f5f5f5;
+}
+.form-group {
+    margin: 0;
+}
+label.control-label
+,.form-group label.control-label {
+    color: #555;
+}
+.navbar-nav>li.filter> .input-group input::-webkit-input-placeholder { font-size: 12px; }
+.navbar-nav>li.filter> .input-group input:-moz-placeholder { font-size: 12px; }
+.navbar-nav>li.filter> .input-group input::-moz-placeholder { font-size: 12px; }
+.navbar-nav>li.filter> .input-group input:-ms-input-placeholder { font-size: 12px; }
+ul.filter-group {
+    margin-top: 10px;
+}
+li.quick-submit button.btn.btn-xs {
+    padding: 4px 6px;
+}
+button.btn.dropdown-toggle {
+    border: 1px solid #CCC;
+    padding-left: 5px;
+    text-transform: inherit;
 }
 
 /**
