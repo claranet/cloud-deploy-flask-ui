@@ -747,7 +747,8 @@ class CommandAppForm(Form):
     command = SelectField('Command', validators=[DataRequiredValidator()], choices=get_ghost_job_commands())
     module_name = SelectField('Module name', validators=[])
     module_rev = StringField('Module revision', validators=[])
-    module_deploy_id = StringField('Deploy ID', validators=[])
+    deploy_id = StringField('Deploy ID', validators=[])
+    fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
 
     submit = SubmitField('Run Application Command')
