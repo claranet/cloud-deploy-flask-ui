@@ -31,7 +31,7 @@
     </td>
     <td>{{ deployment['timestamp'] }}</td>
     <td>
-        <a href="/web/deployments/{{ deployment['_id'] }}/redeploy"><button class="btn btn-warning"><span class="glyphicon glyphicon-refresh"></span> Redeploy</button></a>
+        <a href="/web/deployments/{{ deployment['_id'] }}/redeploy" title="Deploy again this version" data-toggle="tooltip"><button class="btn btn-warning"><span class="glyphicon glyphicon-refresh"></span> Redeploy</button></a>
     </td>
 </tr>
 {% endfor %}
