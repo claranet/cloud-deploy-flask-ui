@@ -374,15 +374,15 @@ def web_deployments_view(deployment_id):
 
     return render_template('deployment_view.html', deployment=deployment)
 
-@app.route('/web/deployments/<deployment_id>/rollback', methods=['GET', 'POST'])
-def web_deployment_rollback(deployment_id):
+@app.route('/web/deployments/<deployment_id>/redeploy', methods=['GET', 'POST'])
+def web_deployment_redeploy(deployment_id):
     # Get Deployment
     deployment = get_ghost_deployment(deployment_id)
 
     app = deployment['app_id']
     form = CommandAppForm(app['_id'])
 
-    form.command.data = 'rollback'
+    form.command.data = 'redeploy'
     form.deploy_id.data = deployment_id
 
     # Perform validation

@@ -201,8 +201,8 @@ def create_ghost_job(app_id, form, headers):
 
     # Process options
     options = []
-    if form.command.data == 'rollback':
-        # In case of rollback
+    if form.command.data == 'redeploy':
+        # In case of redeploy
         # option[0] must be the deploy ID
         options.append(form.deploy_id.data)
 
@@ -214,7 +214,6 @@ def create_ghost_job(app_id, form, headers):
         if form.fabric_execution_strategy.data:
             # In case of deploy, option[0] can be the fabric_execution_strategy
             options.append(form.fabric_execution_strategy.data)
-
 
     if len(options) > 0:
         job['options'] = options
