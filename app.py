@@ -67,12 +67,14 @@ def load_user_from_request(request):
 def before_request():
     pass
 
+LEGACY_COMMANDS = ['destroyinstance','rollback']
+
 @app.context_processor
 def env_list():
     return dict(env_list=ghost_app_schema['env']['allowed'],
                 role_list=ghost_app_schema['role']['allowed'],
                 statuses=JOB_STATUSES,
-                command_list=ghost_jobs_schema['command']['allowed'])
+                command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
 
 try:
     CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
