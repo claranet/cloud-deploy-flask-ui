@@ -9,8 +9,12 @@ body {
 #navbar .nav.navbar-nav li a {
     padding: 15px;
 }
-.nav.navbar-nav li a:hover {
+.nav.navbar-nav li > a:hover {
+    background-color: #eee;
+}
+#navbar > .nav.navbar-nav > li > a:hover {
     color: #fff;
+    background-color: #333;
 }
 .container[role=main] {
     width: 100%;
