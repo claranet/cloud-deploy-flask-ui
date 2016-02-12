@@ -6,6 +6,8 @@ from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
 
+from datetime import datetime 
+from eve import RFC1123_DATE_FORMAT
 from base64 import b64encode
 import traceback
 import boto.vpc
@@ -126,8 +128,32 @@ def get_aws_ec2_regions():
     except:
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
+    
+def get_ghost_app_as_group(as_group, region):
+    conn_as = boto.ec2.autoscale.connect_to_region(region)
+    asgs = conn_as.get_all_groups(names=[as_group])
+    if len(asgs) > 0:
+        return asgs[0]
 
-def find_ec2_instances(ghost_app, ghost_env, ghost_role, region):
+def get_as_group_instances(as_group, region):
+    conn = boto.ec2.connect_to_region(region)
+    instance_ids = []
+    for i in as_group.instances:
+        instance_ids.append(i.instance_id)
+    instances = conn.get_only_instances(instance_ids=instance_ids)
+    hosts = []
+    for host in instances:
+        hosts.append(format_host_infos(host, conn, region))
+    return hosts
+
+def get_elbs_in_as_group(as_group, region):
+    conn_as = boto.ec2.autoscale.connect_to_region(region)
+    conn_elb = boto.elb.connect_to_region(region)
+    conn_ec2 = boto.ec2.connect_to_region(region)
+
+    #Retrieve auscaling group
+
+def get_ghost_ec2_instances(ghost_app, ghost_env, ghost_role, region, filters=[]):
     conn_as = boto.ec2.autoscale.connect_to_region(region)
     conn = boto.ec2.connect_to_region(region)
 
@@ -135,31 +161,43 @@ def find_ec2_instances(ghost_app, ghost_env, ghost_role, region):
     running_instance_filters = {"tag:env": ghost_env, "tag:role": ghost_role, "tag:app": ghost_app}
     running_instances = conn.get_only_instances(filters=running_instance_filters)
 
+    host_ids_as = []
+    if len(filters) > 0:
+        for h in filters:
+            host_ids_as.append(h.instance_id)  
     hosts = []
     for instance in running_instances:
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
         autoscale_instances = conn_as.get_all_autoscaling_instances(instance_ids=[instance.id])
         if not autoscale_instances or not autoscale_instances[0].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
-            sg_string = None
-            image_name = conn.get_image(instance.image_id)
-            if image_name is not None:
-                image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image_name)
-            else:
-                image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name="deregistered")
-            for sg in instance.groups:
-                if sg_string == None:
-                    sg_string = "{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name)
-                else:
-                    sg_string = "{previous_sg}, {sg_id} ({sg_name})".format(previous_sg=sg_string, sg_id=sg.id, sg_name=sg.name)
-            
-            hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, \
-                'status': instance.state, 'type': instance.instance_type, 'launch_time': instance.launch_time, \
-                'security_group':sg_string, 'subnet_id':instance.subnet_id, 'image_id':image_string, \
-                'instance_type':instance.instance_type, 'instance_profile':instance.instance_profile['arn'] })
+            if instance.id not in host_ids_as:
+                hosts.append(format_host_infos(instance, conn, region))
         else:
             hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'terminated'})
 
     return hosts
+
+def format_host_infos(instance, conn, region):
+    sg_string = None
+    image = conn.get_image(instance.image_id)
+    if image is not None:
+        image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name)
+    else:
+        image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name="deregistered")
+
+    for sg in instance.groups:
+        if sg_string == None:
+            sg_string = "{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name)
+        else:
+            sg_string = "{previous_sg}, {sg_id} ({sg_name})".format(previous_sg=sg_string, sg_id=sg.id, sg_name=sg.name)
+
+    subnets = boto.vpc.connect_to_region(region).get_all_subnets(subnet_ids=[instance.subnet_id])
+    subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
+    host = {'id': instance.id, 'private_ip_address': instance.private_ip_address, \
+    'status': instance.state, 'launch_time': datetime.strptime(instance.launch_time, "%Y-%m-%dT%H:%M:%S.%fZ"), \
+    'security_group':sg_string, 'subnet_id':subnet_string, 'image_id':image_string, \
+    'instance_type':instance.instance_type, 'instance_profile':str(instance.instance_profile['arn']).split("/")[1] }
+    return host
 
 def get_aws_ec2_instance_types(region):
     # Uncomment when implemented on AWS side

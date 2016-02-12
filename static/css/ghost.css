@@ -175,10 +175,16 @@ td.inline {
     margin-right: 10px;
 }
 .app-infos-wrap li h5.running span.glyphicon {
-    color: #a5d6a7;
+    /*color: #a5d6a7;*/
+    color: #8bc34a;
+    font-size: 60px;
+    text-shadow: 3px 3px 2px rgba(150, 150, 150, 1);
 }
 .app-infos-wrap li h5.stopped span.glyphicon {
-    color: #ef9a9a;
+    /*color: #ef9a9a;*/
+    color: #f44336;
+    font-size: 60px;
+    text-shadow: 3px 3px 2px rgba(150, 150, 150, 1);
 }
 
 /*Generic List*/

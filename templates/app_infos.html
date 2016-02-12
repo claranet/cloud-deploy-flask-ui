@@ -1,31 +1,101 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h4>
+    <h3 class="modal-title" id="myModalLabel">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h3>
 </div>
-<div class="modal-body">
-{%- if hosts | length > 0 -%}
+{%- if as_group -%}
+<div class="modal-header">
+<h4 class="modal-title" id="myModalLabel">Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
+</div>
+<div class="modal-body" style="padding-bottom:10px;">
+    {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
-{% for host in hosts %}
-    <li class="panel panel-default">
-        <div class="panel-heading">
-            <h5 class="panel-title {{ host['status'] }}"><span class="glyphicon glyphicon-hdd"></span> &nbsp; {{ host['id'] }}</h5>
-        </div>
-        <div class="panel-body">
+    {% for host in as_instances %}
+    <li>
+	<a data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
+            <center>
+                <h5 class="panel-title {{ host['status'] }}"><span class="glyphicon glyphicon-stop" style="font-size:60px;"></span></h5>
+                &nbsp;&nbsp;{{ host['id'] }}
+            </center>
+       </a>
+       <div class="popper-content hide">
             <p>
-                <strong class="label label-default">Subnet</strong>
-                subnet-yyyy
-            </p>
-            <p>
-                <strong class="label label-default">Private IP</strong>
-                {{ host['private_ip_address'] }}
+                <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
             <p>
                 <strong class="label label-default">Public IP</strong>
-                x.x.X.x
             </p>
             <p>
-                <strong class="label label-default">toto</strong>
-                tatata
+                <strong class="label label-default">State</strong> {{ host['status'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Launch Time</strong> {{ host['launch_time'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Security Groups</strong> {{ host['security_group'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Subnet Id</strong> {{ host['subnet_id'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Image Id</strong> {{ host['image_id'] }}
+            </p>
+            <p>
+                <strong class="label label-default">instance_type</strong> {{ host['instance_type'] }}
+            </p>
+            <p>
+                <strong class="label label-default">instance_profile</strong> {{ host['instance_profile'] }}
+            </p>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+{%- else %}
+<p>No instance found for the app '{{ app['name'] }} / {{ app['env'] }} / {{ app['role'] }}'</p>
+{%- endif %}
+</div>
+{%- endif %}
+{%- if ghost_instances | length > 0 -%}
+<hr style="clear:both" />
+<div class="modal-header" style="padding-bottom: 10px;">
+<h4 class="modal-title" id="myModalLabel">Standalone Group</h4>
+</div>
+<div class="modal-body">
+<ul class="app-infos-wrap">
+{% for host in ghost_instances %}
+    <li>
+       <a data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
+            <center>
+                <h5 class="panel-title {{ host['status'] }}"><span class="glyphicon glyphicon-stop" style="font-size:60px;"></span></h5>
+                &nbsp;&nbsp;{{ host['id'] }}
+            </center>
+       </a>
+       <div class="popper-content hide">
+            <p>
+                <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Public IP</strong>
+            </p>
+            <p>
+                <strong class="label label-default">State</strong> {{ host['status'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Launch Time</strong> {{ host['launch_time'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Security Groups</strong> {{ host['security_group'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Subnet Id</strong> {{ host['subnet_id'] }}
+            </p>
+            <p>
+                <strong class="label label-default">Image Id</strong> {{ host['image_id'] }}
+            </p>
+            <p>
+                <strong class="label label-default">instance_type</strong> {{ host['instance_type'] }}
+            </p>
+            <p>
+                <strong class="label label-default">instance_profile</strong> {{ host['instance_profile'] }}
             </p>
         </div>
     </li>
@@ -36,3 +106,13 @@
 {%- endif %}
 </div>
 <div class="modal-footer" style="clear:both;"></div>
+<script type="text/javascript">
+    $(function () {
+    $('[data-toggle="popover"]').popover({
+        html : true,
+        content : function() {
+            return $(this).next('.popper-content').html();
+        }
+    });
+})
+</script>
