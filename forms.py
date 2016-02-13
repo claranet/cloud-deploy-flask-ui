@@ -129,11 +129,14 @@ def get_aws_ec2_regions():
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
     
-def get_ghost_app_as_group(as_group, region):
+def get_ghost_app_as_group(as_group_name, region):
+    if not as_group_name:
+        return None
     conn_as = boto.ec2.autoscale.connect_to_region(region)
-    asgs = conn_as.get_all_groups(names=[as_group])
+    asgs = conn_as.get_all_groups(names=[as_group_name])
     if len(asgs) > 0:
         return asgs[0]
+    return None
 
 def get_as_group_instances(as_group, region):
     conn = boto.ec2.connect_to_region(region)

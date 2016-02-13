@@ -4,20 +4,18 @@
 </div>
 {%- if as_group -%}
 <div class="modal-header">
-<h4 class="modal-title" id="myModalLabel">Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
+    <h4 class="modal-title" id="myModalLabel">Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
 </div>
 <div class="modal-body" style="padding-bottom:10px;">
     {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
     {% for host in as_instances %}
     <li>
-	<a data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
-            <center>
-                <h5 class="panel-title {{ host['status'] }}"><span class="glyphicon glyphicon-stop" style="font-size:60px;"></span></h5>
-                &nbsp;&nbsp;{{ host['id'] }}
-            </center>
-       </a>
-       <div class="popper-content hide">
+        <a class="instance-item {{ host['status'] }}" data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
+            <span class="glyphicon glyphicon-stop"></span>
+            <span class="instance-id">{{ host['id'] }}</span>
+        </a>
+        <div class="popper-content hide">
             <p>
                 <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
@@ -40,10 +38,10 @@
                 <strong class="label label-default">Image Id</strong> {{ host['image_id'] }}
             </p>
             <p>
-                <strong class="label label-default">instance_type</strong> {{ host['instance_type'] }}
+                <strong class="label label-default">Instance Type</strong> {{ host['instance_type'] }}
             </p>
             <p>
-                <strong class="label label-default">instance_profile</strong> {{ host['instance_profile'] }}
+                <strong class="label label-default">Instance Profile</strong> {{ host['instance_profile'] }}
             </p>
         </div>
     </li>
@@ -54,22 +52,21 @@
 {%- endif %}
 </div>
 {%- endif %}
+
 {%- if ghost_instances | length > 0 -%}
-<hr style="clear:both" />
-<div class="modal-header" style="padding-bottom: 10px;">
-<h4 class="modal-title" id="myModalLabel">Standalone Group</h4>
+
+<div class="modal-header standalone-header"">
+    <h4 class="modal-title" id="myModalLabel">Standalone Group</h4>
 </div>
 <div class="modal-body">
 <ul class="app-infos-wrap">
 {% for host in ghost_instances %}
     <li>
-       <a data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
-            <center>
-                <h5 class="panel-title {{ host['status'] }}"><span class="glyphicon glyphicon-stop" style="font-size:60px;"></span></h5>
-                &nbsp;&nbsp;{{ host['id'] }}
-            </center>
-       </a>
-       <div class="popper-content hide">
+        <a class="instance-item {{ host['status'] }}" data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
+            <span class="glyphicon glyphicon-stop"></span>
+            <span class="instance-id">{{ host['id'] }}</span>
+        </a>
+        <div class="popper-content hide">
             <p>
                 <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
@@ -92,10 +89,10 @@
                 <strong class="label label-default">Image Id</strong> {{ host['image_id'] }}
             </p>
             <p>
-                <strong class="label label-default">instance_type</strong> {{ host['instance_type'] }}
+                <strong class="label label-default">Instance Type</strong> {{ host['instance_type'] }}
             </p>
             <p>
-                <strong class="label label-default">instance_profile</strong> {{ host['instance_profile'] }}
+                <strong class="label label-default">Instance Profile</strong> {{ host['instance_profile'] }}
             </p>
         </div>
     </li>
@@ -106,6 +103,7 @@
 {%- endif %}
 </div>
 <div class="modal-footer" style="clear:both;"></div>
+
 <script type="text/javascript">
     $(function () {
     $('[data-toggle="popover"]').popover({

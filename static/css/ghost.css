@@ -174,17 +174,41 @@ td.inline {
     list-style: none;
     margin-right: 10px;
 }
-.app-infos-wrap li h5.running span.glyphicon {
+.app-infos-wrap a.instance-item {
+    display: inline-block;
+    text-align: center;
+}
+.app-infos-wrap a.instance-item,
+.app-infos-wrap a.instance-item:hover {
+    text-decoration: none !important;
+}
+.app-infos-wrap a.instance-item:focus {
+    outline: none;
+    outline-offset: 0;
+    text-decoration: none !important;
+}
+.app-infos-wrap a.instance-item span.glyphicon {
+    font-size: 60px;
+    margin-right: 3px;
+    display: block;
+}
+.app-infos-wrap a.instance-item span.instance-id {
+    padding-left: 3px;
+}
+.app-infos-wrap li a.instance-item.running span.glyphicon {
     /*color: #a5d6a7;*/
     color: #8bc34a;
     font-size: 60px;
     text-shadow: 3px 3px 2px rgba(150, 150, 150, 1);
 }
-.app-infos-wrap li h5.stopped span.glyphicon {
+.app-infos-wrap li a.instance-item.stopped span.glyphicon {
     /*color: #ef9a9a;*/
     color: #f44336;
     font-size: 60px;
     text-shadow: 3px 3px 2px rgba(150, 150, 150, 1);
+}
+.standalone-header {
+    clear: both;
 }
 
 /*Generic List*/
