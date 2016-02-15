@@ -1,12 +1,12 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h3 class="modal-title" id="myModalLabel">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h3>
+    <h3 class="modal-title">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h3>
 </div>
 {%- if as_group -%}
 <div class="modal-header">
-    <h4 class="modal-title" id="myModalLabel">Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
+    <h4 class="modal-title">Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
 </div>
-<div class="modal-body" style="padding-bottom:10px;">
+<div class="modal-body">
     {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
     {% for host in as_instances %}
@@ -48,15 +48,15 @@
 {% endfor %}
 </ul>
 {%- else %}
-<p>No instance found for the app '{{ app['name'] }} / {{ app['env'] }} / {{ app['role'] }}'</p>
+<p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
 {%- endif %}
 </div>
 {%- endif %}
 
 {%- if ghost_instances | length > 0 -%}
 
-<div class="modal-header standalone-header"">
-    <h4 class="modal-title" id="myModalLabel">Standalone Group</h4>
+<div class="modal-header standalone-header">
+    <h4 class="modal-title">Standalone Group</h4>
 </div>
 <div class="modal-body">
 <ul class="app-infos-wrap">
@@ -99,7 +99,9 @@
 {% endfor %}
 </ul>
 {%- else %}
-<p>No instance found for the app '{{ app['name'] }} / {{ app['env'] }} / {{ app['role'] }}'</p>
+<div class="modal-header standalone-header">
+    <h4 class="modal-title">No standalone instance found for the app <strong>'{{ app['name'] }}'</strong></h4>
+</div>
 {%- endif %}
 </div>
 <div class="modal-footer" style="clear:both;"></div>
