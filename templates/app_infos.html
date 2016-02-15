@@ -3,16 +3,16 @@
     <h3 class="modal-title">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h3>
 </div>
 {%- if as_group -%}
-<div class="modal-header">
-    <h4 class="modal-title">Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
-</div>
-<div class="modal-body">
+<div class="zone col-md-6"><fieldset class="well the-fieldset">
+    <legend class="the-legend">
+        <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
+    </legend>
     {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
     {% for host in as_instances %}
     <li>
         <a class="instance-item {{ host['status'] }}" data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
-            <span class="glyphicon glyphicon-stop"></span>
+            <span class="fa fa-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
         <div class="popper-content hide">
@@ -50,20 +50,19 @@
 {%- else %}
 <p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
 {%- endif %}
-</div>
+</fieldset></div>
 {%- endif %}
 
 {%- if ghost_instances | length > 0 -%}
-
-<div class="modal-header standalone-header">
-    <h4 class="modal-title">Standalone Group</h4>
-</div>
-<div class="modal-body">
+<div class="zone col-md-6"><fieldset class="well the-fieldset">
+    <legend class="the-legend">
+        <h4 class="modal-title">Standalone Group</h4>
+    </legend>
 <ul class="app-infos-wrap">
 {% for host in ghost_instances %}
     <li>
         <a class="instance-item {{ host['status'] }}" data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
-            <span class="glyphicon glyphicon-stop"></span>
+            <span class="fa fa-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
         <div class="popper-content hide">
@@ -98,12 +97,13 @@
     </li>
 {% endfor %}
 </ul>
+</fieldset></div>
 {%- else %}
-<div class="modal-header standalone-header">
+<div class="zone col-md-6">
     <h4 class="modal-title">No standalone instance found for the app <strong>'{{ app['name'] }}'</strong></h4>
 </div>
 {%- endif %}
-</div>
+
 <div class="modal-footer" style="clear:both;"></div>
 
 <script type="text/javascript">

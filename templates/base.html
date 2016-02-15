@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-select.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-material-design.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ripples.min.css')}}?v={{current_revision}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/font-awesome.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
 {% endblock %}
 
@@ -376,7 +377,7 @@
         $(document).ready(function() {
             updateMenusPositions();
         });
-	</script>
+    </script>
 
     {% block page_scripts %}
     {% endblock %}
