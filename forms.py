@@ -55,14 +55,6 @@ def get_ghost_mod_scopes():
     return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['scope']['allowed'])
 
 
-def get_ghost_mod_uid():
-    return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['uid']['allowed'])
-
-
-def get_ghost_mod_gid():
-    return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['gid']['allowed'])
-
-
 def get_ghost_optional_volumes():
     return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type']['allowed'])
 
@@ -397,8 +389,15 @@ class ModuleForm(Form):
             ghost_app_schema['modules']['schema']['schema']['path']['regex']
         )
     ])
-    module_uid = SelectField('Uid', validators=[], choices=get_ghost_mod_uid())
-    module_gid = SelectField('Gid', validators=[], choices=get_ghost_mod_gid())
+    module_uid = IntegerField('Uid', validators=[
+        OptionalValidator(),
+        NumberRangeValidator(min=0)
+    ])
+    module_gid = IntegerField('Gid', validators=[
+        OptionalValidator(),
+        NumberRangeValidator(min=0)
+    ])
+
     module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
     module_build_pack = TextAreaField('Build Pack', validators=[])
     module_pre_deploy = TextAreaField('Pre Deploy', validators=[])
@@ -413,8 +412,8 @@ class ModuleForm(Form):
         self.module_git_repo.data = module.get('git_repo', '')
         self.module_path.data = module.get('path', '')
         self.module_scope.data = module.get('scope', '')
-	self.module_uid.data = module.get('uid', '')
-	self.module_gid.data = module.get('gid', '')
+        self.module_uid.data = module.get('uid', '')
+        self.module_gid.data = module.get('gid', '')
         if 'build_pack' in module:
             self.module_build_pack.data = module['build_pack']
         if 'pre_deploy' in module:
@@ -626,8 +625,10 @@ class BaseAppForm(Form):
             module['git_repo'] = form_module.module_git_repo.data
             module['path'] = form_module.module_path.data
             module['scope'] = form_module.module_scope.data
-            module['uid'] = form_module.module_uid.data
-            module['gid'] = form_module.module_gid.data
+            if isinstance(form_module.module_uid.data, int):
+                module['uid'] = form_module.module_uid.data
+            if isinstance(form_module.module_gid.data, int):
+                module['gid'] = form_module.module_gid.data
             if form_module.module_build_pack.data:
                 module['build_pack'] = b64encode(form_module.module_build_pack.data.replace('\r\n', '\n'))
             if form_module.module_pre_deploy.data:
