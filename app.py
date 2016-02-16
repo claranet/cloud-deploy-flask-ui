@@ -19,7 +19,7 @@ from ghost_client import headers, test_ghost_auth
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles
-from forms import get_ghost_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_in_as_group
+from forms import get_ghost_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances
 
 # Web UI App
 app = Flask(__name__)
@@ -121,10 +121,9 @@ def web_app_infos(app_id):
         as_group = get_ghost_app_as_group(app['autoscale']['name'], app['region'])
         if as_group != None:
             as_instances = get_as_group_instances(as_group, app['region'])
-    	    elbs = as_group.load_balancers
-    	    elb_instances = []
+    	    elbs_instances = get_elbs_instances(as_group, app['region'])
             ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
-            return render_template('app_infos.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs=elbs, elb_instances=elb_instances)
+            return render_template('app_infos.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
         else:
             ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'])
             return render_template('app_infos.html', app=app, ghost_instances=ghost_instances)

@@ -148,11 +148,34 @@ def get_as_group_instances(as_group, region):
     return hosts
 
 def get_elbs_in_as_group(as_group, region):
-    conn_as = boto.ec2.autoscale.connect_to_region(region)
-    conn_elb = boto.elb.connect_to_region(region)
-    conn_ec2 = boto.ec2.connect_to_region(region)
+    conn_elb = boto.ec2.elb.connect_to_region(region)
+    if len(as_group.load_balancers) > 0:
+        as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
+        if len(as_elbs) > 0:
+            return as_elbs
+        else: 
+            return None
+    else:
+        return None
 
-    #Retrieve auscaling group
+def get_elbs_instances(as_group, region):
+    conn = boto.ec2.connect_to_region(region)
+    elbs = get_elbs_in_as_group(as_group, region)
+    if len(elbs) > 0:
+        elbs_instances = []
+        for elb in elbs:
+            if len(elb.instances) > 0:
+                elb_instance_ids = []
+                elb_instances= []
+                for instance in elb.instances:
+                    elb_instance_ids.append(instance.id)
+                instances = conn.get_only_instances(instance_ids=elb_instance_ids)
+                for instance in instances:
+                    elb_instances.append(format_host_infos(instance, conn, region))
+            elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instances})
+        return elbs_instances
+    else: 
+        return None
 
 def get_ghost_ec2_instances(ghost_app, ghost_env, ghost_role, region, filters=[]):
     conn_as = boto.ec2.autoscale.connect_to_region(region)
@@ -194,7 +217,7 @@ def format_host_infos(instance, conn, region):
 
     subnets = boto.vpc.connect_to_region(region).get_all_subnets(subnet_ids=[instance.subnet_id])
     subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
-    host = {'id': instance.id, 'private_ip_address': instance.private_ip_address, \
+    host = {'id': instance.id, 'private_ip_address': instance.private_ip_address, 'public_ip_address': instance.ip_address, \
     'status': instance.state, 'launch_time': datetime.strptime(instance.launch_time, "%Y-%m-%dT%H:%M:%S.%fZ"), \
     'security_group':sg_string, 'subnet_id':subnet_string, 'image_id':image_string, \
     'instance_type':instance.instance_type, 'instance_profile':str(instance.instance_profile['arn']).split("/")[1] }

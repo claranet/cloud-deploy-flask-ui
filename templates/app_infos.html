@@ -8,6 +8,19 @@
     <legend class="the-legend">
         <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
     </legend>
+    {%- if elbs_instances | length > 0 -%}
+    <div>
+        {% for elb in elbs_instances %}
+            <div>
+                 <strong>{{ elb['elb_name'] }}</strong><br/>
+                 {% for instance in elb['elb_instances']  %}
+                     {{ instance['id'] }}<br/>
+                 {% endfor %}
+            </div>
+        {% endfor %}
+    <br/>
+    {%- endif -%}
+    </div>
     {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
     {% for host in as_instances %}
@@ -24,7 +37,7 @@
                 <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
             <p>
-                <strong class="label label-default">Public IP</strong>
+                <strong class="label label-default">Public IP</strong> {{ host['public_ip_address'] }}
             </p>
             <p>
                 <strong class="label label-default">State</strong> {{ host['status'] }}
@@ -77,7 +90,7 @@
                 <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
             <p>
-                <strong class="label label-default">Public IP</strong>
+                <strong class="label label-default">Public IP</strong> {{ host['public_ip_address'] }}
             </p>
             <p>
                 <strong class="label label-default">State</strong> {{ host['status'] }}
