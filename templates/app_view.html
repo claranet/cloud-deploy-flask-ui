@@ -180,6 +180,7 @@
                     <th>Git</th>
                     <th>Path</th>
                     <th>Scope</th>
+                    <th>Uid / Gid</th>
                     <th>Build Pack</th>
                     <th>Pre Deploy</th>
                     <th>Post Deploy</th>
@@ -196,6 +197,7 @@
                         <td>{{ module['git_repo'] }}</td>
                         <td>{{ module['path'] }}</td>
                         <td>{{ module['scope'] }}</td>
+                        <td>{{ module['uid'] }} / {{ module['gid'] }}</td>
                         <td>{{ ghost_script(module.get('build_pack', '')) }}</td>
                         <td>{{ ghost_script(module.get('pre_deploy', '')) }}</td>
                         <td>{{ ghost_script(module.get('post_deploy', '')) }}</td>
