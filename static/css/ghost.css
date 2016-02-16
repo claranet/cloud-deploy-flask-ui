@@ -177,6 +177,11 @@ td.inline {
 .app-infos-wrap a.instance-item {
     display: inline-block;
     text-align: center;
+    padding: 3px;
+    border-radius: 5px;
+}
+.app-infos-wrap a.instance-item.focus {
+    background-color: #e3e3e3;
 }
 .app-infos-wrap a.instance-item,
 .app-infos-wrap a.instance-item:hover {
@@ -187,25 +192,22 @@ td.inline {
     outline-offset: 0;
     text-decoration: none !important;
 }
-.app-infos-wrap a.instance-item span.fa {
+.app-infos-wrap a.instance-item span.ionicons {
     font-size: 42px;
     display: block;
 }
 .app-infos-wrap a.instance-item span.instance-id {
     padding-left: 3px;
 }
-.app-infos-wrap li a.instance-item.running span.fa {
-    color: #8bc34a;
+.app-infos-wrap li a.instance-item.running span.ionicons {
+    color: #5FA443; /*Green Morea logo*/
 /*    text-shadow: 3px 3px 2px rgba(150, 150, 150, 1); */
 }
-.app-infos-wrap li a.instance-item.stopped span.fa {
+.app-infos-wrap li a.instance-item.stopped span.ionicons {
     color: #f44336;
 }
-.popover-title {
-    color: #333;
-}
 .zone.col-md-6 {
-    padding: 12px;    
+    padding: 12px;
 }
 fieldset.well.the-fieldset {
     border: 2px groove #eee;
@@ -224,6 +226,9 @@ fieldset.well.the-fieldset legend.the-legend {
 }
 fieldset.well.the-fieldset legend.the-legend h4 {
     display: inline;
+}
+#as-instance-details p {
+    white-space: normal;
 }
 
 /*Generic List*/

@@ -125,6 +125,9 @@ def web_app_infos(app_id):
     	    elb_instances = []
             ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
             return render_template('app_infos.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs=elbs, elb_instances=elb_instances)
+        else:
+            ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+            return render_template('app_infos.html', app=app, ghost_instances=ghost_instances)
     else:
         ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'])
     	return render_template('app_infos.html', app=app, ghost_instances=ghost_instances)

@@ -117,6 +117,19 @@
                 }
             });
             $('#global-search input').val(getUrlParameter('search'));
+
+            $(document).on('click', 'button.app-infos-btn', function(evt) {
+                $('#as-instance-details fieldset').addClass('hide');
+            });
+            $(document).on('click', '.instance-item', function(evt) {
+                evt.preventDefault();
+                instance_content = $(this).next().html();
+                $('.instance-item').removeClass('focus');
+                $(this).addClass('focus');
+                $('#as-instance-details fieldset').removeClass('hide');
+                $('#as-instance-details fieldset').html(instance_content);
+            });
+
         });
     </script>
 {% endblock %}

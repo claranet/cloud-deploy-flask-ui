@@ -2,8 +2,9 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h3 class="modal-title">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h3>
 </div>
+<div class="zone col-md-6">
 {%- if as_group -%}
-<div class="zone col-md-6"><fieldset class="well the-fieldset">
+<fieldset class="well the-fieldset">
     <legend class="the-legend">
         <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
     </legend>
@@ -11,11 +12,14 @@
 <ul class="app-infos-wrap">
     {% for host in as_instances %}
     <li>
-        <a class="instance-item {{ host['status'] }}" data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
-            <span class="fa fa-cube"></span>
+        <a class="instance-item {{ host['status'] }}" href="#">
+            <span class="ionicons ion-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
-        <div class="popper-content hide">
+        <div class="instance-content hide">
+            <legend class="the-legend">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
+            </legend>
             <p>
                 <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
@@ -50,22 +54,25 @@
 {%- else %}
 <p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
 {%- endif %}
-</fieldset></div>
+</fieldset>
 {%- endif %}
 
 {%- if ghost_instances | length > 0 -%}
-<div class="zone col-md-6"><fieldset class="well the-fieldset">
+<fieldset class="well the-fieldset">
     <legend class="the-legend">
-        <h4 class="modal-title">Standalone Group</h4>
+        <h4 class="modal-title">Standalone instances</h4>
     </legend>
 <ul class="app-infos-wrap">
 {% for host in ghost_instances %}
     <li>
-        <a class="instance-item {{ host['status'] }}" data-toggle="popover" title="{{ host['id'] }}" data-placement="bottom" data-trigger="focus" role="button" tabindex="0">
-            <span class="fa fa-cube"></span>
+        <a class="instance-item {{ host['status'] }}" href="#">
+            <span class="ionicons ion-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
         <div class="popper-content hide">
+            <legend class="the-legend">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
+            </legend>
             <p>
                 <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
             </p>
@@ -97,22 +104,18 @@
     </li>
 {% endfor %}
 </ul>
-</fieldset></div>
+</fieldset>
 {%- else %}
-<div class="zone col-md-6">
+<div class="zone">
     <h4 class="modal-title">No standalone instance found for the app <strong>'{{ app['name'] }}'</strong></h4>
 </div>
 {%- endif %}
+</div>
+
+<div class="zone col-md-6" id="as-instance-details">
+    <fieldset class="well the-fieldset hide">
+        <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+    </fieldset>
+</div>
 
 <div class="modal-footer" style="clear:both;"></div>
-
-<script type="text/javascript">
-    $(function () {
-    $('[data-toggle="popover"]').popover({
-        html : true,
-        content : function() {
-            return $(this).next('.popper-content').html();
-        }
-    });
-})
-</script>
