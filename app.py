@@ -117,12 +117,17 @@ def web_amis_list(region_id):
 def web_app_infos(app_id):
     # Get App data
     app = get_ghost_app(app_id)
-    as_group = get_ghost_app_as_group(app['autoscale']['name'], app['region'])
-    as_instances = get_as_group_instances(as_group, app['region'])
-    elbs = as_group.load_balancers
-    elb_instances = []
-    ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
-    return render_template('app_infos.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs=elbs, elb_instances=elb_instances)
+    if app['autoscale']['name']:
+        as_group = get_ghost_app_as_group(app['autoscale']['name'], app['region'])
+        if as_group != None:
+            as_instances = get_as_group_instances(as_group, app['region'])
+    	    elbs = as_group.load_balancers
+    	    elb_instances = []
+            ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
+            return render_template('app_infos.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs=elbs, elb_instances=elb_instances)
+    else:
+        ghost_instances = get_ghost_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+    	return render_template('app_infos.html', app=app, ghost_instances=ghost_instances)
 
 @app.route('/web/apps')
 def web_app_list():
