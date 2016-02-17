@@ -199,10 +199,7 @@ def get_ghost_app_ec2_instances(ghost_app, ghost_env, ghost_role, region, filter
 def format_host_infos(instance, conn, region):
     sg_string = None
     image = conn.get_image(instance.image_id)
-    if image is not None:
-        image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name)
-    else:
-        image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name="deregistered")
+    image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name if image is not None else 'deregistered')
 
     for sg in instance.groups:
         if sg_string == None:
