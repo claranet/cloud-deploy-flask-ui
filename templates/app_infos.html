@@ -77,7 +77,7 @@
 <ul class="app-infos-wrap">
 {% for host in ghost_instances %}
     <li>
-        <a class="instance-item {{ host['status'] }}" href="#">
+        <a class="instance-item {{ host['status'] }}" href="#" id="{{ host['id'] }}">
             <span class="ionicons ion-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
