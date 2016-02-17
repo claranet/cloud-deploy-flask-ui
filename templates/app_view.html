@@ -8,6 +8,9 @@
             <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
         </li>
         <li>
+            <a href="javascript:void(0)"><button href="/web/aws/appinfos/{{ app['_id'] }}" class="btn btn-raised btn-success app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app['_id'] }}"><span class="glyphicon glyphicon-new-window"></span> Resources details</button></a>
+        </li>
+        <li>
             <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
         </li>
         <li>
@@ -209,4 +212,47 @@
             </tbody>
         </table>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="app-infos-{{ app['_id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog app-infos" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block page_scripts %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(document).on('click', 'button.app-infos-btn', function(evt) {
+                $('#as-instance-details fieldset').addClass('hide');
+            });
+            $(document).on('click', '.instance-item', function(evt) {
+                evt.preventDefault();
+                instance_content = $(this).next().html();
+                $('.instance-item').removeClass('focus');
+                $(this).addClass('focus');
+                $('#as-instance-details fieldset').removeClass('hide');
+                $('#as-instance-details fieldset').html(instance_content);
+            });
+            $(document).on('click', '#as-elb a', function(evt) {
+                evt.preventDefault();
+                $('#as-elb a').removeClass('btn-raised');
+                $(this).addClass('btn-raised');
+
+                $('.instance-item').removeClass(function (index, css) {
+                    return (css.match (/(^|\s)hl-\S+/g) || []).join(' ');
+                });
+                instances = $(this).attr('data-instances');
+                color = $(this).attr('data-color');
+                $(instances).addClass('hl-'+color);
+            });
+        });
+    </script>
 {% endblock %}
