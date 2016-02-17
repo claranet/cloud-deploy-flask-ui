@@ -131,8 +131,8 @@
             });
             $(document).on('click', '#as-elb a', function(evt) {
                 evt.preventDefault();
-                $('#as-elb a').removeClass('btn-raised');
-                $(this).addClass('btn-raised');
+                $('#as-elb a').removeClass('btn-colored');
+                $(this).addClass('btn-colored');
 
                 $('.instance-item').removeClass(function (index, css) {
                     return (css.match (/(^|\s)hl-\S+/g) || []).join(' ');

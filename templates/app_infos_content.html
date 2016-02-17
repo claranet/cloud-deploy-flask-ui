@@ -9,7 +9,7 @@
         <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
     </legend>
     {%- if elbs_instances | length > 0 -%}
-    {% set bootstrap_classes = ['primary', 'info', 'success', 'warning'] %}
+    {% set bootstrap_classes = ['info', 'success', 'warning', 'primary'] %}
     <div id="as-elb" class="btn-group btn-group-justified">
         {% for elb in elbs_instances %}
         {% set ids = ', '.join(elb['elb_instances']) %}
@@ -32,32 +32,32 @@
             <legend class="the-legend">
                 <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
             </legend>
-            <p>
-                <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Private IP</strong><span class="col-md-10"> {{ host['private_ip_address'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Public IP</strong> {{ host['public_ip_address'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Public IP</strong><span class="col-md-10"> {{ host['public_ip_address'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">State</strong> {{ host['status'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">State</strong><span class="col-md-10"> {{ host['status'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Launch Time</strong> {{ host['launch_time'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Launch Time</strong><span class="col-md-10"> {{ host['launch_time'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Security Groups</strong> {{ host['security_group'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Security Groups</strong><span class="col-md-10"> {{ host['security_group'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Subnet Id</strong> {{ host['subnet_id'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Subnet Id</strong><span class="col-md-10"> {{ host['subnet_id'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Image Id</strong> {{ host['image_id'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Image Id</strong><span class="col-md-10"> {{ host['image_id'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Instance Type</strong> {{ host['instance_type'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Type</strong><span class="col-md-10"> {{ host['instance_type'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Instance Profile</strong> {{ host['instance_profile'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Profile</strong><span class="col-md-10"> {{ host['instance_profile'] }}</span>
             </p>
         </div>
     </li>
@@ -81,36 +81,36 @@
             <span class="ionicons ion-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
-        <div class="popper-content hide">
+        <div class="instance-content hide">
             <legend class="the-legend">
                 <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
             </legend>
-            <p>
-                <strong class="label label-default">Private IP</strong> {{ host['private_ip_address'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Private IP</strong><span class="col-md-10"> {{ host['private_ip_address'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Public IP</strong> {{ host['public_ip_address'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Public IP</strong><span class="col-md-10"> {{ host['public_ip_address'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">State</strong> {{ host['status'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">State</strong><span class="col-md-10"> {{ host['status'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Launch Time</strong> {{ host['launch_time'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Launch Time</strong><span class="col-md-10"> {{ host['launch_time'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Security Groups</strong> {{ host['security_group'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Security Groups</strong><span class="col-md-10"> {{ host['security_group'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Subnet Id</strong> {{ host['subnet_id'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Subnet Id</strong><span class="col-md-10"> {{ host['subnet_id'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Image Id</strong> {{ host['image_id'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Image Id</strong><span class="col-md-10"> {{ host['image_id'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Instance Type</strong> {{ host['instance_type'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Type</strong><span class="col-md-10"> {{ host['instance_type'] }}</span>
             </p>
-            <p>
-                <strong class="label label-default">Instance Profile</strong> {{ host['instance_profile'] }}
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Profile</strong><span class="col-md-10"> {{ host['instance_profile'] }}</span>
             </p>
         </div>
     </li>

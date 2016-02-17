@@ -181,6 +181,9 @@ td.inline {
     border-radius: 5px;
     color: #333;
 }
+.instance-item {
+    border: 1px solid transparent;
+}
 .app-infos-wrap a.instance-item.focus {
     background-color: #e3e3e3;
 }
@@ -232,15 +235,10 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     white-space: normal;
 }
 
-/*
-.hl-primary {text-shadow: -1px 0 #009688, 0 1px #009688, 1px 0 #009688, 0 -1px #009688;}
-.hl-success {text-shadow: -1px 0 #4caf50, 0 1px #4caf50, 1px 0 #4caf50, 0 -1px #4caf50;}
-.hl-info    {text-shadow: -1px 0 #03a9f4, 0 1px #03a9f4, 1px 0 #03a9f4, 0 -1px #03a9f4;}
-*/
-.hl-primary {border: 1px solid #009688}
-.hl-success {border: 1px solid #4caf50}
-.hl-info    {border: 1px solid #03a9f4}
-.hl-warning {border: 1px solid #ff5722}
+#as-elb a.btn-primary.btn-colored, .hl-primary {border: 1px solid #009688}
+#as-elb a.btn-success.btn-colored, .hl-success {border: 1px solid #4caf50}
+#as-elb a.btn-info.btn-colored,    .hl-info    {border: 1px solid #03a9f4}
+#as-elb a.btn-warning.btn-colored, .hl-warning {border: 1px solid #ff5722}
 
 /*Generic List*/
 .top-right {
@@ -387,6 +385,7 @@ button.btn.dropdown-toggle {
 }
 #as-elb a.btn {
     text-transform: inherit;
+    border: 1px solid transparent;
 }
 
 /**
