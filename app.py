@@ -123,13 +123,13 @@ def web_app_infos(app_id):
             as_instances = get_as_group_instances(as_group, app['region'])
             elbs_instances = get_elbs_instances_from_as_group(as_group, app['region'])
             ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
-            return render_template('app_infos.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
+            return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
         else:
             ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
-            return render_template('app_infos.html', app=app, ghost_instances=ghost_instances)
+            return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
     else:
         ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
-        return render_template('app_infos.html', app=app, ghost_instances=ghost_instances)
+        return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
 @app.route('/web/apps')
 def web_app_list():
