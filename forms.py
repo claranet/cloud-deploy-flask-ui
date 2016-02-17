@@ -158,7 +158,7 @@ def get_elbs_in_as_group(as_group, region):
     else:
         return None
 
-def get_elbs_instances(as_group, region):
+def get_elbs_instances_from_as_group(as_group, region):
     conn = boto.ec2.connect_to_region(region)
     elbs = get_elbs_in_as_group(as_group, region)
     if len(elbs) > 0:
@@ -178,7 +178,7 @@ def get_elbs_instances(as_group, region):
     else: 
         return None
 
-def get_ghost_ec2_instances(ghost_app, ghost_env, ghost_role, region, filters=[]):
+def get_ghost_app_ec2_instances(ghost_app, ghost_env, ghost_role, region, filters=[]):
     conn_as = boto.ec2.autoscale.connect_to_region(region)
     conn = boto.ec2.connect_to_region(region)
 
