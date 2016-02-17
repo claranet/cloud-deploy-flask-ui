@@ -7,13 +7,13 @@ from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
 
 from datetime import datetime 
-from eve import RFC1123_DATE_FORMAT
 from base64 import b64encode
 import traceback
 import boto.vpc
 import boto.ec2
 import boto.iam
 import boto.ec2.autoscale
+import boto.ec2.elb
 import aws_data
 
 from models.apps import apps_schema as ghost_app_schema
@@ -159,7 +159,6 @@ def get_elbs_in_as_group(as_group, region):
         return None
 
 def get_elbs_instances_from_as_group(as_group, region):
-    conn = boto.ec2.connect_to_region(region)
     elbs = get_elbs_in_as_group(as_group, region)
     if len(elbs) > 0:
         elbs_instances = []
