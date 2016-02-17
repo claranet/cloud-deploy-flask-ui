@@ -200,19 +200,22 @@ def format_host_infos(instance, conn, region):
     sg_string = None
     image = conn.get_image(instance.image_id)
     image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name if image is not None else 'deregistered')
-
-    for sg in instance.groups:
-        if sg_string == None:
-            sg_string = "{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name)
-        else:
-            sg_string = "{previous_sg}, {sg_id} ({sg_name})".format(previous_sg=sg_string, sg_id=sg.id, sg_name=sg.name)
+    sg_string = ', '.join(["{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name) for sg in instance.groups])
 
     subnets = boto.vpc.connect_to_region(region).get_all_subnets(subnet_ids=[instance.subnet_id])
     subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
-    host = {'id': instance.id, 'private_ip_address': instance.private_ip_address, 'public_ip_address': instance.ip_address, \
-    'status': instance.state, 'launch_time': datetime.strptime(instance.launch_time, "%Y-%m-%dT%H:%M:%S.%fZ"), \
-    'security_group':sg_string, 'subnet_id':subnet_string, 'image_id':image_string, \
-    'instance_type':instance.instance_type, 'instance_profile':str(instance.instance_profile['arn']).split("/")[1] }
+    
+    host = {'id': instance.id,
+      'private_ip_address': instance.private_ip_address,
+      'public_ip_address': instance.ip_address,
+      'status': instance.state,
+      'launch_time': datetime.strptime(instance.launch_time, "%Y-%m-%dT%H:%M:%S.%fZ"),
+      'security_group':sg_string,
+      'subnet_id':subnet_string,
+      'image_id':image_string,
+      'instance_type':instance.instance_type,
+      'instance_profile':str(instance.instance_profile['arn']).split("/")[1] 
+    }
     return host
 
 def get_aws_ec2_instance_types(region):
