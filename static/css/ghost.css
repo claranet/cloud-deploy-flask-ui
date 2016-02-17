@@ -240,6 +240,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .hl-primary {border: 1px solid #009688}
 .hl-success {border: 1px solid #4caf50}
 .hl-info    {border: 1px solid #03a9f4}
+.hl-warning {border: 1px solid #ff5722}
 
 /*Generic List*/
 .top-right {
