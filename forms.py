@@ -166,13 +166,14 @@ def get_elbs_instances(as_group, region):
         for elb in elbs:
             if len(elb.instances) > 0:
                 elb_instance_ids = []
-                elb_instances= []
+#                elb_instances= []
                 for instance in elb.instances:
-                    elb_instance_ids.append(instance.id)
-                instances = conn.get_only_instances(instance_ids=elb_instance_ids)
-                for instance in instances:
-                    elb_instances.append(format_host_infos(instance, conn, region))
-            elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instances})
+                    elb_instance_ids.append('#' + instance.id)
+#                instances = conn.get_only_instances(instance_ids=elb_instance_ids)
+#                for instance in instances:
+#                    elb_instances.append(format_host_infos(instance, conn, region))
+#            elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instances})
+                elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
         return elbs_instances
     else: 
         return None

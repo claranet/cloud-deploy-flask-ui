@@ -179,6 +179,7 @@ td.inline {
     text-align: center;
     padding: 3px;
     border-radius: 5px;
+    color: #333;
 }
 .app-infos-wrap a.instance-item.focus {
     background-color: #e3e3e3;
@@ -230,6 +231,15 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 #as-instance-details p {
     white-space: normal;
 }
+
+/*
+.hl-primary {text-shadow: -1px 0 #009688, 0 1px #009688, 1px 0 #009688, 0 -1px #009688;}
+.hl-success {text-shadow: -1px 0 #4caf50, 0 1px #4caf50, 1px 0 #4caf50, 0 -1px #4caf50;}
+.hl-info    {text-shadow: -1px 0 #03a9f4, 0 1px #03a9f4, 1px 0 #03a9f4, 0 -1px #03a9f4;}
+*/
+.hl-primary {border: 1px solid #009688}
+.hl-success {border: 1px solid #4caf50}
+.hl-info    {border: 1px solid #03a9f4}
 
 /*Generic List*/
 .top-right {
@@ -368,6 +378,13 @@ li.quick-submit button.btn.btn-xs {
 button.btn.dropdown-toggle {
     border: 1px solid #CCC;
     padding-left: 5px;
+    text-transform: inherit;
+}
+#as-elb {
+    margin-bottom: 10px;
+    margin-top: -15px;
+}
+#as-elb a.btn {
     text-transform: inherit;
 }
 

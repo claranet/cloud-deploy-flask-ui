@@ -129,7 +129,18 @@
                 $('#as-instance-details fieldset').removeClass('hide');
                 $('#as-instance-details fieldset').html(instance_content);
             });
+            $(document).on('click', '#as-elb a', function(evt) {
+                evt.preventDefault();
+                $('#as-elb a').removeClass('btn-raised');
+                $(this).addClass('btn-raised');
 
+                $('.instance-item').removeClass(function (index, css) {
+                    return (css.match (/(^|\s)hl-\S+/g) || []).join(' ');
+                });
+                instances = $(this).attr('data-instances');
+                color = $(this).attr('data-color');
+                $(instances).addClass('hl-'+color);
+            });
         });
     </script>
 {% endblock %}

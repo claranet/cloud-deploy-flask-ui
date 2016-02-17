@@ -9,23 +9,22 @@
         <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
     </legend>
     {%- if elbs_instances | length > 0 -%}
-    <div>
+    {% set bootstrap_classes = ['success', 'info', 'primary'] %}
+    <div id="as-elb" class="btn-group btn-group-justified">
         {% for elb in elbs_instances %}
-            <div>
-                 <strong>{{ elb['elb_name'] }}</strong><br/>
-                 {% for instance in elb['elb_instances']  %}
-                     {{ instance['id'] }}<br/>
-                 {% endfor %}
-            </div>
+        {% set ids = ', '.join(elb['elb_instances']) %}
+        <a href="#" class="btn btn-{{ bootstrap_classes[loop.index] }}"
+           data-color="{{ bootstrap_classes[loop.index] }}"
+           data-instances="{{ ids }}"
+           ><span class="ionicons ion-network"></span> {{ elb['elb_name'] }}</a>
         {% endfor %}
-    <br/>
-    {%- endif -%}
     </div>
+    {%- endif -%}
     {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
     {% for host in as_instances %}
     <li>
-        <a class="instance-item {{ host['status'] }}" href="#">
+        <a class="instance-item {{ host['status'] }}" href="#" id="{{ host['id'] }}">
             <span class="ionicons ion-cube"></span>
             <span class="instance-id">{{ host['id'] }}</span>
         </a>
