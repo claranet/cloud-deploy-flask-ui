@@ -1,7 +1,7 @@
 {% for job in jobs | sort(reverse=True, attribute='_created') %}
     {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
 <tr class="env-{{ app['env'] }}">
-    <th scope="row" class="status status-{{ job['status'] }}">{{ loop.index }}</th>
+    <th scope="row" class="status status-{{ job['status'] }}"><span class="index"></span></th>
     <td>
         <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
     </td>

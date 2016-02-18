@@ -19,6 +19,7 @@ from ghost_client import headers, test_ghost_auth
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles
+from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group
 
 # Web UI App
 app = Flask(__name__)
@@ -111,6 +112,24 @@ def web_subnets_list(region_id, vpc_id):
 @app.route('/web/aws/regions/<region_id>/ami/ids')
 def web_amis_list(region_id):
     return jsonify(get_aws_ami_ids(region_id))
+
+@app.route('/web/aws/appinfos/<app_id>', methods=['GET'])
+def web_app_infos(app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+    if app['autoscale']['name']:
+        as_group = get_ghost_app_as_group(app['autoscale']['name'], app['region'])
+        if as_group != None:
+            as_instances = get_as_group_instances(as_group, app['region'])
+            elbs_instances = get_elbs_instances_from_as_group(as_group, app['region'])
+            ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
+            return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
+        else:
+            ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+            return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
+    else:
+        ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+        return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
 @app.route('/web/apps')
 def web_app_list():

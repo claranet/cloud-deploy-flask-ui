@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-select.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-material-design.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ripples.min.css')}}?v={{current_revision}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/font-awesome.min.css')}}?v={{current_revision}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/ionicons.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
 {% endblock %}
 
@@ -110,9 +112,6 @@
                 {
                     if (html) {
                         $('tr#loadmoreajaxloader').before(html);
-                        $('table.tablelist tbody tr').each(function() {
-                            $(this).find('th').html($(this).index() + 1);
-                        });
                         $('tr#loadmoreajaxloader td').hide();
                         if ($('body').innerHeight() < $(window).height()) { //fetchfing next page to fill the document 
                             fetchNextPage();

@@ -50,7 +50,11 @@ body {
 span.index:after {
   content: " " counter(group_entry);
 }
-
+.caret.right {
+    border-left: 4px solid;
+    border-bottom: 4px solid transparent;
+    border-top: 4px solid transparent;
+}
 .sidebar {
     padding-left: 10px;
     padding-right: 10px;
@@ -158,6 +162,83 @@ td.inline {
     width: 50%;
     max-width: 50%;
 }
+.app-infos {
+    width: 90%;
+}
+.app-infos-wrap {
+    padding: 0;
+    margin: 0;
+}
+.app-infos-wrap li {
+    float: left;
+    list-style: none;
+    margin-right: 10px;
+}
+.app-infos-wrap a.instance-item {
+    display: inline-block;
+    text-align: center;
+    padding: 3px;
+    border-radius: 5px;
+    color: #333;
+}
+.instance-item {
+    border: 1px solid transparent;
+}
+.app-infos-wrap a.instance-item.focus {
+    background-color: #e3e3e3;
+}
+.app-infos-wrap a.instance-item,
+.app-infos-wrap a.instance-item:hover {
+    text-decoration: none !important;
+}
+.app-infos-wrap a.instance-item:focus {
+    outline: none;
+    outline-offset: 0;
+    text-decoration: none !important;
+}
+.app-infos-wrap a.instance-item span.ionicons {
+    font-size: 42px;
+    display: block;
+}
+.app-infos-wrap a.instance-item span.instance-id {
+    padding-left: 3px;
+}
+.app-infos-wrap li a.instance-item.running span.ionicons {
+    color: #5FA443; /*Green Morea logo*/
+/*    text-shadow: 3px 3px 2px rgba(150, 150, 150, 1); */
+}
+.app-infos-wrap li a.instance-item.stopped span.ionicons {
+    color: #f44336;
+}
+.zone.col-md-6 {
+    padding: 12px;
+}
+fieldset.well.the-fieldset {
+    border: 2px groove #eee;
+    border-radius: 5px;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+}
+fieldset.well.the-fieldset legend.the-legend {
+    border-style: none;
+    border-width: 0;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 0;
+    width: auto;
+    padding: 0 5px;
+}
+fieldset.well.the-fieldset legend.the-legend h4 {
+    display: inline;
+}
+#as-instance-details p {
+    white-space: normal;
+}
+
+#as-elb a.btn-primary.btn-colored, .hl-primary {border: 1px solid #009688}
+#as-elb a.btn-success.btn-colored, .hl-success {border: 1px solid #4caf50}
+#as-elb a.btn-info.btn-colored,    .hl-info    {border: 1px solid #03a9f4}
+#as-elb a.btn-warning.btn-colored, .hl-warning {border: 1px solid #ff5722}
 
 /*Generic List*/
 .top-right {
@@ -165,6 +246,9 @@ td.inline {
 }
 #loadmoreajaxloader td {
     text-align: center;
+}
+.tablelist {
+    counter-reset: rowindex;
 }
 .tablelist tr td{
     white-space: nowrap;
@@ -209,7 +293,13 @@ td.inline {
 .tablelist th.status-done {
     background-color: #5cb85c;
 }
-
+.tablelist th span.index:before {
+    counter-increment: rowindex;
+    content: counter(rowindex);
+}
+.tablelist th span.index:after {
+    content: "";
+}
 .action-btns li a, .action-btns li {
     float: left;
 }
@@ -288,6 +378,14 @@ button.btn.dropdown-toggle {
     border: 1px solid #CCC;
     padding-left: 5px;
     text-transform: inherit;
+}
+#as-elb {
+    margin-bottom: 10px;
+    margin-top: -15px;
+}
+#as-elb a.btn {
+    text-transform: inherit;
+    border: 1px solid transparent;
 }
 
 /**

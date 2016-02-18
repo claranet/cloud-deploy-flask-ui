@@ -1,10 +1,10 @@
 {% for app in apps | sort(reverse=True, attribute='_updated') %}
-<tr class="env-{{ app['env'] }}">
-    <th scope="row">{{ loop.index }}</th>
+<tr class="env-{{ app['env'] }} app-row">
+    <th scope="row"><span class="index"></span></th>
     <td>
         <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
         <br>
-        {{ app['_id'] }}
+        <span class="app-uid">{{ app['_id'] }}</span>
     </td>
     <td>
         {{ app['_created'] }}
@@ -40,9 +40,25 @@
     </td>
     <td>
         <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default" title="Run Command" data-toggle="tooltip"><span class="glyphicon glyphicon-console"></span></button></a>
+        <button href="/web/aws/appinfos/{{ app['_id'] }}" class="btn btn-success app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app['_id'] }}"><span class="glyphicon glyphicon-new-window"></span></button>
         <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-warning" title="Edit" data-toggle="tooltip"><span class="glyphicon glyphicon-edit"></span></button></a>
         <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-info" title="Clone" data-toggle="tooltip"><span class="glyphicon glyphicon-duplicate"></span></button></a>
         <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-danger" title="Delete" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button></a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="app-infos-{{ app['_id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog app-infos" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+            </div>
+            </div>
+        </div>
+        </div>
     </td>
 </tr>
 {% endfor %}

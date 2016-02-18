@@ -1,0 +1,133 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h3>
+</div>
+<div class="zone col-md-6">
+{%- if as_group -%}
+<fieldset class="well the-fieldset">
+    <legend class="the-legend">
+        <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
+    </legend>
+    {%- if elbs_instances | length > 0 -%}
+    {% set bootstrap_classes = ['info', 'success', 'warning', 'primary'] %}
+    <div id="as-elb" class="btn-group btn-group-justified">
+        {% for elb in elbs_instances %}
+        {% set ids = ', '.join(elb['elb_instances']) %}
+        <a href="#" class="btn btn-{{ bootstrap_classes[loop.index % 4] }}"
+           data-color="{{ bootstrap_classes[loop.index % 4] }}"
+           data-instances="{{ ids }}"
+           ><span class="ionicons ion-network"></span> {{ elb['elb_name'] }}</a>
+        {% endfor %}
+    </div>
+    {%- endif -%}
+    {%- if as_instances | length > 0 -%}
+<ul class="app-infos-wrap">
+    {% for host in as_instances %}
+    <li>
+        <a class="instance-item {{ host['status'] }}" href="#" id="{{ host['id'] }}">
+            <span class="ionicons ion-cube"></span>
+            <span class="instance-id">{{ host['id'] }}</span>
+        </a>
+        <div class="instance-content hide">
+            <legend class="the-legend">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
+            </legend>
+            <p class="row">
+                <strong class="label label-default col-md-2">Private IP</strong><span class="col-md-10"> {{ host['private_ip_address'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Public IP</strong><span class="col-md-10"> {{ host['public_ip_address'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">State</strong><span class="col-md-10"> {{ host['status'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Launch Time</strong><span class="col-md-10"> {{ host['launch_time'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Security Groups</strong><span class="col-md-10"> {{ host['security_group'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Subnet Id</strong><span class="col-md-10"> {{ host['subnet_id'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Image Id</strong><span class="col-md-10"> {{ host['image_id'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Type</strong><span class="col-md-10"> {{ host['instance_type'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Profile</strong><span class="col-md-10"> {{ host['instance_profile'] }}</span>
+            </p>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+{%- else %}
+<p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
+{%- endif %}
+</fieldset>
+{%- endif %}
+
+{%- if ghost_instances | length > 0 -%}
+<fieldset class="well the-fieldset">
+    <legend class="the-legend">
+        <h4 class="modal-title">Standalone instances</h4>
+    </legend>
+<ul class="app-infos-wrap">
+{% for host in ghost_instances %}
+    <li>
+        <a class="instance-item {{ host['status'] }}" href="#" id="{{ host['id'] }}">
+            <span class="ionicons ion-cube"></span>
+            <span class="instance-id">{{ host['id'] }}</span>
+        </a>
+        <div class="instance-content hide">
+            <legend class="the-legend">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
+            </legend>
+            <p class="row">
+                <strong class="label label-default col-md-2">Private IP</strong><span class="col-md-10"> {{ host['private_ip_address'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Public IP</strong><span class="col-md-10"> {{ host['public_ip_address'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">State</strong><span class="col-md-10"> {{ host['status'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Launch Time</strong><span class="col-md-10"> {{ host['launch_time'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Security Groups</strong><span class="col-md-10"> {{ host['security_group'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Subnet Id</strong><span class="col-md-10"> {{ host['subnet_id'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Image Id</strong><span class="col-md-10"> {{ host['image_id'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Type</strong><span class="col-md-10"> {{ host['instance_type'] }}</span>
+            </p>
+            <p class="row">
+                <strong class="label label-default col-md-2">Instance Profile</strong><span class="col-md-10"> {{ host['instance_profile'] }}</span>
+            </p>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+</fieldset>
+{%- else %}
+<div class="zone">
+    <h4 class="modal-title">No standalone instance found for the app <strong>'{{ app['name'] }}'</strong></h4>
+</div>
+{%- endif %}
+</div>
+
+<div class="zone col-md-6" id="as-instance-details">
+    <fieldset class="well the-fieldset hide">
+        <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+    </fieldset>
+</div>
+
+<div class="modal-footer" style="clear:both;"></div>
