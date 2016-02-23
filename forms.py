@@ -140,11 +140,13 @@ def get_as_group_instances(as_group, region):
     conn = boto.ec2.connect_to_region(region)
     instance_ids = []
     for i in as_group.instances:
-        instance_ids.append(i.instance_id)
-    instances = conn.get_only_instances(instance_ids=instance_ids)
+        if i.health_status != 'Unhealthy':
+            instance_ids.append(i.instance_id)
     hosts = []
-    for host in instances:
-        hosts.append(format_host_infos(host, conn, region))
+    if len(instance_ids) > 0:
+        instances = conn.get_only_instances(instance_ids=instance_ids)
+        for host in instances:
+            hosts.append(format_host_infos(host, conn, region))
     return hosts
 
 def get_elbs_in_as_group(as_group, region):
@@ -202,8 +204,11 @@ def format_host_infos(instance, conn, region):
     image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name if image is not None else 'deregistered')
     sg_string = ', '.join(["{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name) for sg in instance.groups])
 
-    subnets = boto.vpc.connect_to_region(region).get_all_subnets(subnet_ids=[instance.subnet_id])
-    subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
+    if instance.subnet_id:
+        subnets = boto.vpc.connect_to_region(region).get_all_subnets(subnet_ids=[instance.subnet_id])
+        subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
+    else:
+        subnet_string = '-'
     
     host = {'id': instance.id,
       'private_ip_address': instance.private_ip_address,
@@ -214,7 +219,7 @@ def format_host_infos(instance, conn, region):
       'subnet_id':subnet_string,
       'image_id':image_string,
       'instance_type':instance.instance_type,
-      'instance_profile':str(instance.instance_profile['arn']).split("/")[1] 
+      'instance_profile':str(instance.instance_profile['arn']).split("/")[1] if instance.instance_profile else '-'
     }
     return host
 
