@@ -112,9 +112,10 @@ def get_ghost_app(app_id, embed_deployments=False):
             if 'post_deploy' in module:
                 module['post_deploy'] = b64decode(module['post_deploy'])
 
-            if 'last_deployment' in module:
+            if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
                 try:
-                    module['last_deployment']['_created'] = datetime.utcfromtimestamp(module['last_deployment']['timestamp']).strftime(RFC1123_DATE_FORMAT)
+                    last_deployment_timestamp = module['last_deployment'].get('timestamp', None)
+                    module['last_deployment']['_created'] = datetime.utcfromtimestamp(last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
                 except:
                     traceback.print_exc()
 
