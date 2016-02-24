@@ -173,6 +173,7 @@ td.inline {
     float: left;
     list-style: none;
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 .app-infos-wrap a.instance-item {
     display: inline-block;
@@ -386,6 +387,9 @@ button.btn.dropdown-toggle {
 #as-elb a.btn {
     text-transform: inherit;
     border: 1px solid transparent;
+    padding: 8px 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /**

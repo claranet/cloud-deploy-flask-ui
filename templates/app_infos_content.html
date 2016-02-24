@@ -16,6 +16,7 @@
         <a href="#" class="btn btn-{{ bootstrap_classes[loop.index % 4] }}"
            data-color="{{ bootstrap_classes[loop.index % 4] }}"
            data-instances="{{ ids }}"
+           title="{{ elb['elb_name'] }}"
            ><span class="ionicons ion-network"></span> {{ elb['elb_name'] }}</a>
         {% endfor %}
     </div>
