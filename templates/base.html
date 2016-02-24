@@ -309,13 +309,15 @@
             clone.attr("id", entry_id_prefix + "_"+(count+1));
             clone.find("input, select, textarea").each(function() {
                 var old_id = $(this).attr('id');
-                var new_id = old_id.replace('-0', '-' + count);
-                $(this).attr("id", new_id);
-                $(this).attr("name", new_id);
-                $(this).val(null);
+                if (old_id) {
+                    var new_id = old_id.replace('-0', '-' + count);
+                    $(this).attr("id", new_id);
+                    $(this).attr("name", new_id);
+                    $(this).val(null);
 
-                var field_label = clone.find("label[for='" + old_id + "']");
-                field_label.attr("for", new_id);
+                    var field_label = clone.find("label[for='" + old_id + "']");
+                    field_label.attr("for", new_id);
+                }
             });
 
             clone.appendTo("table#" + group_id_prefix + "_list");
