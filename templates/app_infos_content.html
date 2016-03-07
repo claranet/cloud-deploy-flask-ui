@@ -8,7 +8,7 @@
     <legend class="the-legend">
         <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
     </legend>
-    {%- if elbs_instances | length > 0 -%}
+    {%- if elbs_instances -%}
     {% set bootstrap_classes = ['info', 'success', 'warning', 'primary'] %}
     <div id="as-elb" class="btn-group btn-group-justified">
         {% for elb in elbs_instances %}
