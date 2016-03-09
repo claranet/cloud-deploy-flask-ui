@@ -293,11 +293,11 @@ class AutoscaleForm(Form):
         """
         app['autoscale'] = {}
         app['autoscale']['name'] = self.name.data
-        if self.min.data:
+        if isinstance(self.min.data, int):
             app['autoscale']['min'] = self.min.data
-        if self.max.data:
+        if isinstance(self.max.data, int):
             app['autoscale']['max'] = self.max.data
-        if self.current.data:
+        if isinstance(self.current.data, int):
             app['autoscale']['current'] = self.current.data
 
 
