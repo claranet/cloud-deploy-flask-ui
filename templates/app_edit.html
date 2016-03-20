@@ -70,10 +70,13 @@
                 <div class="row">
                     {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
                     {{ wtf.form_field(form.region, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#region" data-call="void(0);"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#instance_type" data-call="ghost_update_ec2_instancetypes($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.vpc_id, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#vpc_id" data-call="ghost_update_ec2_vpcs($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                 </div>
             </div>
         </div>
@@ -102,7 +105,9 @@
                 <div class="row">
                     {{ wtf.form_field(form.build_infos.form.ssh_username, form_type='horizontal', placeholder='admin') }}
                     {{ wtf.form_field(form.build_infos.form.source_ami, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#build_infos-source_ami" data-call="ghost_update_ec2_amis($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#build_infos-subnet_id" data-call="ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                 </div>
             </div>
         </div>
@@ -121,7 +126,9 @@
                     <div class="panel-body">
                         <div class="row">
                             {{ wtf.form_field(form.environment_infos.form.instance_profile, form_type='horizontal') }}
+                            <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#environment_infos-instance_profile" data-call="ghost_update_iam_profiles($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                             {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal') }}
+                            <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#environment_infos-key_name" data-call="ghost_update_ec2_keys($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                         </div>
                     </div>
                 </div>
@@ -231,6 +238,16 @@
             var module_name = $(this).val();
             var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"] span');
             menu_link.text(module_name);
+        });
+        $('.refresh-select').each(function(index) {
+            $(this).prev().addClass('select-panel');
+        });
+        $('.refresh-select').click(function (evt) {
+            evt.preventDefault();
+            jsCall = $(this).attr('data-call');
+            eval(jsCall);
+            selectElt = $(this).attr('data-target');
+            $(selectElt).selectpicker('refresh')
         });
         $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
             var path = $(this).val();

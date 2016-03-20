@@ -151,7 +151,7 @@ ul.nav.navbar-nav {
 /*AppEdit*/
 td.inline .form-group {
     width: 50%;
-    float: left;    
+    float: left;
 }
 td.inline {
     clear: both;
@@ -164,6 +164,18 @@ td.inline {
   height: auto !important;
   max-width: 1000px;
 }
+#app-form .refresh-select {
+    position: relative;
+    right: 0;
+    top: -45px;
+    float: right;
+    padding: 12px;
+    margin: 0 0 -45px 0;
+}
+#app-form .form-group.select-panel {
+    padding-right: 40px;
+}
+
 /*AppList*/
 .apptable {
     border: 3px solid #eee;
