@@ -192,6 +192,11 @@
             evt.preventDefault();
             $('#app-form #submit').click();
         });
+        $('#modules_list').on('focusout', 'input[name$="module_name"]', function () {
+            var module_name = $(this).val();
+            var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"]');
+            menu_link.text(module_name);
+        });
         $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
             var path = $(this).val();
             if (path == '/' || path == '/tmp' || path == '/var' || path == '/etc') {
