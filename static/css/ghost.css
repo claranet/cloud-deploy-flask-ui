@@ -127,6 +127,9 @@ ul.nav.navbar-nav {
     list-style-type: decimal;
     color:  #31B0D5;
 }
+#left-menu .subnav li a i {
+    color:  #31B0D5;
+}
 #left-menu .subnav.env li {
     list-style-type: disc;
     color:  #31B0D5;

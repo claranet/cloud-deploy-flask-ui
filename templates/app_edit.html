@@ -178,6 +178,7 @@
 {% block page_scripts %}
     <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/Sortable.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
         $('textarea').each(function(index, elem){
@@ -192,9 +193,11 @@
             evt.preventDefault();
             $('#app-form #submit').click();
         });
+        var list = document.getElementById("menu-modules-list");
+        Sortable.create(list);
         $('#modules_list').on('focusout', 'input[name$="module_name"]', function () {
             var module_name = $(this).val();
-            var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"]');
+            var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"] span');
             menu_link.text(module_name);
         });
         $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
