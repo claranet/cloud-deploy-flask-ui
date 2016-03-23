@@ -193,8 +193,22 @@
             evt.preventDefault();
             $('#app-form #submit').click();
         });
+        var oneDropDone = false;
         var list = document.getElementById("menu-modules-list");
-        Sortable.create(list);
+        Sortable.create(list, {
+             onEnd: function (/**Event*/evt) {
+                if (evt.oldIndex != evt.newIndex) {
+                    if (!oneDropDone) {
+                        oneDropDone = true;
+                        $('#app-form').submit(function () {
+                            if (confirm('Module order has changed. Do you want to update the App MANIFEST ? If No, the MANISFET will be updated on the next deploy command.')) {
+                                $('#app-form').append('<input type="hidden" id="update_manifest" name="update_manifest" value="1">');
+                            }
+                        });
+                    }
+                }
+            },
+        });
         $('#modules_list').on('focusout', 'input[name$="module_name"]', function () {
             var module_name = $(this).val();
             var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"] span');
