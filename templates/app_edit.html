@@ -201,11 +201,29 @@
                     if (!oneDropDone) {
                         oneDropDone = true;
                         $('#app-form').submit(function () {
-                            if (confirm('Module order has changed. Do you want to update the App MANIFEST ? If No, the MANISFET will be updated on the next deploy command.')) {
+                            /* Rewrite indexes for Flask */
+                            $('#modules_list tr').each(function(index, mod) {
+                                $(this).find('[name]').each(function() {
+                                    newModAttr = $(this).attr('name').replace(/modules-[0-9]*-/i, 'modules-'+index+'-');
+                                    $(this).attr('name', newModAttr);
+                                    $(this).attr('id', newModAttr);
+                                });
+                            });
+                            /* -- TODO Update Manifest trigger
+                            if (confirm('Module order has changed. Do you want to update the App MANIFEST ? If No, the MANIFEST will be updated on the next deploy command.')) {
                                 $('#app-form').append('<input type="hidden" id="update_manifest" name="update_manifest" value="1">');
-                            }
+                            }*/
                         });
                     }
+
+                    /* DOM Swap */
+                    modules = $('#modules_list tr');
+                    oldModule = $(modules.get(evt.oldIndex));
+                    if (evt.oldIndex > evt.newIndex)
+                        $(modules.get(evt.newIndex)).before(oldModule.clone(true));
+                    else
+                        $(modules.get(evt.newIndex)).after(oldModule.clone(true));
+                    oldModule.remove();
                 }
             },
         });
