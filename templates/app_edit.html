@@ -3,6 +3,7 @@
 {% set page_title = edit and ('Edit %s (%s)' % (form.name.data, form.env.data)) or 'Create an Application' %}
 
 {% block page_header %}
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
     <ul class="nav nav-stacked">
         <li>
         </li>
@@ -175,8 +176,18 @@
 {% endblock %}
 
 {% block page_scripts %}
+    <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
+        $('textarea').each(function(index, elem){
+            var editor = CodeMirror.fromTextArea(elem, {
+                lineNumbers: true,
+                viewportMargin: Infinity,
+                lineWrapping: true,
+                mode: 'shell',
+            });
+        });
         $('.quick-submit').click(function (evt) {
             evt.preventDefault();
             $('#app-form #submit').click();
