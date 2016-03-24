@@ -270,6 +270,7 @@ def web_app_command(app_id):
     form.map_from_app(app)
 
     form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+    form.command.data = 'deploy'
 
     return render_template('app_command.html', form=form, app=app)
 
