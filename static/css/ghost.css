@@ -248,11 +248,6 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 #as-elb a.btn-info.btn-colored,    .hl-info    {border: 1px solid #03a9f4}
 #as-elb a.btn-warning.btn-colored, .hl-warning {border: 1px solid #ff5722}
 
-.btn.btn-raised {
-    padding: 10px 15px;
-    margin: 0 5px;
-}
-
 /*Generic List*/
 .top-right {
     float: right;
@@ -312,6 +307,10 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 }
 .tablelist th span.index:after {
     content: "";
+}
+.tablelist .btn.btn-raised {
+    padding: 10px 15px;
+    margin: 10px 5px 0 0;
 }
 .action-btns li a, .action-btns li {
     float: left;
