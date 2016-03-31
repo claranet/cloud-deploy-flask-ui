@@ -306,12 +306,12 @@
             var count = $("tr[data-" + entry_id_prefix + "]").size();
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
 
-            clone.attr("id", entry_id_prefix + "_"+(count+1));
+            clone.attr("id", entry_id_prefix + "_" + count);
             clone.find("input, select, textarea").each(function() {
                 var old_id = $(this).attr('id');
                 $(this).val(null);
                 if (old_id) {
-                    var new_id = old_id.replace('-0', '-' + count);
+                    var new_id = old_id.replace(/modules-[0-9]+-/i, 'modules-' + count + '-');
                     $(this).attr("id", new_id);
                     $(this).attr("name", new_id);
 
@@ -322,13 +322,34 @@
 
             var slt = clone.find('select');
             slt.parent().before(slt);
+
+            // Bootstrap Dynamic Select - update
             clone.find('.bootstrap-select').remove();
             clone.find('select').selectpicker({
                 style: 'btn-default',
                 liveSearch: true,
                 dropupAuto:  false
             });
+
+            // CodeMirror cleaning
+            clone.find('.CodeMirror').remove();
+            clone.find('textarea').each(function(index, elem) {
+                $(elem).css('display', 'block');
+                $(elem).unbind();
+            });
+
+            // DOM Insert
             clone.appendTo("table#" + group_id_prefix + "_list");
+
+            // CodeMirror update
+            $('#' + entry_id_prefix + "_" + count).find('textarea').each(function(index, elem) {
+                var editor = CodeMirror.fromTextArea(elem, {
+                    lineNumbers: true,
+                    viewportMargin: Infinity,
+                    lineWrapping: true,
+                    mode: 'shell',
+                });
+            });
         }
 
         function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {

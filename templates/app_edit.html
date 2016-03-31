@@ -180,7 +180,7 @@
     <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
-        $('textarea').each(function(index, elem){
+        $('textarea').each(function(index, elem) {
             var editor = CodeMirror.fromTextArea(elem, {
                 lineNumbers: true,
                 viewportMargin: Infinity,
