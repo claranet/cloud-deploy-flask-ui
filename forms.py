@@ -834,6 +834,7 @@ class CreateAppForm(BaseAppForm):
 
 class EditAppForm(BaseAppForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
+    update_manifest = HiddenField(validators=[]);
 
     submit = SubmitField('Update Application')
 

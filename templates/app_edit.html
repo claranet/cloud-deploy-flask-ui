@@ -178,6 +178,7 @@
 {% block page_scripts %}
     <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/Sortable.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
         $('textarea').each(function(index, elem) {
@@ -191,6 +192,45 @@
         $('.quick-submit').click(function (evt) {
             evt.preventDefault();
             $('#app-form #submit').click();
+        });
+        var oneDropDone = false;
+        var list = document.getElementById("menu-modules-list");
+        Sortable.create(list, {
+             onEnd: function (/**Event*/evt) {
+                if (evt.oldIndex != evt.newIndex) {
+                    if (!oneDropDone) {
+                        oneDropDone = true;
+                        $('#app-form').submit(function () {
+                            /* Rewrite indexes for Flask */
+                            $('#modules_list tr').each(function(index, mod) {
+                                $(this).find('[name]').each(function() {
+                                    newModAttr = $(this).attr('name').replace(/modules-[0-9]*-/i, 'modules-'+index+'-');
+                                    $(this).attr('name', newModAttr);
+                                    $(this).attr('id', newModAttr);
+                                });
+                            });
+                            /* -- TODO Update Manifest trigger
+                            if (confirm('Module order has changed. Do you want to update the App MANIFEST ? If No, the MANIFEST will be updated on the next deploy command.')) {
+                                $('#app-form').append('<input type="hidden" id="update_manifest" name="update_manifest" value="1">');
+                            }*/
+                        });
+                    }
+
+                    /* DOM Swap */
+                    modules = $('#modules_list tr');
+                    oldModule = $(modules.get(evt.oldIndex));
+                    if (evt.oldIndex > evt.newIndex)
+                        $(modules.get(evt.newIndex)).before(oldModule.clone(true));
+                    else
+                        $(modules.get(evt.newIndex)).after(oldModule.clone(true));
+                    oldModule.remove();
+                }
+            },
+        });
+        $('#modules_list').on('focusout', 'input[name$="module_name"]', function () {
+            var module_name = $(this).val();
+            var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"] span');
+            menu_link.text(module_name);
         });
         $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
             var path = $(this).val();

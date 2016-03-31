@@ -443,10 +443,10 @@
 {%- endmacro %}
 
 {% macro ghost_menulist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
-<ul class="subnav">
+<ul class="subnav" id="menu-modules-list">
     {% for entry in fieldlist %}
     <li>
-        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}">{{ entry.data['module_name'] or 'New module' }}</a>
+        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}"><i class="glyphicon glyphicon-align-justify"></i> <span>{{ entry.data['module_name'] or 'New module' }}</span></a>
     </li>
     {% endfor %}
 </ul>

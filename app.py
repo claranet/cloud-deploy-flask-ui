@@ -230,6 +230,9 @@ def web_app_edit(app_id):
 
         message = update_ghost_app(app_id, local_headers, app)
 
+        #if form.update_manifest.data:
+        #TODO Perform Manifest update
+
         return render_template('action_completed.html', message=message)
 
     # Get App data on first access
