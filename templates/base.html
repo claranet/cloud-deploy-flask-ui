@@ -141,11 +141,12 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('form input#submit').click(function(evt) {
-                if ($(this).hasClass('disabled')) {
+            $('form').submit(function(evt) {
+                btn = $(this).find('input#submit');
+                if (btn.hasClass('disabled')) {
                     evt.preventDefault();
                 }
-                $(this).addClass('disabled');
+                btn.addClass('disabled');
             });
         });
     </script>
