@@ -89,7 +89,6 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/autosize.js/1.18.18/jquery.autosize.js?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/bootstrap-select.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/ripples.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/material.min.js')}}?v={{current_revision}}"></script>
@@ -160,7 +159,6 @@
         })
 
         $(document).ready(function() {
-            $('textarea').autosize();
             $('select:not([readonly])').selectpicker({
                 style: 'btn-default',
                 liveSearch: true,
