@@ -47,6 +47,13 @@
             show_options_fields();
         });
 
+        $('#command option').each(function() {
+            cmd = $(this).val();
+            desc = $(this).text();
+            $(this).text(cmd);
+            $(this).attr('data-subtext', ' - ' + desc);
+        });
+        $('#command').selectpicker('refresh');
     })();
     </script>
 {% endblock %}
