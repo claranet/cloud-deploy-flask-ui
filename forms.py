@@ -1,3 +1,4 @@
+import pkgutil
 from flask_wtf import Form
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
@@ -51,7 +52,12 @@ def get_ghost_app_roles():
 
 
 def get_ghost_job_commands():
-    return get_wtforms_selectfield_values(ghost_job_schema['command']['allowed'])
+    commands = []
+    for _, name, _ in pkgutil.iter_modules(['commands']):
+        command = __import__('commands.' + name, fromlist=['COMMAND_DESCRIPTION'])
+        module_desc = command.COMMAND_DESCRIPTION
+        commands.append( (name, module_desc) )
+    return commands
 
 
 def get_ghost_mod_scopes():
