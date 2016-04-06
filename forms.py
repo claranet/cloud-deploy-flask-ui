@@ -1,4 +1,3 @@
-import pkgutil
 from flask_wtf import Form
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
@@ -20,7 +19,7 @@ import aws_data
 from models.apps import apps_schema as ghost_app_schema
 from models.jobs import jobs_schema as ghost_job_schema
 
-from web_ui.ghost_client import get_ghost_app
+from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
 
 # Helpers
@@ -49,15 +48,6 @@ def get_ghost_app_envs():
 
 def get_ghost_app_roles():
     return get_wtforms_selectfield_values(ghost_app_schema['role']['allowed'])
-
-
-def get_ghost_job_commands():
-    commands = []
-    for _, name, _ in pkgutil.iter_modules(['commands']):
-        command = __import__('commands.' + name, fromlist=['COMMAND_DESCRIPTION'])
-        module_desc = command.COMMAND_DESCRIPTION
-        commands.append( (name, module_desc) )
-    return commands
 
 
 def get_ghost_mod_scopes():
@@ -862,7 +852,7 @@ class EditAppForm(BaseAppForm):
 
 
 class CommandAppForm(Form):
-    command = SelectField('Command', validators=[DataRequiredValidator()], choices=get_ghost_job_commands())
+    command = SelectField('Command', validators=[DataRequiredValidator()], choices=[])
     module_name = SelectField('Module name', validators=[])
     module_rev = StringField('Module revision', validators=[])
     deploy_id = StringField('Deploy ID', validators=[])
@@ -876,6 +866,9 @@ class CommandAppForm(Form):
 
         # Get the Ghost application
         app = get_ghost_app(app_id)
+
+        # Get the list of commands at construction time because it requires a request context
+        self.command.choices = get_ghost_job_commands()
 
         # Get the modules of the Ghost application
         self.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]

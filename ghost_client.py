@@ -17,6 +17,7 @@ API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
 headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 url_apps = 'http://localhost:5000/apps'
 url_jobs = 'http://localhost:5000/jobs'
+url_commands = 'http://localhost:5000/commands'
 url_deployments = 'http://localhost:5000/deployments'
 
 # Helpers
@@ -123,6 +124,7 @@ def get_ghost_app(app_id, embed_deployments=False):
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
+        app = {}
     return app
 
 def create_ghost_app(app):
@@ -169,7 +171,20 @@ def get_ghost_job(job_id):
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
+        job = {}
     return job
+
+def get_ghost_job_commands():
+    try:
+        result = requests.get(url_commands, headers=headers, auth=current_user.auth)
+        commands = result.json().items()
+        handle_response_status_code(result.status_code)
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        commands = [('Error', 'Failed to retrieve commands')]
+    return commands
 
 def create_ghost_job(app_id, form, headers):
     job = {}
