@@ -388,6 +388,7 @@ body {
     margin: 0;
 }
 label.control-label
+,.form-group .checkbox label
 ,.form-group label.control-label {
     color: #555;
 }

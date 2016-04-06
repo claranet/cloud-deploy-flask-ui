@@ -203,13 +203,17 @@ def create_ghost_job(app_id, form, headers):
     if modules:
         job['modules'] = modules
 
+    # Process options
+    options = []
+
     # Process BuildImage options
     if form.command.data == 'buildimage':
         if form.instance_type.data:
             job['instance_type'] = form.instance_type.data
+        if isinstance(form.skip_salt_bootstrap.data, bool):
+            # In case of buildimage, option[0] can be the skip_salt_bootstrap
+            options.append(str(form.skip_salt_bootstrap.data))
 
-    # Process options
-    options = []
     if form.command.data == 'redeploy':
         # In case of redeploy
         # option[0] must be the deploy ID

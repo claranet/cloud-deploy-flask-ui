@@ -1,6 +1,6 @@
 from flask_wtf import Form
 
-from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
@@ -858,6 +858,7 @@ class CommandAppForm(Form):
     deploy_id = StringField('Deploy ID', validators=[])
     fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
+    skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
 
     submit = SubmitField('Run Application Command')
 
