@@ -77,9 +77,22 @@ def env_list():
                 command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
 
 try:
-    CURRENT_REVISION = dict(current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip())
+    CURRENT_REVISION_NAME=git('symbolic-ref', '-q', '--short', 'HEAD')
 except:
-    CURRENT_REVISION = dict(current_revision='s160104')
+    CURRENT_REVISION_NAME=git('describe', '--tags', '--exact-match')
+
+try:
+    CURRENT_REVISION = dict(
+        current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip(),
+        current_revision_date=git('log', '-1', '--format=%cD').strip(),
+        current_revision_name=CURRENT_REVISION_NAME.strip()
+    )
+except:
+    CURRENT_REVISION = dict(
+        current_revision='s160407',
+        current_revision_date='Mon, 4 Apr 2016 15:12:38 +0200',
+        current_revision_name='16.04'
+    )
 
 @app.context_processor
 def current_revision():

@@ -33,28 +33,15 @@
 {% endblock %}
 
 {% block navbar %}
+<div class="page-wrap">
     <nav id="header" class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
                 <a class="pull-left" href="/web/apps"><img height="45" alt="Logo Morea" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li role="presentation" class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="/web/apps" role="button" aria-expanded="false">
-                            Applications <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/web/apps">List Apps</a></li>
-                            <li><a href="/web/apps/create">Create App</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="/web/apps">Applications</a></li>
                     <li><a href="/web/jobs">Jobs</a></li>
                     <li><a href="/web/deployments">Deployments</a></li>
                 </ul>
@@ -85,6 +72,11 @@
         {% block page_content %}
         {% endblock %}
     </div>
+</div>
+<footer class="site-footer">
+  <span class="right"><a href="https://www.morea.fr" target="_blank"><img height="10" alt="Logo Morea" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a></span>
+  <span class="left" title="{{current_revision_date}}">GHOST v{{current_revision_name}}</span>
+</footer>
 {% endblock %}
 
 {% block scripts %}
