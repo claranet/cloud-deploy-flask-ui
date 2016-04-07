@@ -20,6 +20,7 @@ from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
+from forms import get_aws_connection_data
 
 # Web UI App
 app = Flask(__name__)
@@ -101,54 +102,69 @@ except:
 def current_revision():
     return CURRENT_REVISION
 
-@app.route('/web/aws/regions/<region_id>/ec2/instancetypes')
-def web_ec2_instance_types_list(region_id):
+@app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
+def web_ec2_instance_types_list(provider, region_id):
     return jsonify(get_aws_ec2_instance_types(region_id))
 
-@app.route('/web/aws/regions/<region_id>/ec2/keypairs')
-def web_ec2_key_pairs_list(region_id):
-    return jsonify(get_aws_ec2_key_pairs(region_id))
+@app.route('/web/<provider>/regions/<region_id>/ec2/keypairs')
+def web_ec2_key_pairs_list(provider, region_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_ec2_key_pairs(provider, region_id, **query_string))
 
-@app.route('/web/aws/regions/<region_id>/ec2/autoscale/ids')
-def web_ec2_as_list(region_id):
-    return jsonify(get_aws_as_groups(region_id))
+@app.route('/web/<provider>/regions/<region_id>/ec2/autoscale/ids')
+def web_ec2_as_list(provider, region_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_as_groups(provider, region_id, **query_string))
 
-@app.route('/web/aws/regions/<region_id>/iam/profiles')
-def web_iam_profiles_list(region_id):
-    return jsonify(get_aws_iam_instance_profiles(region_id))
+@app.route('/web/<provider>/regions/<region_id>/iam/profiles')
+def web_iam_profiles_list(provider, region_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_iam_instance_profiles(provider, region_id, **query_string))
 
-@app.route('/web/aws/regions/<region_id>/vpc/ids')
-def web_vpcs_list(region_id):
-    return jsonify(get_aws_vpc_ids(region_id))
+@app.route('/web/<provider>/regions/<region_id>/vpc/ids')
+def web_vpcs_list(provider, region_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_vpc_ids(provider, region_id, **query_string))
 
-@app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/sg/ids')
-def web_sgs_list(region_id, vpc_id):
-    return jsonify(get_aws_sg_ids(region_id, vpc_id))
+@app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/sg/ids')
+def web_sgs_list(provider, region_id, vpc_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_sg_ids(provider, region_id, vpc_id, **query_string))
 
-@app.route('/web/aws/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
-def web_subnets_list(region_id, vpc_id):
-    return jsonify(get_aws_subnet_ids(region_id, vpc_id))
+@app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
+def web_subnets_list(provider, region_id, vpc_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_subnet_ids(provider, region_id, vpc_id, **query_string))
 
-@app.route('/web/aws/regions/<region_id>/ami/ids')
-def web_amis_list(region_id):
-    return jsonify(get_aws_ami_ids(region_id))
+@app.route('/web/<provider>/regions/<region_id>/ami/ids')
+def web_amis_list(provider, region_id):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_ami_ids(provider, region_id, **query_string))
 
-@app.route('/web/aws/appinfos/<app_id>', methods=['GET'])
-def web_app_infos(app_id):
+@app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
+def web_app_infos(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
-    if app['autoscale']['name']:
-        as_group = get_ghost_app_as_group(app['autoscale']['name'], app['region'])
+    aws_connection_data = get_aws_connection_data(app['assumed_account_id'], app['assumed_role_name'])
+    if app['autoscale']['name']:s_group_instances
+        as_group = get_ghost_app_as_group(app['provider'], app['autoscale']['name'], app['region'], **aws_connection_data)
         if as_group != None:
-            as_instances = get_as_group_instances(as_group, app['region'])
-            elbs_instances = get_elbs_instances_from_as_group(as_group, app['region'])
-            ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'], as_group.instances)
+            as_instances = get_as_group_instances(app['provider'], as_group, app['region'], **aws_connection_data)
+            elbs_instances = get_elbs_instances_from_as_group(app['provider'], as_group, app['region'], **aws_connection_data)
+            ghost_instances = get_ghost_app_ec2_instances(app['provider'], app['name'], app['env'], app['role'], app['region'], as_group.instances, **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
         else:
-            ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+            ghost_instances = get_ghost_app_ec2_instances(app['provider'], app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
     else:
-        ghost_instances = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+        ghost_instances = get_ghost_app_ec2_instances(app['provider'], app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
         return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
 @app.route('/web/apps')
@@ -172,18 +188,19 @@ def web_app_create():
         clone_from_app = get_ghost_app(clone_from_app_id)
 
     # Dynamic selections update
-    if form.is_submitted() and form.region.data:
+    if form.is_submitted() and form.provider.data and form.region.data:
+        aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-        form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
-        form.autoscale.as_name.choices = get_aws_as_groups(form.region.data)
-        form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
-        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
-        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
-        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.region.data)
+        form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
+        form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
+        form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data; **aws_connection_data)
         for subnet in form.environment_infos.subnet_ids:
-            subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+            subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
+            sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -197,17 +214,18 @@ def web_app_create():
     if clone_from_app:
         form.map_from_app(clone_from_app)
         if not form.is_submitted():
+            aws_connection_data = get_aws_connection_data(clone_from_app['assumed_account_id'], clone_from_app['assumed_role_name'])
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
-            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
-            form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['region'])
-            form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
-            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
-            form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app['region'])
-            form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app['region'])
+            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
+            form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['provider'], clone_from_app['region'], **aws_connection_da)
+            form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
+            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['provider'], clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
+            form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
+            form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
             for subnet in form.environment_infos.subnet_ids:
-                subnet.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+                subnet.choices = get_aws_subnet_ids(clone_from_app['provider'], clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
             for sg in  form.environment_infos.security_groups:
-                sg.choices = get_aws_sg_ids(clone_from_app['region'], clone_from_app['vpc_id'])
+                sg.choices = get_aws_sg_ids(clone_from_app['provider'], clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=False)
@@ -224,18 +242,19 @@ def web_app_edit(app_id):
     form = EditAppForm()
 
     # Dynamic selections update
-    if form.is_submitted() and form.region.data:
+    aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
+    if form.is_submitted() and form.provider.data and form.region.data:
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-        form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
-        form.autoscale.as_name.choices = get_aws_as_groups(form.region.data)
-        form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
-        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
-        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
-        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.region.data)
+        form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
+        form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
+        form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data, **aws_connection_data)
         for subnet in form.environment_infos.subnet_ids:
-            subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+            subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)
+            sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -268,16 +287,16 @@ def web_app_edit(app_id):
     form.role.choices = [(form.role.data, form.role.data)]
 
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-    form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
-    form.autoscale.as_name.choices = get_aws_as_groups(form.region.data)
-    form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
-    form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
-    form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
-    form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.region.data)
+    form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
+    form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
+    form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
+    form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+    form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
+    form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data, **aws_connection_data)
     for subnet in form.environment_infos.subnet_ids:
-        subnet.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
+        subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
     for sg in  form.environment_infos.security_groups:
-        sg.choices = get_aws_sg_ids(form.region.data, form.vpc_id.data)    
+        sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connecton_data)    
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=True)
