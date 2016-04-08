@@ -75,6 +75,21 @@
                     {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
                     {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
+
+                    {{ wtf.form_field(form.provider, form_type='horizontal', readonly=edit) }}
+                    {{ wtf.form_field(form.assumed_account_id, form_type='horizontal') }}
+                    {{ wtf.form_field(form.assumed_role_name, form_type='horizontal') }}
+                </div>
+            </div>
+        </div>
+
+        <a name="provider" class="anchor">&nbsp;</a>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Cloud Provider properties
+            </div>
+            <div class="panel-body">
+                <div class="row">
                     {{ wtf.form_field(form.region, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#region" data-call="void(0);"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
