@@ -374,6 +374,22 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     position: relative;
     resize: both;
 }
+.jobview #log .panel {
+    margin: 0
+}
+.jobview #log .panel-body {
+    padding: 0 15px;
+}
+.jobview #log em {
+    display: block;
+}
+.jobview #log .panel-body {
+    color: white;
+    background: #333;
+}
+.jobview #log .panel-body samp {
+    display: block;
+}
 .jobview .logactions {
     padding-bottom: 10px;
 }
