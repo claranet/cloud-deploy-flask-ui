@@ -987,7 +987,7 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        self.provider.choices = [('', 'Please select cloud provider')]
+        self.provider.choices = [('', 'Please select cloud provider')] + get_ghost_app_providers()
         self.region.choices = [('', 'Please select provider and enter conncection parameters First')]
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
@@ -1009,9 +1009,10 @@ class EditAppForm(BaseAppForm):
     def __init__(self, *args, **kwargs):
         super(EditAppForm, self).__init__(*args, **kwargs)
 
-        # Refresh AWS lists, check what to refresh exactly in thi new version,
+        # Refresh AWS lists, check what to refresh exactly in this new version,
         # and update the function call if necessary
-        self.region.choices = get_aws_ec2_regions()
+        #self.region.choices = get_aws_ec2_regions()
+        self.provider.choices = get_ghost_app_providers()
 
 
     def map_from_app(self, app):

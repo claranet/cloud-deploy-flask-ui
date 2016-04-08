@@ -153,7 +153,7 @@ def web_app_infos(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
     aws_connection_data = get_aws_connection_data(app['assumed_account_id'], app['assumed_role_name'])
-    if app['autoscale']['name']:s_group_instances
+    if app['autoscale']['name']:
         as_group = get_ghost_app_as_group(app['provider'], app['autoscale']['name'], app['region'], **aws_connection_data)
         if as_group != None:
             as_instances = get_as_group_instances(app['provider'], as_group, app['region'], **aws_connection_data)
@@ -196,7 +196,7 @@ def web_app_create():
         form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
-        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data; **aws_connection_data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data, **aws_connection_data)
         for subnet in form.environment_infos.subnet_ids:
             subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
         for sg in  form.environment_infos.security_groups:
