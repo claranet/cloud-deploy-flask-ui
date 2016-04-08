@@ -296,7 +296,7 @@ def web_app_edit(app_id):
     for subnet in form.environment_infos.subnet_ids:
         subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
     for sg in  form.environment_infos.security_groups:
-        sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connecton_data)    
+        sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=True)
