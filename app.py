@@ -6,6 +6,7 @@ from base64 import b64decode
 import traceback
 import sys
 from sh import git
+from settings import DEFAULT_PROVIDER
 
 from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_STATUSES, jobs_schema as ghost_jobs_schema
 from models.apps import apps_schema as ghost_app_schema
@@ -152,19 +153,19 @@ def web_amis_list(provider, region_id):
 def web_app_infos(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
-    aws_connection_data = get_aws_connection_data(app['assumed_account_id'], app['assumed_role_name'])
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app('assumed_role_name', ''))
     if app['autoscale']['name']:
-        as_group = get_ghost_app_as_group(app['provider'], app['autoscale']['name'], app['region'], **aws_connection_data)
+        as_group = get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), app['autoscale']['name'], app['region'], **aws_connection_data)
         if as_group != None:
-            as_instances = get_as_group_instances(app['provider'], as_group, app['region'], **aws_connection_data)
-            elbs_instances = get_elbs_instances_from_as_group(app['provider'], as_group, app['region'], **aws_connection_data)
-            ghost_instances = get_ghost_app_ec2_instances(app['provider'], app['name'], app['env'], app['role'], app['region'], as_group.instances, **aws_connection_data)
+            as_instances = get_as_group_instances(app.get('provider', DEFAULT_PROVIDER), as_group, app['region'], **aws_connection_data)
+            elbs_instances = get_elbs_instances_from_as_group(app.get('provider', DEFAULT_PROVIDER), as_group, app['region'], **aws_connection_data)
+            ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], as_group.instances, **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
         else:
-            ghost_instances = get_ghost_app_ec2_instances(app['provider'], app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
+            ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
     else:
-        ghost_instances = get_ghost_app_ec2_instances(app['provider'], app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
+        ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
         return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
 @app.route('/web/apps')
@@ -214,7 +215,7 @@ def web_app_create():
     if clone_from_app:
         form.map_from_app(clone_from_app)
         if not form.is_submitted():
-            aws_connection_data = get_aws_connection_data(clone_from_app['assumed_account_id'], clone_from_app['assumed_role_name'])
+            aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''))
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
             form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
             form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['provider'], clone_from_app['region'], **aws_connection_da)
@@ -223,9 +224,9 @@ def web_app_create():
             form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
             form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
             for subnet in form.environment_infos.subnet_ids:
-                subnet.choices = get_aws_subnet_ids(clone_from_app['provider'], clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
+                subnet.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
             for sg in  form.environment_infos.security_groups:
-                sg.choices = get_aws_sg_ids(clone_from_app['provider'], clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
+                sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=False)

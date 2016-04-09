@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from settings import cloud_connections
+from settings import cloud_connections, DEFAULT_PROVIDER
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired as DataRequiredValidator
@@ -68,7 +68,7 @@ def get_ghost_optional_volumes():
 def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
     vpcs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         vpcs = c.get_all_vpcs()
     except:
@@ -78,7 +78,7 @@ def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
 def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
     sgs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
@@ -88,7 +88,7 @@ def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
 def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
     amis = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         amis = c.get_all_images(
             filters={
@@ -103,7 +103,7 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
 def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
     except:
@@ -113,7 +113,7 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         c = cloud_connection.get_connection(region, ["iam"])
         profiles = c.list_instance_profiles()
     except:
@@ -123,7 +123,7 @@ def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
 def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
     keys = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         keys = c.get_all_key_pairs()
     except:
@@ -133,7 +133,7 @@ def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
 def get_aws_ec2_regions(provider, log_file=None, **kwargs):
     regions = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
         regions = sorted(cloud_connection.get_regions(["ec2"]), key=lambda region: region.name)
     except:
         traceback.print_exc()
@@ -163,7 +163,7 @@ def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwa
     return None
 
 def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
-    cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+    cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
     conn = cloud_connection.get_connection(region, ["ec2"])
     instance_ids = []
     for i in as_group.instances:
@@ -211,7 +211,7 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
     return None
 
 def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, log_file=None, filters=[], **kwargs):
-    cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+    cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
 
@@ -896,7 +896,7 @@ class BaseAppForm(Form):
 
         # Populate form with app data
         self.name.data = app.get('name', '')
-        self.provider.data = app.get('provider', '')
+        self.provider.data = app.get('provider', DEFAULT_PROVIDER)
         self.assumed_account_id.data = app.get('assumed_account_id', '')
         self.assumed_role_name.data = app.get('assumed_role_name', '')
         self.env.data = app.get('env', '')
