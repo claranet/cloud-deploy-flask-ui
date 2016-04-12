@@ -1002,8 +1002,8 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        self.provider.choices = [('', 'Please select cloud provider')] + get_ghost_app_providers()
-        self.region.choices = [('', 'Please select provider and enter conncection parameters First')]
+        self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
+        self.region.choices = [('', 'Please select provider and enter identity parameters first')]
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.autoscale.as_name.choices = [('', 'Please select region first')]
