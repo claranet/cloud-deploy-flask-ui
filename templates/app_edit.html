@@ -78,15 +78,15 @@
 
                     {{ wtf.form_field(form.provider, form_type='horizontal', readonly=edit) }}
                     {{ wtf.form_field(form.use_custom_identity, form_type='horizontal') }}
-                    <div id="identity_provider">
+                    <div id="identity_provider" style="{{ 'display:none;' if not form.use_custom_identity.data }}">
                         {{ wtf.form_field(form.assumed_account_id, form_type='horizontal', placeholder=account_id) }}
                         {{ wtf.form_field(form.assumed_role_name, form_type='horizontal', placeholder=role_name) }}
-                        <button class="btn btn-raised btn-info btn-xs" id="check_provider_creds">Check</button>
+                        <button class="btn btn-raised btn-info btn-xs" id="check_provider_creds"><i class=" glyphicon glyphicon-refresh"> </i> Check credentials</button>
                     </div>
                 </div>
             </div>
         </div>
-
+     <div id="app_options_wrapper">
         <a name="provider" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -226,6 +226,7 @@
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 
         {{ wtf.form_field(form.submit) }}
+    </div>
     </form>
 {% endblock %}
 
@@ -317,6 +318,13 @@
                 $('.haproxy-params').show();
             } else {
                 $('.haproxy-params').hide();
+        $('#use_custom_identity').change(function(evt) {
+            if (this.checked) {
+                $('#identity_provider').slideDown('slow');
+                $('#app_options_wrapper').slideUp('slow');
+            } else {
+                $('#identity_provider').slideUp('slow');
+                $('#app_options_wrapper').slideDown('slow');
             }
         });
     })();
