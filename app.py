@@ -21,7 +21,7 @@ from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
-from forms import get_aws_connection_data
+from forms import get_aws_connection_data, get_aws_ghost_iam_info
 
 # Web UI App
 app = Flask(__name__)
@@ -229,7 +229,8 @@ def web_app_create():
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=False)
+    account_id, role_name = get_aws_ghost_iam_info()
+    return render_template('app_edit.html', form=form, account_id=account_id, role_name=role_name, edit=False)
 
 @app.route('/web/apps/<app_id>', methods=['GET'])
 def web_app_view(app_id):
