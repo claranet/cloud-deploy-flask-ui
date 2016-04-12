@@ -47,15 +47,19 @@ def get_aws_connection_data(assumed_account_id, assumed_role_name):
         aws_connection_data = {}
     return (aws_connection_data)
 
-def get_aws_ghost_iam_info():
+def get_aws_ghost_iam_info(provider, log_file=None):
     """
     Function to get the aws account id of the ghost instance
     """
-    cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file)
-    ghost_profile = cloud_connection.launch_service(["utils", "get_instance_metadata"])["iam"]["info"]["InstanceProfileArn"].split(":")
-    account_id = ghost_profile[4]
-    role_name = ghost_profile[-1]
-    return (account_id, role_name[role_name.index("/") + 1:])
+    try:
+        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file)
+        ghost_profile = cloud_connection.launch_service(["utils", "get_instance_metadata"])["iam"]["info"]["InstanceProfileArn"].split(":")
+        account_id = ghost_profile[4]
+        role_name = ghost_profile[-1]
+        return (account_id, role_name[role_name.index("/") + 1:])
+    except:
+        traceback.print_exc()
+        return ('1234', 'morea-access')
 
 def get_ghost_app_envs():
     return get_wtforms_selectfield_values(ghost_app_schema['env']['allowed'])

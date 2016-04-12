@@ -229,7 +229,7 @@ def web_app_create():
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
-    account_id, role_name = get_aws_ghost_iam_info()
+    account_id, role_name = get_aws_ghost_iam_info(DEFAULT_PROVIDER)
     return render_template('app_edit.html', form=form, account_id=account_id, role_name=role_name, edit=False)
 
 @app.route('/web/apps/<app_id>', methods=['GET'])
