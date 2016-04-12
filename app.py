@@ -19,7 +19,7 @@ from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
-from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
+from forms import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
 from forms import get_aws_connection_data, get_aws_ghost_iam_info
 
@@ -102,6 +102,10 @@ except:
 @app.context_processor
 def current_revision():
     return CURRENT_REVISION
+
+@app.route('/web/<provider>/regions')
+def web_cloud_regions(provider):
+    return jsonify(get_aws_ec2_regions(provider))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(provider, region_id):
