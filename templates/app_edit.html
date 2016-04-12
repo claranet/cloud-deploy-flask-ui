@@ -77,8 +77,12 @@
                     {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
 
                     {{ wtf.form_field(form.provider, form_type='horizontal', readonly=edit) }}
+                    {{ wtf.form_field(form.use_custom_identity, form_type='horizontal') }}
+                    <div id="identity_provider">
                     {{ wtf.form_field(form.assumed_account_id, form_type='horizontal', placeholder=account_id) }}
                     {{ wtf.form_field(form.assumed_role_name, form_type='horizontal', placeholder=role_name) }}
+                        <button class="btn btn-raised btn-info btn-xs" id="check_provider_creds">Check</button>
+                    </div>
                 </div>
             </div>
         </div>

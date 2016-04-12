@@ -664,7 +664,10 @@ class BaseAppForm(Form):
     ])
 
     env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
+    role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    # Cloud Provider
     #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
+    use_custom_identity = BooleanField('Use a custom Identity', validators=[DataRequiredValidator()])
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
         DataRequiredValidator(),
@@ -679,8 +682,6 @@ class BaseAppForm(Form):
             ghost_app_schema['assumed_role_name']['regex']
         )
     ])
-
-    role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
 
     # Notification properties
     log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
