@@ -21,7 +21,7 @@ from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
-from forms import get_aws_connection_data, get_aws_ghost_iam_info
+from forms import get_aws_connection_data, get_aws_ghost_iam_info, check_aws_assumed_credentials
 
 # Web UI App
 app = Flask(__name__)
@@ -105,11 +105,13 @@ def current_revision():
 
 @app.route('/web/<provider>/identity/check/<account_id>/<role_name>')
 def web_cloud_check_assume_role(provider, account_id, role_name):
-    return jsonify( {'result': True} ) #TODO tester l'assume role et retourner si l'assume role est possible
+    return jsonify(check_aws_assumed_credentials(provider, account_id, role_name))
 
 @app.route('/web/<provider>/regions')
 def web_cloud_regions(provider):
-    return jsonify(get_aws_ec2_regions(provider))
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
+    return jsonify(get_aws_ec2_regions(provider, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(provider, region_id):

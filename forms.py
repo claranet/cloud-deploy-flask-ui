@@ -52,7 +52,7 @@ def get_aws_ghost_iam_info(provider, log_file=None):
     Function to get the aws account id of the ghost instance
     """
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file)
+        cloud_connection = cloud_connections.get(provider)(log_file)
         ghost_profile = cloud_connection.launch_service(["utils", "get_instance_metadata"])["iam"]["info"]["InstanceProfileArn"].split(":")
         account_id = ghost_profile[4]
         role_name = ghost_profile[-1]
@@ -82,17 +82,25 @@ def get_ghost_optional_volumes():
 def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
     vpcs = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         vpcs = c.get_all_vpcs()
     except:
         traceback.print_exc()
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
+def check_aws_assumed_credentials(provider, account_id, role_name, log_file=None):
+    cloud_connection = cloud_connections.get(provider)(
+            log_file,
+            assumed_account_id=account_id,
+            assumed_role_name=role_name
+            )
+    return (coud_connection.check_credentials())
+
 def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
     sgs = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
@@ -102,7 +110,7 @@ def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
 def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
     amis = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         amis = c.get_all_images(
             filters={
@@ -117,7 +125,7 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
 def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
     except:
@@ -127,17 +135,17 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         c = cloud_connection.get_connection(region, ["iam"])
         profiles = c.list_instance_profiles()
     except:
         traceback.print_exc()
-    return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles]
+    return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles.instance_profiles]
 
 def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
     keys = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         keys = c.get_all_key_pairs()
     except:
@@ -147,7 +155,7 @@ def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
 def get_aws_ec2_regions(provider, log_file=None, **kwargs):
     regions = []
     try:
-        cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         regions = sorted(cloud_connection.get_regions(["ec2"]), key=lambda region: region.name)
     except:
         traceback.print_exc()
@@ -177,7 +185,7 @@ def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwa
     return None
 
 def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
-    cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+    cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn = cloud_connection.get_connection(region, ["ec2"])
     instance_ids = []
     for i in as_group.instances:
@@ -225,7 +233,7 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
     return None
 
 def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, log_file=None, filters=[], **kwargs):
-    cloud_connection = cloud_connections.get(provider, DEFAULT_PROVIDER)(log_file, kwargs)
+    cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
 
