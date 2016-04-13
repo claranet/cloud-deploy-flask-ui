@@ -105,7 +105,7 @@ def current_revision():
 
 @app.route('/web/<provider>/identity/check/<account_id>/<role_name>')
 def web_cloud_check_assume_role(provider, account_id, role_name):
-    return jsonify(True) #TODO tester l'assume role et retourner si l'assume role est possible
+    return jsonify( {'result': True} ) #TODO tester l'assume role et retourner si l'assume role est possible
 
 @app.route('/web/<provider>/regions')
 def web_cloud_regions(provider):

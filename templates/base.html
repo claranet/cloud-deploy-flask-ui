@@ -305,14 +305,6 @@
           });
         }
 
-        function ghost_check_provider_identity(account, role) {
-          $.ajax("/web/" + provider + "/identity/check/" + account + "/" + role).done(function(data) {
-              return data;
-          }).fail(function() {
-              return false;
-          });
-        }
-
         $('select#provider').change(function () {
             ghost_update_ec2_regions();
         });
@@ -332,13 +324,20 @@
             ghost_update_vpc_subnets($('select#region').val(), vpcid, false);
         });
         $('#check_provider_creds').click(function(evt) {
-            evt.PreventDefault();
-            if (ghost_check_provider_identity($('#assumed_account_id').val(), $('#assumed_role_name').val())) {
-                $('#app_options_wrapper').slideDown('slow');
-                provider_identity_query = '?assumed_account_id=' + $('#assumed_account_id').val() + '&assumed_role_name=' + $('#assumed_role_name').val();
-            } else {
-                alert('Invalid Identity parameters, please correct them.');
-            }
+            evt.preventDefault();
+            account = $('#assumed_account_id').val();
+            role =  $('#assumed_role_name').val();
+            $.ajax("/web/" + provider + "/identity/check/" + account + "/" + role).done(function(data) {
+                if (data.result) {
+                    $('#app_options_wrapper').slideDown('slow');
+                    provider_identity_query = '?assumed_account_id=' + $('#assumed_account_id').val() + '&assumed_role_name=' + $('#assumed_role_name').val();
+                    $('#check_provider_creds').html('<i class="glyphicon glyphicon-check"> </i> Credentials OK');
+                } else {
+                    alert('Invalid Identity parameters, please correct them. ' + data.msg);
+                }
+            }).fail(function() {
+                alert('Invalid Identity parameters, please correct them. ');
+            });
         });
 
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
