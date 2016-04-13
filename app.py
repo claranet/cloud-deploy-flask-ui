@@ -103,6 +103,10 @@ except:
 def current_revision():
     return CURRENT_REVISION
 
+@app.route('/web/<provider>/identity/check/<account_id>/<role_name>')
+def web_cloud_check_assume_role(provider, account_id, role_name):
+    return jsonify(True) #TODO tester l'assume role et retourner si l'assume role est possible
+
 @app.route('/web/<provider>/regions')
 def web_cloud_regions(provider):
     return jsonify(get_aws_ec2_regions(provider))

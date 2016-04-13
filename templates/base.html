@@ -170,7 +170,7 @@
 
         function ghost_update_ec2_regions() {
           $('#region').find('option').remove();
-          $.ajax("/web/" + provider + "/regions").done(function(data) {
+          $.ajax("/web/" + provider + "/regions" + provider_identity_query).done(function(data) {
               // Update instance types select input options
               $.each(data,function(key, value) {
                 $('#region').append('<option value=' + key + '>' + value + '</option>');
@@ -183,7 +183,7 @@
 
         function ghost_update_ec2_instancetypes(region) {
           $('#instance_type').find('option').remove();
-          $.ajax("/web/" + provider + "/regions/" + region + "/ec2/instancetypes").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/ec2/instancetypes" + provider_identity_query).done(function(data) {
               // Update instance types select input options
               $.each(data,function(key, value) {
                 $('#instance_type').append('<option value=' + key + '>' + value + '</option>');
@@ -196,7 +196,7 @@
 
         function ghost_update_ec2_vpcs(region) {
           $('#vpc_id').find('option').remove();
-          $.ajax("/web/" + provider + "/regions/" + region + "/vpc/ids").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/vpc/ids" + provider_identity_query).done(function(data) {
               // Update VPCs select input options
               $.each(data,function(key, value) {
                 $('#vpc_id').append('<option value=' + key + '>' + value + '</option>');
@@ -210,7 +210,7 @@
 
         function ghost_update_ec2_keys(region) {
           $('select#environment_infos-key_name').find('option').remove();
-          $.ajax("/web/" + provider + "/regions/" + region + "/ec2/keypairs").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/ec2/keypairs" + provider_identity_query).done(function(data) {
               // Update Key Pairs select input options
               $.each(data,function(key, value) {
                 $('select#environment_infos-key_name').append('<option value=' + key + '>' + value + '</option>');
@@ -223,7 +223,7 @@
 
         function ghost_update_iam_profiles(region) {
           $('select#environment_infos-instance_profile').find('option').remove();
-          $.ajax("/web/" + provider + "/regions/" + region + "/iam/profiles").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/iam/profiles" + provider_identity_query).done(function(data) {
               // Update Instance Profiles select input options
               $.each(data,function(key, value) {
                 $('select#environment_infos-instance_profile').append('<option value=' + key + '>' + value + '</option>');
@@ -236,7 +236,7 @@
 
         function ghost_update_vpc_sgs(region, vpc_id) {
           $('[id^=environment_infos-security_groups]').find('option').remove();
-          $.ajax("/web/" + provider + "/regions/" + region + "/vpc/" + vpc_id + "/sg/ids").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/vpc/" + vpc_id + "/sg/ids" + provider_identity_query).done(function(data) {
               // Update SGs select input options
               $.each(data, function(key, value) {
                   $.each($('[id^=environment_infos-security_groups]'), function(index) {
@@ -279,7 +279,7 @@
         
         function ghost_update_ec2_amis(region) {
           $('[id^=build_infos-source_ami]').find('option').remove();
-          $.ajax("/web/" + provider + "/regions/" + region + "/ami/ids").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/ami/ids" + provider_identity_query).done(function(data) {
               // Update AMIs select input options
               $.each(data, function(key, value) {
                   $.each($('[id^=build_infos-source_ami]'), function(index) {
@@ -305,6 +305,17 @@
           });
         }
 
+        function ghost_check_provider_identity(account, role) {
+          $.ajax("/web/" + provider + "/identity/check/" + account + "/" + role).done(function(data) {
+              return data;
+          }).fail(function() {
+              return false;
+          });
+        }
+
+        $('select#provider').change(function () {
+            ghost_update_ec2_regions();
+        });
         $('select#region').change(function() {
             var region = $(this).val();
             ghost_update_ec2_instancetypes(region);
@@ -319,6 +330,15 @@
             ghost_update_vpc_sgs($('select#region').val(), vpcid);
             ghost_update_vpc_subnets($('select#region').val(), vpcid, true);
             ghost_update_vpc_subnets($('select#region').val(), vpcid, false);
+        });
+        $('#check_provider_creds').click(function(evt) {
+            evt.PreventDefault();
+            if (ghost_check_provider_identity($('#assumed_account_id').val(), $('#assumed_role_name').val())) {
+                $('#app_options_wrapper').slideDown('slow');
+                provider_identity_query = '?assumed_account_id=' + $('#assumed_account_id').val() + '&assumed_role_name=' + $('#assumed_role_name').val();
+            } else {
+                alert('Invalid Identity parameters, please correct them.');
+            }
         });
 
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
