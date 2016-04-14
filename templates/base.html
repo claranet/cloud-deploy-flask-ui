@@ -304,12 +304,13 @@
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
             var count = $("tr[data-" + entry_id_prefix + "]").size();
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
+
             clone.attr("id", entry_id_prefix + "_" + count);
             clone.find("input, select, textarea").each(function() {
                 var old_id = $(this).attr('id');
                 $(this).val(null);
                 if (old_id) {
-                    var new_id = old_id.replace(/-[0-9]+/i, '-' + count );
+                    var new_id = old_id.replace(/-[0-9]+/i, '-' + count);
                     $(this).attr("id", new_id);
                     $(this).attr("name", new_id);
 
