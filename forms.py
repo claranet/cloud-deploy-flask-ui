@@ -95,7 +95,7 @@ def check_aws_assumed_credentials(provider, account_id, role_name, log_file=None
             assumed_account_id=account_id,
             assumed_role_name=role_name
             )
-    return (coud_connection.check_credentials())
+    return (cloud_connection.check_credentials())
 
 def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
     sgs = []
@@ -678,8 +678,8 @@ class BaseAppForm(Form):
     env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
     role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
     # Cloud Provider
-    #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
-    use_custom_identity = BooleanField('Use a custom Identity', validators=[DataRequiredValidator()])
+    provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
+    use_custom_identity = BooleanField('Use a custom Identity', validators=[])
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
         OptionalValidator(),
