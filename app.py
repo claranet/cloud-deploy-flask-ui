@@ -317,6 +317,8 @@ def web_app_edit(app_id):
     form.env.choices = [(form.env.data, form.env.data)]
     form.role.choices = [(form.role.data, form.role.data)]
 
+    aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
+    form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
     form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
     form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
