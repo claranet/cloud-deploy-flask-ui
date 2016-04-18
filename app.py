@@ -210,8 +210,8 @@ def web_app_create():
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
         else:
-            form.assumed_account_id.data = None
-            form.assumed_role_name.data = None
+            form.assumed_account_id.data = ""
+            form.assumed_role_name.data = ""
             aws_connection_data = {}
         form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
@@ -271,8 +271,8 @@ def web_app_edit(app_id):
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
         else:
-            form.assumed_account_id.data = None
-            form.assumed_role_name.data = None
+            form.assumed_account_id.data = ""
+            form.assumed_role_name.data = ""
             aws_connection_data = {}
         form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
@@ -332,7 +332,8 @@ def web_app_edit(app_id):
         sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=True)
+    account_id, role_name = get_aws_ghost_iam_info(DEFAULT_PROVIDER)
+    return render_template('app_edit.html', form=form, account_id=account_id, role_name=role_name, edit=True)
 
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
 def web_app_command(app_id):
