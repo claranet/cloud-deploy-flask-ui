@@ -210,6 +210,8 @@ def web_app_create():
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
         else:
+            form.assumed_account_id.data = None
+            form.assumed_role_name.data = None
             aws_connection_data = {}
         form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
