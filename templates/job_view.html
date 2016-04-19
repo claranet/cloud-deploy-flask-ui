@@ -167,9 +167,17 @@
             $('#scrollstate').html(textScrolling);
         }
 
+        $log.bind('scroll mousedown wheel DOMMouseScroll mousewheel keyup', function(e){
+            if (e.which > 0 || e.type == "mousedown" || e.type == "mousewheel" || e.type == "wheel") {
+                scrollActivated = false;
+                $('#logScrollBottom button').removeClass('active');
+                $('#scrollstate').html(textNoScrolling);
+            }
+        });
+
         setInterval(function () {
             if (scrollActivated) {
-                $('#log').scrollTop($log.get(0).scrollHeight);
+                $log.scrollTop($log.get(0).scrollHeight);
             }
         }, 1000);
 
