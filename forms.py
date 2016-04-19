@@ -682,14 +682,14 @@ class BaseAppForm(Form):
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
-        OptionalValidator()
+        OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['assumed_account_id']['regex']
         )
     ])
 
     assumed_role_name = StringField('Assumed Role Name', validators=[
-        OptionalValidator()
+        OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['assumed_role_name']['regex']
         )
