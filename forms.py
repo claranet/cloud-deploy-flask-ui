@@ -683,16 +683,16 @@ class BaseAppForm(Form):
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
         OptionalValidator()
-        #RegexpValidator(
-        #    ghost_app_schema['assumed_account_id']['regex']
-        #)
+        RegexpValidator(
+            ghost_app_schema['assumed_account_id']['regex']
+        )
     ])
 
     assumed_role_name = StringField('Assumed Role Name', validators=[
         OptionalValidator()
-        #RegexpValidator(
-        #    ghost_app_schema['assumed_role_name']['regex']
-        #)
+        RegexpValidator(
+            ghost_app_schema['assumed_role_name']['regex']
+        )
     ])
 
     # Notification properties
