@@ -307,6 +307,7 @@
 
         $('select#provider').change(function () {
             ghost_update_ec2_regions();
+            provider = $(this).val();
         });
         $('select#region').change(function() {
             var region = $(this).val();
