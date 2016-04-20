@@ -387,6 +387,9 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     color: white;
     background: #333;
 }
+.jobview #log .timeinterval {
+    float: right;
+}
 .jobview #log .panel-body samp {
     display: block;
 }

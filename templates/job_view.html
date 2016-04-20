@@ -175,12 +175,16 @@
         });
         socket.on('job', function(data) {
             last_pos = data['last_pos'];
-            $log.append(data['html']);
+            content = $(data['html']);
+            content.find('em').each(function() {
+                cmd = $(this).find('span.command-title').text();
+                
+            });
+            $log.append(content);
             if (scrollActivated) {
                 $log.scrollTop($log.get(0).scrollHeight);
             }
         });
-
 
     })();
     </script>
