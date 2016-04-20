@@ -316,7 +316,7 @@ class AutoscaleForm(Form):
 
     def map_to_app(self, app):
         """
-        Map autoscale data from form to app
+        Map autoscale & safe deployment data from form to app
         """
         app['autoscale'] = {}
         app['autoscale']['name'] = self.as_name.data
@@ -326,6 +326,13 @@ class AutoscaleForm(Form):
             app['autoscale']['max'] = self.max.data
         if isinstance(self.current.data, int):
             app['autoscale']['current'] = self.current.data
+        app['safe-deployment'] = {}
+        app['safe-deployment']['load_balancer_type'] = self.lb_type.data
+        app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data
+        app['safe-deployment']['wait_after_deploy'] = self.safe_deploy_wait_after.data
+        if self.lb_type.data == "haproxy":
+            app['safe-deployment']['app_id_ha'] = self.haproxy_app_tag.data
+            app['safe-deployment']['ha_backend'] = self.haproxy_backend.data
 
 class BuildInfosForm(Form):
     ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Morea Debian AMI', validators=[
@@ -888,6 +895,8 @@ class CommandAppForm(Form):
     module_rev = StringField('Module revision', validators=[])
     deploy_id = StringField('Deploy ID', validators=[])
     fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
+    safe_deployment = SelectField('Deploy with Safe Deployment', validators=[], choices=[('Yes', 'yes'), ('no', 'no')])
+    safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[('One By One', '1by1'), ('25%', '25%'), ('50%','50%')])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
 
