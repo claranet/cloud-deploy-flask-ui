@@ -6,7 +6,7 @@ from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
 
-from datetime import datetime 
+from datetime import datetime
 from base64 import b64encode
 import traceback
 import boto.vpc
@@ -202,7 +202,7 @@ def get_ghost_app_ec2_instances(ghost_app, ghost_env, ghost_role, region, filter
     host_ids_as = []
     if len(filters) > 0:
         for h in filters:
-            host_ids_as.append(h.instance_id)  
+            host_ids_as.append(h.instance_id)
     hosts = []
     for instance in running_instances:
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
@@ -226,7 +226,6 @@ def format_host_infos(instance, conn, region):
         subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
     else:
         subnet_string = '-'
-    
     host = {
       'id': instance.id,
       'private_ip_address': instance.private_ip_address,
@@ -275,6 +274,7 @@ class OptionalVolumeForm(Form):
         self.volume_size.data = optional_volume.get('volume_size', '')
         self.iops.data = optional_volume.get('iops', '')
 
+
 # Forms
 class AutoscaleForm(Form):
     as_name = SelectField('Name', choices=[], validators=[])
@@ -292,6 +292,15 @@ class AutoscaleForm(Form):
     current = IntegerField('Desired', description='The number of instances that should be running in the Auto Scaling group', validators=[
         OptionalValidator()
     ])
+
+    lb_type = SelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','haproxy')])
+
+    safe_deploy_wait_before = IntegerField('Time to wait before deployment', validators=[], default = 10)
+    safe_deploy_wait_after = IntegerField('Time to wait after deployment', validators=[], default = 10)
+
+    haproxy_app_tag = StringField('Haproxy app_tag', validators=[])
+    haproxy_backend = StringField('Haproxy backend name', validators=[])
+
 
     # Disable CSRF in autoscale forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -317,7 +326,6 @@ class AutoscaleForm(Form):
             app['autoscale']['max'] = self.max.data
         if isinstance(self.current.data, int):
             app['autoscale']['current'] = self.current.data
-
 
 class BuildInfosForm(Form):
     ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Morea Debian AMI', validators=[

@@ -94,6 +94,11 @@
                     {{ wtf.form_field(form.autoscale.form.min, form_type='horizontal', placeholder='1') }}
                     {{ wtf.form_field(form.autoscale.form.current, form_type='horizontal', placeholder='2') }}
                     {{ wtf.form_field(form.autoscale.form.max, form_type='horizontal', placeholder='3') }}
+                    {{ wtf.form_field(form.autoscale.form.lb_type, form_type='horizontal') }}
+                    {{ wtf.form_field(form.autoscale.form.safe_deploy_wait_before, form_type='horizontal') }}
+                    {{ wtf.form_field(form.autoscale.form.safe_deploy_wait_after, form_type='horizontal') }}
+                    {{ wtf.form_field(form.autoscale.form.haproxy_app_tag, form_type='horizontal') }}
+                    {{ wtf.form_field(form.autoscale.form.haproxy_backend, form_type='horizontal') }}
                 </div>
             </div>
         </div>
