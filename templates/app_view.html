@@ -31,6 +31,9 @@
             <a href="#autoscale">Autoscale</a>
         </li>
         <li>
+            <a href="#loadbalancer">Load Balancer</a>
+        </li>
+        <li>
             <a href="#build-infos">Build-infos</a>
         </li>
         <li>
@@ -96,6 +99,20 @@
             <div class="row">
                 {{ ghost_display_field('app-autoscale-min', 'Min Value', app.get('autoscale', {})['min']) }}
                 {{ ghost_display_field('app-autoscale-max', 'Max Value', app.get('autoscale', {})['max']) }}
+            </div>
+        </div>
+
+        <a name="loadbalancer" class="anchor">&nbsp;</a>
+        <div class="panel-heading">Load Balancer</div>
+        <div class="panel-body">
+            <div class="row">
+                {{ ghost_display_field('app-lb-type', 'Load Balancer type', app.get('autoscale', {})['lb_type']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-lb-safe_deploy_wait_before', 'Time to wait before deployment', app.get('autoscale', {})['safe_deploy_wait_before']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-lb-safe_deploy_wait_after', 'Time to wait after deployment', app.get('autoscale', {})['safe_deploy_wait_after']) }}
             </div>
         </div>
 

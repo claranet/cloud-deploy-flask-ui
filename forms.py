@@ -293,13 +293,13 @@ class AutoscaleForm(Form):
         OptionalValidator()
     ])
 
-    lb_type = SelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','haproxy')])
+    lb_type = SelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','HAProxy')])
 
     safe_deploy_wait_before = IntegerField('Time to wait before deployment', validators=[], default = 10)
     safe_deploy_wait_after = IntegerField('Time to wait after deployment', validators=[], default = 10)
 
-    haproxy_app_tag = StringField('Haproxy app_tag', validators=[])
-    haproxy_backend = StringField('Haproxy backend name', validators=[])
+    haproxy_app_tag = StringField('HAProxy app tag', validators=[])
+    haproxy_backend = StringField('HAProxy backend name', validators=[])
 
 
     # Disable CSRF in autoscale forms as they are subforms
