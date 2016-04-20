@@ -895,8 +895,8 @@ class CommandAppForm(Form):
     module_rev = StringField('Module revision', validators=[])
     deploy_id = StringField('Deploy ID', validators=[])
     fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
-    safe_deployment = SelectField('Deploy with Safe Deployment', validators=[], choices=[('Yes', 'yes'), ('no', 'no')])
-    safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[('One By One', '1by1'), ('25%', '25%'), ('50%','50%')])
+    safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
+    safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[('1by1', 'One By One'), ('25%', '25%'), ('50%','50%')])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
 

@@ -38,7 +38,6 @@
                 $('.wrap.module_rev').show();
                 $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.safe_deployment').show();
-                $('.wrap.safe_deployment_strategy').show();
             } else if ($('#command').val() == 'redeploy') {
                 $('.wrap.deploy_id').show();
                 $('.wrap.fabric_execution_strategy').show();
@@ -53,6 +52,14 @@
         $('#command').change(function() {
             show_options_fields();
         });
+        $('#safe_deployment').change(function() {
+            if ($(this).is(':checked')) {
+                $('.wrap.safe_deployment_strategy').show();
+            } else {
+                $('.wrap.safe_deployment_strategy').hide();
+            }
+        });
+
 
         $('#command option').each(function() {
             cmd = $(this).val();
