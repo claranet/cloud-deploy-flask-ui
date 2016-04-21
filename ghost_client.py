@@ -225,7 +225,7 @@ def create_ghost_job(app_id, form, headers):
 
         if form.safe_deployment.data:
             # option[2] can be the safe deployment type
-            options.append(form.safe_deployment_type)
+            options.append(form.safe_deployment_type.data)
 
     if form.command.data == 'deploy':
         if form.fabric_execution_strategy.data:
@@ -234,7 +234,7 @@ def create_ghost_job(app_id, form, headers):
 
         if form.safe_deployment.data:
             # option[1] can be the safe deployment type
-            options.append(form.safe_deployment_type)
+            options.append(form.safe_deployment_type.data)
 
     if len(options) > 0:
         job['options'] = options
