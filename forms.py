@@ -257,6 +257,30 @@ def get_aws_ec2_instance_types(region):
                                                                        disk=instance_type.disk)
          ) for instance_type in types]
 
+def safe_deployment_possibilities(hosts_list):
+    """ Return a dict with split types as key and string as value
+        which describes the number of instances per deployment group.
+
+        :param  hosts_list  list:  A list of instances IPs.
+        :return  dict
+    """
+    split_types = ['1by1', '1/3', '25%', '50%']
+    possibilities = {}
+    msg = 'Number of instances per deployment group ---'
+    for split_type in split_types:
+        if split_type == '1by1' and len(hosts_list) > 1:
+            possibilities['1by1'] = 'Number of groups of 1 instance: {0}' .format(str(len(hosts_list)))
+        elif split_type == '1/3' and len(hosts_list) > 2:
+            split_list = [hosts_list[i::3] for i in range(3)]
+            possibilities['1/3'] =  msg + 'Group1: {0}, Group2: {1}, Group3: {2}' .format(len(split_list[0]), len(split_list[1]), len(split_list[2]))
+        elif split_type == '25%' and len(hosts_list) > 3:
+            split_list = [hosts_list[i::4] for i in range(4)]
+            possibilities['25%'] = msg + 'Group1: {0}, Group2: {1}, Group3: {2}, Group4: {3}' .format(len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
+        elif split_type == '50%' and len(hosts_list) == 2 or len(hosts_list) > 3:
+            split_list = [hosts_list[i::2] for i in range(2)]
+            possibilities['50%'] = msg + 'Group1: {0}, Group2: {1}' .format(len(split_list[0]), len(split_list[1]))
+    return possibilities
+
 
 class OptionalVolumeForm(Form):
     device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]', validators=[])
@@ -896,7 +920,7 @@ class CommandAppForm(Form):
     deploy_id = StringField('Deploy ID', validators=[])
     fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
-    safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[('1by1', 'One By One'), ('25%', '25%'), ('50%','50%')])
+    safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
 
@@ -916,6 +940,11 @@ class CommandAppForm(Form):
 
         # Get the instance types in the Ghost application's region
         self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
+
+        # Get the safe deployment possibilities
+        hosts_list = get_ghost_app_ec2_instances(app['app'], app['env'], app['role'], app['region'])
+        safe_possibilities = safe_deployment_possibilities(hosts_list)
+        self.safe_deployment_strategy.choices = [(k, v) for k,v in safe_possibilities]
 
     def map_from_app(self, app):
         """
