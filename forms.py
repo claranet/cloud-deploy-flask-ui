@@ -266,19 +266,19 @@ def safe_deployment_possibilities(hosts_list):
     """
     split_types = ['1by1', '1/3', '25%', '50%']
     possibilities = {}
-    msg = 'Number of instances per deployment group ---'
+    msg = 'Number of instances per deployment group     '
     for split_type in split_types:
         if split_type == '1by1' and len(hosts_list) > 1:
-            possibilities['1by1'] = 'Number of groups of 1 instance: {0}' .format(str(len(hosts_list)))
+            possibilities['1by1'] = '1by1     Number of groups of 1 instance: {0}' .format(str(len(hosts_list)))
         elif split_type == '1/3' and len(hosts_list) > 2:
             split_list = [hosts_list[i::3] for i in range(3)]
-            possibilities['1/3'] =  msg + 'Group1: {0}, Group2: {1}, Group3: {2}' .format(len(split_list[0]), len(split_list[1]), len(split_list[2]))
+            possibilities['1/3'] =  '1/3    {0}    Group1: {1}, Group2: {2}, Group3: {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
         elif split_type == '25%' and len(hosts_list) > 3:
             split_list = [hosts_list[i::4] for i in range(4)]
-            possibilities['25%'] = msg + 'Group1: {0}, Group2: {1}, Group3: {2}, Group4: {3}' .format(len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
+            possibilities['25%'] = '25%    {0}    Group1: {1}, Group2: {2}, Group3: {3}, Group4: {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
         elif split_type == '50%' and len(hosts_list) == 2 or len(hosts_list) > 3:
             split_list = [hosts_list[i::2] for i in range(2)]
-            possibilities['50%'] = msg + 'Group1: {0}, Group2: {1}' .format(len(split_list[0]), len(split_list[1]))
+            possibilities['50%'] = '50%   {0}    Group1: {1}, Group2: {2}' .format(msg, len(split_list[0]), len(split_list[1]))
     return possibilities
 
 
@@ -942,9 +942,9 @@ class CommandAppForm(Form):
         self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
 
         # Get the safe deployment possibilities
-        hosts_list = get_ghost_app_ec2_instances(app['app'], app['env'], app['role'], app['region'])
+        hosts_list = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
         safe_possibilities = safe_deployment_possibilities(hosts_list)
-        self.safe_deployment_strategy.choices = [(k, v) for k,v in safe_possibilities]
+        self.safe_deployment_strategy.choices = [(k, v) for k,v in safe_possibilities.items()]
 
     def map_from_app(self, app):
         """
