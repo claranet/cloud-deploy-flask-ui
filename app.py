@@ -250,6 +250,8 @@ def web_app_create():
     if clone_from_app:
         form.map_from_app(clone_from_app)
         if not form.is_submitted():
+            if clone_from_app.get('assumed_account_id', None) and clone_from_app.get('assumed_role_name', None):
+                form.use_custom_identity.data = True
             aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''), clone_from_app.get('assumed_region_name', ''))
             form.region.choices = get_aws_ec2_regions(clone_from_app.get('provider', DEFAULT_PROVIDER), **aws_connection_data)
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])

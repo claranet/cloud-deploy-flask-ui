@@ -1053,6 +1053,10 @@ class EditAppForm(BaseAppForm):
         """
         # Store app etag in form
         self.etag.data = app.get('_etag', '')
+        
+        # Keep the use_custom_identity checked if it was
+        if app.get('assumed_account_id', None) and app.get('assumed_role_name', None):
+            self.use_custom_identity.data = True
 
         super(EditAppForm, self).map_from_app(app)
 
