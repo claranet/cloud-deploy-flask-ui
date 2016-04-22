@@ -135,16 +135,6 @@ def web_cloud_regions(provider):
 def web_ec2_instance_types_list(provider, region_id):
     return jsonify(get_aws_ec2_instance_types(region_id))
 
-@app.route('/web/<provider>/regions')
-def web_cloud_regions(provider):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
-        else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_ec2_regions(provider, **query_string))
-
-@app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
-def web_ec2_instance_types_list(provider, region_id):
-    return jsonify(get_aws_ec2_instance_types(region_id))
-
 @app.route('/web/<provider>/regions/<region_id>/ec2/keypairs')
 def web_ec2_key_pairs_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
