@@ -206,7 +206,7 @@ def web_app_create():
         clone_from_app = get_ghost_app(clone_from_app_id)
 
     # Dynamic selections update
-    if form.is_submitted() and form.provider.data and form.region.data:
+    if form.is_submitted() and form.provider.data:
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
         else:
@@ -240,6 +240,7 @@ def web_app_create():
         form.map_from_app(clone_from_app)
         if not form.is_submitted():
             aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''), clone_from_app.get('assumed_region_name', ''))
+            form.region.choices = get_aws_ec2_regions(clone_form_app.get('provider', DEFAULT_PROVIDER), **aws_connection_data)
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
             form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
             form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['provider'], clone_from_app['region'], **aws_connection_da)
@@ -268,7 +269,7 @@ def web_app_edit(app_id):
     form = EditAppForm()
 
     # Dynamic selections update
-    if form.is_submitted() and form.provider.data and form.region.data:
+    if form.is_submitted() and form.provider.data:
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
         else:
