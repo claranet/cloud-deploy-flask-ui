@@ -104,7 +104,7 @@ def current_revision():
     return CURRENT_REVISION
 
 @app.route('/web/<provider>/identity/check/<account_id>/<role_name>/<region_name>')
-def web_cloud_check_assume_role(provider, account_id, role_name, region_name):
+def web_cloud_check_assume_role_region(provider, account_id, role_name, region_name):
     try:
         check =  check_aws_assumed_credentials(provider, account_id, role_name, region_name)
     except:
@@ -113,6 +113,27 @@ def web_cloud_check_assume_role(provider, account_id, role_name, region_name):
         flash(message, 'danger')
         check = False
     return jsonify({'result' : check})
+
+@app.route('/web/<provider>/identity/check/<account_id>/<role_name>/')
+def web_cloud_check_assume_role(provider, account_id, role_name):
+    try:
+        check =  check_aws_assumed_credentials(provider, account_id, role_name)
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        check = False
+    return jsonify({'result' : check})
+
+@app.route('/web/<provider>/regions')
+def web_cloud_regions(provider):
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
+        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    return jsonify(get_aws_ec2_regions(provider, **query_string))
+
+@app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
+def web_ec2_instance_types_list(provider, region_id):
+    return jsonify(get_aws_ec2_instance_types(region_id))
 
 @app.route('/web/<provider>/regions')
 def web_cloud_regions(provider):
@@ -320,7 +341,7 @@ def web_app_edit(app_id):
     form.env.choices = [(form.env.data, form.env.data)]
     form.role.choices = [(form.role.data, form.role.data)]
 
-    aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name)
+    aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
     form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
     form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
@@ -335,7 +356,7 @@ def web_app_edit(app_id):
         sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
-    account_id, role_name, region_name = get_aws_ghost_iam_info(DEFAULT_PROVIDER)
+    account_id, role_name= get_aws_ghost_iam_info(DEFAULT_PROVIDER)
     return render_template('app_edit.html', form=form, account_id=account_id, role_name=role_name, edit=True)
 
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
