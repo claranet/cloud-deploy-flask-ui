@@ -37,12 +37,12 @@ def get_wtforms_selectfield_values(allowed_schema_values):
     """
     return [(value, value) for value in allowed_schema_values]
 
-def get_aws_connection_data(assumed_account_id, assumed_role_name):
+def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_region_name=""):
     """
     Build a key-value dictionnatiory args for aws cross  connections
     """
     if assumed_account_id and assumed_role_name:
-        aws_connection_data = dict([("assumed_account_id", assumed_account_id), ("assumed_role_name", assumed_role_name)])
+        aws_connection_data = dict([("assumed_account_id", assumed_account_id), ("assumed_role_name", assumed_role_name), ("assumed_region_name", assumed_region_name)])
     else:
         aws_connection_data = {}
     return (aws_connection_data)
@@ -89,11 +89,12 @@ def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
         traceback.print_exc()
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
-def check_aws_assumed_credentials(provider, account_id, role_name, log_file=None):
+def check_aws_assumed_credentials(provider, account_id, role_name, region_name="", log_file=None):
     cloud_connection = cloud_connections.get(provider)(
             log_file,
             assumed_account_id=account_id,
-            assumed_role_name=role_name
+            assumed_role_name=role_name,
+            assumed_region_name=region_name
             )
     return (cloud_connection.check_credentials())
 
@@ -695,6 +696,13 @@ class BaseAppForm(Form):
         )
     ])
 
+    assumed_region_name = StringField('Assumed Region Name', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['assumed_region_name']['regex']
+        )
+    ])
+
     # Notification properties
     log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
         OptionalValidator(),
@@ -751,6 +759,8 @@ class BaseAppForm(Form):
             app['assumed_account_id'] = self.assumed_account_id.data
         if self.assumed_role_name:
             app['assumed_role_name'] = self.assumed_role_name.data
+        if self.assumed_region_name:
+            app['assumed_region_name'] = self.assumed_region_name.data
         if self.env:
             app['env'] = self.env.data
         if self.role:
@@ -922,6 +932,7 @@ class BaseAppForm(Form):
         self.provider.data = app.get('provider', DEFAULT_PROVIDER)
         self.assumed_account_id.data = app.get('assumed_account_id', '')
         self.assumed_role_name.data = app.get('assumed_role_name', '')
+        self.assumed_region_name.data = app.get('assumed_region_name', '')
         self.env.data = app.get('env', '')
         self.role.data = app.get('role', '')
         self.region.data = app.get('region', '')

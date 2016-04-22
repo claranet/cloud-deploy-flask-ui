@@ -103,10 +103,10 @@ except:
 def current_revision():
     return CURRENT_REVISION
 
-@app.route('/web/<provider>/identity/check/<account_id>/<role_name>')
-def web_cloud_check_assume_role(provider, account_id, role_name):
+@app.route('/web/<provider>/identity/check/<account_id>/<role_name>/<region_name>')
+def web_cloud_check_assume_role(provider, account_id, role_name, region_name):
     try:
-        check =  check_aws_assumed_credentials(provider, account_id, role_name)
+        check =  check_aws_assumed_credentials(provider, account_id, role_name, region_name)
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
@@ -170,7 +170,7 @@ def web_amis_list(provider, region_id):
 def web_app_infos(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
-    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app('assumed_role_name', ''))
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
     if app['autoscale']['name']:
         as_group = get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), app['autoscale']['name'], app['region'], **aws_connection_data)
         if as_group != None:
@@ -208,10 +208,11 @@ def web_app_create():
     # Dynamic selections update
     if form.is_submitted() and form.provider.data and form.region.data:
         if form.use_custom_identity.data:
-            aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
+            aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
         else:
             form.assumed_account_id.data = ""
             form.assumed_role_name.data = ""
+            form.assumed_region_name.data = ""
             aws_connection_data = {}
         form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
@@ -238,7 +239,7 @@ def web_app_create():
     if clone_from_app:
         form.map_from_app(clone_from_app)
         if not form.is_submitted():
-            aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''))
+            aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''), clone_from_app.get('assumed_region_name', ''))
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
             form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
             form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['provider'], clone_from_app['region'], **aws_connection_da)
@@ -252,7 +253,7 @@ def web_app_create():
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
-    account_id, role_name = get_aws_ghost_iam_info(DEFAULT_PROVIDER)
+    account_id, role_name= get_aws_ghost_iam_info(DEFAULT_PROVIDER)
     return render_template('app_edit.html', form=form, account_id=account_id, role_name=role_name, edit=False)
 
 @app.route('/web/apps/<app_id>', methods=['GET'])
@@ -269,10 +270,11 @@ def web_app_edit(app_id):
     # Dynamic selections update
     if form.is_submitted() and form.provider.data and form.region.data:
         if form.use_custom_identity.data:
-            aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
+            aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
         else:
             form.assumed_account_id.data = ""
             form.assumed_role_name.data = ""
+            form.assumed_region_name.data = ""
             aws_connection_data = {}
         form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
@@ -317,7 +319,7 @@ def web_app_edit(app_id):
     form.env.choices = [(form.env.data, form.env.data)]
     form.role.choices = [(form.role.data, form.role.data)]
 
-    aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data)
+    aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name)
     form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
     form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
@@ -332,7 +334,7 @@ def web_app_edit(app_id):
         sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
-    account_id, role_name = get_aws_ghost_iam_info(DEFAULT_PROVIDER)
+    account_id, role_name, region_name = get_aws_ghost_iam_info(DEFAULT_PROVIDER)
     return render_template('app_edit.html', form=form, account_id=account_id, role_name=role_name, edit=True)
 
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
