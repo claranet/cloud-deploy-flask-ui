@@ -679,6 +679,9 @@ class BaseAppForm(Form):
     env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
     role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
     # Cloud Provider
+    #Leave the following line commented to remember for further 
+    #dev to manage other cloud providers than aws
+    #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
 
@@ -1021,8 +1024,19 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
-        self.region.choices = [('', 'Please select provider and enter identity parameters first')]
+        #Leave the following line commented to remember for further 
+        #dev to manage other cloud providers than aws
+        #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
+        self.provider.data = DEFAULT_PROVIDER
+        if self.use_custom_identity.data:
+            aws_connection_data = get_aws_connection_data(
+                                                            self.assumed_account_id.data,
+                                                            self.assumed_role_name.data,
+                                                            self.assumed_region_name.data
+                                                         )
+        else:
+            aws_connection_data = {}
+        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection)
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.autoscale.as_name.choices = [('', 'Please select region first')]
