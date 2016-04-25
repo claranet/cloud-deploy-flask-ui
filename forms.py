@@ -1036,7 +1036,7 @@ class CreateAppForm(BaseAppForm):
                                                          )
         else:
             aws_connection_data = {}
-        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection)
+        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection_data)
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.autoscale.as_name.choices = [('', 'Please select region first')]
