@@ -265,20 +265,25 @@ def safe_deployment_possibilities(hosts_list):
         :return  dict
     """
     split_types = ['1by1', '1/3', '25%', '50%']
-    possibilities = {}
     msg = 'Number of instances per deployment group:'
+    possibilities = {}
     for split_type in split_types:
         if split_type == '1by1' and len(hosts_list) > 1:
-            possibilities['1by1'] = '1by1 | {0} | {1} ' .format(msg, str(' '.join(['Group' + str(i[0] + 1) + ' : 1 |' for i in enumerate(hosts_list)]))[:-2])
+            groups_one = ['Group' + str(i[0] + 1) + ' : 1 |' for i in enumerate(hosts_list)]
+            if len(groups_one) > 5:
+                groups_one = groups_one[0:5] + ['.....']
+            possibilities['1by1'] = '{0} | {1} ' .format(msg, str(' '.join(groups_one))[:-2])
         elif split_type == '1/3' and len(hosts_list) > 2:
             split_list = [hosts_list[i::3] for i in range(3)]
-            possibilities['1/3'] =  '1/3 | {0} | Group1 : {1} | Group2 : {2} | Group3 : {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
+            possibilities['1/3'] =  '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
         elif split_type == '25%' and len(hosts_list) > 3:
             split_list = [hosts_list[i::4] for i in range(4)]
-            possibilities['25%'] = '25% | {0} | Group1 : {1} | Group2 : {2} | Group3 : {3} | Group4 : {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
+            possibilities['25%'] = '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3} | Group4 : {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
         elif split_type == '50%' and len(hosts_list) == 2 or len(hosts_list) > 3:
             split_list = [hosts_list[i::2] for i in range(2)]
-            possibilities['50%'] = '50% | {0} | Group1 : {1} | Group2 : {2}' .format(msg, len(split_list[0]), len(split_list[1]))
+            possibilities['50%'] = '{0} | Group1 : {1} | Group2 : {2}' .format(msg, len(split_list[0]), len(split_list[1]))
+    if not possibilities:
+        possibilities = {'None': 'Not Supported because at least two instances must be running for this application'}
     return possibilities
 
 
@@ -322,8 +327,11 @@ class AutoscaleForm(Form):
     safe_deploy_wait_before = IntegerField('Time to wait before deployment', validators=[], default = 10)
     safe_deploy_wait_after = IntegerField('Time to wait after deployment', validators=[], default = 10)
 
-    haproxy_app_tag = StringField('HAProxy app tag', validators=[])
-    haproxy_backend = StringField('HAProxy backend name', validators=[])
+    haproxy_app_tag = StringField('HAProxy app tag', validators=[], description="Enter the value set for the HAproxy tag 'app'.\
+                                A filter will be perform on Haproxy instances with this app tag value, running in the same environment \
+                                as this application and with the tag role set to 'loadbalancer'")
+    haproxy_backend = StringField('HAProxy backend name', validators=[], description="Enter the Haproxy backend name where the \
+                                                                                        application's instances will be registered")
 
 
     # Disable CSRF in autoscale forms as they are subforms
@@ -944,7 +952,7 @@ class CommandAppForm(Form):
         # Get the safe deployment possibilities
         hosts_list = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
         safe_possibilities = safe_deployment_possibilities(hosts_list)
-        self.safe_deployment_strategy.choices = [(k, v) for k,v in safe_possibilities.items()]
+        self.safe_deployment_strategy.choices = [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
 
     def map_from_app(self, app):
         """
