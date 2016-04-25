@@ -266,19 +266,19 @@ def safe_deployment_possibilities(hosts_list):
     """
     split_types = ['1by1', '1/3', '25%', '50%']
     possibilities = {}
-    msg = 'Number of instances per deployment group     '
+    msg = 'Number of instances per deployment group:'
     for split_type in split_types:
         if split_type == '1by1' and len(hosts_list) > 1:
-            possibilities['1by1'] = '1by1     Number of groups of 1 instance: {0}' .format(str(len(hosts_list)))
+            possibilities['1by1'] = '1by1 | Number of groups of 1 instance: {0}' .format(str(len(hosts_list)))
         elif split_type == '1/3' and len(hosts_list) > 2:
             split_list = [hosts_list[i::3] for i in range(3)]
-            possibilities['1/3'] =  '1/3    {0}    Group1: {1}, Group2: {2}, Group3: {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
+            possibilities['1/3'] =  '1/3 | {0} *Group1*: {1} --- *Group2*: {2} --- *Group3*: {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
         elif split_type == '25%' and len(hosts_list) > 3:
             split_list = [hosts_list[i::4] for i in range(4)]
-            possibilities['25%'] = '25%    {0}    Group1: {1}, Group2: {2}, Group3: {3}, Group4: {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
+            possibilities['25%'] = '25% | {0}   *Group1*: {1} --- *Group2*: {2} --- *Group3*: {3} --- *Group4*: {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
         elif split_type == '50%' and len(hosts_list) == 2 or len(hosts_list) > 3:
             split_list = [hosts_list[i::2] for i in range(2)]
-            possibilities['50%'] = '50%   {0}    Group1: {1}, Group2: {2}' .format(msg, len(split_list[0]), len(split_list[1]))
+            possibilities['50%'] = '50% | {0}    *Group1*: {1} --- *Group2*: {2}' .format(msg, len(split_list[0]), len(split_list[1]))
     return possibilities
 
 
@@ -355,7 +355,7 @@ class AutoscaleForm(Form):
         app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data
         app['safe-deployment']['wait_after_deploy'] = self.safe_deploy_wait_after.data
         if self.lb_type.data == "haproxy":
-            app['safe-deployment']['app_id_ha'] = self.haproxy_app_tag.data
+            app['safe-deployment']['app_tag_value'] = self.haproxy_app_tag.data
             app['safe-deployment']['ha_backend'] = self.haproxy_backend.data
 
 class BuildInfosForm(Form):
