@@ -269,7 +269,7 @@ def safe_deployment_possibilities(hosts_list):
     msg = 'Number of instances per deployment group:'
     for split_type in split_types:
         if split_type == '1by1' and len(hosts_list) > 1:
-            possibilities['1by1'] = '1by1 | {0} | {1} ' .format(msg, str(' '.join(['Group' + str(i[0] + 1) + ' : 1 |' for i in enumerate(hosts_list)])))
+            possibilities['1by1'] = '1by1 | {0} | {1} ' .format(msg, str(' '.join(['Group' + str(i[0] + 1) + ' : 1 |' for i in enumerate(hosts_list)]))[:-2])
         elif split_type == '1/3' and len(hosts_list) > 2:
             split_list = [hosts_list[i::3] for i in range(3)]
             possibilities['1/3'] =  '1/3 | {0} | Group1 : {1} | Group2 : {2} | Group3 : {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
