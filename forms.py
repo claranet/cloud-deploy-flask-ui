@@ -346,6 +346,14 @@ class AutoscaleForm(Form):
         self.max.data = autoscale.get('max', '')
         self.current.data = autoscale.get('current', '')
         self.as_name.data = autoscale.get('name', '')
+        # Populate form with safe deployment data if available
+        safe_deployment = app.get('safe-deployment', {})
+        self.lb_type.data = safe_deployment.get('load_balancer_type', '')
+        self.safe_deploy_wait_before.data = safe_deployment.get('wait_before_deploy', '')
+        self.safe_deploy_wait_after.data = safe_deployment.get('wait_after_deploy', '')
+        self.haproxy_app_tag.data = safe_deployment.get('app_tag_value', '')
+        self.haproxy_backend.data = safe_deployment.get('ha_backend', '')
+        self.haproxy_api_port.data = safe_deployment.get('api_port', '')
 
     def map_to_app(self, app):
         """
