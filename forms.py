@@ -331,7 +331,6 @@ class AutoscaleForm(Form):
                                 A filter will be perform on Haproxy instances with this app tag value, running in the same environment \
                                 as this application and with the tag role set to 'loadbalancer'")
     haproxy_api_port = IntegerField('HAProxy API port', validators=[], description="Enter the port number for the HAproxy API. Default is 5001", default = 5001)
-                                as this application and with the tag role set to 'loadbalancer'")
     haproxy_backend = StringField('HAProxy backend name', validators=[], description="Enter the Haproxy backend name where the \
                                                                                         application's instances will be registered")
 
