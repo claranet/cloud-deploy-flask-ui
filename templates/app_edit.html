@@ -114,6 +114,7 @@
                     <div class="haproxy-params" style="{{ 'display:none;' if not form.autoscale.form.lb_type.data == 'haproxy' }}">
                     {{ wtf.form_field(form.autoscale.form.haproxy_app_tag, form_type='horizontal') }}
                     {{ wtf.form_field(form.autoscale.form.haproxy_backend, form_type='horizontal') }}
+                    {{ wtf.form_field(form.autoscale.form.haproxy_api_port, form_type='horizontal') }}
                     </div>
                 </div>
             </div>
