@@ -990,7 +990,7 @@ class CommandAppForm(Form):
 
         # Get the safe deployment possibilities
         hosts_list = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
-        safe_possibilities = safe_deployment_possibilities(hosts_list)
+        safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
         self.safe_deployment_strategy.choices = [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
 
     def map_from_app(self, app):
