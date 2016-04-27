@@ -106,13 +106,13 @@
         <div class="panel-heading">Load Balancer</div>
         <div class="panel-body">
             <div class="row">
-                {{ ghost_display_field('app-lb-type', 'Load Balancer type', app.get('autoscale', {})['lb_type']) }}
+                {{ ghost_display_field('app-lb-type', 'Load Balancer type', app.get('safe-deployment', {})['lb_type']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('app-lb-safe_deploy_wait_before', 'Time to wait before deployment', app.get('autoscale', {})['safe_deploy_wait_before']) }}
+                {{ ghost_display_field('app-lb-safe_deploy_wait_before', 'Time to wait before deployment', app.get('safe-deployment', {})['safe_deploy_wait_before']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('app-lb-safe_deploy_wait_after', 'Time to wait after deployment', app.get('autoscale', {})['safe_deploy_wait_after']) }}
+                {{ ghost_display_field('app-lb-safe_deploy_wait_after', 'Time to wait after deployment', app.get('safe-deployment', {})['safe_deploy_wait_after']) }}
             </div>
         </div>
 

@@ -322,19 +322,6 @@ class AutoscaleForm(Form):
         OptionalValidator()
     ])
 
-    lb_type = SelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','HAProxy')])
-
-    safe_deploy_wait_before = IntegerField('Time to wait before deployment(seconds)', validators=[], default = 10)
-    safe_deploy_wait_after = IntegerField('Time to wait after deployment(seconds)', validators=[], default = 10)
-
-    haproxy_app_tag = StringField('HAProxy app tag', validators=[], description="Enter the value set for the HAproxy tag 'app'.\
-                                A filter will be perform on Haproxy instances with this app tag value, running in the same environment \
-                                as this application and with the tag role set to 'loadbalancer'")
-    haproxy_api_port = IntegerField('HAProxy API port', validators=[], description="Enter the port number for the HAproxy API. Default is 5001", default = 5001)
-    haproxy_backend = StringField('HAProxy backend name', validators=[], description="Enter the Haproxy backend name where the \
-                                                                                        application's instances will be registered")
-
-
     # Disable CSRF in autoscale forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(AutoscaleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
@@ -346,6 +333,38 @@ class AutoscaleForm(Form):
         self.max.data = autoscale.get('max', '')
         self.current.data = autoscale.get('current', '')
         self.as_name.data = autoscale.get('name', '')
+
+    def map_to_app(self, app):
+        """
+        Map autoscale data from form to app
+        """
+        app['autoscale'] = {}
+        app['autoscale']['name'] = self.as_name.data
+        if isinstance(self.min.data, int):
+            app['autoscale']['min'] = self.min.data
+        if isinstance(self.max.data, int):
+            app['autoscale']['max'] = self.max.data
+        if isinstance(self.current.data, int):
+            app['autoscale']['current'] = self.current.data
+
+class SafedeploymentForm(Form):
+
+    lb_type = SelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','HAProxy')])
+    safe_deploy_wait_before = IntegerField('Time to wait before deployment(seconds)', validators=[], default = 10)
+    safe_deploy_wait_after = IntegerField('Time to wait after deployment(seconds)', validators=[], default = 10)
+
+    haproxy_app_tag = StringField('HAProxy app tag', validators=[], description="Enter the value set for the HAproxy tag 'app'.\
+                                A filter will be perform on Haproxy instances with this app tag value, running in the same environment \
+                                as this application and with the tag role set to 'loadbalancer'")
+    haproxy_api_port = IntegerField('HAProxy API port', validators=[], description="Enter the port number for the HAproxy API. Default is 5001", default = 5001)
+    haproxy_backend = StringField('HAProxy backend name', validators=[], description="Enter the Haproxy backend name where the \
+                                                                                        application's instances will be registered")
+
+
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(SafedeploymentForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, app):
         # Populate form with safe deployment data if available
         safe_deployment = app.get('safe-deployment', {})
         self.lb_type.data = safe_deployment.get('load_balancer_type', '')
@@ -357,16 +376,8 @@ class AutoscaleForm(Form):
 
     def map_to_app(self, app):
         """
-        Map autoscale & safe deployment data from form to app
+        Map safe deployment data from form to app
         """
-        app['autoscale'] = {}
-        app['autoscale']['name'] = self.as_name.data
-        if isinstance(self.min.data, int):
-            app['autoscale']['min'] = self.min.data
-        if isinstance(self.max.data, int):
-            app['autoscale']['max'] = self.max.data
-        if isinstance(self.current.data, int):
-            app['autoscale']['current'] = self.current.data
         app['safe-deployment'] = {}
         app['safe-deployment']['load_balancer_type'] = self.lb_type.data
         app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data
@@ -375,6 +386,7 @@ class AutoscaleForm(Form):
             app['safe-deployment']['app_tag_value'] = self.haproxy_app_tag.data
             app['safe-deployment']['ha_backend'] = self.haproxy_backend.data
             app['safe-deployment']['api_port'] = self.haproxy_api_port.data
+
 
 class BuildInfosForm(Form):
     ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Morea Debian AMI', validators=[
@@ -616,6 +628,9 @@ class BaseAppForm(Form):
 
     # Autoscale properties
     autoscale = FormField(AutoscaleForm)
+
+    # Safe deployment properties
+    safedeployment = FormField(SafedeploymentForm)
 
     # Build properties
     build_infos = FormField(BuildInfosForm)

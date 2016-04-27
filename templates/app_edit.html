@@ -108,13 +108,13 @@
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {{ wtf.form_field(form.autoscale.form.lb_type, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.safe_deploy_wait_before, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.safe_deploy_wait_after, form_type='horizontal') }}
-                    <div class="haproxy-params" style="{{ 'display:none;' if not form.autoscale.form.lb_type.data == 'haproxy' }}">
-                    {{ wtf.form_field(form.autoscale.form.haproxy_app_tag, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.haproxy_backend, form_type='horizontal') }}
-                    {{ wtf.form_field(form.autoscale.form.haproxy_api_port, form_type='horizontal') }}
+                    {{ wtf.form_field(form.safedeployment.form.lb_type, form_type='horizontal') }}
+                    {{ wtf.form_field(form.safedeployment.form.safe_deploy_wait_before, form_type='horizontal') }}
+                    {{ wtf.form_field(form.safedeployment.form.safe_deploy_wait_after, form_type='horizontal') }}
+                    <div class="haproxy-params" style="{{ 'display:none;' if not form.safedeployment.form.lb_type.data == 'haproxy' }}">
+                    {{ wtf.form_field(form.safedeployment.form.haproxy_app_tag, form_type='horizontal') }}
+                    {{ wtf.form_field(form.safedeployment.form.haproxy_backend, form_type='horizontal') }}
+                    {{ wtf.form_field(form.safedeployment.form.haproxy_api_port, form_type='horizontal') }}
                     </div>
                 </div>
             </div>
@@ -292,7 +292,7 @@
             }
         });
 
-        $('#autoscale-lb_type').change(function() {
+        $('#safedeployment-lb_type').change(function() {
             if ($(this).val() == 'haproxy') {
                 $('.haproxy-params').show();
             } else {
