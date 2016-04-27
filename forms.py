@@ -679,6 +679,7 @@ class BaseAppForm(Form):
 
         self.map_to_app_log_notifications(app)
         self.map_to_app_autoscale(app)
+        self.map_to_app_safedeployment(app)
         self.map_to_app_build_infos(app)
         self.map_to_app_resources(app)
         self.map_to_app_environment_infos(app)
@@ -714,6 +715,12 @@ class BaseAppForm(Form):
         Map autoscale data from form to app
         """
         self.autoscale.form.map_to_app(app)
+
+    def map_to_app_safedeployment(self, app):
+        """
+        Map safe deployment data from form to app
+        """
+        self.safedeployment.form.map_to_app(app)
 
     def map_to_app_build_infos(self, app):
         """
@@ -838,6 +845,7 @@ class BaseAppForm(Form):
 
         self.map_from_app_notifications(app)
         self.map_from_app_autoscale(app)
+        self.map_from_app_safedeployment(app)
         self.map_from_app_build_infos(app)
         self.map_from_app_environment_infos(app)
         self.map_from_app_lifecycle_hooks(app)
@@ -851,6 +859,12 @@ class BaseAppForm(Form):
         Map autoscale data from app to form
         """
         return self.autoscale.form.map_from_app(app)
+
+    def map_from_app_safedeployment(self, app):
+        """
+        Map safe deployment data from app to form
+        """
+        return self.safedeployment.form.map_from_app(app)
 
     def map_from_app_build_infos(self, app):
         """
