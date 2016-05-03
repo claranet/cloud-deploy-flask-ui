@@ -175,7 +175,13 @@
         });
         socket.on('job', function(data) {
             last_pos = data['last_pos'];
-            content = $(data['html']);
+            var content = $(data['html']);
+            content.each(function() {
+                hasContent = $(this).find('samp').length > 0;
+                if (hasContent) {
+                    $(this).addClass('expandable');
+                }
+            });
             content.find('em').each(function() {
                 cmd = $(this).find('span.command-title').text();
                 
@@ -183,6 +189,15 @@
             $log.append(content);
             if (scrollActivated) {
                 $log.scrollTop($log.get(0).scrollHeight);
+            }
+        });
+
+        $log.on('click', '.expandable em', function(evt) {
+            if ($(this).parent().hasClass('closed')) {
+                $log.find('div.panel.expandable').addClass('closed');
+                $(this).parent().removeClass('closed');
+            } else {
+                $(this).parent().addClass('closed');
             }
         });
 

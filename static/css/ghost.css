@@ -393,14 +393,22 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .jobview #log em {
     display: block;
     padding: 5px 20px;
-    cursor: pointer;
     font-style: normal;
-    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Ik0yLDksOSw1LDIsMXoiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIwLjUiIGZpbGw9IiM2NjYiLz4KPC9zdmc+Cgo=) 5px 10px no-repeat #333;
     color: #f1f1f1;
     border-radius: 0;
+    background: #333;
 }
-.jobview #log em.open {
+.jobview #log .panel.expandable em {
+    cursor: pointer;
     background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Im0wLjUsMS41LDQuNSw3LDQuNS03eiIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjAuNSIgZmlsbD0iIzY2NiIvPgo8L3N2Zz4KCg==) 5px 10px no-repeat #2b2b2b;
+}
+.jobview #log .panel.expandable.closed em {
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Ik0yLDksOSw1LDIsMXoiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIwLjUiIGZpbGw9IiM2NjYiLz4KPC9zdmc+Cgo=) 5px 10px no-repeat #333;
+}
+.jobview #log .panel.closed .panel-body {
+/*    height: 0;
+    visibility: hidden;*/
+    display: none;
 }
 .jobview #log em.info {
     color: #FFFFB6;
@@ -427,8 +435,8 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 }
 .log-panel.fullscreen {
     position: fixed;
-    bottom: 0px;
-    top: 140px;
+    bottom: 30px;
+    top: 130px;
     left: 10px;
     right: 10px;
 }
