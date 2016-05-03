@@ -175,16 +175,40 @@
         });
         socket.on('job', function(data) {
             last_pos = data['last_pos'];
+            if (last_pos == 0) {
+                last_cmd_date = '';
+            } else {
+                last_cmd_date = $log.find('span.command-title').last().text().substring(0, 20);
+            }
             var content = $(data['html']);
-            content.each(function() {
+            content.each(function(ite) {
+                // Content Expandable or not
                 hasContent = $(this).find('samp').length > 0;
                 if (hasContent) {
                     $(this).addClass('expandable');
                 }
-            });
-            content.find('em').each(function() {
+
                 cmd = $(this).find('span.command-title').text();
-                
+
+                // Color Style
+                if (cmd.indexOf(': CMD:') == -1) {
+                    $(this).addClass('info');
+                }
+                if (cmd.indexOf(': Deployment OK:') > -1) {
+                    $(this).addClass('ok');
+                }
+                if (cmd.indexOf(': Deployment Failed:') > -1) {
+                    $(this).addClass('failed');
+                }
+
+                // Calculate time interval
+                if (ite < content.length - 1) {
+                    cur_cmd_date = cmd.substring(0, 20);
+                    timeinterval = 'todo';
+                } else {
+                    timeinterval = '0s';
+                }
+                $(this).find('span.timeinterval').text(timeinterval);
             });
             $log.append(content);
             if (scrollActivated) {
@@ -194,7 +218,7 @@
 
         $log.on('click', '.expandable em', function(evt) {
             if ($(this).parent().hasClass('closed')) {
-                $log.find('div.panel.expandable').addClass('closed');
+                //$log.find('div.panel.expandable').addClass('closed');
                 $(this).parent().removeClass('closed');
             } else {
                 $(this).parent().addClass('closed');

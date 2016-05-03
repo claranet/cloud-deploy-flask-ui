@@ -410,8 +410,14 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     visibility: hidden;*/
     display: none;
 }
-.jobview #log em.info {
+.jobview #log .info em {
     color: #FFFFB6;
+}
+.jobview #log .ok em {
+    color: #aed581;
+}
+.jobview #log .failed em {
+    color: #f44336;
 }
 .jobview #log .panel-body {
     color: #f1f1f1;
