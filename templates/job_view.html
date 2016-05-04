@@ -194,10 +194,12 @@
                 if (cmd.indexOf(': CMD:') == -1) {
                     $(this).addClass('info');
                 }
-                if (cmd.indexOf(': Deployment OK:') > -1) {
+                if (cmd.indexOf(': Deployment OK:') > -1
+                 || cmd.indexOf(': Build image OK:') > -1) {
                     $(this).addClass('ok');
                 }
-                if (cmd.indexOf(': Deployment Failed:') > -1) {
+                if (cmd.indexOf(': Deployment Failed:') > -1
+                 || cmd.indexOf('ERROR: ') > -1) {
                     $(this).addClass('failed');
                 }
 
