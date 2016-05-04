@@ -86,6 +86,7 @@
                 <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
                 <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
                 <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
+                <a href="#" id="logCollapseAll"><button class="btn btn-default btn-xs" title="Collapse log details"><span class="fa fa-compress"></span></button></a>
                 <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode"><span class="glyphicon glyphicon-new-window"></span></button></a>
             </p>
         </div>
@@ -124,6 +125,10 @@
         var textNoScrolling =  'AutoScroll disabled';
         var $log = $('#log');
 
+        $('#logCollapseAll').click(function(evt) {
+            evt.preventDefault();
+            $log.find('.expandable').addClass('closed');
+        });
         $('#logScrollTop').click(function(evt) {
             evt.preventDefault();
             scrollActivated = false;

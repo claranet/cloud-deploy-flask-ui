@@ -439,6 +439,9 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     margin: 0;
     height: 30px;
 }
+.jobview #logCollapseAll {
+    font-size: 1.5em;
+}
 .log-panel.fullscreen {
     position: fixed;
     bottom: 30px;
