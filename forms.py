@@ -365,18 +365,25 @@ class SafedeploymentForm(Form):
         super(SafedeploymentForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
 
     def map_from_app(self, app):
-        # Populate form with safe deployment data if available
-        safe_deployment = app.get('safe-deployment', {})
-        self.lb_type.data = safe_deployment.get('load_balancer_type', '')
-        self.safe_deploy_wait_before.data = safe_deployment.get('wait_before_deploy', '')
-        self.safe_deploy_wait_after.data = safe_deployment.get('wait_after_deploy', '')
-        self.haproxy_app_tag.data = safe_deployment.get('app_tag_value', '')
-        self.haproxy_backend.data = safe_deployment.get('ha_backend', '')
-        self.haproxy_api_port.data = safe_deployment.get('api_port', '')
+        # Populate form with safe deployment data if available. If not
+        # set the default value to avoid applications created before the
+        # safe deployment feature to stay stuck in the app edit view.
+        if 'safe-deployment' not in app.keys():
+            self.lb_type.data = 'elb'
+            self.safe_deploy_wait_before.data = 10
+            self.safe_deploy_wait_after.data = 10
+        else:
+            safe_deployment = app.get('safe-deployment', {})
+            self.lb_type.data = safe_deployment.get('load_balancer_type', '')
+            self.safe_deploy_wait_before.data = safe_deployment.get('wait_before_deploy', '')
+            self.safe_deploy_wait_after.data = safe_deployment.get('wait_after_deploy', '')
+            self.haproxy_app_tag.data = safe_deployment.get('app_tag_value', '')
+            self.haproxy_backend.data = safe_deployment.get('ha_backend', '')
+            self.haproxy_api_port.data = safe_deployment.get('api_port', 5001)
 
     def map_to_app(self, app):
         """
-        Map safe deployment data from form to app
+        Map safe deployment data from to app
         """
         app['safe-deployment'] = {}
         app['safe-deployment']['load_balancer_type'] = self.lb_type.data
