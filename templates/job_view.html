@@ -127,7 +127,15 @@
 
         $('#logCollapseAll').click(function(evt) {
             evt.preventDefault();
-            $log.find('.expandable').addClass('closed');
+            if ($(this).hasClass('active')) {
+                $log.find('.expandable').removeClass('closed');
+                $(this).removeClass('active');
+                $(this).find('button').attr('title', 'Collapse log details');
+            } else {
+                $log.find('.expandable').addClass('closed');
+                $(this).addClass('active');
+                $(this).find('button').attr('title', 'Expand log details');
+            }
         });
         $('#logScrollTop').click(function(evt) {
             evt.preventDefault();
