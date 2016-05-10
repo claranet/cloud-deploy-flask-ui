@@ -376,6 +376,10 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     padding: 0;
     counter-reset: line;
 }
+.jobview #log samp {
+    display: block;
+    padding-left: 20px;
+}
 .jobview #log em:before
 ,.jobview #log samp:before {
   counter-increment: line;
@@ -388,7 +392,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     margin: 0
 }
 .jobview #log .panel-body {
-    padding: 0 20px;
+    padding: 0 20px 0 0;
 }
 .jobview #log em {
     display: block;
@@ -432,9 +436,6 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 }
 .jobview #log .timeinterval i {
     margin-left: 5px;
-}
-.jobview #log .panel-body samp {
-    display: block;
 }
 .jobview .logactions {
     padding-bottom: 10px;
