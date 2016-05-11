@@ -90,7 +90,10 @@
                 <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode"><span class="glyphicon glyphicon-new-window"></span></button></a>
             </p>
         </div>
-        <div id="log" class="panel-body"></div>
+        <div id="log" class="panel-body"><p style="text-align: center; padding: 20px;">
+            Logs loading...
+            <img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading...">
+        </p></div>
     </div>
 {% endblock %}
 
@@ -228,7 +231,11 @@
                 }
                 previous_timespan = $(this).find('span.timeinterval');
             });
-            $log.append(content);
+            if (last_pos == 0) {
+                $log.html(content);
+            } else {
+                $log.append(content);
+            }
             if (scrollActivated) {
                 $log.scrollTop($log.get(0).scrollHeight);
             }
