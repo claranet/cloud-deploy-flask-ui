@@ -202,6 +202,16 @@ td.inline {
 #app-form .form-group.select-panel {
     padding-right: 40px;
 }
+#app-form th {
+    font-weight: normal;
+}
+#app-form .panel-heading span.subtitle {
+    font-size: 12px;
+}
+#app-form .btn.add-entry {
+    margin: 1px;
+    padding: 8px 16px;
+}
 
 /*AppList*/
 .apptable {

@@ -446,8 +446,8 @@
 {% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='') -%}
     <div class="panel panel-default">
         <div class="panel-heading" style="counter-reset: group_entry;">
-            {{ group_label }}
-            <a class="btn btn-success" title="Add {{ entry_label }}"
+            <strong>{{ group_label }}</strong>
+            <a class="btn btn-success add-entry" title="Add {{ entry_label }}"
                 onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
