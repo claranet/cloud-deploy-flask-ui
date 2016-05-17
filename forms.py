@@ -247,10 +247,10 @@ def get_aws_ec2_instance_types(region):
 
 
 class OptionalVolumeForm(Form):
-    device_name = StringField('DeviceName', validators=[])
-    volume_type = SelectField('VolumeType', validators=[], choices=get_ghost_optional_volumes())
-    volume_size = IntegerField('VolumeSize', validators=[OptionalValidator()])
-    iops = IntegerField('IOPS', validators=[OptionalValidator()])
+    device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]', validators=[])
+    volume_type = SelectField('Volume Type', description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>', validators=[], choices=get_ghost_optional_volumes())
+    volume_size = IntegerField('Volume Size', description='In Go', validators=[OptionalValidator()])
+    iops = IntegerField('IOPS', description='For information, 1To volume size is 3000 IOPS in GP2 type', validators=[OptionalValidator()])
 
     # Disable CSRF in optional_volume forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -266,17 +266,17 @@ class OptionalVolumeForm(Form):
 class AutoscaleForm(Form):
     as_name = SelectField('Name', choices=[], validators=[])
 
-    min = IntegerField('Min', validators=[
+    min = IntegerField('Min', description='The minimum size of the Auto Scaling group', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
 
-    max = IntegerField('Max', validators=[
+    max = IntegerField('Max', description='The maximum size of the Auto Scaling group', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=1)
     ])
 
-    current = IntegerField('Desired', validators=[
+    current = IntegerField('Desired', description='The number of instances that should be running in the Auto Scaling group', validators=[
         OptionalValidator()
     ])
 
@@ -307,14 +307,14 @@ class AutoscaleForm(Form):
 
 
 class BuildInfosForm(Form):
-    ssh_username = StringField('SSH Username', validators=[
+    ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Morea Debian AMI', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
         )
     ], default='admin')
 
-    source_ami = SelectField('Source AWS AMI', choices=[], validators=[
+    source_ami = SelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisionning', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
@@ -365,14 +365,14 @@ class EnvironmentInfosForm(Form):
         )
     ]), min_entries=1)
 
-    instance_profile = SelectField('Instance Profile', validators=[
+    instance_profile = SelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policies', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
         )
     ])
 
-    key_name = SelectField('Key Name', validators=[
+    key_name = SelectField('Key Name', description='Ghost should have the associated private key to deploy on instances', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['key_name']['regex']
@@ -440,8 +440,8 @@ class ResourceForm(Form):
         pass
 
 class LifecycleHooksForm(Form):
-    pre_bootstrap = TextAreaField('Pre Bootstrap', validators=[])
-    post_bootstrap = TextAreaField('Post Bootstrap', validators=[])
+    pre_bootstrap = TextAreaField('Pre Bootstrap', description='Script executed at bootstrap before modules deploy', validators=[])
+    post_bootstrap = TextAreaField('Post Bootstrap', description='Script executed at bootstrap after modules deploy', validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):

@@ -201,6 +201,10 @@ td.inline {
 }
 #app-form .form-group.select-panel {
     padding-right: 40px;
+    margin-top: 10px;
+}
+#app-form .form-group.select-panel .help-block {
+    display: block;
 }
 #app-form th {
     font-weight: normal;
