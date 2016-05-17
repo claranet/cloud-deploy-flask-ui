@@ -126,10 +126,14 @@ def get_aws_ec2_regions():
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
     
 def get_ghost_app_as_group(as_group_name, region):
-    conn_as = boto.ec2.autoscale.connect_to_region(region)
-    asgs = conn_as.get_all_groups(names=[as_group_name])
-    if len(asgs) > 0:
-        return asgs[0]
+    try:
+        conn_as = boto.ec2.autoscale.connect_to_region(region)
+        asgs = conn_as.get_all_groups(names=[as_group_name])
+        if len(asgs) > 0:
+            return asgs[0]
+        return None
+    except:
+        traceback.print_exc()
     return None
 
 def get_as_group_instances(as_group, region):
@@ -146,29 +150,37 @@ def get_as_group_instances(as_group, region):
     return hosts
 
 def get_elbs_in_as_group(as_group, region):
-    conn_elb = boto.ec2.elb.connect_to_region(region)
-    if len(as_group.load_balancers) > 0:
-        as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
-        if len(as_elbs) > 0:
-            return as_elbs
-        else: 
+    try:
+        conn_elb = boto.ec2.elb.connect_to_region(region)
+        if len(as_group.load_balancers) > 0:
+            as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
+            if len(as_elbs) > 0:
+                return as_elbs
+            else:
+                return None
+        else:
             return None
-    else:
-        return None
+    except:
+        traceback.print_exc()
+    return None
 
 def get_elbs_instances_from_as_group(as_group, region):
-    elbs = get_elbs_in_as_group(as_group, region)
-    if elbs:
-        elbs_instances = []
-        for elb in elbs:
-            if len(elb.instances) > 0:
-                elb_instance_ids = []
-                for instance in elb.instances:
-                    elb_instance_ids.append('#' + instance.id)
-                elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
-        return elbs_instances
-    else: 
-        return None
+    try:
+        elbs = get_elbs_in_as_group(as_group, region)
+        if elbs:
+            elbs_instances = []
+            for elb in elbs:
+                if len(elb.instances) > 0:
+                    elb_instance_ids = []
+                    for instance in elb.instances:
+                        elb_instance_ids.append('#' + instance.id)
+                    elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
+            return elbs_instances
+        else:
+            return None
+    except:
+        traceback.print_exc()
+    return None
 
 def get_ghost_app_ec2_instances(ghost_app, ghost_env, ghost_role, region, filters=[]):
     conn_as = boto.ec2.autoscale.connect_to_region(region)
@@ -206,7 +218,8 @@ def format_host_infos(instance, conn, region):
     else:
         subnet_string = '-'
     
-    host = {'id': instance.id,
+    host = {
+      'id': instance.id,
       'private_ip_address': instance.private_ip_address,
       'public_ip_address': instance.ip_address,
       'status': instance.state,
