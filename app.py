@@ -18,7 +18,7 @@ from ghost_client import headers, test_ghost_auth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
-from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles
+from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group
 
 # Web UI App
@@ -106,6 +106,10 @@ def web_ec2_instance_types_list(region_id):
 def web_ec2_key_pairs_list(region_id):
     return jsonify(get_aws_ec2_key_pairs(region_id))
 
+@app.route('/web/aws/regions/<region_id>/ec2/autoscale/ids')
+def web_ec2_as_list(region_id):
+    return jsonify(get_aws_as_groups(region_id))
+
 @app.route('/web/aws/regions/<region_id>/iam/profiles')
 def web_iam_profiles_list(region_id):
     return jsonify(get_aws_iam_instance_profiles(region_id))
@@ -168,6 +172,7 @@ def web_app_create():
     if form.is_submitted() and form.region.data:
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+        form.autoscale.as_name.choices = get_aws_as_groups(form.region.data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
@@ -191,6 +196,7 @@ def web_app_create():
         if not form.is_submitted():
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
             form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['region'])
+            form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['region'])
             form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['region'])
             form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['region'], clone_from_app['vpc_id'])
             form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app['region'])
@@ -218,6 +224,7 @@ def web_app_edit(app_id):
     if form.is_submitted() and form.region.data:
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
         form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+        form.autoscale.as_name.choices = get_aws_as_groups(form.region.data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)
@@ -259,6 +266,7 @@ def web_app_edit(app_id):
 
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
     form.vpc_id.choices = get_aws_vpc_ids(form.region.data)
+    form.autoscale.as_name.choices = get_aws_as_groups(form.region.data)
     form.build_infos.source_ami.choices = get_aws_ami_ids(form.region.data)
     form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.region.data, form.vpc_id.data)
     form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.region.data)

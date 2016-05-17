@@ -125,6 +125,15 @@ def get_aws_ec2_regions():
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
     
+def get_aws_as_groups(region):
+    asgs = []
+    try:
+        conn_as = boto.ec2.autoscale.connect_to_region(region)
+        asgs = conn_as.get_all_groups()
+    except:
+        traceback.print_exc()
+    return [(asg.name, asg.name + ' (' + asg.launch_config_name + ')') for asg in asgs]
+
 def get_ghost_app_as_group(as_group_name, region):
     conn_as = boto.ec2.autoscale.connect_to_region(region)
     asgs = conn_as.get_all_groups(names=[as_group_name])
@@ -255,7 +264,7 @@ class OptionalVolumeForm(Form):
 
 # Forms
 class AutoscaleForm(Form):
-    name = StringField('Name', validators=[])
+    as_name = SelectField('Name', choices=[], validators=[])
 
     min = IntegerField('Min', validators=[
         OptionalValidator(),
@@ -281,14 +290,14 @@ class AutoscaleForm(Form):
         self.min.data = autoscale.get('min', '')
         self.max.data = autoscale.get('max', '')
         self.current.data = autoscale.get('current', '')
-        self.name.data = autoscale.get('name', '')
+        self.as_name.data = autoscale.get('name', '')
 
     def map_to_app(self, app):
         """
         Map autoscale data from form to app
         """
         app['autoscale'] = {}
-        app['autoscale']['name'] = self.name.data
+        app['autoscale']['name'] = self.as_name.data
         if isinstance(self.min.data, int):
             app['autoscale']['min'] = self.min.data
         if isinstance(self.max.data, int):
@@ -820,6 +829,7 @@ class CreateAppForm(BaseAppForm):
         self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions()
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
+        self.autoscale.as_name.choices = [('', 'Please select region first')]
         self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
         self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
         self.environment_infos.key_name.choices = [('', 'Please select region first')]

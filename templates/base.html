@@ -266,10 +266,24 @@
           });
         }
 
+        function ghost_update_ec2_asgs(region) {
+          $('#autoscale-as_name').find('option').remove();
+          $.ajax("/web/aws/regions/" + region + "/ec2/autoscale/ids").done(function(data) {
+              // Update ASGs select input options
+              $.each(data,function(key, value) {
+                $('#autoscale-as_name').append('<option value=' + key + '>' + value + '</option>');
+              });
+              $('#autoscale-as_name').selectpicker('refresh');
+          }).fail(function() {
+              alert("Failed to retrieve EC2 AutoScaling Groups for region " + region);
+          });
+        }
+
         $('select#region').change(function() {
             var region = $(this).val();
             ghost_update_ec2_instancetypes(region);
             ghost_update_ec2_vpcs(region);
+            ghost_update_ec2_asgs(region);
             ghost_update_ec2_keys(region);
             ghost_update_ec2_amis(region);
             ghost_update_iam_profiles(region);
