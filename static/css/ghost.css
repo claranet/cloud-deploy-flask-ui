@@ -213,10 +213,12 @@ td.inline {
     margin: 1px;
     padding: 8px 16px;
 }
-#app-form #features_list td {
+#app-form #features_list td,
+#app-form #log_notifications_list td {
     padding: 0 8px;
 }
-#app-form #features_list th {
+#app-form #features_list th,
+#app-form #log_notifications_list th {
     vertical-align: middle;
 }
 
