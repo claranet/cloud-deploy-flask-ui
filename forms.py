@@ -267,7 +267,7 @@ class AutoscaleForm(Form):
         NumberRangeValidator(min=1)
     ])
 
-    current = IntegerField('Initial', validators=[
+    current = IntegerField('Desired', validators=[
         OptionalValidator()
     ])
 
@@ -516,16 +516,16 @@ class ModuleForm(Form):
 
 class BaseAppForm(Form):
     # App properties
-    name = StringField('Name', validators=[
+    name = StringField('App name', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['name']['regex']
         )
     ])
 
-    env = SelectField('Environment', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
+    env = SelectField('App environment', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
 
-    role = SelectField('Role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    role = SelectField('App role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
 
     # Notification properties
     log_notifications = FieldList(StringField('email', validators=[
