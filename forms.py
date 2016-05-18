@@ -321,7 +321,7 @@ class BuildInfosForm(Form):
         )
     ])
 
-    subnet_id = SelectField('AWS Subnet', choices=[], validators=[
+    subnet_id = SelectField('AWS Subnet', description='This subnet for building should be a public one', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
@@ -379,12 +379,12 @@ class EnvironmentInfosForm(Form):
         )
     ])
 
-    root_block_device_size = IntegerField('Size (GiB)', validators=[
+    root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ]);
 
-    root_block_device_name = StringField('Name', validators=[
+    root_block_device_name = StringField('Name', description='Empty if you want to use the default one', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
@@ -477,24 +477,24 @@ class FeatureForm(Form):
 
 
 class ModuleForm(Form):
-    module_name = StringField('Name', validators=[
+    module_name = StringField('Name', description='Module name: should not include special chars', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['modules']['schema']['schema']['name']['regex']
         )
     ])
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
-    module_path = StringField('Path', validators=[
+    module_path = StringField('Path', description='Destination path to deploy to', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['modules']['schema']['schema']['path']['regex']
         )
     ])
-    module_uid = IntegerField('Uid', validators=[
+    module_uid = IntegerField('Uid', description='File Uid (User), by default it uses the Ghost user', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
-    module_gid = IntegerField('Gid', validators=[
+    module_gid = IntegerField('Gid', description='File Gid (Group), by default it uses the Ghost group', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
@@ -537,7 +537,7 @@ class BaseAppForm(Form):
     role = SelectField('App role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
 
     # Notification properties
-    log_notifications = FieldList(StringField('email', validators=[
+    log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['log_notifications']['schema']['regex']
