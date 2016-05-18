@@ -199,11 +199,13 @@ td.inline {
     padding: 12px;
     margin: 0 0 -45px 0;
 }
+#app-form .form-group.script-panel,
 #app-form .form-group.select-panel {
     padding-right: 40px;
     margin-top: 10px;
 }
-#app-form .form-group.select-panel .help-block {
+#app-form .form-group.select-panel .help-block,
+#app-form .form-group.script-panel .help-block {
     display: block;
 }
 #app-form th {
