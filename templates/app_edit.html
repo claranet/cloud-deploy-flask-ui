@@ -107,7 +107,7 @@
                     {{ wtf.form_field(form.build_infos.form.source_ami, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#build_infos-source_ami" data-call="ghost_update_ec2_amis($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
-                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#build_infos-subnet_id" data-call="ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val());"><span class="glyphicon glyphicon-refresh"></span></button>
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#build_infos-subnet_id" data-call="ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val(), true);"><span class="glyphicon glyphicon-refresh"></span></button>
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@
                 <a name="sgs" class="anchor">&nbsp;</a>
                 {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group', '', '', "ghost_update_vpc_sgs($('select#region').val(), $('select#vpc_id').val());") }}
                 <a name="subnets" class="anchor">&nbsp;</a>
-                {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID', '', '', "ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val());") }}
+                {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID', '', '', "ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val(), false);") }}
                 <a name="volumes" class="anchor">&nbsp;</a>
                 {{ ghost_fieldlist(form.environment_infos.form.optional_volumes, 'optional_volumes', 'Optional Volumes', 'optional_volume', 'Optional Volume') }}
 

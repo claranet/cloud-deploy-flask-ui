@@ -233,19 +233,28 @@
           });
         }
 
-        function ghost_update_vpc_subnets(region, vpc_id) {
-          $('[id^=environment_infos-subnet]').find('option').remove();
-          $('#build_infos-subnet_id').find('option').remove();
+        function ghost_update_vpc_subnets(region, vpc_id, for_build) {
+          if (!for_build) {
+            $('[id^=environment_infos-subnet]').find('option').remove();
+          } else {
+            $('#build_infos-subnet_id').find('option').remove();
+          }
           $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/subnet/ids").done(function(data) {
               // Update Subnets select input options
               $.each(data, function(key, value) {
+                if (for_build) {
                   $('#build_infos-subnet_id').append('<option value=' + key + '>' + value + '</option>');
+                } else {
                   $.each($('[id^=environment_infos-subnet]'), function(index) {
                     $(this).append('<option value=' + key + '>' + value + '</option>');
                   });
+                }
               });
-              $('[id^=environment_infos-subnet]').selectpicker('refresh');
-              $('#build_infos-subnet_id').selectpicker('refresh');
+              if (!for_build) {
+                $('[id^=environment_infos-subnet]').selectpicker('refresh');
+              } else {
+                $('#build_infos-subnet_id').selectpicker('refresh');
+              }
           }).fail(function() {
               alert("Failed to retrieve Subnet for region " + region + " and VPC id "  + vpc_id);
           });
@@ -277,7 +286,8 @@
         $('select#vpc_id').change(function() {
             var vpcid = $(this).val();
             ghost_update_vpc_sgs($('select#region').val(), vpcid);
-            ghost_update_vpc_subnets($('select#region').val(), vpcid);
+            ghost_update_vpc_subnets($('select#region').val(), vpcid, true);
+            ghost_update_vpc_subnets($('select#region').val(), vpcid, false);
         });
 
         function ghost_update_command_deploy_revision(module) {
