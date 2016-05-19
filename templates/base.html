@@ -407,7 +407,7 @@
 
 {% endblock %}
 
-{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='') -%}
+{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='', refresh_function='') -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
         <th scope="row" class="col-md-2">
             <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
@@ -420,6 +420,9 @@
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+            {% elif entry.type == 'SelectField' %}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
             {% else %}
                 {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
             {% endif %}
@@ -443,7 +446,7 @@
 </ul>
 {%- endmacro %}
 
-{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='') -%}
+{% macro ghost_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='', refresh_function='') -%}
     <div class="panel panel-default">
         <div class="panel-heading" style="counter-reset: group_entry;">
             {{ group_label }}
@@ -455,7 +458,7 @@
         <table class="table" id="{{ group_id_prefix }}_list">
             <tbody>
             {% for entry in fieldlist %}
-                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder) }}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
             {% endfor %}
             </tbody>
         </table>
