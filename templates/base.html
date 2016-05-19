@@ -430,7 +430,7 @@
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-            {% elif entry.type == 'SelectField' %}
+            {% elif entry.type == 'SelectField' and refresh_function %}
                 {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
                 <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
             {% else %}
