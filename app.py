@@ -84,7 +84,7 @@ except:
 try:
     CURRENT_REVISION = dict(
         current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD').strip(),
-        current_revision_date=git('log', '-1', '--format=%cD').strip(),
+        current_revision_date=git('log', '-1', '--format=%cD', _tty_out=False).strip(),
         current_revision_name=CURRENT_REVISION_NAME.strip()
     )
 except:
