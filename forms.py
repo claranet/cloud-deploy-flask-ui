@@ -249,8 +249,8 @@ def get_aws_ec2_instance_types(region):
 class OptionalVolumeForm(Form):
     device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]', validators=[])
     volume_type = SelectField('Volume Type', description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>', validators=[], choices=get_ghost_optional_volumes())
-    volume_size = IntegerField('Volume Size', description='In Go', validators=[OptionalValidator()])
-    iops = IntegerField('IOPS', description='For information, 1To volume size is 3000 IOPS in GP2 type', validators=[OptionalValidator()])
+    volume_size = IntegerField('Volume Size', description='In GiB', validators=[OptionalValidator()])
+    iops = IntegerField('IOPS', description='For information, 1TiB volume size is 3000 IOPS in GP2 type', validators=[OptionalValidator()])
 
     # Disable CSRF in optional_volume forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -314,7 +314,7 @@ class BuildInfosForm(Form):
         )
     ], default='admin')
 
-    source_ami = SelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisionning', choices=[], validators=[
+    source_ami = SelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisioning', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
@@ -365,7 +365,7 @@ class EnvironmentInfosForm(Form):
         )
     ]), min_entries=1)
 
-    instance_profile = SelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policies', validators=[
+    instance_profile = SelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policy on the Ghost bucket', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
@@ -490,11 +490,11 @@ class ModuleForm(Form):
             ghost_app_schema['modules']['schema']['schema']['path']['regex']
         )
     ])
-    module_uid = IntegerField('Uid', description='File Uid (User), by default it uses the Ghost user', validators=[
+    module_uid = IntegerField('UID', description='File UID (User), by default it uses the ID of Ghost user on the Ghost instance', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
-    module_gid = IntegerField('Gid', description='File Gid (Group), by default it uses the Ghost group', validators=[
+    module_gid = IntegerField('GID', description='File GID (Group), by default it uses the ID of Ghost group on the Ghost instance', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
@@ -525,16 +525,16 @@ class ModuleForm(Form):
 
 class BaseAppForm(Form):
     # App properties
-    name = StringField('App name', validators=[
+    name = StringField('App name', description='This mandatory field will not be editable after app creation', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['name']['regex']
         )
     ])
 
-    env = SelectField('App environment', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
+    env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
 
-    role = SelectField('App role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
 
     # Notification properties
     log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
