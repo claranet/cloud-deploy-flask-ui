@@ -125,6 +125,15 @@ def get_aws_ec2_regions():
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
     
+def get_aws_as_groups(region):
+    asgs = []
+    try:
+        conn_as = boto.ec2.autoscale.connect_to_region(region)
+        asgs = conn_as.get_all_groups()
+    except:
+        traceback.print_exc()
+    return [(asg.name, asg.name + ' (' + asg.launch_config_name + ')') for asg in asgs]
+
 def get_ghost_app_as_group(as_group_name, region):
     try:
         conn_as = boto.ec2.autoscale.connect_to_region(region)
@@ -251,10 +260,10 @@ def get_aws_ec2_instance_types(region):
 
 
 class OptionalVolumeForm(Form):
-    device_name = StringField('DeviceName', validators=[])
-    volume_type = SelectField('VolumeType', validators=[], choices=get_ghost_optional_volumes())
-    volume_size = IntegerField('VolumeSize', validators=[OptionalValidator()])
-    iops = IntegerField('IOPS', validators=[OptionalValidator()])
+    device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]', validators=[])
+    volume_type = SelectField('Volume Type', description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>', validators=[], choices=get_ghost_optional_volumes())
+    volume_size = IntegerField('Volume Size', description='In GiB', validators=[OptionalValidator()])
+    iops = IntegerField('IOPS', description='For information, 1TiB volume size is 3000 IOPS in GP2 type', validators=[OptionalValidator()])
 
     # Disable CSRF in optional_volume forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -268,19 +277,19 @@ class OptionalVolumeForm(Form):
 
 # Forms
 class AutoscaleForm(Form):
-    name = StringField('Name', validators=[])
+    as_name = SelectField('Name', choices=[], validators=[])
 
-    min = IntegerField('Min', validators=[
+    min = IntegerField('Min', description='The minimum size of the Auto Scaling group', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
 
-    max = IntegerField('Max', validators=[
+    max = IntegerField('Max', description='The maximum size of the Auto Scaling group', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=1)
     ])
 
-    current = IntegerField('Initial', validators=[
+    current = IntegerField('Desired', description='The number of instances that should be running in the Auto Scaling group', validators=[
         OptionalValidator()
     ])
 
@@ -294,14 +303,14 @@ class AutoscaleForm(Form):
         self.min.data = autoscale.get('min', '')
         self.max.data = autoscale.get('max', '')
         self.current.data = autoscale.get('current', '')
-        self.name.data = autoscale.get('name', '')
+        self.as_name.data = autoscale.get('name', '')
 
     def map_to_app(self, app):
         """
         Map autoscale data from form to app
         """
         app['autoscale'] = {}
-        app['autoscale']['name'] = self.name.data
+        app['autoscale']['name'] = self.as_name.data
         if isinstance(self.min.data, int):
             app['autoscale']['min'] = self.min.data
         if isinstance(self.max.data, int):
@@ -311,21 +320,21 @@ class AutoscaleForm(Form):
 
 
 class BuildInfosForm(Form):
-    ssh_username = StringField('SSH Username', validators=[
+    ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Morea Debian AMI', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
         )
     ], default='admin')
 
-    source_ami = SelectField('Source AWS AMI', choices=[], validators=[
+    source_ami = SelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisioning', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
         )
     ])
 
-    subnet_id = SelectField('AWS Subnet', choices=[], validators=[
+    subnet_id = SelectField('AWS Subnet', description='This subnet for building should be a public one', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
@@ -369,26 +378,26 @@ class EnvironmentInfosForm(Form):
         )
     ]), min_entries=1)
 
-    instance_profile = SelectField('Instance Profile', validators=[
+    instance_profile = SelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policy on the Ghost bucket', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
         )
     ])
 
-    key_name = SelectField('Key Name', validators=[
+    key_name = SelectField('Key Name', description='Ghost should have the associated private key to deploy on instances', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['key_name']['regex']
         )
     ])
 
-    root_block_device_size = IntegerField('Size (GiB)', validators=[
+    root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ]);
 
-    root_block_device_name = StringField('Name', validators=[
+    root_block_device_name = StringField('Name', description='Empty if you want to use the default one', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
@@ -444,8 +453,8 @@ class ResourceForm(Form):
         pass
 
 class LifecycleHooksForm(Form):
-    pre_bootstrap = TextAreaField('Pre Bootstrap', validators=[])
-    post_bootstrap = TextAreaField('Post Bootstrap', validators=[])
+    pre_bootstrap = TextAreaField('Pre Bootstrap', description='Script executed at bootstrap before modules deploy', validators=[])
+    post_bootstrap = TextAreaField('Post Bootstrap', description='Script executed at bootstrap after modules deploy', validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -481,24 +490,24 @@ class FeatureForm(Form):
 
 
 class ModuleForm(Form):
-    module_name = StringField('Name', validators=[
+    module_name = StringField('Name', description='Module name: should not include special chars', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['modules']['schema']['schema']['name']['regex']
         )
     ])
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
-    module_path = StringField('Path', validators=[
+    module_path = StringField('Path', description='Destination path to deploy to', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['modules']['schema']['schema']['path']['regex']
         )
     ])
-    module_uid = IntegerField('Uid', validators=[
+    module_uid = IntegerField('UID', description='File UID (User), by default it uses the ID of Ghost user on the Ghost instance', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
-    module_gid = IntegerField('Gid', validators=[
+    module_gid = IntegerField('GID', description='File GID (Group), by default it uses the ID of Ghost group on the Ghost instance', validators=[
         OptionalValidator(),
         NumberRangeValidator(min=0)
     ])
@@ -529,19 +538,19 @@ class ModuleForm(Form):
 
 class BaseAppForm(Form):
     # App properties
-    name = StringField('Name', validators=[
+    name = StringField('App name', description='This mandatory field will not be editable after app creation', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['name']['regex']
         )
     ])
 
-    env = SelectField('Environment', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
+    env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
 
-    role = SelectField('Role', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
 
     # Notification properties
-    log_notifications = FieldList(StringField('email', validators=[
+    log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['log_notifications']['schema']['regex']
@@ -833,6 +842,7 @@ class CreateAppForm(BaseAppForm):
         self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions()
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
+        self.autoscale.as_name.choices = [('', 'Please select region first')]
         self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
         self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
         self.environment_infos.key_name.choices = [('', 'Please select region first')]

@@ -64,17 +64,18 @@
         <a name="properties" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Main properties
+                <strong>Main app properties</strong>
+                <span class="subtitle"> - global informations</span>
             </div>
             <div class="panel-body">
                 <div class="row">
                     {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
+                    {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
+                    {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.region, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#region" data-call="void(0);"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#instance_type" data-call="ghost_update_ec2_instancetypes($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
-                    {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
-                    {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.vpc_id, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#vpc_id" data-call="ghost_update_ec2_vpcs($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                 </div>
@@ -84,11 +85,12 @@
         <a name="autoscale" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Autoscale
+                <strong>Autoscale</strong>
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {{ wtf.form_field(form.autoscale.form.name, form_type='horizontal', placeholder='Name') }}
+                    {{ wtf.form_field(form.autoscale.form.as_name, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#autoscale-as_name" data-call="ghost_update_ec2_asgs($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.autoscale.form.min, form_type='horizontal', placeholder='1') }}
                     {{ wtf.form_field(form.autoscale.form.current, form_type='horizontal', placeholder='2') }}
                     {{ wtf.form_field(form.autoscale.form.max, form_type='horizontal', placeholder='3') }}
@@ -99,7 +101,8 @@
         <a name="build-infos" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Build Infos
+                <strong>Build Infos</strong>
+                <span class="subtitle"> - options to bake instance Images</span>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -115,13 +118,14 @@
         <a name="env-infos" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Environment Infos
+                <strong>Environment Infos</strong>
+                <span class="subtitle"> - all needed to run instances</span>
             </div>
             <div class="panel-body">
                 <a name="instance" class="anchor">&nbsp;</a>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Instance
+                        Instance options
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -162,7 +166,8 @@
         <a name="lifecycle-hooks" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Lifecycle hooks
+                <strong>Lifecycle hooks</strong>
+                <span class="subtitle"> - instance bootstrap scripts</span>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -195,6 +200,7 @@
                 lineWrapping: true,
                 mode: 'shell',
             });
+            $(this).parent().parent().addClass('script-panel');
         });
         $('.quick-submit').click(function (evt) {
             evt.preventDefault();

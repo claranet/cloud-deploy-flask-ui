@@ -199,8 +199,33 @@ td.inline {
     padding: 12px;
     margin: 0 0 -45px 0;
 }
+#app-form .form-group.script-panel,
 #app-form .form-group.select-panel {
     padding-right: 40px;
+    margin-top: 10px;
+}
+#app-form .form-group.select-panel .help-block,
+#app-form .form-group.script-panel .help-block {
+    display: block;
+}
+#app-form th {
+    font-weight: normal;
+    padding: 8px 14px;
+}
+#app-form .panel-heading span.subtitle {
+    font-size: 12px;
+}
+#app-form .btn.add-entry {
+    margin: 1px;
+    padding: 8px 16px;
+}
+#app-form #features_list td,
+#app-form #log_notifications_list td {
+    padding: 0 8px;
+}
+#app-form #features_list th,
+#app-form #log_notifications_list th {
+    vertical-align: middle;
 }
 
 /*AppList*/
