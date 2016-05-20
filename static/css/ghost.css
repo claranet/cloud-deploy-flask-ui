@@ -393,11 +393,74 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     clear: both;
     font-family: monospace;
     color: white;
-    background: #222222;
+    background: #222;
     height: 375px;
     overflow: scroll;
     position: relative;
     resize: both;
+    padding: 0;
+    counter-reset: line;
+}
+.jobview #log samp {
+    display: block;
+    padding-left: 20px;
+}
+.jobview #log em:before
+,.jobview #log samp:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  color: #666;
+  width: 42px;
+}
+.jobview #log .panel {
+    margin: 0
+}
+.jobview #log .panel-body {
+    padding: 0 20px 0 0;
+}
+.jobview #log em {
+    display: block;
+    padding: 5px 10px 5px 20px;
+    font-style: normal;
+    color: #f1f1f1;
+    border-radius: 0;
+    background: #333;
+}
+.jobview #log .panel.expandable em {
+    cursor: pointer;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Im0wLjUsMS41LDQuNSw3LDQuNS03eiIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjAuNSIgZmlsbD0iIzY2NiIvPgo8L3N2Zz4KCg==) 5px 10px no-repeat #2b2b2b;
+}
+.jobview #log .panel.expandable.closed em {
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Ik0yLDksOSw1LDIsMXoiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIwLjUiIGZpbGw9IiM2NjYiLz4KPC9zdmc+Cgo=) 5px 10px no-repeat #333;
+}
+.jobview #log .panel.closed .panel-body {
+/*    height: 0;
+    visibility: hidden;*/
+    display: none;
+}
+.jobview #log .info em {
+    color: #FFFFB6;
+}
+.jobview #log .ok em {
+    color: #aed581;
+}
+.jobview #log .failed em {
+    color: #f44336;
+}
+.jobview #log .panel-body {
+    color: #f1f1f1;
+    background: #222;
+}
+.jobview #log .timeinterval {
+    color: #aed581;
+    float: right;
+    background-color: #666;
+    border-radius: 6px;
+    padding: 0 4px;
+}
+.jobview #log .timeinterval i {
+    margin-left: 5px;
 }
 .jobview .logactions {
     padding-bottom: 10px;
@@ -409,10 +472,13 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     margin: 0;
     height: 30px;
 }
+.jobview #logCollapseAll {
+    font-size: 1.5em;
+}
 .log-panel.fullscreen {
     position: fixed;
-    bottom: 0px;
-    top: 140px;
+    bottom: 30px;
+    top: 130px;
     left: 10px;
     right: 10px;
 }

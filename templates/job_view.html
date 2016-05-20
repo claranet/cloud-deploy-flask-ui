@@ -86,10 +86,14 @@
                 <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
                 <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
                 <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
+                <a href="#" id="logCollapseAll"><button class="btn btn-default btn-xs" title="Collapse log details"><span class="fa fa-compress"></span></button></a>
                 <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode"><span class="glyphicon glyphicon-new-window"></span></button></a>
             </p>
         </div>
-        <div id="log" class="panel-body"></div>
+        <div id="log" class="panel-body"><p style="text-align: center; padding: 20px;">
+            Logs loading...
+            <img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading...">
+        </p></div>
     </div>
 {% endblock %}
 
@@ -124,6 +128,18 @@
         var textNoScrolling =  'AutoScroll disabled';
         var $log = $('#log');
 
+        $('#logCollapseAll').click(function(evt) {
+            evt.preventDefault();
+            if ($(this).hasClass('active')) {
+                $log.find('.expandable').removeClass('closed');
+                $(this).removeClass('active');
+                $(this).find('button').attr('title', 'Collapse log details');
+            } else {
+                $log.find('.expandable').addClass('closed');
+                $(this).addClass('active');
+                $(this).find('button').attr('title', 'Expand log details');
+            }
+        });
         $('#logScrollTop').click(function(evt) {
             evt.preventDefault();
             scrollActivated = false;
@@ -170,17 +186,69 @@
 
         var socket = io.connect({transports: ['websocket']});
         var last_pos = 0;
+        var previous_timespan = false;
         socket.on('connect', function() {
             socket.emit('job_logging', {log_id: "{{ job['log_id'] }}", last_pos: last_pos });
         });
         socket.on('job', function(data) {
             last_pos = data['last_pos'];
-            $log.append(data['html']);
+            if (last_pos == 0) {
+                last_cmd_date = false;
+            } else {
+                last_cmd_date = new Date($log.find('span.command-title').last().text().substring(0, 20));
+            }
+            var content = $(data['html']);
+            content.each(function(ite) {
+                // Content Expandable or not
+                hasContent = $(this).find('samp').length > 0;
+                if (hasContent) {
+                    $(this).addClass('expandable');
+                }
+
+                cmd = $(this).find('span.command-title').text();
+
+                // Color Style
+                if (cmd.indexOf(': CMD:') == -1) {
+                    $(this).addClass('info');
+                }
+                if (cmd.indexOf(': Deployment OK:') > -1
+                 || cmd.indexOf(': Build image OK:') > -1) {
+                    $(this).addClass('ok');
+                }
+                if (cmd.indexOf(': Deployment Failed:') > -1
+                 || cmd.indexOf('ERROR: ') > -1) {
+                    $(this).addClass('failed');
+                }
+
+                // Calculate time interval
+                cur_cmd_date = new Date(cmd.substring(0, 20));
+                if (ite < content.length && last_cmd_date) {
+                    timeinterval = ((cur_cmd_date - last_cmd_date) / 1000) + 's';
+                }
+                last_cmd_date = cur_cmd_date;
+                if (previous_timespan) {
+                    previous_timespan.prepend(timeinterval);
+                }
+                previous_timespan = $(this).find('span.timeinterval');
+            });
+            if (last_pos == 0) {
+                $log.html(content);
+            } else {
+                $log.append(content);
+            }
             if (scrollActivated) {
                 $log.scrollTop($log.get(0).scrollHeight);
             }
         });
 
+        $log.on('click', '.expandable em', function(evt) {
+            if ($(this).parent().hasClass('closed')) {
+                //$log.find('div.panel.expandable').addClass('closed');
+                $(this).parent().removeClass('closed');
+            } else {
+                $(this).parent().addClass('closed');
+            }
+        });
 
     })();
     </script>
