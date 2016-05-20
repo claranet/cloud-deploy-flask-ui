@@ -79,7 +79,10 @@ def env_list():
 try:
     CURRENT_REVISION_NAME=git('symbolic-ref', '-q', '--short', 'HEAD')
 except:
-    CURRENT_REVISION_NAME=git('describe', '--tags', '--exact-match')
+    try:
+        CURRENT_REVISION_NAME=git('describe', '--tags', '--exact-match')
+    except:
+        CURRENT_REVISION_NAME='16.05'
 
 try:
     CURRENT_REVISION = dict(
@@ -89,9 +92,9 @@ try:
     )
 except:
     CURRENT_REVISION = dict(
-        current_revision='s160407',
-        current_revision_date='Mon, 4 Apr 2016 15:12:38 +0200',
-        current_revision_name='16.04'
+        current_revision='s160520',
+        current_revision_date='Tue, 20 May 2016 10:12:16 +0200',
+        current_revision_name='16.05'
     )
 
 @app.context_processor
