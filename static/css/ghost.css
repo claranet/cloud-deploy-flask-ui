@@ -388,6 +388,11 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 #as-elb a.btn-info.btn-colored,    .hl-info    {border: 1px solid #03a9f4}
 #as-elb a.btn-warning.btn-colored, .hl-warning {border: 1px solid #ff5722}
 
+/*Blue Green Elements*/
+.tablelist tr.app-row .btn.app-bluegreen-btn {
+    background: linear-gradient(to right bottom, #03a9f4 50%, #4caf50 50%);
+}
+
 /*Generic List*/
 .top-right {
     float: right;

@@ -677,6 +677,31 @@ class ModuleForm(Form):
         if 'after_all_deploy' in module:
             self.module_after_all_deploy.data = module['after_all_deploy']
 
+class BluegreenForm(Form):
+    alter_ego_id = HiddenField(validators=[])
+    color = HiddenField(validators=[])
+    enable_blue_green = BooleanField('Enable Blue/Green deployment', validators=[])
+
+    # Disable CSRF in module forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(BluegreenForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, blue_green):
+        """
+        Map app data to blue green form
+        """
+        self.alter_ego_id.data = blue_green.get('alter_ego_id', '')
+        self.color.data = blue_green.get('color', '')
+        # Map if blue/green is enabled
+        self.enable_blue_green.data = blue_green.get('enable_blue_green', blue_green.get('alter_ego_id', None) and blue_green.get('color', None))
+
+    def map_to_app(self, app):
+        """
+        Map blue green data form to app
+        """
+        if isinstance(self.enable_blue_green.data, bool) and self.enable_blue_green.data:
+            app['blue_green'] = {}
+            app['blue_green']['enable_blue_green'] = True
 
 class BaseAppForm(Form):
     # App properties
@@ -723,6 +748,9 @@ class BaseAppForm(Form):
             ghost_app_schema['log_notifications']['schema']['regex']
         )
     ]), min_entries=1)
+
+    # Blue Green hidden properties
+    blue_green = FormField(BluegreenForm)
 
     # Autoscale properties
     autoscale = FormField(AutoscaleForm)
@@ -783,6 +811,7 @@ class BaseAppForm(Form):
         app['vpc_id'] = self.vpc_id.data
 
         self.map_to_app_log_notifications(app)
+        self.map_to_app_blue_green(app)
         self.map_to_app_autoscale(app)
         self.map_to_app_safedeployment(app)
         self.map_to_app_build_infos(app)
@@ -814,6 +843,12 @@ class BaseAppForm(Form):
             if form_log_notification.data:
                 log_notification = form_log_notification.data
                 app['log_notifications'].append(log_notification)
+
+    def map_to_app_blue_green(self, app):
+        """
+        Maps blue green data from form to app
+        """
+        self.blue_green.form.map_to_app(app)
 
     def map_to_app_autoscale(self, app):
         """
@@ -964,6 +999,7 @@ class BaseAppForm(Form):
         self.vpc_id.data = app.get('vpc_id', '')
 
         self.map_from_app_notifications(app)
+        self.map_from_app_bluegreen(app)
         self.map_from_app_autoscale(app)
         self.map_from_app_safedeployment(app)
         self.map_from_app_build_infos(app)
@@ -973,6 +1009,12 @@ class BaseAppForm(Form):
         self.map_from_app_modules(app)
 
         # TODO: handle resources app data
+
+    def map_from_app_bluegreen(self, app):
+        """
+        Map bluegreen data from app to form
+        """
+        return self.blue_green.form.map_from_app(app)
 
     def map_from_app_autoscale(self, app):
         """
