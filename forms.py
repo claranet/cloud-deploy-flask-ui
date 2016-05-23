@@ -682,7 +682,6 @@ class BaseAppForm(Form):
     #Leave the following line commented to remember for further 
     #dev to manage other cloud providers than aws
     #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
-    provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
@@ -757,7 +756,7 @@ class BaseAppForm(Form):
         """
         if self.name:
             app['name'] = self.name.data
-        app['provider'] = self.provider.data
+        #app['provider'] = self.provider.data
         if self.assumed_account_id:
             app['assumed_account_id'] = self.assumed_account_id.data
         if self.assumed_role_name:
@@ -932,7 +931,7 @@ class BaseAppForm(Form):
 
         # Populate form with app data
         self.name.data = app.get('name', '')
-        self.provider.data = app.get('provider', DEFAULT_PROVIDER)
+        #self.provider.data = app.get('provider', DEFAULT_PROVIDER)
         self.assumed_account_id.data = app.get('assumed_account_id', '')
         self.assumed_role_name.data = app.get('assumed_role_name', '')
         self.assumed_region_name.data = app.get('assumed_region_name', '')
@@ -1027,7 +1026,7 @@ class CreateAppForm(BaseAppForm):
         #Leave the following line commented to remember for further 
         #dev to manage other cloud providers than aws
         #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
-        self.provider.data = DEFAULT_PROVIDER
+        #self.provider.data = DEFAULT_PROVIDER
         if self.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(
                                                             self.assumed_account_id.data,
@@ -1035,8 +1034,10 @@ class CreateAppForm(BaseAppForm):
                                                             self.assumed_region_name.data
                                                          )
         else:
-            aws_connection_data = {}
-        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection_data)
+           aws_connection_data = {}
+        #provider is intended to be an application attribute
+        #self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection_data)
+        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(DEFAULT_PROVIDER, **aws_connection_data)
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.autoscale.as_name.choices = [('', 'Please select region first')]
@@ -1058,7 +1059,7 @@ class EditAppForm(BaseAppForm):
         super(EditAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists, check what to refresh exactly in this new version,
-        self.provider.choices = get_ghost_app_providers()
+        #self.provider.choices = get_ghost_app_providers()
 
 
     def map_from_app(self, app):

@@ -216,8 +216,12 @@ def web_app_create():
     if clone_from_app_id:
         clone_from_app = get_ghost_app(clone_from_app_id)
 
+    try:
+        cloud_provider = form.provider.data
+    except:
+        cloud_provider = DEFAULT_PROVIDER
     # Dynamic selections update
-    if form.is_submitted() and form.provider.data:
+    if form.is_submitted() and cloud_provider:
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(
                                                             form.assumed_account_id.data,
@@ -231,16 +235,16 @@ def web_app_create():
             aws_connection_data = {}
         #form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-        form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
-        form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
-        form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
-        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
-        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
-        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data, **aws_connection_data)
+        form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
+        form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
+        form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
+        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
         for subnet in form.environment_infos.subnet_ids:
-            subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+            subnet.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+            sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -286,7 +290,11 @@ def web_app_edit(app_id):
     form = EditAppForm()
 
     # Dynamic selections update
-    if form.is_submitted() and form.provider.data:
+    try:
+        cloud_provider = form.provider.data
+    except:
+        cloud_provider = DEFAULT_PROVIDER
+    if form.is_submitted() and cloud_provider:
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
         else:
@@ -294,18 +302,18 @@ def web_app_edit(app_id):
             form.assumed_role_name.data = ""
             form.assumed_region_name.data = ""
             aws_connection_data = {}
-        form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
+        form.region.choices = get_aws_ec2_regions(cloud_provider, **aws_connection_data)
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-        form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
-        form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
-        form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
-        form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
-        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
-        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data, **aws_connection_data)
+        form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
+        form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
+        form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
+        form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
+        form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
+        form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
         for subnet in form.environment_infos.subnet_ids:
-            subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+            subnet.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         for sg in  form.environment_infos.security_groups:
-            sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+            sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -338,18 +346,18 @@ def web_app_edit(app_id):
     form.role.choices = [(form.role.data, form.role.data)]
 
     aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
-    form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
+    form.region.choices = get_aws_ec2_regions(cloud_provider, **aws_connection_data)
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
-    form.vpc_id.choices = get_aws_vpc_ids(form.provider.data, form.region.data, **aws_connection_data)
-    form.autoscale.as_name.choices = get_aws_as_groups(form.provider.data, form.region.data, **aws_connection_data)
-    form.build_infos.source_ami.choices = get_aws_ami_ids(form.provider.data, form.region.data, **aws_connection_data)
-    form.build_infos.subnet_id.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
-    form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(form.provider.data, form.region.data, **aws_connection_data)
-    form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(form.provider.data, form.region.data, **aws_connection_data)
+    form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
+    form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
+    form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
+    form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
+    form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
+    form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
     for subnet in form.environment_infos.subnet_ids:
-        subnet.choices = get_aws_subnet_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+        subnet.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
     for sg in  form.environment_infos.security_groups:
-        sg.choices = get_aws_sg_ids(form.provider.data, form.region.data, form.vpc_id.data, **aws_connection_data)
+        sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
     account_id, role_name= get_aws_ghost_iam_info(DEFAULT_PROVIDER)
