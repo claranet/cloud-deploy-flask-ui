@@ -75,7 +75,7 @@
 </div>
 <footer class="site-footer">
   <span class="right"><a href="https://www.morea.fr" target="_blank"><img height="10" alt="Logo Morea" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a></span>
-  <span class="left" title="{{current_revision_date}}">GHOST v.{{current_revision_name}}</span>
+  <span class="left" title="{{current_revision_date}}">GHOST - {{current_revision_name}}</span>
 </footer>
 {% endblock %}
 
@@ -390,12 +390,14 @@
                 $('.sidebar').addClass('navbar-fixed-top');
                 $('.app-panel').addClass('fixed-top-menu');
                 $('#header').addClass('no-shadow');
+                $('.site-footer').addClass('fixed');
             } else {
                 // relative
                 $('.sidebar').removeClass('navbar-fixed-top');
                 $('.app-panel').removeClass('fixed-top-menu');
                 $('.sidebar').next().css('margin-top', '0');
                 $('#header').removeClass('no-shadow');
+                $('.site-footer').removeClass('fixed');
             }
             if ($("#left-menu").length > 0) {
                 var headingHeight = $('.sidebar').next().offset().top;
