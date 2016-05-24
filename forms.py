@@ -132,7 +132,7 @@ def get_aws_as_groups(region):
         asgs = conn_as.get_all_groups()
     except:
         traceback.print_exc()
-    return [(asg.name, asg.name + ' (' + asg.launch_config_name + ')') for asg in asgs]
+    return [('', '-- No Autoscale for this app --')]+[(asg.name, asg.name + ' (' + asg.launch_config_name + ')') for asg in asgs]
 
 def get_ghost_app_as_group(as_group_name, region):
     try:
