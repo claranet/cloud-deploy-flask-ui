@@ -314,13 +314,18 @@
         }
 
         $('input[type="checkbox"][id^="modules"]').change(function() {
-            if ($(this).is(':checked')) {
+            if ($(this).prop('checked')) {
                 var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"))
                 var name_id = module_prefix + '-name'
                 var revision_id = module_prefix + '-rev'
                 var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value')
                 ghost_update_command_deploy_revision(module_name, revision_id)
             }
+        });
+        
+        $('#deploy_all_modules').change(function () {
+            console.log($(this).prop('checked'));
+            console.log($('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change"));
         });
 
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
@@ -519,6 +524,11 @@
     <div class="form-group">
         <label class="control-label col-lg-2">{{ group_label }}</label>
             <div class="col-lg-10">
+                <div class="checkbox">
+                  <label>
+                      <input id="deploy_all_modules" type="checkbox"> Deploy All
+                  </label>
+              </div>  
             <table class="table" id="{{ group_id_prefix }}_list">
                 <tbody>
                 {% for entry in fieldlist %}
