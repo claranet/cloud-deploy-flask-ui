@@ -15,7 +15,7 @@
         {{ wtf.form_field(form.command, form_type='horizontal') }}
 
         <div class="command_options">
-            <div class="wrap module_name">{{ ghost_command_fieldlist(form.modules, 'modules', 'Modules', 'module', 'inline') }}</div>
+            <div class="wrap modules">{{ ghost_command_fieldlist(form.modules, 'modules', 'Modules', 'module', 'inline') }}</div>
             <div class="wrap deploy_id">{{ wtf.form_field(form.deploy_id, form_type='horizontal') }}</div>
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
@@ -33,8 +33,7 @@
         function show_options_fields()  {
             $('.wrap').hide();
             if ($('#command').val() == 'deploy') {
-                $('.wrap.module_name').show();
-                $('.wrap.module_rev').show();
+                $('.wrap.modules').show();
                 $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.safe_deployment').show();
             } else if ($('#command').val() == 'redeploy') {

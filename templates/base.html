@@ -304,17 +304,23 @@
             ghost_update_vpc_subnets($('select#region').val(), vpcid, false);
         });
 
-        function ghost_update_command_deploy_revision(module) {
-          $.ajax("command/module/" + module).done(function(data) {
+        function ghost_update_command_deploy_revision(module_name, revision_id) {
+          $.ajax("command/module/" + module_name).done(function(data) {
               // Update revision input default
-              $('#module_rev').val(data);
+              $('#' + revision_id).val(data);
           }).fail(function() {
-              alert("Failed to retrieve last deployed revision for module " + module);
+              alert("Failed to retrieve last deployed revision for module " + module_name);
           });
         }
 
-        $('select#module_name').change(function() {
-            ghost_update_command_deploy_revision($(this).val())
+        $('input[type="checkbox"][id^="modules"]').change(function() {
+            if ($(this).is(':checked')) {
+                var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"))
+                var name_id = module_prefix + '-name'
+                var revision_id = module_prefix + '-rev'
+                var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value')
+                ghost_update_command_deploy_revision(module_name, revision_id)
+            }
         });
 
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
@@ -467,7 +473,7 @@
         <th scope="row">{{ entry_label }}</th>
         <td class="{{ form_type }}">
             {% if entry.type == 'FormField' %}
-                {{ entry.hidden_tag() }}
+                            {{ entry.hidden_tag() }}
                 {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
                     {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
                 {% endfor %}
