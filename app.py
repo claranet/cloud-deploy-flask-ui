@@ -19,7 +19,7 @@ from ghost_client import headers, test_ghost_auth
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
-from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group
+from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
 
 # Web UI App
 app = Flask(__name__)
@@ -309,6 +309,12 @@ def web_app_module_last_revision(app_id, module):
     if deployments and len(deployments) > 0:
         last_revision = deployments[0].get('revision', '')
     return last_revision
+
+@app.route('/web/apps/<app_id>/command/deploy/safe_possibilities', methods=['GET'])
+def web_app_get_safe_deployment_possibilities(app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+    return jsonify(get_safe_deployment_possibilities(app))
 
 @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
 def web_app_delete(app_id):

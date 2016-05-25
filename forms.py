@@ -257,6 +257,17 @@ def get_aws_ec2_instance_types(region):
                                                                        disk=instance_type.disk)
          ) for instance_type in types]
 
+def get_safe_deployment_possibilities(app):
+    """ Return the list of items needed by the interface for
+        safe_deployment_possibilities select
+
+        :param app: Ghost app object
+        :return array of pair
+    """
+    hosts_list = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+    safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
+    return [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
+
 def safe_deployment_possibilities(hosts_list):
     """ Return a dict with split types as key and string as value
         which describes the number of instances per deployment group.
@@ -996,9 +1007,7 @@ class CommandAppForm(Form):
         self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
 
         # Get the safe deployment possibilities
-        hosts_list = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
-        safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
-        self.safe_deployment_strategy.choices = [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
+        self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
 
     def map_from_app(self, app):
         """

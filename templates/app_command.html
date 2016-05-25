@@ -48,6 +48,29 @@
             }
         }
 
+        function refresh_options_list() {
+            $('#command option, #safe_deployment_strategy option').each(function() {
+                cmd = $(this).val();
+                desc = $(this).text();
+                $(this).text(cmd);
+                $(this).attr('data-subtext', ' - ' + desc);
+            });
+            $('#command, #safe_deployment_strategy').selectpicker('refresh');
+        }
+
+        function get_app_safe_deployment_possibilities() {
+          app_id = '{{ app['_id'] }}';
+          $('#safe_deployment_strategy').find('option').remove();
+          $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
+              $.each(data, function(key, value) {
+                $('#safe_deployment_strategy').append('<option value=' + key + '>' + value + '</option>');
+              });
+              refresh_options_list();
+          }).fail(function() {
+              alert("Failed to retrieve Safe Deployment Strategies");
+          });
+        }
+
         show_options_fields();
         $('#command').change(function() {
             show_options_fields();
@@ -55,18 +78,13 @@
         $('#safe_deployment').change(function() {
             if ($(this).is(':checked')) {
                 $('.wrap.safe_deployment_strategy').show();
+                get_app_safe_deployment_possibilities();
             } else {
                 $('.wrap.safe_deployment_strategy').hide();
             }
         });
 
-        $('#command option, #safe_deployment_strategy option').each(function() {
-            cmd = $(this).val();
-            desc = $(this).text();
-            $(this).text(cmd);
-            $(this).attr('data-subtext', ' - ' + desc);
-        });
-        $('#command').selectpicker('refresh');
+        refresh_options_list();
     })();
     </script>
 {% endblock %}
