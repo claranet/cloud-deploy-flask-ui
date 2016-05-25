@@ -225,13 +225,29 @@ td.inline {
     margin: 1px;
     padding: 8px 16px;
 }
+.command_options #modules_list tbody td,
 #app-form #features_list td,
 #app-form #log_notifications_list td {
     padding: 0 8px;
 }
+.command_options #modules_list th,
 #app-form #features_list th,
 #app-form #log_notifications_list th {
     vertical-align: middle;
+}
+.command_options #modules_list th {
+    width: 20%;
+}
+.command_options #modules_list thead,
+.command_options #modules_list tbody { display: block; }
+
+.command_options #modules_list tbody {
+    height: 160px;
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    overflow-x: hidden;  /* Hide the horizontal scroll */
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
 }
 
 /*AppList*/

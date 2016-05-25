@@ -103,7 +103,7 @@
             ghost_update_command_deploy_revision(module_name, revision_id)
         }
     });
-    
+
     $('#deploy_all_modules').change(function () {
         $('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change");
     });
@@ -115,7 +115,7 @@
         <th scope="row">{{ entry_label }}</th>
         <td class="{{ form_type }}">
             {% if entry.type == 'FormField' %}
-                            {{ entry.hidden_tag() }}
+                {{ entry.hidden_tag() }}
                 {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
                     {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
                 {% endfor %}
@@ -131,13 +131,17 @@
 {% macro ghost_command_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, form_type, html_placeholder='') -%}
     <div class="form-group">
         <label class="control-label col-lg-2">{{ group_label }}</label>
-            <div class="col-lg-10">
-                <div class="checkbox">
-                  <label>
-                      <input id="deploy_all_modules" type="checkbox"> Deploy All
-                  </label>
-              </div>  
+          <div class="col-lg-10">
             <table class="table" id="{{ group_id_prefix }}_list">
+                <thead>
+                    <tr>
+                        <td colspan="2">
+                            <div class="checkbox"><label>
+                                <input id="deploy_all_modules" type="checkbox"> Deploy all modules
+                            </label></div>
+                        </td>
+                    </tr>
+                </thead>
                 <tbody>
                 {% for entry in fieldlist %}
                     {{ ghost_command_fieldlist_entry(entry, entry_id_prefix, entry.data['name'], loop.index, form_type, html_placeholder) }}
