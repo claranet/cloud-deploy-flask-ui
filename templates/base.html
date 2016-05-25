@@ -462,6 +462,24 @@
     </tr>
 {%- endmacro %}
 
+{% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='') -%}
+    <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
+        <th scope="row">{{ entry_label }}</th>
+        <td class="{{ form_type }}">
+            {% if entry.type == 'FormField' %}
+                {{ entry.hidden_tag() }}
+                {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                {% endfor %}
+            {% elif entry.type == 'TextAreaField' %}
+                {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+            {% else %}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+            {% endif %}
+        </td>
+    </tr>
+{%- endmacro %}
+
 {% macro ghost_menulist(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label) -%}
 <ul class="subnav" id="menu-modules-list">
     {% for entry in fieldlist %}
@@ -488,6 +506,21 @@
             {% endfor %}
             </tbody>
         </table>
+    </div>
+{%- endmacro %}
+
+{% macro ghost_command_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, form_type, html_placeholder='') -%}
+    <div class="form-group">
+        <label class="control-label col-lg-2">{{ group_label }}</label>
+            <div class="col-lg-10">
+            <table class="table" id="{{ group_id_prefix }}_list">
+                <tbody>
+                {% for entry in fieldlist %}
+                    {{ ghost_command_fieldlist_entry(entry, entry_id_prefix, entry.data['name'], loop.index, form_type, html_placeholder) }}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {%- endmacro %}
 

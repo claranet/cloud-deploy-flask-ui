@@ -15,8 +15,7 @@
         {{ wtf.form_field(form.command, form_type='horizontal') }}
 
         <div class="command_options">
-            <div class="wrap module_name">{{ wtf.form_field(form.module_name, form_type='horizontal') }}</div>
-            <div class="wrap module_rev">{{ wtf.form_field(form.module_rev, form_type='horizontal') }}</div>
+            <div class="wrap module_name">{{ ghost_command_fieldlist(form.modules, 'modules', 'Modules', 'module', 'inline') }}</div>
             <div class="wrap deploy_id">{{ wtf.form_field(form.deploy_id, form_type='horizontal') }}</div>
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
