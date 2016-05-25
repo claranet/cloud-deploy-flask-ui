@@ -290,7 +290,7 @@ def safe_deployment_possibilities(hosts_list):
         elif split_type == '25%' and len(hosts_list) > 3:
             split_list = [hosts_list[i::4] for i in range(4)]
             possibilities['25%'] = '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3} | Group4 : {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
-        elif split_type == '50%' and len(hosts_list) == 2 or len(hosts_list) > 3:
+        elif split_type == '50%' and len(hosts_list) >= 2:
             split_list = [hosts_list[i::2] for i in range(2)]
             possibilities['50%'] = '{0} | Group1 : {1} | Group2 : {2}' .format(msg, len(split_list[0]), len(split_list[1]))
     if not possibilities:
