@@ -324,8 +324,7 @@
         });
         
         $('#deploy_all_modules').change(function () {
-            console.log($(this).prop('checked'));
-            console.log($('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change"));
+            $('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change");
         });
 
         function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
