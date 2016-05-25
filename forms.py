@@ -1024,7 +1024,7 @@ class CreateAppForm(BaseAppForm):
 
         # Refresh AWS lists
         #Leave the following line commented to remember for further 
-        #dev to manage other cloud providers than aws
+        #The following commented lines intend to manage other cloud providers than aws
         #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
         #self.provider.data = DEFAULT_PROVIDER
         if self.use_custom_identity.data:
