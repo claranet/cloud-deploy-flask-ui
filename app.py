@@ -285,6 +285,11 @@ def web_app_edit(app_id):
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
 def web_app_command(app_id):
     form = CommandAppForm(app_id)
+    app = get_ghost_app(app_id)
+
+    # Dynamic selections update
+    if form.is_submitted():
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
 
     # Perform validation
     if form.validate_on_submit():
@@ -293,7 +298,6 @@ def web_app_command(app_id):
         return render_template('action_completed.html', message=message)
 
     # Display default template in GET case
-    app = get_ghost_app(app_id)
     form.map_from_app(app)
 
     form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
