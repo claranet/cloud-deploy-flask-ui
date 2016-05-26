@@ -19,9 +19,13 @@
         by&nbsp;{{ app.get('user', '-') }}
     </td>
     <td>
-        {{ app['env'] }}
         {%- if app['blue_green'] and app['blue_green']['alter_ego_id'] -%}
-            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}"><button class="btn btn-info btn-raised app-bluegreen-btn" title="Blue green is enabled on this app" data-toggle="tooltip"><span class="fa fa-clone"></span></button></a>
+        <p class="app-is-bluegreen">
+            <span >{{ app['env'] }}</span> -
+            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">{{ app['blue_green']['color'] }}</a>
+        </p>
+        {%- else -%}
+            {{ app['env'] }}
         {%- endif %}
     </td>
     <td>
