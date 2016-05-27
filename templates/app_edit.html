@@ -76,7 +76,6 @@
                     {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
 
-                    {{ wtf.form_field(form.provider, form_type='horizontal', readonly=edit) }}
                     {{ wtf.form_field(form.use_custom_identity, form_type='horizontal') }}
                     <div id="identity_provider" style="{{ 'display:none;' if not form.use_custom_identity.data }}">
                         {{ wtf.form_field(form.assumed_account_id, form_type='horizontal', placeholder=account_id) }}
