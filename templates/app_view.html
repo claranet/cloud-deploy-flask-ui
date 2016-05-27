@@ -108,17 +108,22 @@
 
         <a name="bluegreen" class="anchor">&nbsp;</a>
         <div class="panel-heading">Blue/Green</div>
-        <div class="panel-body">
         {%- if app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] -%}
+        {% set color_class = 'info' if app['blue_green'].get('color', 'blue') == 'blue' else 'success' %}
+        <div class="panel-body hl-{{ color_class }}">
             <div class="row">
                 {{ ghost_display_field('app-bluegreen-enable', 'Activated', 'True') }}
                 {{ ghost_display_field('app-bluegreen-color', 'Color', app['blue_green']['color']) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('app-bluegreen-is_online', 'Is online', app['blue_green']['is_online']) }}
-                {{ ghost_display_field('app-bluegreen-alter_ego_id', 'Associated app', app['blue_green']['alter_ego_id']) }}
+                <label class="control-label col-md-2" for="app-bluegreen-alter_ego_id">Associated app</label>
+                <div class="col-md-4" id="app-bluegreen-alter_ego_id">
+                    <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}"><i class="glyphicon glyphicon-link"></i> {{ app['blue_green']['alter_ego_id'] }}</a>                    
+                </div>
             </div>
         {%- else -%}
+        <div class="panel-body">
             <div class="row">
                 {{ ghost_display_field('app-bluegreen-enable', 'Activated', 'False') }}
             </div>
