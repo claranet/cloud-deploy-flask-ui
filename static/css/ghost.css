@@ -393,6 +393,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     background: linear-gradient(to right bottom, #03a9f4 50%, #4caf50 50%);
     color: white;
     padding: 3px;
+    text-align: center;
 }
 .tablelist tr.app-row .app-is-bluegreen a {
     color: white;
@@ -582,6 +583,12 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 /*Command*/
 .command_options {
     margin: 10px 0;
+}
+
+.blue-green-delete-warning {
+    padding: 7px;
+    display: inline-block;
+    border-radius: 3px;
 }
 
 /**

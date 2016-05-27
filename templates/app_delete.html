@@ -7,6 +7,12 @@
         {{ form.hidden_tag() }}
 
         <h2>Delete {{ app['name'] }}?</h2>
+        {%- if app['blue_green'] and app['blue_green']['alter_ego_id'] -%}
+        <p class="label-warning blue-green-delete-warning">
+            <i class="glyphicon glyphicon-alert"></i>
+            This application has Blue-green enabled. You will delete both the blue ({{ app['blue_green']['alter_ego_id'] }}) and green app ({{ app['_id'] }}).
+        </p>
+        {%- endif -%}
         
         {{ wtf.form_field(form.confirmation, form_type='horizontal') }}
 

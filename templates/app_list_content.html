@@ -20,9 +20,8 @@
     </td>
     <td>
         {%- if app['blue_green'] and app['blue_green']['alter_ego_id'] -%}
-        <p class="app-is-bluegreen">
-            <span >{{ app['env'] }}</span> -
-            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">{{ app['blue_green']['color'] }}</a>
+        <p class="app-is-bluegreen" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">
+            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}">{{ app['env'] }} - {{ app['blue_green']['color'] }}</a>
         </p>
         {%- else -%}
             {{ app['env'] }}
