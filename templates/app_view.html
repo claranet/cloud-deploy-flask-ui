@@ -28,6 +28,9 @@
             <a href="#aws">AWS</a>
         </li>
         <li>
+            <a href="#bluegreen">Blue/Green</a>
+        </li>
+        <li>
             <a href="#autoscale">Autoscale</a>
         </li>
         <li>
@@ -101,6 +104,25 @@
                 {{ ghost_display_field('app-aws-vpc', 'AWS VPC', app['vpc_id']) }}
                 {{ ghost_display_field('app-aws-ami', 'AWS AMI', app['ami']) }}
             </div>
+        </div>
+
+        <a name="bluegreen" class="anchor">&nbsp;</a>
+        <div class="panel-heading">Blue/Green</div>
+        <div class="panel-body">
+        {%- if app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] -%}
+            <div class="row">
+                {{ ghost_display_field('app-bluegreen-enable', 'Activated', 'True') }}
+                {{ ghost_display_field('app-bluegreen-color', 'Color', app['blue_green']['color']) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-bluegreen-is_online', 'Is online', app['blue_green']['is_online']) }}
+                {{ ghost_display_field('app-bluegreen-alter_ego_id', 'Associated app', app['blue_green']['alter_ego_id']) }}
+            </div>
+        {%- else -%}
+            <div class="row">
+                {{ ghost_display_field('app-bluegreen-enable', 'Activated', 'False') }}
+            </div>
+        {%- endif %}
         </div>
 
         <a name="autoscale" class="anchor">&nbsp;</a>
