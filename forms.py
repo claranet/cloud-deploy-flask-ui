@@ -165,7 +165,7 @@ def get_aws_ec2_regions(provider, log_file=None, **kwargs):
 def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     asgs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
         conn_as = boto.ec2.autoscale.connect_to_region(region)
         asgs = conn_as.get_all_groups()
@@ -175,7 +175,7 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
 
 def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
         asgs = conn_as.get_all_groups(names=[as_group_name])
         if len(asgs) > 0:
@@ -201,7 +201,7 @@ def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
 
 def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_elb = cloud_connection.get_connection(region, ["ec2", "elb"])
         if len(as_group.load_balancers) > 0:
             as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
@@ -217,7 +217,7 @@ def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
 
 def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, **kwargs):
     try:
-        elbs = get_elbs_in_as_group(provider, as_group, region, log_file, kwargs)
+        elbs = get_elbs_in_as_group(provider, as_group, region, log_file, **kwargs)
         if elbs:
             elbs_instances = []
             for elb in elbs:

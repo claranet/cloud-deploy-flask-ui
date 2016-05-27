@@ -295,6 +295,7 @@
         function ghost_update_ec2_asgs(region) {
           $('#autoscale-as_name').find('option').remove();
           $.ajax("/web/aws/regions/" + region + "/ec2/autoscale/ids").done(function(data) {
+          $.ajax("/web/" + provider + "/regions/" + region + "/ec2/autoscale/ids" + provider_identity_query).done(function(data) {
               // Update ASGs select input options
               $.each(data,function(key, value) {
                 $('#autoscale-as_name').append('<option value=' + key + '>' + value + '</option>');
