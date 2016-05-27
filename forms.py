@@ -167,7 +167,6 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
-        conn_as = boto.ec2.autoscale.connect_to_region(region)
         asgs = conn_as.get_all_groups()
     except:
         traceback.print_exc()
