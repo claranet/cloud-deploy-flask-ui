@@ -263,12 +263,12 @@ def web_app_create():
             aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''), clone_from_app.get('assumed_region_name', ''))
             form.region.choices = get_aws_ec2_regions(clone_from_app.get('provider', DEFAULT_PROVIDER), **aws_connection_data)
             form.instance_type.choices = get_aws_ec2_instance_types(clone_from_app['region'])
-            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
-            form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app['provider'], clone_from_app['region'], **aws_connection_da)
-            form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
-            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app['provider'], clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
-            form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
-            form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app['provider'], clone_from_app['region'], **aws_connection_data)
+            form.vpc_id.choices = get_aws_vpc_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
+            form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_da)
+            form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
+            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
+            form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
+            form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
             for subnet in form.environment_infos.subnet_ids:
                 subnet.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
             for sg in  form.environment_infos.security_groups:
