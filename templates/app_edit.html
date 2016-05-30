@@ -78,8 +78,8 @@
 
                     {{ wtf.form_field(form.use_custom_identity, form_type='horizontal') }}
                     <div id="identity_provider" style="{{ 'display:none;' if not form.use_custom_identity.data }}">
-                        {{ wtf.form_field(form.assumed_account_id, form_type='horizontal', placeholder=account_id) }}
-                        {{ wtf.form_field(form.assumed_role_name, form_type='horizontal', placeholder=role_name) }}
+                        {{ wtf.form_field(form.assumed_account_id, form_type='horizontal', placeholder='Enter the AWS account ID containing the role to assume') }}
+                        {{ wtf.form_field(form.assumed_role_name, form_type='horizontal', placeholder='Enter the role to assume in the other AWS account') }}
                         {{ wtf.form_field(form.assumed_region_name, form_type='horizontal', placeholder="Enter a region name if the account you want to assume is linked to a specific region") }}
                         <button class="btn btn-raised btn-info btn-xs" id="check_provider_creds"><i class=" glyphicon glyphicon-refresh"> </i> Check credentials</button>
                     </div>
