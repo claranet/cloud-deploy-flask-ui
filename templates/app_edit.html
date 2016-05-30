@@ -90,7 +90,8 @@
         <a name="provider" class="anchor">&nbsp;</a>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Cloud Provider properties
+                <strong>Cloud Provider properties</strong>
+                <span class="subtitle"> - AWS Informations</span>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -318,6 +319,8 @@
                 $('.haproxy-params').show();
             } else {
                 $('.haproxy-params').hide();
+            }
+        });
         $('#use_custom_identity').change(function(evt) {
             if (this.checked) {
                 $('#identity_provider').slideDown('slow');
