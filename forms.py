@@ -124,7 +124,7 @@ def get_aws_ec2_regions():
     except:
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
-    
+
 def get_aws_as_groups(region):
     asgs = []
     try:
@@ -226,6 +226,7 @@ def format_host_infos(instance, conn, region):
         subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
     else:
         subnet_string = '-'
+
     host = {
       'id': instance.id,
       'private_ip_address': instance.private_ip_address,
@@ -979,7 +980,7 @@ class EditAppForm(BaseAppForm):
 
 class DeployModuleForm(Form):
     name = HiddenField('')
-    deploy = BooleanField('Deploy', validators=[])
+    deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
 
     # Disable CSRF in module forms as they are subforms
@@ -988,6 +989,7 @@ class DeployModuleForm(Form):
 
     def map_from_app(self, module):
         self.name.data = module.get('name', '')
+        self.deploy.label.text = module.get('name', '')
 
 class CommandAppForm(Form):
     command = SelectField('Command', validators=[DataRequiredValidator()], choices=[])

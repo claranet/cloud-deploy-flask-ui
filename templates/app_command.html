@@ -94,6 +94,11 @@
       });
     }
 
+    function ghost_count_checked_modules() {
+       var checked_modules_count = $('input[type="checkbox"][id^="modules"]:checked').length
+       $('#module_counter span').text(checked_modules_count);
+    }
+
     $('input[type="checkbox"][id^="modules"]').change(function() {
         if ($(this).prop('checked')) {
             var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"))
@@ -102,6 +107,7 @@
             var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value')
             ghost_update_command_deploy_revision(module_name, revision_id)
         }
+        ghost_count_checked_modules()
     });
 
     $('#deploy_all_modules').change(function () {
@@ -110,21 +116,24 @@
     </script>
 {% endblock %}
 
-{% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='') -%}
+{% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, loop_index, form_type, html_placeholder='') -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
-        <th scope="row">{{ entry_label }}</th>
-        <td class="{{ form_type }}">
             {% if entry.type == 'FormField' %}
                 {{ entry.hidden_tag() }}
                 {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
+                <td class="{{ form_type }}">
                     {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                </td>
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
-                {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                <td class="{{ form_type }}">
+                    {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                </td>
             {% else %}
-                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                <td class="{{ form_type }}">
+                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                </td>
             {% endif %}
-        </td>
     </tr>
 {%- endmacro %}
 
@@ -132,22 +141,31 @@
     <div class="form-group">
         <label class="control-label col-lg-2">{{ group_label }}</label>
           <div class="col-lg-10">
+            <div class="modules_list">
             <table class="table" id="{{ group_id_prefix }}_list">
                 <thead>
                     <tr>
-                        <td colspan="2">
-                            <div class="checkbox"><label>
-                                <input id="deploy_all_modules" type="checkbox"> Deploy all modules
-                            </label></div>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="deploy_all_modules" type="checkbox"> Deploy all modules
+                                </label>
+                            </div>
                         </td>
                     </tr>
                 </thead>
                 <tbody>
                 {% for entry in fieldlist %}
-                    {{ ghost_command_fieldlist_entry(entry, entry_id_prefix, entry.data['name'], loop.index, form_type, html_placeholder) }}
+                    {{ ghost_command_fieldlist_entry(entry, entry_id_prefix, loop.index, form_type, html_placeholder) }}
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
+            <div id="module_counter">
+                <label>
+                    Deployed Modules : <span>0</span>
+                </label>
+            </div>
         </div>
     </div>
 {%- endmacro %}
