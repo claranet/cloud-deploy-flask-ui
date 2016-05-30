@@ -256,7 +256,6 @@
             $('#build_infos-subnet_id').find('option').remove();
           }
           $.ajax("/web/" + provider + "/regions/" + region + "/vpc/" + vpc_id + "/subnet/ids" + provider_identity_query).done(function(data) {
-          // $.ajax("/web/aws/regions/" + region + "/vpc/" + vpc_id + "/subnet/ids").done(function(data) {
               // Update Subnets select input options
               $.each(data, function(key, value) {
                 if (for_build) {
