@@ -82,7 +82,7 @@ except:
     try:
         CURRENT_REVISION_NAME=git('describe', '--tags', '--exact-match', _tty_out=False)
     except:
-        CURRENT_REVISION_NAME='16.05'
+        CURRENT_REVISION_NAME=git('--no-pager', 'rev-parse', '--short', 'HEAD', _tty_out=False).strip()
 
 try:
     CURRENT_REVISION = dict(
@@ -92,9 +92,9 @@ try:
     )
 except:
     CURRENT_REVISION = dict(
-        current_revision='s160524',
-        current_revision_date='Tue, 24 May 2016 10:12:16 +0200',
-        current_revision_name='16.05'
+        current_revision='unknown',
+        current_revision_date='unknown',
+        current_revision_name='unknown'
     )
 
 @app.context_processor
