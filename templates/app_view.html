@@ -79,6 +79,20 @@
         <a name="aws" class="anchor">&nbsp;</a>
         <div class="panel-heading">AWS</div>
         <div class="panel-body">
+            {%- if app['assumed_account_id'] and app['assumed_role_name'] -%}
+            {% set app_assumed_arn = "arn:{0}:iam::{1}:role/{2}" %}
+            <div class="row">
+                {{ ghost_display_field('app-aws-assumed-account', 'Assumed Account ID', app.get('assumed_account_id', '')) }}
+                {{ ghost_display_field('app-aws-assumed-role', 'Assumed Role Name', app.get('assumed_role_name', '')) }}
+            </div>
+            <div class="row">
+                {{ ghost_display_field('app-aws-assumed-region', 'Assumed Region', app.get('assumed_region', '')) }}
+                <label class="control-label col-md-2" for="app-aws-assumed-arn">AWS complete ARN</label>
+                <div class="col-md-4">
+                    {{ app_assumed_arn.format('aws-cn' if app.get('assumed_region_name', '').startswith('cn-') else 'aws', app['assumed_account_id'], app['assumed_role_name']) }}
+                </div>
+            </div>
+            {%- endif -%}
             <div class="row">
                 {{ ghost_display_field('app-aws-region', 'AWS Region', app['region']) }}
                 {{ ghost_display_field('app-aws-instance-type', 'AWS Instance Type', app['instance_type']) }}
