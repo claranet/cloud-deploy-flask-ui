@@ -5,6 +5,11 @@
         <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
         <br>
         <span class="app-uid">{{ app['_id'] }}</span>
+        {%- if app['assumed_account_id'] and app['assumed_role_name'] -%}
+        {% set app_assumed_arn = "arn:{0}:iam::{1}:role/{2}" %}
+        <br>
+        {{ app_assumed_arn.format('aws-cn' if app.get('assumed_region_name', '').startswith('cn-') else 'aws', app['assumed_account_id'], app['assumed_role_name']) }}
+        {%- endif -%}
     </td>
     <td>
         {{ app['_created'] }}
