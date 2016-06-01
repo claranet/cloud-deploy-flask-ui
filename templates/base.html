@@ -333,6 +333,7 @@
                     $('#app_options_wrapper').slideDown('slow');
                     provider_identity_query = '?assumed_account_id=' + $('#assumed_account_id').val() + '&assumed_role_name=' + $('#assumed_role_name').val() + '&assumed_region_name=' + $('#assumed_region_name').val();
                     $('#check_provider_creds').html('<i class="glyphicon glyphicon-check"> </i> Credentials OK');
+                    $('select#region').change(); // Will reload all select in the page
                 } else {
                     alert('Invalid Identity parameters, please correct them. ' + data.msg);
                 }
