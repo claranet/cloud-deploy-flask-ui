@@ -686,14 +686,16 @@ class BluegreenForm(Form):
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(BluegreenForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
 
-    def map_from_app(self, blue_green):
+    def map_from_app(self, app):
         """
         Map app data to blue green form
         """
-        self.alter_ego_id.data = blue_green.get('alter_ego_id', '')
-        self.color.data = blue_green.get('color', '')
-        # Map if blue/green is enabled
-        self.enable_blue_green.data = blue_green.get('enable_blue_green', blue_green.get('alter_ego_id', None) and blue_green.get('color', None))
+        blue_green = app.get('blue_green', None)
+        if blue_green:
+            self.alter_ego_id.data = blue_green.get('alter_ego_id', '')
+            self.color.data = blue_green.get('color', '')
+            # Map if blue/green is enabled
+            self.enable_blue_green.data = blue_green.get('enable_blue_green', blue_green.get('alter_ego_id', None) and blue_green.get('color', None))
 
     def map_to_app(self, app):
         """
