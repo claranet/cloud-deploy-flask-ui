@@ -124,7 +124,7 @@ def get_aws_ec2_regions():
     except:
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
-    
+
 def get_aws_as_groups(region):
     asgs = []
     try:
@@ -226,6 +226,7 @@ def format_host_infos(instance, conn, region):
         subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
     else:
         subnet_string = '-'
+
     host = {
       'id': instance.id,
       'private_ip_address': instance.private_ip_address,
@@ -977,11 +978,22 @@ class EditAppForm(BaseAppForm):
 
         super(EditAppForm, self).map_from_app(app)
 
+class DeployModuleForm(Form):
+    name = HiddenField('')
+    deploy = BooleanField('', validators=[])
+    rev = StringField('Revision', validators=[])
+
+    # Disable CSRF in module forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(DeployModuleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, module):
+        self.name.data = module.get('name', '')
+        self.deploy.label.text = module.get('name', '')
 
 class CommandAppForm(Form):
     command = SelectField('Command', validators=[DataRequiredValidator()], choices=[])
-    module_name = SelectField('Module name', validators=[])
-    module_rev = StringField('Module revision', validators=[])
+    modules = FieldList(FormField(DeployModuleForm), min_entries=1)
     deploy_id = StringField('Deploy ID', validators=[])
     fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
@@ -1000,9 +1012,6 @@ class CommandAppForm(Form):
         # Get the list of commands at construction time because it requires a request context
         self.command.choices = get_ghost_job_commands()
 
-        # Get the modules of the Ghost application
-        self.module_name.choices = [('', '')] + [(module['name'], module['name']) for module in app['modules']]
-
         # Get the instance types in the Ghost application's region
         self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
 
@@ -1015,6 +1024,18 @@ class CommandAppForm(Form):
         """
         # Use the instance type of the Ghost application as default
         self.instance_type.data = app.get('instance_type', '')
+        self.map_from_app_modules(app)
+
+    def map_from_app_modules(self, app):
+        """
+        Map modules data from app to form
+        """
+        if 'modules' in app and len(app['modules']) > 0:
+            empty_fieldlist(self.modules)
+            for module in app.get('modules', []):
+                self.modules.append_entry()
+                form_module = self.modules.entries[-1].form
+                form_module.map_from_app(module)
 
 class DeleteAppForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])

@@ -193,12 +193,13 @@ def create_ghost_job(app_id, form, headers):
 
     # Process modules
     modules = []
-    if form.module_name.data:
-        module = {}
-        if form.command.data == 'deploy':
-            module['name'] = form.module_name.data
-            module['rev'] = form.module_rev.data or 'HEAD'
-        modules.append(module)
+    if form.modules.data and form.command.data == 'deploy':
+        for form_module in form.modules.data:
+            module = {}
+            if form_module['deploy']:
+                module['name'] = form_module['name']
+                module['rev'] = form_module['rev']
+                modules.append(module)
 
     if modules:
         job['modules'] = modules

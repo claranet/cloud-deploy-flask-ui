@@ -225,13 +225,45 @@ td.inline {
     margin: 1px;
     padding: 8px 16px;
 }
+.command_options #modules_list tbody td,
 #app-form #features_list td,
 #app-form #log_notifications_list td {
     padding: 0 8px;
 }
+.command_options #modules_list th,
 #app-form #features_list th,
 #app-form #log_notifications_list th {
     vertical-align: middle;
+}
+.command_options #modules_list th {
+    width: 20%;
+}
+
+.command_options #modules_list.table {
+    table-layout: fixed;
+}
+
+.command_options #modules_list.table .col-lg-offset-2 {
+    margin-left: auto;
+}
+
+.command_options #modules_list.table td.inline .form-group {
+    width: 100%;
+    float: left;
+}
+
+.command_options .modules_list {
+    max-height: 450px;
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    overflow-x: hidden;  /* Hide the horizontal scroll */
+    border-left: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.command_options #modules_list.table .checkbox label {
+    text-align: left;
 }
 
 /*AppList*/

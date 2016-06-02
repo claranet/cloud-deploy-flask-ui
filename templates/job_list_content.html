@@ -21,13 +21,16 @@
         {% endfor %}
     </td>
     <td>
+        {%- if job['command'] in ['deploy', 'redeploy', 'rollback'] -%}
         {% for module in job['modules'] %}
-            Name:&nbsp;{{ module['name'] }}
-            <br>
-            Revision:&nbsp;{{ module['rev'] }}
-            <br>
-            Deploy ID:&nbsp;{{ module['deploy_id'] or '-' }}<br>
+            {%- if module['deploy_id'] -%}
+                <a href="/web/deployments/{{ module['deploy_id'] }}" title="{{ module['deploy_id'] }}">{{ module['name'] }} / {{ module['rev'] }}</a>
+            {%- else -%}
+                {{ module['name'] }} / {{ module['rev'] }}
+            {%- endif -%}
+            <br/>
         {% endfor %}
+        {%- endif -%}
     </td>
     <td>
         <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-raised btn-danger" title="Cancel this job" data-toggle="tooltip" {%- if job['status'] not in cancellable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-ban-circle"></span> Cancel</button></a>

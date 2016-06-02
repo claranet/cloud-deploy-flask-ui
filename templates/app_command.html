@@ -15,8 +15,7 @@
         {{ wtf.form_field(form.command, form_type='horizontal') }}
 
         <div class="command_options">
-            <div class="wrap module_name">{{ wtf.form_field(form.module_name, form_type='horizontal') }}</div>
-            <div class="wrap module_rev">{{ wtf.form_field(form.module_rev, form_type='horizontal') }}</div>
+            <div class="wrap modules">{{ ghost_command_fieldlist(form.modules, 'modules', 'Modules', 'module', 'inline') }}</div>
             <div class="wrap deploy_id">{{ wtf.form_field(form.deploy_id, form_type='horizontal') }}</div>
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
@@ -34,8 +33,7 @@
         function show_options_fields()  {
             $('.wrap').hide();
             if ($('#command').val() == 'deploy') {
-                $('.wrap.module_name').show();
-                $('.wrap.module_rev').show();
+                $('.wrap.modules').show();
                 $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.safe_deployment').show();
             } else if ($('#command').val() == 'redeploy') {
@@ -86,5 +84,88 @@
 
         refresh_options_list();
     })();
+
+    function ghost_update_command_deploy_revision(module_name, revision_id) {
+      $.ajax("command/module/" + module_name).done(function(data) {
+          // Update revision input default
+          $('#' + revision_id).val(data);
+      }).fail(function() {
+          alert("Failed to retrieve last deployed revision for module " + module_name);
+      });
+    }
+
+    function ghost_count_checked_modules() {
+       var checked_modules_count = $('input[type="checkbox"][id^="modules"]:checked').length
+       $('#module_counter span').text(checked_modules_count);
+    }
+
+    $('input[type="checkbox"][id^="modules"]').change(function() {
+        if ($(this).prop('checked')) {
+            var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"))
+            var name_id = module_prefix + '-name'
+            var revision_id = module_prefix + '-rev'
+            var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value')
+            ghost_update_command_deploy_revision(module_name, revision_id)
+        }
+        ghost_count_checked_modules()
+    });
+
+    $('#deploy_all_modules').change(function () {
+        $('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change");
+    });
     </script>
 {% endblock %}
+
+{% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, loop_index, form_type, html_placeholder='') -%}
+    <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
+            {% if entry.type == 'FormField' %}
+                {{ entry.hidden_tag() }}
+                {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
+                <td class="{{ form_type }}">
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                </td>
+                {% endfor %}
+            {% elif entry.type == 'TextAreaField' %}
+                <td class="{{ form_type }}">
+                    {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                </td>
+            {% else %}
+                <td class="{{ form_type }}">
+                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                </td>
+            {% endif %}
+    </tr>
+{%- endmacro %}
+
+{% macro ghost_command_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, form_type, html_placeholder='') -%}
+    <div class="form-group">
+        <label class="control-label col-lg-2">{{ group_label }}</label>
+          <div class="col-lg-10">
+            <div class="modules_list">
+            <table class="table" id="{{ group_id_prefix }}_list">
+                <thead>
+                    <tr>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="deploy_all_modules" type="checkbox"> Deploy all modules
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for entry in fieldlist %}
+                    {{ ghost_command_fieldlist_entry(entry, entry_id_prefix, loop.index, form_type, html_placeholder) }}
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            <div id="module_counter">
+                <label>
+                    Deployed Modules : <span>0</span>
+                </label>
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
