@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% set page_title = edit and ('Edit %s (%s)' % (form.name.data, form.env.data)) or 'Create an Application' %}
+{% set app_color = " [{0}]".format(form.blue_green.form.color.data) if form.blue_green.form.enable_blue_green.data else "" %}
+{% set page_title = edit and ('Edit %s (%s)%s' % (form.name.data, form.env.data, app_color)) or 'Create an Application' %}
 
 {% block page_header %}
     <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
