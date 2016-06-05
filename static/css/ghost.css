@@ -374,25 +374,31 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     background-color: #e1bee7;
 }
 .tablelist tr.env-staging,
-.tablelist tr.env-preprod {
+.tablelist tr.env-preprod,
+.tablelist tr.env-oat {
     background-color: #D9EDF7;
 }
 .tablelist tr.env-staging:hover,
-.tablelist tr.env-preprod:hover {
+.tablelist tr.env-preprod:hover,
+.tablelist tr.env-oat:hover {
     background-color: #C4E3F3;
 }
 .tablelist tr.env-dev,
-.tablelist tr.env-demo {
+.tablelist tr.env-demo,
+.tablelist tr.env-int {
     background-color: #FCF8E3;
 }
 .tablelist tr.env-dev:hover,
-.tablelist tr.env-demo:hover {
+.tablelist tr.env-demo:hover,
+.tablelist tr.env-int:hover {
     background-color: #FAF2CC;
 }
-.tablelist tr.env-test {
+.tablelist tr.env-test,
+.tablelist tr.env-uat {
     background-color: #efebe9;
 }
-.tablelist tr.env-test:hover {
+.tablelist tr.env-test:hover,
+.tablelist tr.env-uat:hover {
     background-color: #d7ccc8;
 }
 
