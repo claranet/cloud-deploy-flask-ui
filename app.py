@@ -7,6 +7,7 @@ import traceback
 import sys
 from sh import git
 from settings import DEFAULT_PROVIDER
+from .websocket import ansi_to_html
 
 from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_STATUSES, jobs_schema as ghost_jobs_schema
 from models.apps import apps_schema as ghost_app_schema
@@ -31,6 +32,7 @@ app.config.update(
     SECRET_KEY='a random string',
     WTF_CSRF_SECRET_KEY='a random string'
 )
+app.jinja_env.globals.update(ansi_to_html=ansi_to_html)
 
 Bootstrap(app)
 
