@@ -147,7 +147,7 @@ def get_aws_ec2_regions(provider, log_file=None, **kwargs):
     except:
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
-    
+
 def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     asgs = []
     try:
@@ -270,14 +270,8 @@ def format_host_infos(instance, conn, cloud_connection, region):
     return host
 
 def get_aws_ec2_instance_types(region):
-    # Uncomment when implemented on AWS side
-    #types = []
-    #try:
-    #    c = boto.ec2.connect_to_region(region)
-    #    types = c.get_all_instance_types()
-    #except:
-    #    traceback.print_exc()
-
+    # TODO: use `get_all_instance_types()` once implemented on AWS side
+    # cf. https://github.com/boto/boto/issues/3137
     types = aws_data.instance_types[region]
     return [(instance_type.name,
          '{name} (cores:{cores}, memory:{memory}, disk:{disk})'.format(name=instance_type.name,
