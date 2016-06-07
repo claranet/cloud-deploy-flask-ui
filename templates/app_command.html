@@ -119,6 +119,7 @@
         $('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change");
     });
     </script>
+    <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
 {% endblock %}
 
 {% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, loop_index, form_type, html_placeholder='') -%}

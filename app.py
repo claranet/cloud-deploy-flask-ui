@@ -127,8 +127,8 @@ def web_cloud_check_assume_role(provider, account_id, role_name):
 
 @app.route('/web/<provider>/regions')
 def web_cloud_regions(provider):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ec2_regions(provider, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
@@ -137,44 +137,44 @@ def web_ec2_instance_types_list(provider, region_id):
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/keypairs')
 def web_ec2_key_pairs_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ec2_key_pairs(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/autoscale/ids')
 def web_ec2_as_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_as_groups(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/iam/profiles')
 def web_iam_profiles_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_iam_instance_profiles(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/ids')
 def web_vpcs_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_vpc_ids(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/sg/ids')
 def web_sgs_list(provider, region_id, vpc_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_sg_ids(provider, region_id, vpc_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
 def web_subnets_list(provider, region_id, vpc_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_subnet_ids(provider, region_id, vpc_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ami/ids')
 def web_amis_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ami_ids(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
@@ -381,7 +381,8 @@ def web_app_command(app_id):
 
     form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
     form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
-    form.command.data = 'deploy'
+    if not form.is_submitted():
+        form.command.data = 'deploy'
 
     return render_template('app_command.html', form=form, app=app)
 

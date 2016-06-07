@@ -127,7 +127,7 @@ def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwa
         subs = c.get_all_subnets(subnet_ids=subnets)
     except:
         traceback.print_exc()
-    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
+    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ' - ' + sub.cidr_block + ')') for sub in subs]
 
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
@@ -1087,7 +1087,7 @@ class CommandAppForm(Form):
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
-    private_ip_address = StringField('Private IP address', validators=[])
+    private_ip_address = StringField('Private IP address', validators=[DataRequiredValidator(),RegexpValidator("^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
     subnet = SelectField('Subnet', validators=[], choices=[])
 
     submit = SubmitField('Run Application Command')
