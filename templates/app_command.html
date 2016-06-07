@@ -22,6 +22,7 @@
             <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
             <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
             <div class="wrap skip_salt_bootstrap">{{ wtf.form_field(form.skip_salt_bootstrap, form_type='horizontal') }}</div>
+            <div class="crap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
         </div>
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
@@ -43,6 +44,8 @@
             } else if ($('#command').val() == 'buildimage') {
                 $('.wrap.instance_type').show();
                 $('.wrap.skip_salt_bootstrap').show();
+            } else if ($('#command').val() == 'createinstance') {
+                $('.wrap.private_ip_address').show();
             }
         }
 

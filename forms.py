@@ -1077,6 +1077,7 @@ class CommandAppForm(Form):
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
+    private_ip_address = StringField('Private IP address', validators=[])
 
     submit = SubmitField('Run Application Command')
 
