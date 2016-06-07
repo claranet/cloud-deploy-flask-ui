@@ -119,6 +119,16 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
         traceback.print_exc()
     return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
+def get_aws_subnets_ids_from_app(region, subnets):
+    subs = []
+    try:
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["vpc"])
+        subs = c.get_all_subnets(subnet_ids=subnets)
+    except:
+        traceback.print_exc()
+    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
+
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
     try:
@@ -192,7 +202,7 @@ def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
             as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
             if len(as_elbs) > 0:
                 return as_elbs
-            else: 
+            else:
                 return None
         else:
             return None
@@ -212,7 +222,7 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
                         elb_instance_ids.append('#' + instance.id)
                     elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
             return elbs_instances
-        else: 
+        else:
             return None
     except:
         traceback.print_exc()
@@ -659,7 +669,7 @@ class BaseAppForm(Form):
     env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
     role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
     # Cloud Provider
-    #Leave the following line commented to remember for further 
+    #Leave the following line commented to remember for further
     #dev to manage other cloud providers than aws
     #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
@@ -1003,7 +1013,7 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        #Leave the following line commented to remember for further 
+        #Leave the following line commented to remember for further
         #The following commented lines intend to manage other cloud providers than aws
         #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
         #self.provider.data = DEFAULT_PROVIDER
@@ -1048,7 +1058,7 @@ class EditAppForm(BaseAppForm):
         """
         # Store app etag in form
         self.etag.data = app.get('_etag', '')
-        
+
         # Keep the use_custom_identity checked if it was
         if app.get('assumed_account_id', None) and app.get('assumed_role_name', None):
             self.use_custom_identity.data = True
@@ -1078,6 +1088,7 @@ class CommandAppForm(Form):
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
     private_ip_address = StringField('Private IP address', validators=[])
+    subnet = SelectField('Subnet', validators=[], choices=[])
 
     submit = SubmitField('Run Application Command')
 
@@ -1095,6 +1106,9 @@ class CommandAppForm(Form):
 
         # Get the safe deployment possibilities
         self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
+
+        # Get the subnets of the current application
+        self.subnet.choices = get_aws_subnets_ids_from_app(app['region'], app['environment_infos']['subnet_ids'])
 
     def map_from_app(self, app):
         """
