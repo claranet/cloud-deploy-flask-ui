@@ -119,7 +119,7 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
         traceback.print_exc()
     return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
-def get_aws_subnets_ids_from_app(region, subnets):
+def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwargs):
     subs = []
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
@@ -1108,7 +1108,7 @@ class CommandAppForm(Form):
         self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
 
         # Get the subnets of the current application
-        self.subnet.choices = get_aws_subnets_ids_from_app(app['region'], app['environment_infos']['subnet_ids'])
+        self.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'])
 
     def map_from_app(self, app):
         """
