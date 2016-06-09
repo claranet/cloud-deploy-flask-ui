@@ -95,10 +95,22 @@ span.index:after {
 .sidebar-outer {
     position: relative;
 }
+.ghost-titlebar {
+    position: relative;
+}
+.ghost-titlebar.navbar-fixed-top {
+    position: fixed;
+}
+.ghost-titlebar h1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 #ajaxSpinnerContainer {
     position: absolute;
     top: 5px;
     left: 49%;
+    background: white;
+    border-radius: 16px;
 }
 .panel .row {
   margin: 0;

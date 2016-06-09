@@ -55,8 +55,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="sidebar">
-        <h1 style="overflow: hidden; text-overflow: ellipsis" title="{{ page_title }}">{{ page_title }}</h1>
+    <div class="sidebar ghost-titlebar">
+        <h1 title="{{ page_title }}">{{ page_title }}</h1>
 
         <div id="ajaxSpinnerContainer">
             <img src="{{ url_for('static', filename='ajax-loader.gif')}}" id="ajaxSpinnerImage" alt="Loading...">
