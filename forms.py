@@ -287,7 +287,8 @@ def get_safe_deployment_possibilities(app):
         :param app: Ghost app object
         :return array of pair
     """
-    hosts_list = get_ghost_app_ec2_instances(DEFAULT_PROVIDER, app['name'], app['env'], app['role'], app['region'])
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
+    hosts_list = get_ghost_app_ec2_instances(DEFAULT_PROVIDER, app['name'], app['env'], app['role'], app['region'], [], **aws_connection_data)
     safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
     return [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
 
