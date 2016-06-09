@@ -1108,7 +1108,8 @@ class CommandAppForm(Form):
         self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
 
         # Get the subnets of the current application
-        self.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'])
+        aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
+        self.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
 
     def map_from_app(self, app):
         """
