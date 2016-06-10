@@ -75,6 +75,26 @@
                     {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
                     {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
                     {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
+
+                    {{ wtf.form_field(form.use_custom_identity, form_type='horizontal') }}
+                    <div id="identity_provider" style="{{ 'display:none;' if not form.use_custom_identity.data }}">
+                        {{ wtf.form_field(form.assumed_account_id, form_type='horizontal', placeholder='Enter the AWS account ID containing the role to assume') }}
+                        {{ wtf.form_field(form.assumed_role_name, form_type='horizontal', placeholder='Enter the role to assume in the other AWS account') }}
+                        {{ wtf.form_field(form.assumed_region_name, form_type='horizontal', placeholder="Enter a region name if the account you want to assume is linked to a specific region") }}
+                        <button class="btn btn-raised btn-info btn-xs" id="check_provider_creds"><i class=" glyphicon glyphicon-refresh"> </i> Check credentials</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+     <div id="app_options_wrapper">
+        <a name="provider" class="anchor">&nbsp;</a>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Cloud Provider properties</strong>
+                <span class="subtitle"> - AWS Informations</span>
+            </div>
+            <div class="panel-body">
+                <div class="row">
                     {{ wtf.form_field(form.region, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#region" data-call="void(0);"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
@@ -207,6 +227,7 @@
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
 
         {{ wtf.form_field(form.submit) }}
+    </div>
     </form>
 {% endblock %}
 
@@ -298,6 +319,15 @@
                 $('.haproxy-params').show();
             } else {
                 $('.haproxy-params').hide();
+            }
+        });
+        $('#use_custom_identity').change(function(evt) {
+            if (this.checked) {
+                $('#identity_provider').slideDown('slow');
+                $('#app_options_wrapper').slideUp('slow');
+            } else {
+                $('#identity_provider').slideUp('slow');
+                $('#app_options_wrapper').slideDown('slow');
             }
         });
     })();

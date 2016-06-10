@@ -1,4 +1,5 @@
 from flask_wtf import Form
+from settings import cloud_connections, DEFAULT_PROVIDER
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired as DataRequiredValidator
@@ -9,11 +10,6 @@ from wtforms.validators import Regexp as RegexpValidator
 from datetime import datetime
 from base64 import b64encode
 import traceback
-import boto.vpc
-import boto.ec2
-import boto.iam
-import boto.ec2.autoscale
-import boto.ec2.elb
 import aws_data
 
 from models.apps import apps_schema as ghost_app_schema
@@ -41,10 +37,21 @@ def get_wtforms_selectfield_values(allowed_schema_values):
     """
     return [(value, value) for value in allowed_schema_values]
 
+def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_region_name=""):
+    """
+    Build a key-value dictionnatiory args for aws cross  connections
+    """
+    if assumed_account_id and assumed_role_name:
+        aws_connection_data = dict([("assumed_account_id", assumed_account_id), ("assumed_role_name", assumed_role_name), ("assumed_region_name", assumed_region_name)])
+    else:
+        aws_connection_data = {}
+    return (aws_connection_data)
 
 def get_ghost_app_envs():
     return get_wtforms_selectfield_values(ghost_app_schema['env']['allowed'])
 
+def get_ghost_app_providers():
+    return get_wtforms_selectfield_values(ghost_app_schema['provider']['allowed'])
 
 def get_ghost_app_roles():
     return get_wtforms_selectfield_values(ghost_app_schema['role']['allowed'])
@@ -58,28 +65,40 @@ def get_ghost_optional_volumes():
     return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type']['allowed'])
 
 
-def get_aws_vpc_ids(region):
+def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
     vpcs = []
     try:
-        c = boto.vpc.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["vpc"])
         vpcs = c.get_all_vpcs()
     except:
         traceback.print_exc()
     return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
 
-def get_aws_sg_ids(region, vpc_id):
+def check_aws_assumed_credentials(provider, account_id, role_name, region_name="", log_file=None):
+    cloud_connection = cloud_connections.get(provider)(
+            log_file,
+            assumed_account_id=account_id,
+            assumed_role_name=role_name,
+            assumed_region_name=region_name
+            )
+    return (cloud_connection.check_credentials())
+
+def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
     sgs = []
     try:
-        c = boto.ec2.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["ec2"])
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
         traceback.print_exc()
     return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]
 
-def get_aws_ami_ids(region):
+def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
     amis = []
     try:
-        c = boto.ec2.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["ec2"])
         amis = c.get_all_images(
             filters={
                 'image_type': 'machine',
@@ -90,53 +109,59 @@ def get_aws_ami_ids(region):
         traceback.print_exc()
     return [(ami.id, ami.id + ' (' + ami.name + ')') for ami in amis]
 
-def get_aws_subnet_ids(region, vpc_id):
+def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
     try:
-        c = boto.vpc.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
     except:
         traceback.print_exc()
     return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
-def get_aws_iam_instance_profiles(region):
+def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
     try:
-        c = boto.iam.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["iam"])
         profiles = c.list_instance_profiles()
     except:
         traceback.print_exc()
     return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles.instance_profiles]
 
-def get_aws_ec2_key_pairs(region):
+def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
     keys = []
     try:
-        c = boto.ec2.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["ec2"])
         keys = c.get_all_key_pairs()
     except:
         traceback.print_exc()
     return [(key.name, key.name + ' (' + key.fingerprint + ')') for key in keys]
 
-def get_aws_ec2_regions():
+def get_aws_ec2_regions(provider, log_file=None, **kwargs):
     regions = []
     try:
-        regions = sorted(boto.ec2.regions(), key=lambda region: region.name)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        regions = sorted(cloud_connection.get_regions(["ec2"]), key=lambda region: region.name)
     except:
         traceback.print_exc()
     return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
 
-def get_aws_as_groups(region):
+def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     asgs = []
     try:
-        conn_as = boto.ec2.autoscale.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
         asgs = conn_as.get_all_groups()
     except:
         traceback.print_exc()
     return [('', '-- No Autoscale for this app --')]+[(asg.name, asg.name + ' (' + asg.launch_config_name + ')') for asg in asgs]
 
-def get_ghost_app_as_group(as_group_name, region):
+def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     try:
-        conn_as = boto.ec2.autoscale.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
         asgs = conn_as.get_all_groups(names=[as_group_name])
         if len(asgs) > 0:
             return asgs[0]
@@ -145,8 +170,9 @@ def get_ghost_app_as_group(as_group_name, region):
         traceback.print_exc()
     return None
 
-def get_as_group_instances(as_group, region):
-    conn = boto.ec2.connect_to_region(region)
+def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
+    cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+    conn = cloud_connection.get_connection(region, ["ec2"])
     instance_ids = []
     for i in as_group.instances:
         if i.health_status != 'Unhealthy':
@@ -155,17 +181,18 @@ def get_as_group_instances(as_group, region):
     if len(instance_ids) > 0:
         instances = conn.get_only_instances(instance_ids=instance_ids)
         for host in instances:
-            hosts.append(format_host_infos(host, conn, region))
+            hosts.append(format_host_infos(host, conn, cloud_connection, region))
     return hosts
 
-def get_elbs_in_as_group(as_group, region):
+def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
     try:
-        conn_elb = boto.ec2.elb.connect_to_region(region)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        conn_elb = cloud_connection.get_connection(region, ["ec2", "elb"])
         if len(as_group.load_balancers) > 0:
             as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
             if len(as_elbs) > 0:
                 return as_elbs
-            else:
+            else: 
                 return None
         else:
             return None
@@ -173,9 +200,9 @@ def get_elbs_in_as_group(as_group, region):
         traceback.print_exc()
     return None
 
-def get_elbs_instances_from_as_group(as_group, region):
+def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, **kwargs):
     try:
-        elbs = get_elbs_in_as_group(as_group, region)
+        elbs = get_elbs_in_as_group(provider, as_group, region, log_file, **kwargs)
         if elbs:
             elbs_instances = []
             for elb in elbs:
@@ -185,15 +212,16 @@ def get_elbs_instances_from_as_group(as_group, region):
                         elb_instance_ids.append('#' + instance.id)
                     elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
             return elbs_instances
-        else:
+        else: 
             return None
     except:
         traceback.print_exc()
     return None
 
-def get_ghost_app_ec2_instances(ghost_app, ghost_env, ghost_role, region, filters=[]):
-    conn_as = boto.ec2.autoscale.connect_to_region(region)
-    conn = boto.ec2.connect_to_region(region)
+def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, log_file=None, filters=[], **kwargs):
+    cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+    conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
+    conn = cloud_connection.get_connection(region, ["ec2"])
 
     # Retrieve running instances
     running_instance_filters = {"tag:env": ghost_env, "tag:role": ghost_role, "tag:app": ghost_app}
@@ -209,20 +237,20 @@ def get_ghost_app_ec2_instances(ghost_app, ghost_env, ghost_role, region, filter
         autoscale_instances = conn_as.get_all_autoscaling_instances(instance_ids=[instance.id])
         if not autoscale_instances or not autoscale_instances[0].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
             if instance.id not in host_ids_as:
-                hosts.append(format_host_infos(instance, conn, region))
+                hosts.append(format_host_infos(instance, conn, cloud_connection, region))
         else:
             hosts.append({'id': instance.id, 'private_ip_address': instance.private_ip_address, 'status': 'terminated'})
 
     return hosts
 
-def format_host_infos(instance, conn, region):
+def format_host_infos(instance, conn, cloud_connection, region):
     sg_string = None
     image = conn.get_image(instance.image_id)
     image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name if image is not None else 'deregistered')
     sg_string = ', '.join(["{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name) for sg in instance.groups])
 
     if instance.subnet_id:
-        subnets = boto.vpc.connect_to_region(region).get_all_subnets(subnet_ids=[instance.subnet_id])
+        subnets = cloud_connection.get_connection(region, ["vpc"]).get_all_subnets(subnet_ids=[instance.subnet_id])
         subnet_string = instance.subnet_id + ' (' + subnets[0].tags.get('Name', '') + ')'
     else:
         subnet_string = '-'
@@ -242,14 +270,8 @@ def format_host_infos(instance, conn, region):
     return host
 
 def get_aws_ec2_instance_types(region):
-    # Uncomment when implemented on AWS side
-    #types = []
-    #try:
-    #    c = boto.ec2.connect_to_region(region)
-    #    types = c.get_all_instance_types()
-    #except:
-    #    traceback.print_exc()
-
+    # TODO: use `get_all_instance_types()` once implemented on AWS side
+    # cf. https://github.com/boto/boto/issues/3137
     types = aws_data.instance_types[region]
     return [(instance_type.name,
          '{name} (cores:{cores}, memory:{memory}, disk:{disk})'.format(name=instance_type.name,
@@ -265,7 +287,8 @@ def get_safe_deployment_possibilities(app):
         :param app: Ghost app object
         :return array of pair
     """
-    hosts_list = get_ghost_app_ec2_instances(app['name'], app['env'], app['role'], app['region'])
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
+    hosts_list = get_ghost_app_ec2_instances(DEFAULT_PROVIDER, app['name'], app['env'], app['role'], app['region'], [], **aws_connection_data)
     safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
     return [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
 
@@ -634,8 +657,33 @@ class BaseAppForm(Form):
     ])
 
     env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
-
     role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    # Cloud Provider
+    #Leave the following line commented to remember for further 
+    #dev to manage other cloud providers than aws
+    #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
+    use_custom_identity = BooleanField('Use a custom Identity', validators=[])
+
+    assumed_account_id = StringField('Assumed Account ID', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['assumed_account_id']['regex']
+        )
+    ])
+
+    assumed_role_name = StringField('Assumed Role Name', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['assumed_role_name']['regex']
+        )
+    ])
+
+    assumed_region_name = StringField('Assumed Region Name', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['assumed_region_name']['regex']
+        )
+    ])
 
     # Notification properties
     log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
@@ -688,6 +736,13 @@ class BaseAppForm(Form):
         """
         if self.name:
             app['name'] = self.name.data
+        #app['provider'] = self.provider.data
+        if self.assumed_account_id:
+            app['assumed_account_id'] = self.assumed_account_id.data
+        if self.assumed_role_name:
+            app['assumed_role_name'] = self.assumed_role_name.data
+        if self.assumed_region_name:
+            app['assumed_region_name'] = self.assumed_region_name.data
         if self.env:
             app['env'] = self.env.data
         if self.role:
@@ -856,6 +911,10 @@ class BaseAppForm(Form):
 
         # Populate form with app data
         self.name.data = app.get('name', '')
+        #self.provider.data = app.get('provider', DEFAULT_PROVIDER)
+        self.assumed_account_id.data = app.get('assumed_account_id', '')
+        self.assumed_role_name.data = app.get('assumed_role_name', '')
+        self.assumed_region_name.data = app.get('assumed_region_name', '')
         self.env.data = app.get('env', '')
         self.role.data = app.get('role', '')
         self.region.data = app.get('region', '')
@@ -944,7 +1003,21 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions()
+        #Leave the following line commented to remember for further 
+        #The following commented lines intend to manage other cloud providers than aws
+        #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
+        #self.provider.data = DEFAULT_PROVIDER
+        if self.use_custom_identity.data:
+            aws_connection_data = get_aws_connection_data(
+                                                            self.assumed_account_id.data,
+                                                            self.assumed_role_name.data,
+                                                            self.assumed_region_name.data
+                                                         )
+        else:
+           aws_connection_data = {}
+        #provider is intended to be an application attribute
+        #self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection_data)
+        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(DEFAULT_PROVIDER, **aws_connection_data)
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.autoscale.as_name.choices = [('', 'Please select region first')]
@@ -965,8 +1038,8 @@ class EditAppForm(BaseAppForm):
     def __init__(self, *args, **kwargs):
         super(EditAppForm, self).__init__(*args, **kwargs)
 
-        # Refresh AWS lists
-        self.region.choices = get_aws_ec2_regions()
+        # Refresh AWS lists, check what to refresh exactly in this new version,
+        #self.provider.choices = get_ghost_app_providers()
 
 
     def map_from_app(self, app):
@@ -975,6 +1048,10 @@ class EditAppForm(BaseAppForm):
         """
         # Store app etag in form
         self.etag.data = app.get('_etag', '')
+        
+        # Keep the use_custom_identity checked if it was
+        if app.get('assumed_account_id', None) and app.get('assumed_role_name', None):
+            self.use_custom_identity.data = True
 
         super(EditAppForm, self).map_from_app(app)
 

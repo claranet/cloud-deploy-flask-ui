@@ -277,6 +277,9 @@ td.inline {
 .command_options #modules_list.table .checkbox label {
     text-align: left;
 }
+#app-form #check_provider_creds {
+    float: right;
+}
 
 /*AppList*/
 .apptable {
