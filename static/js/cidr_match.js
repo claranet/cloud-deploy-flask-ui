@@ -1,5 +1,3 @@
-//(function ()
-// {
      //
      // Convert an IP to a long integer.
      //
@@ -123,15 +121,3 @@
              return false;
          }
      };
-
-
-     //
-     // Export our public API
-     //
-     //var exports = {};
-     //exports.cidr_match = cidr_match;
-     //exports.long2ip    = long2ip;
-     //exports.ip2long    = ip2long;
-
-     //module.exports = exports;
-//}());

@@ -30,6 +30,7 @@
 {% endblock %}
 
 {% block page_scripts %}
+    <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
         function show_options_fields()  {
@@ -102,6 +103,18 @@
         });
 
         refresh_options_list();
+
+        $('#private_ip_address').focusout(function (){
+            ip_input = $(this).val();
+            subnet_input = $('#subnet').val();
+            cidr = $('option[value='+subnet_input+']').text().split(' - ')[1].replace(')', '');
+            if (!cidr_match(ip_input, cidr)) {
+                $(this).parent().parent().addClass('has-error');
+                alert("'" + ip_input + "' is not a valid IP for the choosen subnet with CIDR '" + cidr + "'")
+            } else {
+                $(this).parent().parent().removeClass('has-error');
+            }
+        });
     })();
 
     function ghost_update_command_deploy_revision(module_name, revision_id) {
@@ -133,7 +146,6 @@
         $('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change");
     });
     </script>
-    <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
 {% endblock %}
 
 {% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, loop_index, form_type, html_placeholder='') -%}
