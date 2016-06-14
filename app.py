@@ -21,6 +21,7 @@ from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
+from forms import get_wtforms_selectfield_values, get_aws_subnets_ids_from_app
 from forms import get_aws_connection_data, check_aws_assumed_credentials
 
 # Web UI App
@@ -176,6 +177,13 @@ def web_amis_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ami_ids(provider, region_id, **query_string))
+
+@app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
+def web_app_subnets_list(provider, app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
+    return jsonify(get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)) 
 
 @app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
 def web_app_infos(provider, app_id):
@@ -369,6 +377,7 @@ def web_app_command(app_id):
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+        form.subnet.choices = get_wtforms_selectfield_values(app['environment_infos']['subnet_ids'])
 
     # Perform validation
     if form.validate_on_submit():
