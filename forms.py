@@ -637,9 +637,10 @@ class ModuleForm(Form):
     ])
 
     module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
-    module_build_pack = TextAreaField('Build Pack', validators=[])
-    module_pre_deploy = TextAreaField('Pre Deploy', validators=[])
-    module_post_deploy = TextAreaField('Post Deploy', validators=[])
+    module_build_pack = TextAreaField('Build Pack', description='Script executed on Ghost in order to build artifacts before packaging.', validators=[])
+    module_pre_deploy = TextAreaField('Pre Deploy', description='Script executed on each target instance *before* deploying the module.', validators=[])
+    module_post_deploy = TextAreaField('Post Deploy', description='Script executed on each target instance *after* deploying the module.', validators=[])
+    module_after_all_deploy = TextAreaField('After All Deploy', description='Script executed on Ghost after the deploy of the module on every instances.', validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -658,6 +659,8 @@ class ModuleForm(Form):
             self.module_pre_deploy.data = module['pre_deploy']
         if 'post_deploy' in module:
             self.module_post_deploy.data = module['post_deploy']
+        if 'after_all_deploy' in module:
+            self.module_after_all_deploy.data = module['after_all_deploy']
 
 
 class BaseAppForm(Form):
@@ -915,6 +918,8 @@ class BaseAppForm(Form):
                 module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.replace('\r\n', '\n'))
             if form_module.module_post_deploy.data:
                 module['post_deploy'] = b64encode(form_module.module_post_deploy.data.replace('\r\n', '\n'))
+            if form_module.module_after_all_deploy.data:
+                module['after_all_deploy'] = b64encode(form_module.module_after_all_deploy.data.replace('\r\n', '\n'))
             app['modules'].append(module)
 
     def map_from_app(self, app):
