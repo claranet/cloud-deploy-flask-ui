@@ -112,6 +112,8 @@ def get_ghost_app(app_id, embed_deployments=False):
                 module['pre_deploy'] = b64decode(module['pre_deploy'])
             if 'post_deploy' in module:
                 module['post_deploy'] = b64decode(module['post_deploy'])
+            if 'after_all_deploy' in module:
+                module['after_all_deploy'] = b64decode(module['after_all_deploy'])
 
             if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
                 try:
