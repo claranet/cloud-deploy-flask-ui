@@ -377,7 +377,7 @@ def web_app_command(app_id):
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
-        form.subnet.choices = get_wtforms_selectfield_values(app['environment_infos']['subnet_ids'])
+        form.subnet.choices = [('', '')] + get_wtforms_selectfield_values(app['environment_infos']['subnet_ids'])
 
     # Perform validation
     if form.validate_on_submit():
