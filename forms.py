@@ -640,7 +640,7 @@ class ModuleForm(Form):
     module_build_pack = TextAreaField('Build Pack', description='Script executed on Ghost in order to build artifacts before packaging.', validators=[])
     module_pre_deploy = TextAreaField('Pre Deploy', description='Script executed on each target instance *before* deploying the module.', validators=[])
     module_post_deploy = TextAreaField('Post Deploy', description='Script executed on each target instance *after* deploying the module.', validators=[])
-    module_after_all_deploy = TextAreaField('After All Deploy', description='Script executed on Ghost after the deploy of the module on every instances.', validators=[])
+    module_after_all_deploy = TextAreaField('After All Deploy', description='Script executed on Ghost after deploying the module on every instances.', validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
