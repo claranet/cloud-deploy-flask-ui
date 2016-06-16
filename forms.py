@@ -192,7 +192,7 @@ def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
             as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
             if len(as_elbs) > 0:
                 return as_elbs
-            else: 
+            else:
                 return None
         else:
             return None
@@ -212,7 +212,7 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
                         elb_instance_ids.append('#' + instance.id)
                     elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
             return elbs_instances
-        else: 
+        else:
             return None
     except:
         traceback.print_exc()
@@ -422,12 +422,12 @@ class SafedeploymentForm(Form):
         """
         app['safe-deployment'] = {}
         app['safe-deployment']['load_balancer_type'] = self.lb_type.data
-        app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data
-        app['safe-deployment']['wait_after_deploy'] = self.safe_deploy_wait_after.data
+        app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data.strip()
+        app['safe-deployment']['wait_after_deploy'] = self.safe_deploy_wait_after.data.strip()
         if self.lb_type.data == "haproxy":
-            app['safe-deployment']['app_tag_value'] = self.haproxy_app_tag.data
-            app['safe-deployment']['ha_backend'] = self.haproxy_backend.data
-            app['safe-deployment']['api_port'] = self.haproxy_api_port.data
+            app['safe-deployment']['app_tag_value'] = self.haproxy_app_tag.data.strip()
+            app['safe-deployment']['ha_backend'] = self.haproxy_backend.data.strip()
+            app['safe-deployment']['api_port'] = self.haproxy_api_port.data.strip()
 
 
 class BuildInfosForm(Form):
@@ -659,7 +659,7 @@ class BaseAppForm(Form):
     env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
     role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
     # Cloud Provider
-    #Leave the following line commented to remember for further 
+    #Leave the following line commented to remember for further
     #dev to manage other cloud providers than aws
     #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
@@ -1003,7 +1003,7 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        #Leave the following line commented to remember for further 
+        #Leave the following line commented to remember for further
         #The following commented lines intend to manage other cloud providers than aws
         #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
         #self.provider.data = DEFAULT_PROVIDER
@@ -1048,7 +1048,7 @@ class EditAppForm(BaseAppForm):
         """
         # Store app etag in form
         self.etag.data = app.get('_etag', '')
-        
+
         # Keep the use_custom_identity checked if it was
         if app.get('assumed_account_id', None) and app.get('assumed_role_name', None):
             self.use_custom_identity.data = True
