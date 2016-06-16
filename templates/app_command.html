@@ -110,9 +110,11 @@
             cidr = $('option[value='+subnet_input+']').text().split(' - ')[1].replace(')', '');
             if (!cidr_match(ip_input, cidr)) {
                 $(this).parent().parent().addClass('has-error');
+                $('#submit').attr('disabled', 'disabled');
                 alert("'" + ip_input + "' is not a valid IP for the choosen subnet with CIDR '" + cidr + "'")
             } else {
                 $(this).parent().parent().removeClass('has-error');
+                $('#submit').removeAttr('disabled');
             }
         });
     })();
