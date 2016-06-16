@@ -8,6 +8,7 @@ import traceback
 import sys
 import requests
 import json
+from settings import API_BASE_URL
 
 from ghost_tools import b64decode_utf8
 
@@ -16,10 +17,10 @@ API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
 
 # FIXME: Static conf to externalize with Flask-Appconfig
 headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-url_apps = 'http://localhost:5000/apps'
-url_jobs = 'http://localhost:5000/jobs'
-url_commands = 'http://localhost:5000/commands'
-url_deployments = 'http://localhost:5000/deployments'
+url_apps = API_BASE_URL + '/apps'
+url_jobs = API_BASE_URL + '/jobs'
+url_commands = API_BASE_URL + '/commands'
+url_deployments = API_BASE_URL + '/deployments'
 
 # Helpers
 def format_success_message(success_message, result):
