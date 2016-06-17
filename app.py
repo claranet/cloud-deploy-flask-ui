@@ -385,6 +385,58 @@ def web_app_command(app_id):
 
     return render_template('app_command.html', form=form, app=app)
 
+@app.route('/web/apps/<app_id>/command/job/<job_id>', methods=['GET', 'POST'])
+def web_app_command_from_job(app_id, job_id):
+    form = CommandAppForm(app_id)
+    app = get_ghost_app(app_id)
+
+    # Dynamic selections update
+    if form.is_submitted():
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+
+    # Perform validation
+    if form.validate_on_submit():
+        message = create_ghost_job(app_id, form, headers)
+
+        return render_template('action_completed.html', message=message)
+
+    # Display default template in GET case
+    form.map_from_app(app)
+
+    # Get job info and map command form
+    job = get_ghost_job(job_id)
+
+    form.command.data = job['command']
+
+    if job['command'] == 'deploy' and 'options' in job and len(job['options']):
+        form.fabric_execution_strategy.data = job['options'][0]
+    else:
+        form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+    if job['command'] == 'buildimage' and 'options' in job and len(job['options']):
+        form.skip_salt_bootstrap.data = job['options'][0]
+    else:
+        form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
+
+    if job['command'] == 'deploy':
+        job_modules = {}
+        for mod in job['modules']:
+            job_modules[mod['name']] = mod
+        # Map deployed modules
+        for form_module in form.modules:
+            if form_module.form.name.data in job_modules.keys():
+                form_module.deploy.data = True
+                form_module.rev.data = job_modules[form_module.form.name.data]['rev']
+        # Map safe deployment options
+        if 'options' in job and len(job['options']) > 1:
+            form.safe_deployment.data = True
+            form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+            form.safe_deployment_strategy.data = job['options'][1]
+
+    if job['command'] == 'redeploy' and 'options' in job and len(job['options']):
+        form.deploy_id.data = job['options'][0]
+
+    return render_template('app_command.html', form=form, app=app)
+
 @app.route('/web/apps/<app_id>/command/module/<module>', methods=['GET', 'POST'])
 def web_app_module_last_revision(app_id, module):
     last_revision = ''
