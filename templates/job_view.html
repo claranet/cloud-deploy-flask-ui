@@ -11,9 +11,11 @@
         <li>
             <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-raised btn-danger" {%- if job['status'] not in deletable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
+        {% if app['_id'] %}
         <li>
             <a href="/web/apps/{{ app['_id'] }}/command/job/{{ job['_id'] }}"><button class="btn btn-raised btn-default"><span class="fa fa-share"></span> Launch another like this</button></a>
         </li>
+        {% endif %}
     </ul>
 {% endblock %}
 
