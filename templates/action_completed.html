@@ -17,6 +17,16 @@
 {% endblock %}"
 
 {% block page_content %}
+    {% if action_object_type == 'apps' %}
+    <ul class="nav nav-stacked action-btns">
+        <li>
+            <a href="/web/apps/{{ action_object_id }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> App Run Command</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/{{ action_object_id }}/edit"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-edit"></span> App Edit</button></a>
+        </li>
+    </ul>
+    {% endif %}
     <h2>Message:</h2>
     <hr/>
     <div>{{ message }}</div>

@@ -253,7 +253,7 @@ def web_app_create():
 
         message = create_ghost_app(app)
 
-        return render_template('action_completed.html', message=message)
+        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=message['_id'])
 
     if clone_from_app:
         form.map_from_app(clone_from_app)
@@ -333,7 +333,7 @@ def web_app_edit(app_id):
         #if form.update_manifest.data:
         #TODO Perform Manifest update
 
-        return render_template('action_completed.html', message=message)
+        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=app_id)
 
     # Get App data on first access
     if not form.etag.data:
