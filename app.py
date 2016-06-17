@@ -183,7 +183,7 @@ def web_app_subnets_list(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
     aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
-    return jsonify(get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)) 
+    return jsonify(get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data))
 
 @app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
 def web_app_infos(provider, app_id):
@@ -388,9 +388,9 @@ def web_app_command(app_id):
     # Display default template in GET case
     form.map_from_app(app)
 
-    form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
-    form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
     if not form.is_submitted():
+        form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+        form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
         form.command.data = 'deploy'
 
     return render_template('app_command.html', form=form, app=app)
