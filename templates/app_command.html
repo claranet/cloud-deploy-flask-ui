@@ -108,7 +108,7 @@
             ip_input = $(this).val();
             subnet_input = $('#subnet').val();
             cidr = $('option[value='+subnet_input+']').text().split(' - ')[1].replace(')', '');
-            if (!cidr_match(ip_input, cidr)) {
+            if (ip_input && !cidr_match(ip_input, cidr)) {
                 $(this).parent().parent().addClass('has-error');
                 $('#submit').attr('disabled', 'disabled');
                 alert("'" + ip_input + "' is not a valid IP for the choosen subnet with CIDR '" + cidr + "'")
