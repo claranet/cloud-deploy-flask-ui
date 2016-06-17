@@ -422,12 +422,12 @@ class SafedeploymentForm(Form):
         """
         app['safe-deployment'] = {}
         app['safe-deployment']['load_balancer_type'] = self.lb_type.data
-        app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data.strip()
-        app['safe-deployment']['wait_after_deploy'] = self.safe_deploy_wait_after.data.strip()
+        app['safe-deployment']['wait_before_deploy'] = self.safe_deploy_wait_before.data
+        app['safe-deployment']['wait_after_deploy'] = self.safe_deploy_wait_after.data
         if self.lb_type.data == "haproxy":
             app['safe-deployment']['app_tag_value'] = self.haproxy_app_tag.data.strip()
             app['safe-deployment']['ha_backend'] = self.haproxy_backend.data.strip()
-            app['safe-deployment']['api_port'] = self.haproxy_api_port.data.strip()
+            app['safe-deployment']['api_port'] = self.haproxy_api_port.data
 
 
 class BuildInfosForm(Form):
