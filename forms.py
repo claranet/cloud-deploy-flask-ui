@@ -372,11 +372,12 @@ class AutoscaleForm(Form):
 
     max = IntegerField('Max', description='The maximum size of the Auto Scaling group', validators=[
         OptionalValidator(),
-        NumberRangeValidator(min=1)
+        NumberRangeValidator(min=0)
     ])
 
     current = IntegerField('Desired', description='The number of instances that should be running in the Auto Scaling group', validators=[
-        OptionalValidator()
+        OptionalValidator(),
+        NumberRangeValidator(min=0)
     ])
 
     # Disable CSRF in autoscale forms as they are subforms
