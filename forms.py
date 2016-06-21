@@ -702,9 +702,8 @@ class BluegreenForm(Form):
         """
         Map blue green data form to app
         """
-        if isinstance(self.enable_blue_green.data, bool) and self.enable_blue_green.data:
-            app['blue_green'] = {}
-            app['blue_green']['enable_blue_green'] = True
+        app['blue_green'] = {}
+        app['blue_green']['enable_blue_green'] = isinstance(self.enable_blue_green.data, bool) and self.enable_blue_green.data
 
 class BaseAppForm(Form):
     # App properties
