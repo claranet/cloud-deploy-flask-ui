@@ -3,12 +3,13 @@ from flask.ext.login import current_user
 from werkzeug.exceptions import default_exceptions
 from eve import RFC1123_DATE_FORMAT
 
-from base64 import b64decode
 from datetime import datetime
 import traceback
 import sys
 import requests
 import json
+
+from ghost_tools import b64decode_utf8
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
@@ -100,20 +101,20 @@ def get_ghost_app(app_id, embed_deployments=False):
         lifecycle_hooks = app.get('lifecycle_hooks', None)
         if lifecycle_hooks is not None:
             if 'pre_bootstrap' in lifecycle_hooks:
-                lifecycle_hooks['pre_bootstrap'] = b64decode(lifecycle_hooks['pre_bootstrap'])
+                lifecycle_hooks['pre_bootstrap'] = b64decode_utf8(lifecycle_hooks['pre_bootstrap'])
             if 'post_bootstrap' in lifecycle_hooks:
-                lifecycle_hooks['post_bootstrap'] = b64decode(lifecycle_hooks['post_bootstrap'])
+                lifecycle_hooks['post_bootstrap'] = b64decode_utf8(lifecycle_hooks['post_bootstrap'])
 
         # Decode module scripts
         for module in app.get('modules', []):
             if 'build_pack' in module:
-                module['build_pack'] = b64decode(module['build_pack'])
+                module['build_pack'] = b64decode_utf8(module['build_pack'])
             if 'pre_deploy' in module:
-                module['pre_deploy'] = b64decode(module['pre_deploy'])
+                module['pre_deploy'] = b64decode_utf8(module['pre_deploy'])
             if 'post_deploy' in module:
-                module['post_deploy'] = b64decode(module['post_deploy'])
+                module['post_deploy'] = b64decode_utf8(module['post_deploy'])
             if 'after_all_deploy' in module:
-                module['after_all_deploy'] = b64decode(module['after_all_deploy'])
+                module['after_all_deploy'] = b64decode_utf8(module['after_all_deploy'])
 
             if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
                 try:
