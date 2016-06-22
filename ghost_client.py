@@ -250,6 +250,11 @@ def create_ghost_job(app_id, form, headers):
         if form.private_ip_address.data:
             options.append(form.private_ip_address.data)
 
+    if form.command.data == 'preparebluegreen':
+        if isinstance(form.prepare_bg_copy_ami.data, bool):
+            # In case of preparebluegreen, option[0] can be the prepare_bg_copy_ami
+            options.append(str(form.prepare_bg_copy_ami.data))
+
     if len(options) > 0:
         job['options'] = options
 

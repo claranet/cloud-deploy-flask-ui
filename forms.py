@@ -1165,6 +1165,7 @@ class CommandAppForm(Form):
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
     private_ip_address = StringField('Private IP address', validators=[RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
     subnet = SelectField('Subnet', validators=[], choices=[])
+    prepare_bg_copy_ami = BooleanField('Copy AMI from online app', validators=[])
 
     submit = SubmitField('Run Application Command')
 

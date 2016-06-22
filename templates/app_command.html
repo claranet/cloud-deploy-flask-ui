@@ -24,6 +24,7 @@
             <div class="wrap skip_salt_bootstrap">{{ wtf.form_field(form.skip_salt_bootstrap, form_type='horizontal') }}</div>
             <div class="wrap subnet">{{ wtf.form_field(form.subnet, form_type='horizontal') }}</div>
             <div class="wrap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
+            <div class="wrap prepare_bg_copy_ami">{{ wtf.form_field(form.prepare_bg_copy_ami, form_type='horizontal') }}</div>
         </div>
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
@@ -50,6 +51,8 @@
                 $('.wrap.subnet').show();
                 $('.wrap.private_ip_address').show();
                 get_app_subnets('{{ app['_id'] }}');
+            } else if ($('#command').val() == 'preparebluegreen') {
+                $('.wrap.prepare_bg_copy_ami').show();
             }
         }
 
