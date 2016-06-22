@@ -237,6 +237,12 @@ def create_ghost_job(app_id, form, headers):
             # option[1] can be the safe deployment type
             options.append(form.safe_deployment_strategy.data)
 
+    if form.command.data == 'createinstance':
+        if form.subnet.data:
+            options.append(form.subnet.data)
+        if form.private_ip_address.data:
+            options.append(form.private_ip_address.data)
+
     if len(options) > 0:
         job['options'] = options
 

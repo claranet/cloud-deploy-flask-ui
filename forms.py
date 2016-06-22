@@ -119,6 +119,16 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
         traceback.print_exc()
     return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
 
+def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwargs):
+    subs = []
+    try:
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        c = cloud_connection.get_connection(region, ["vpc"])
+        subs = c.get_all_subnets(subnet_ids=subnets)
+    except:
+        traceback.print_exc()
+    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ' - ' + sub.cidr_block + ')') for sub in subs]
+
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
     try:
@@ -1077,6 +1087,8 @@ class CommandAppForm(Form):
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
+    private_ip_address = StringField('Private IP address', validators=[RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
+    subnet = SelectField('Subnet', validators=[], choices=[])
 
     submit = SubmitField('Run Application Command')
 
@@ -1094,6 +1106,9 @@ class CommandAppForm(Form):
 
         # Get the safe deployment possibilities
         self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
+
+        # Get the subnets of the current application
+        self.subnet.choices = [('', '-- Retrieving available subnets... --')]
 
     def map_from_app(self, app):
         """

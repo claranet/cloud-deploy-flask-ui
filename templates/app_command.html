@@ -22,12 +22,15 @@
             <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
             <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
             <div class="wrap skip_salt_bootstrap">{{ wtf.form_field(form.skip_salt_bootstrap, form_type='horizontal') }}</div>
+            <div class="wrap subnet">{{ wtf.form_field(form.subnet, form_type='horizontal') }}</div>
+            <div class="wrap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
         </div>
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
 {% endblock %}
 
 {% block page_scripts %}
+    <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
         function show_options_fields()  {
@@ -43,6 +46,10 @@
             } else if ($('#command').val() == 'buildimage') {
                 $('.wrap.instance_type').show();
                 $('.wrap.skip_salt_bootstrap').show();
+            } else if ($('#command').val() == 'createinstance') {
+                $('.wrap.subnet').show();
+                $('.wrap.private_ip_address').show();
+                get_app_subnets('{{ app['_id'] }}');
             }
         }
 
@@ -54,6 +61,19 @@
                 $(this).attr('data-subtext', ' - ' + desc);
             });
             $('#command, #safe_deployment_strategy').selectpicker('refresh');
+        }
+
+        function get_app_subnets(app_id) {
+            $('#subnet').find('option').remove();
+            $.ajax("/web/aws/appinfos/" + app_id +"/subnet/ids").done(function(data) {
+                // Update Subnets select input options
+                $.each(data, function(key, value) {
+                    $('#subnet').append('<option value=' + key + '>' + value + '</option>');
+                });
+                $('#subnet').selectpicker('refresh');
+            }).fail(function() {
+                alert("Failed to retrieve Subnet for App " + app_id);
+            });
         }
 
         function get_app_safe_deployment_possibilities() {
@@ -83,6 +103,20 @@
         });
 
         refresh_options_list();
+
+        $('#private_ip_address').focusout(function (){
+            ip_input = $(this).val();
+            subnet_input = $('#subnet').val();
+            cidr = $('option[value='+subnet_input+']').text().split(' - ')[1].replace(')', '');
+            if (ip_input && !cidr_match(ip_input, cidr)) {
+                $(this).parent().parent().addClass('has-error');
+                $('#submit').attr('disabled', 'disabled');
+                alert("'" + ip_input + "' is not a valid IP for the choosen subnet with CIDR '" + cidr + "'")
+            } else {
+                $(this).parent().parent().removeClass('has-error');
+                $('#submit').removeAttr('disabled');
+            }
+        });
     })();
 
     function ghost_update_command_deploy_revision(module_name, revision_id) {

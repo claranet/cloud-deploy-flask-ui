@@ -21,6 +21,7 @@ from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
+from forms import get_wtforms_selectfield_values, get_aws_subnets_ids_from_app
 from forms import get_aws_connection_data, check_aws_assumed_credentials
 
 # Web UI App
@@ -127,8 +128,8 @@ def web_cloud_check_assume_role(provider, account_id, role_name):
 
 @app.route('/web/<provider>/regions')
 def web_cloud_regions(provider):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ec2_regions(provider, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
@@ -137,45 +138,52 @@ def web_ec2_instance_types_list(provider, region_id):
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/keypairs')
 def web_ec2_key_pairs_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ec2_key_pairs(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/autoscale/ids')
 def web_ec2_as_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_as_groups(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/iam/profiles')
 def web_iam_profiles_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_iam_instance_profiles(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/ids')
 def web_vpcs_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_vpc_ids(provider, region_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/sg/ids')
 def web_sgs_list(provider, region_id, vpc_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_sg_ids(provider, region_id, vpc_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
 def web_subnets_list(provider, region_id, vpc_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_subnet_ids(provider, region_id, vpc_id, **query_string))
 
 @app.route('/web/<provider>/regions/<region_id>/ami/ids')
 def web_amis_list(provider, region_id):
-    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1 
-        else request.args.getlist(key)[0]) for key in request.args.keys()) 
+    query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
+        else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(get_aws_ami_ids(provider, region_id, **query_string))
+
+@app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
+def web_app_subnets_list(provider, app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
+    return jsonify(get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data))
 
 @app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
 def web_app_infos(provider, app_id):
@@ -369,6 +377,7 @@ def web_app_command(app_id):
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+        form.subnet.choices = [('', '')] + get_wtforms_selectfield_values(app['environment_infos']['subnet_ids'])
 
     # Perform validation
     if form.validate_on_submit():
@@ -379,9 +388,10 @@ def web_app_command(app_id):
     # Display default template in GET case
     form.map_from_app(app)
 
-    form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
-    form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
-    form.command.data = 'deploy'
+    if not form.is_submitted():
+        form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+        form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
+        form.command.data = 'deploy'
 
     return render_template('app_command.html', form=form, app=app)
 
