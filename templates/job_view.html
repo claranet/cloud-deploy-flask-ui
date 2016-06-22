@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% set page_title = 'Job %s' % (job['_id'] or '-')  %}
+{% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
 
 {% block page_header %}
     <ul class="nav nav-stacked action-btns">
@@ -10,11 +11,15 @@
         <li>
             <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-raised btn-danger" {%- if job['status'] not in deletable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
+        {% if app['_id'] %}
+        <li>
+            <a href="/web/apps/{{ app['_id'] }}/command/job/{{ job['_id'] }}"><button class="btn btn-raised btn-default"><span class="fa fa-share"></span> Run more like this</button></a>
+        </li>
+        {% endif %}
     </ul>
-{% endblock %}"
+{% endblock %}
 
 {% block page_content %}
-    {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
 
     <div class="panel panel-default jobview">
         <div class="panel-heading">Properties</div>
