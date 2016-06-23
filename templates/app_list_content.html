@@ -1,4 +1,5 @@
 {% for app in apps | sort(reverse=True, attribute='_updated') %}
+{% set app_is_bluegreen = app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] %}
 <tr class="env-{{ app['env'] }} app-row">
     <th scope="row"><span class="index"></span></th>
     <td>
@@ -19,9 +20,10 @@
         by&nbsp;{{ app.get('user', '-') }}
     </td>
     <td>
-        {%- if app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] -%}
+        {%- if app_is_bluegreen -%}
         <p class="app-is-bluegreen" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">
             <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}">{{ app['env'] }} - {{ app['blue_green']['color'] }}</a>
+            {{ app['blue_green']['is_online'] and '&nbsp;&#10004;' | safe or '' }}
         </p>
         {%- else -%}
             {{ app['env'] }}
