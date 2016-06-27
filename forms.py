@@ -595,7 +595,7 @@ class FeatureForm(Form):
             ghost_app_schema['features']['schema']['schema']['name']['regex']
         )
     ])
-    feature_version = StringField('Version', validators=[
+    feature_version = StringField('Value', validators=[
         RegexpValidator(
             ghost_app_schema['features']['schema']['schema']['version']['regex']
         )
