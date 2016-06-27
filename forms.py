@@ -137,7 +137,10 @@ def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
         profiles = c.list_instance_profiles()
     except:
         traceback.print_exc()
-    return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles.instance_profiles]
+    if len(profiles):
+        return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles.instance_profiles]
+    else:
+        return []
 
 def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
     keys = []
