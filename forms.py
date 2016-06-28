@@ -577,6 +577,8 @@ class ResourceForm(Form):
         pass
 
 class LifecycleHooksForm(Form):
+    pre_buildimage = TextAreaField('Pre Build Image', description='Script executed at bake before SALT provisioning', validators=[])
+    post_buildimage = TextAreaField('Post Build Image', description='Script executed at bake after SALT provisioning', validators=[])
     pre_bootstrap = TextAreaField('Pre Bootstrap', description='Script executed at bootstrap before modules deploy', validators=[])
     post_bootstrap = TextAreaField('Post Bootstrap', description='Script executed at bootstrap after modules deploy', validators=[])
 
@@ -587,6 +589,10 @@ class LifecycleHooksForm(Form):
     def map_from_app(self, app):
         if 'lifecycle_hooks' in app:
             lifecycle_hooks = app['lifecycle_hooks']
+            if 'pre_buildimage' in lifecycle_hooks:
+                self.pre_buildimage.data = lifecycle_hooks['pre_buildimage']
+            if 'post_buildimage' in lifecycle_hooks:
+                self.post_buildimage.data = lifecycle_hooks['post_buildimage']
             if 'pre_bootstrap' in lifecycle_hooks:
                 self.pre_bootstrap.data = lifecycle_hooks['pre_bootstrap']
             if 'pre_bootstrap' in lifecycle_hooks:
@@ -871,6 +877,16 @@ class BaseAppForm(Form):
         """
         app['lifecycle_hooks'] = {}
         form_lifecycle_hooks = self.lifecycle_hooks
+        if form_lifecycle_hooks.pre_buildimage.data:
+            app['lifecycle_hooks']['pre_buildimage'] = b64encode_utf8(form_lifecycle_hooks.pre_buildimage.data.replace('\r\n', '\n'))
+        else:
+            app['lifecycle_hooks']['pre_buildimage'] = ''
+
+        if form_lifecycle_hooks.post_buildimage.data:
+            app['lifecycle_hooks']['post_buildimage'] = b64encode_utf8(form_lifecycle_hooks.post_buildimage.data.replace('\r\n', '\n'))
+        else:
+            app['lifecycle_hooks']['post_buildimage'] = ''
+
         if form_lifecycle_hooks.pre_bootstrap.data:
             app['lifecycle_hooks']['pre_bootstrap'] = b64encode_utf8(form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
         else:
@@ -880,7 +896,6 @@ class BaseAppForm(Form):
             app['lifecycle_hooks']['post_bootstrap'] = b64encode_utf8(form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['post_bootstrap'] = ''
-
 
     def map_to_app_features(self, app):
         """

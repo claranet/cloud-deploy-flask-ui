@@ -100,6 +100,10 @@ def get_ghost_app(app_id, embed_deployments=False):
         # Decode lifecycle hooks scripts
         lifecycle_hooks = app.get('lifecycle_hooks', None)
         if lifecycle_hooks is not None:
+            if 'pre_buildimage' in lifecycle_hooks:
+                lifecycle_hooks['pre_buildimage'] = b64decode_utf8(lifecycle_hooks['pre_buildimage'])
+            if 'post_buildimage' in lifecycle_hooks:
+                lifecycle_hooks['post_buildimage'] = b64decode_utf8(lifecycle_hooks['post_buildimage'])
             if 'pre_bootstrap' in lifecycle_hooks:
                 lifecycle_hooks['pre_bootstrap'] = b64decode_utf8(lifecycle_hooks['pre_bootstrap'])
             if 'post_bootstrap' in lifecycle_hooks:
