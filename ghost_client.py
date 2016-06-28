@@ -255,6 +255,10 @@ def create_ghost_job(app_id, form, headers):
             # In case of preparebluegreen, option[0] can be the prepare_bg_copy_ami
             options.append(str(form.prepare_bg_copy_ami.data))
 
+    if form.command.data == 'swapbluegreen':
+        if form.swapbluegreen_strategy.data:
+            options.append(form.swapbluegreen_strategy.data)
+
     if len(options) > 0:
         job['options'] = options
 

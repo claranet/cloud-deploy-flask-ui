@@ -1161,6 +1161,7 @@ class CommandAppForm(Form):
     fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
+    swapbluegreen_strategy = SelectField('Blue Green Swap Strategy', validators=[], choices=[('shared', 'shared'), ('isolated', 'isolated')])
     instance_type = SelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
     private_ip_address = StringField('Private IP address', validators=[RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])

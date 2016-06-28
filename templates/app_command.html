@@ -21,6 +21,7 @@
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
+            <div class="wrap swapbluegreen_strategy">{{ wtf.form_field(form.swapbluegreen_strategy, form_type='horizontal') }}</div>
             <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
             <div class="wrap skip_salt_bootstrap">{{ wtf.form_field(form.skip_salt_bootstrap, form_type='horizontal') }}</div>
             <div class="wrap subnet">{{ wtf.form_field(form.subnet, form_type='horizontal') }}</div>
@@ -54,6 +55,8 @@
                 get_app_subnets('{{ app['_id'] }}');
             } else if ($('#command').val() == 'preparebluegreen') {
                 $('.wrap.prepare_bg_copy_ami').show();
+            } else if ($('#command').val() == 'swapbluegreen') {
+                $('.wrap.swapbluegreen_strategy').show();
             }
         }
 
