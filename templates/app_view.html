@@ -169,15 +169,25 @@
         <div class="panel-heading">Lifecycle Hooks</div>
         <div class="panel-body">
             <div class="row">
-                <label class="control-label col-md-1" for="lifecycle_hooks-pre_bootstrap">pre_bootstrap</label>
-                <div class="col-md-11" id="lifecycle_hooks-pre_bootstrap">
-                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('pre_bootstrap', '')) }}
+                <label class="control-label col-md-2" for="lifecycle_hooks-pre_buildimage">Pre Build Image</label>
+                <div class="col-md-4" id="lifecycle_hooks-pre_buildimage">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('pre_buildimage', ''), 42) }}
+                </div>
+
+                <label class="control-label col-md-2" for="lifecycle_hooks-pre_bootstrap">Pre Bootstrap</label>
+                <div class="col-md-4" id="lifecycle_hooks-pre_bootstrap">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('pre_bootstrap', ''), 42) }}
                 </div>
             </div>
             <div class="row">
-                <label class="control-label col-md-1" for="lifecycle_hooks-post_bootstrap">post_bootstrap</label>
-                <div class="col-md-11" id="lifecycle_hooks-post_bootstrap">
-                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('post_bootstrap', '')) }}
+                <label class="control-label col-md-2" for="lifecycle_hooks-post_buildimage">Post Build Image</label>
+                <div class="col-md-4" id="lifecycle_hooks-post_buildimage">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('post_buildimage', ''), 42) }}
+                </div>
+
+                <label class="control-label col-md-2" for="lifecycle_hooks-post_bootstrap">Post Bootstrap</label>
+                <div class="col-md-4" id="lifecycle_hooks-post_bootstrap">
+                    {{ ghost_script(app.get('lifecycle_hooks', {}).get('post_bootstrap', ''), 42) }}
                 </div>
             </div>
         </div>

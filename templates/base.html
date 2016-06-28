@@ -522,12 +522,12 @@
     </div>
 {%- endmacro %}
 
-{% macro ghost_script(value) -%}
-    {%- if value | length > 10 -%}
+{% macro ghost_script(value, maxchars=10) -%}
+    {%- if value | length > maxchars -%}
         <abbr title="{{ value }}">
     {%- endif -%}
-    {{ value[:10] }}
-    {%- if value | length > 10 -%}
+    {{ value[:maxchars] }}
+    {%- if value | length > maxchars -%}
         &hellip;</abbr>
     {%- endif %}
 {%- endmacro %}
