@@ -17,7 +17,7 @@
 {% endblock %}"
 
 {% block page_content %}
-    {% if action_object_type == 'apps' %}
+    {% if action_object_type == 'apps' and action_object_id %}
     <ul class="nav nav-stacked action-btns">
         <li>
             <a href="/web/apps/{{ action_object_id }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> App Run Command</button></a>

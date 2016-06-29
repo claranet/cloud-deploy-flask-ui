@@ -259,9 +259,9 @@ def web_app_create():
         app = {}
         form.map_to_app(app)
 
-        message = create_ghost_app(app)
-
-        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=message['_id'])
+        message, result = create_ghost_app(app)
+        app_id = result['_id'] if '_id' in result else None
+        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=app_id)
 
     if clone_from_app:
         form.map_from_app(clone_from_app)

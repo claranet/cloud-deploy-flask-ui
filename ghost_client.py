@@ -50,7 +50,7 @@ def do_request(method, url, data, headers, success_message, failure_message):
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(failure_message, 'danger')
     print message
-    return message
+    return message, result.json() if status_code in [200, 201] else {}
 
 def handle_response_status_code(status_code):
     if status_code >= 300:
@@ -133,11 +133,12 @@ def create_ghost_app(app):
     return do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers, success_message='Application created', failure_message='Application creation failed')
 
 def update_ghost_app(app_id, local_headers, app):
-    return do_request(requests.patch, url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, success_message='Application updated', failure_message='Application update failed')
+    message, result = do_request(requests.patch, url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, success_message='Application updated', failure_message='Application update failed')
+    return message
 
 def delete_ghost_app(app_id, local_headers):
-    return do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
-
+    message, result = do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
+    return message
 
 def get_ghost_jobs(query=None, page=None):
     try:
@@ -248,16 +249,17 @@ def create_ghost_job(app_id, form, headers):
     if len(options) > 0:
         job['options'] = options
 
-    message = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
+    message, result = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
 
     return message
 
 def delete_ghost_job(job_id, local_headers):
-    return do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
+    message, result = do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
+    return message
 
 def cancel_ghost_job(job_id, local_headers):
-    return do_request(requests.delete, url=url_jobs + '/' + job_id + '/enqueueings', data=None, headers=local_headers, success_message='Job cancelled', failure_message='Job cancellation failed')
-
+    message, result = do_request(requests.delete, url=url_jobs + '/' + job_id + '/enqueueings', data=None, headers=local_headers, success_message='Job cancelled', failure_message='Job cancellation failed')
+    return message
 
 def get_ghost_deployments(query=None, page=None):
     try:
