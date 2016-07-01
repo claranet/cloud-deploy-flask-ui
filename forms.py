@@ -8,7 +8,6 @@ from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
 
 from datetime import datetime
-from base64 import b64encode
 import traceback
 import aws_data
 
@@ -17,6 +16,7 @@ from models.jobs import jobs_schema as ghost_job_schema
 
 from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
+from ghost_tools import b64encode_utf8
 
 # Helpers
 def empty_fieldlist(fieldlist):
@@ -872,12 +872,12 @@ class BaseAppForm(Form):
         app['lifecycle_hooks'] = {}
         form_lifecycle_hooks = self.lifecycle_hooks
         if form_lifecycle_hooks.pre_bootstrap.data:
-            app['lifecycle_hooks']['pre_bootstrap'] = b64encode(form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
+            app['lifecycle_hooks']['pre_bootstrap'] = b64encode_utf8(form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['pre_bootstrap'] = ''
 
         if form_lifecycle_hooks.post_bootstrap.data:
-            app['lifecycle_hooks']['post_bootstrap'] = b64encode(form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
+            app['lifecycle_hooks']['post_bootstrap'] = b64encode_utf8(form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['post_bootstrap'] = ''
 
@@ -913,13 +913,13 @@ class BaseAppForm(Form):
             if isinstance(form_module.module_gid.data, int):
                 module['gid'] = form_module.module_gid.data
             if form_module.module_build_pack.data:
-                module['build_pack'] = b64encode(form_module.module_build_pack.data.replace('\r\n', '\n'))
+                module['build_pack'] = b64encode_utf8(form_module.module_build_pack.data.replace('\r\n', '\n'))
             if form_module.module_pre_deploy.data:
-                module['pre_deploy'] = b64encode(form_module.module_pre_deploy.data.replace('\r\n', '\n'))
+                module['pre_deploy'] = b64encode_utf8(form_module.module_pre_deploy.data.replace('\r\n', '\n'))
             if form_module.module_post_deploy.data:
-                module['post_deploy'] = b64encode(form_module.module_post_deploy.data.replace('\r\n', '\n'))
+                module['post_deploy'] = b64encode_utf8(form_module.module_post_deploy.data.replace('\r\n', '\n'))
             if form_module.module_after_all_deploy.data:
-                module['after_all_deploy'] = b64encode(form_module.module_after_all_deploy.data.replace('\r\n', '\n'))
+                module['after_all_deploy'] = b64encode_utf8(form_module.module_after_all_deploy.data.replace('\r\n', '\n'))
             app['modules'].append(module)
 
     def map_from_app(self, app):
