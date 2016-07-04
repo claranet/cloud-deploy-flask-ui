@@ -214,6 +214,8 @@
             </div>
             <div class="panel-body">
                 <div class="row">
+                    {{ wtf.form_field(form.lifecycle_hooks.form.pre_buildimage, form_type='horizontal') }}
+                    {{ wtf.form_field(form.lifecycle_hooks.form.post_buildimage, form_type='horizontal') }}
                     {{ wtf.form_field(form.lifecycle_hooks.form.pre_bootstrap, form_type='horizontal') }}
                     {{ wtf.form_field(form.lifecycle_hooks.form.post_bootstrap, form_type='horizontal') }}
                 </div>
