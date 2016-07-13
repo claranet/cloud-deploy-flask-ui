@@ -231,7 +231,7 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
         traceback.print_exc()
     return None
 
-def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, log_file=None, filters=[], **kwargs):
+def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=[], log_file=None, **kwargs):
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
@@ -243,7 +243,7 @@ def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, regi
     host_ids_as = []
     if len(filters) > 0:
         for h in filters:
-            host_ids_as.append(h.instance_id)
+            host_ids_as.append(h['id'])
     hosts = []
     for instance in running_instances:
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
