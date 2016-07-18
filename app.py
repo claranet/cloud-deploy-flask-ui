@@ -17,6 +17,7 @@ from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
+from libs.blue_green import ghost_has_blue_green_enabled
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
@@ -79,6 +80,7 @@ def env_list():
     return dict(env_list=ghost_app_schema['env']['allowed'],
                 role_list=ghost_app_schema['role']['allowed'],
                 statuses=JOB_STATUSES,
+                ghost_blue_green=ghost_has_blue_green_enabled(),
                 command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
 
 try:

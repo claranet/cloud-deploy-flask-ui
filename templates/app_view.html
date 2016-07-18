@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Application: %s' % app['name'] %}
+{% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
+{% set page_title = 'Application: %s%s' % (app['name'], app_color) %}
 
 {% block page_header %}
     <ul class="nav nav-stacked action-btns">
@@ -27,9 +28,11 @@
         <li>
             <a href="#aws">AWS</a>
         </li>
+{% if ghost_blue_green %}
         <li>
             <a href="#bluegreen">Blue/Green</a>
         </li>
+{% endif %}
         <li>
             <a href="#autoscale">Autoscale</a>
         </li>
@@ -105,7 +108,7 @@
                 {{ ghost_display_field('app-aws-ami', 'AWS AMI', app['ami']) }}
             </div>
         </div>
-
+{% if ghost_blue_green %}
         <a name="bluegreen" class="anchor">&nbsp;</a>
         <div class="panel-heading">Blue/Green</div>
         {%- if app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] -%}
@@ -132,7 +135,7 @@
             </div>
         {%- endif %}
         </div>
-
+{% endif %}
         <a name="autoscale" class="anchor">&nbsp;</a>
         <div class="panel-heading">Autoscale</div>
         <div class="panel-body">
