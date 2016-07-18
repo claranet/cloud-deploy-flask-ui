@@ -113,7 +113,10 @@
         <div class="panel-body hl-{{ color_class }}">
             <div class="row">
                 {{ ghost_display_field('app-bluegreen-enable', 'Activated', 'True') }}
-                {{ ghost_display_field('app-bluegreen-color', 'Color', app['blue_green']['color']) }}
+                <label class="control-label col-md-2" for="app-bluegreen-color">Color</label>
+                <div class="col-md-4" id="app-bluegreen-color">
+                    <span class="sticker label-{{ color_class }}">{{ app['blue_green']['color'] }}</span>
+                </div>
             </div>
             <div class="row">
                 {{ ghost_display_field('app-bluegreen-is_online', 'Is online', app['blue_green']['is_online']) }}

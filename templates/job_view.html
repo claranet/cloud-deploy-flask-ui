@@ -2,6 +2,7 @@
 
 {% set page_title = 'Job %s' % (job['_id'] or '-')  %}
 {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+{% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 
 {% block page_header %}
     <ul class="nav nav-stacked action-btns">
@@ -27,7 +28,7 @@
             <div class="row">
                 {{ ghost_display_field('job-id', 'Job ID', job['_id'] or '-', cols=3, labelcols=1) }}
                 {{ ghost_display_field('job-created', 'Created', job['_created'], cols=3, labelcols=1) }}
-                {{ ghost_display_field('job-app', 'Application', app['name'] + (app['_id'] and ' (' + app['env'] + ')' or ''), app['_id'] and '/web/apps/' + app['_id'] or None, cols=3, labelcols=1) }}
+                {{ ghost_display_field('job-app', 'Application', app['name'] + (app['_id'] and ' (' + app['env'] + ')' + app_color or ''), app['_id'] and '/web/apps/' + app['_id'] or None, cols=3, labelcols=1) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('job-status', 'Status', job['status'], cols=3, labelcols=1) }}

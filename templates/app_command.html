@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Run Command on %s (%s)' % (app['name'], app['env']) %}
+{% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
+{% set page_title = 'Run Command on %s (%s)%s' % (app['name'], app['env'], app_color) %}
 
 {% block page_content %}
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">

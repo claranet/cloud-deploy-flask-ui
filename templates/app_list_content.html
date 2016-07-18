@@ -21,8 +21,12 @@
     </td>
     <td>
         {%- if app_is_bluegreen -%}
-        <p class="app-is-bluegreen" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">
-            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}">{{ app['env'] }} - {{ app['blue_green']['color'] }}</a>
+        {% set color_class = 'info' if app['blue_green'].get('color', 'blue') == 'blue' else 'success' %}
+        <p class="" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">
+            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}">{{ app['env'] }}</a>
+        </p>
+        <p>
+            <span class="sticker label-{{ color_class }}">{{ app['blue_green']['color'] }}</span>
             {{ app['blue_green']['is_online'] and '&nbsp;&#10004;' | safe or '' }}
         </p>
         {%- else -%}

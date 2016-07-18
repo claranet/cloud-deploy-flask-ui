@@ -10,7 +10,15 @@
         <br>
         {{ job['_updated'] }}</td>
     <td>
-        <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
+        <p>
+            <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
+        </p>
+        <p>
+        {% if app['_id'] and app.get('blue_green') %}
+        {% set color_class = 'info' if app['blue_green'].get('color', 'blue') == 'blue' else 'success' %}
+            <span class="sticker label-{{ color_class }}">{{ app['blue_green']['color'] }}</span>
+        {% endif %}
+        </p>
     </td>
     <td>{{ job['command'] }}</td>
     <td>{{ job['status'] }}</td>

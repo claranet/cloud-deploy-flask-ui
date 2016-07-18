@@ -398,6 +398,12 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .tablelist tr.app-row .app-is-bluegreen a {
     color: white;
 }
+.sticker {
+    color: white;
+    padding: 2px 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
 
 /*Generic List*/
 .top-right {
