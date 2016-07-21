@@ -23,7 +23,11 @@
         <br>
         {{ deployment['module_path'] }}
         <br>
-        {{ deployment['package'] }}
+        {% if app['_id'] %}
+            <a href="s3://{{ bucket_s3 }}/ghost/{{ app['name'] }}/{{ app['env'] }}/{{ app['role'] }}/{{ deployment['module'] }}/{{ deployment['package'] }}" target="_blank">{{ deployment['package'] }}</a>
+        {% else %}
+            {{ deployment['package'] }}
+        {% endif %}
     </td>
     <td>{{ deployment['revision'] }}</td>
     <td>

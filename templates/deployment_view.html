@@ -36,7 +36,14 @@
                 {{ ghost_display_field('deployment-module_path', 'Module Path', deployment['module_path']) }}
             </div>
             <div class="row">
-                {{ ghost_display_field('deployment-package', 'Package', deployment['package']) }}
+                <label class="control-label col-md-2" for="deployment-package">Package</label>
+                <div class="col-md-4" id="deployment-package">
+                {% if app['_id'] %}
+                    <a href="s3://{{ bucket_s3 }}/ghost/{{ app['name'] }}/{{ app['env'] }}/{{ app['role'] }}/{{ deployment['module'] }}/{{ deployment['package'] }}" target="_blank">{{ deployment['package'] }}</a>
+                {% else %}
+                    {{ deployment['package'] }}
+                {% endif %}
+                </div>
             </div>
             <div class="row">
                 {{ ghost_display_field('deployment-revision', 'Revision', deployment['revision']) }}

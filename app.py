@@ -559,17 +559,17 @@ def web_deployments_list():
 
     if request.is_xhr:
         return render_template('deployment_list_content.html', deployments=deployments,
-                               page=int(page))
+                               page=int(page), bucket_s3=config.get('bucket_s3'))
 
     return render_template('deployment_list.html', deployments=deployments,
-                           page=int(page))
+                           page=int(page), bucket_s3=config.get('bucket_s3'))
 
 @app.route('/web/deployments/<deployment_id>', methods=['GET'])
 def web_deployments_view(deployment_id):
     # Get Deployment
     deployment = get_ghost_deployment(deployment_id)
 
-    return render_template('deployment_view.html', deployment=deployment)
+    return render_template('deployment_view.html', deployment=deployment, bucket_s3=config.get('bucket_s3'))
 
 @app.route('/web/deployments/<deployment_id>/redeploy', methods=['GET', 'POST'])
 def web_deployment_redeploy(deployment_id):
