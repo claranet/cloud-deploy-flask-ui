@@ -408,6 +408,11 @@
                     mode: 'shell',
                 });
             });
+
+            // ScrollTo the new element
+            $('html, body').animate({
+                scrollTop: $('#' + entry_id_prefix + "_" + count).offset().top - 100
+            }, 1000);
         }
 
         function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
