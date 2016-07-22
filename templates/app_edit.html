@@ -254,8 +254,10 @@
         });
         var oneDropDone = false;
         var list = document.getElementById("menu-modules-list");
+        $('#menu-modules-list li').addClass('draggable');
         Sortable.create(list, {
-             onEnd: function (/**Event*/evt) {
+            animation: 150,
+            onEnd: function (/**Event*/evt) {
                 if (evt.oldIndex != evt.newIndex) {
                     if (!oneDropDone) {
                         oneDropDone = true;
@@ -290,6 +292,26 @@
             var module_name = $(this).val();
             var menu_link = $('ul.navbar-fixed-left li a[href="#'+$(this).parentsUntil('tr').parent().attr('id').replace('_', '-')+'"] span');
             menu_link.text(module_name);
+        });
+        var listFeatures = $("#features_list tbody").get(0);
+        $('#features_list tr').addClass('draggable');
+        Sortable.create(listFeatures, {
+            animation: 150,
+            onEnd: function (/**Event*/evt) {
+                if (!oneDropDone) {
+                    oneDropDone = true;
+                    $('#app-form').submit(function () {
+                        /* Rewrite indexes for Flask */
+                        $('#features_list tr').each(function(index, mod) {
+                            $(this).find('[name]').each(function() {
+                                newModAttr = $(this).attr('name').replace(/features-[0-9]*-/i, 'features-'+index+'-');
+                                $(this).attr('name', newModAttr);
+                                $(this).attr('id', newModAttr);
+                            });
+                        });
+                    });
+                }
+            },
         });
         $('.refresh-select').each(function(index) {
             $(this).prev().addClass('select-panel');
