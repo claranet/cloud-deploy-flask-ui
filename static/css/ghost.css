@@ -219,6 +219,16 @@ td.inline {
   height: auto !important;
   max-width: 1000px;
 }
+#app-form #features_list tr.draggable,
+#menu-modules-list li.draggable {
+    padding: 4px;
+}
+#app-form #features_list tr.draggable:hover,
+#menu-modules-list li.draggable:hover {
+    cursor: pointer;
+    border: 2px dashed #ccc;
+    padding: 2px;
+}
 #app-form .refresh-select {
     position: relative;
     right: 0;

@@ -514,7 +514,7 @@
 <ul class="subnav" id="menu-modules-list">
     {% for entry in fieldlist %}
     <li>
-        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}"><i class="glyphicon glyphicon-align-justify"></i> <span>{{ entry.data['module_name'] or 'New module' }}</span></a>
+        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}"><i class="glyphicon glyphicon-move"></i> <span>{{ entry.data['module_name'] or 'New module' }}</span></a>
     </li>
     {% endfor %}
 </ul>
