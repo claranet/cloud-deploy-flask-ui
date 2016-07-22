@@ -236,7 +236,7 @@
 {% block page_scripts %}
     <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
-    <script src="{{url_for('.static', filename='js/Sortable.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/Sortable.min.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
         $('textarea').each(function(index, elem) {
