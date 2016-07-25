@@ -211,6 +211,12 @@ td.inline .form-group {
 td.inline {
     clear: both;
 }
+.btn-select-append-option {
+    display: none;
+}
+.select-generic-options .btn-select-append-option {
+    display: inline-block;
+}
 #app-form textarea {
     font-family: Consolas, Courier New, Courier, monospace;
 }
