@@ -13,6 +13,7 @@ import traceback
 import aws_data
 
 from models.apps import apps_schema as ghost_app_schema
+from models.instance_role import role as ghost_role_default_values
 from models.jobs import jobs_schema as ghost_job_schema
 
 from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
@@ -56,7 +57,7 @@ def get_ghost_app_providers():
     return get_wtforms_selectfield_values(ghost_app_schema['provider']['allowed'])
 
 def get_ghost_app_roles():
-    return get_wtforms_selectfield_values(ghost_app_schema['role']['allowed'])
+    return get_wtforms_selectfield_values(ghost_role_default_values)
 
 
 def get_ghost_mod_scopes():
