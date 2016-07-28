@@ -2,6 +2,7 @@ from flask_wtf import Form
 from settings import cloud_connections, DEFAULT_PROVIDER
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
+from form_helper import BetterSelectField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
@@ -346,7 +347,7 @@ def safe_deployment_possibilities(hosts_list):
 
 class OptionalVolumeForm(Form):
     device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]', validators=[])
-    volume_type = SelectField('Volume Type', description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>', validators=[], choices=get_ghost_optional_volumes())
+    volume_type = BetterSelectField('Volume Type', description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>', validators=[], choices=get_ghost_optional_volumes())
     volume_size = IntegerField('Volume Size', description='In GiB', validators=[OptionalValidator()])
     iops = IntegerField('IOPS', description='For information, 1TiB volume size is 3000 IOPS in GP2 type', validators=[OptionalValidator()])
 
@@ -363,7 +364,7 @@ class OptionalVolumeForm(Form):
 
 # Forms
 class AutoscaleForm(Form):
-    as_name = SelectField('Name', choices=[], validators=[])
+    as_name = BetterSelectField('Name', choices=[], validators=[])
 
     min = IntegerField('Min', description='The minimum size of the Auto Scaling group', validators=[
         OptionalValidator(),
@@ -407,7 +408,7 @@ class AutoscaleForm(Form):
 
 class SafedeploymentForm(Form):
 
-    lb_type = SelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','HAProxy')])
+    lb_type = BetterSelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','HAProxy')])
     safe_deploy_wait_before = IntegerField('Wait before deploy (s)', description='Time to wait before deployment (in seconds)', validators=[], default = 10)
     safe_deploy_wait_after = IntegerField('Wait after deploy (s)', description='Time to wait after deployment (in seconds)', validators=[], default = 10)
 
@@ -461,14 +462,14 @@ class BuildInfosForm(Form):
         )
     ], default='admin')
 
-    source_ami = SelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisioning', choices=[], validators=[
+    source_ami = BetterSelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisioning', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_ami']['regex']
         )
     ])
 
-    subnet_id = SelectField('AWS Subnet', description='This subnet for building should be a public one', choices=[], validators=[
+    subnet_id = BetterSelectField('AWS Subnet', description='This subnet for building should be a public one', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
@@ -498,28 +499,28 @@ class BuildInfosForm(Form):
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 class EnvironmentInfosForm(Form):
-    security_groups = FieldList(SelectField('Security Group', choices=[], validators=[
+    security_groups = FieldList(BetterSelectField('Security Group', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['security_groups']['schema']['regex']
         )
     ]), min_entries=1)
 
-    subnet_ids = FieldList(SelectField('Subnet ID', choices=[], validators=[
+    subnet_ids = FieldList(BetterSelectField('Subnet ID', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['subnet_ids']['schema']['regex']
         )
     ]), min_entries=1)
 
-    instance_profile = SelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policy on the Ghost bucket', validators=[
+    instance_profile = BetterSelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policy on the Ghost bucket', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
         )
     ])
 
-    key_name = SelectField('Key Name', description='Ghost should have the associated private key to deploy on instances', validators=[
+    key_name = BetterSelectField('Key Name', description='Ghost should have the associated private key to deploy on instances', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['key_name']['regex']
@@ -652,7 +653,7 @@ class ModuleForm(Form):
         NumberRangeValidator(min=0)
     ])
 
-    module_scope = SelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
+    module_scope = BetterSelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
     module_build_pack = TextAreaField('Build Pack', description='Script executed on Ghost in order to build artifacts before packaging.', validators=[])
     module_pre_deploy = TextAreaField('Pre Deploy', description='Script executed on each target instance *before* deploying the module.', validators=[])
     module_post_deploy = TextAreaField('Post Deploy', description='Script executed on each target instance *after* deploying the module.', validators=[])
@@ -714,12 +715,12 @@ class BaseAppForm(Form):
         )
     ])
 
-    env = SelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
-    role = SelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    env = BetterSelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
+    role = BetterSelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
     # Cloud Provider
     #Leave the following line commented to remember for further
     #dev to manage other cloud providers than aws
-    #provider = SelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
+    #provider = BetterSelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
@@ -771,11 +772,11 @@ class BaseAppForm(Form):
     environment_infos = FormField(EnvironmentInfosForm)
 
     # AWS properties
-    region = SelectField('AWS Region', validators=[DataRequiredValidator()], choices=[])
+    region = BetterSelectField('AWS Region', validators=[DataRequiredValidator()], choices=[])
 
-    instance_type = SelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=[])
+    instance_type = BetterSelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=[])
 
-    vpc_id = SelectField('AWS VPC', choices=[], validators=[
+    vpc_id = BetterSelectField('AWS VPC', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['vpc_id']['regex']
@@ -1155,18 +1156,18 @@ class DeployModuleForm(Form):
         self.deploy.label.text = module.get('name', '')
 
 class CommandAppForm(Form):
-    command = SelectField('Command', validators=[DataRequiredValidator()], choices=[])
+    command = BetterSelectField('Command', validators=[DataRequiredValidator()], choices=[])
     modules = FieldList(FormField(DeployModuleForm), min_entries=1)
     deploy_id = StringField('Deploy ID', validators=[])
-    fabric_execution_strategy = SelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
+    fabric_execution_strategy = BetterSelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
     swapbluegreen_strategy = SelectField('Blue Green Swap Strategy', validators=[], choices=[('overlap','Overlap --- Blue/Green without downtime but two versions could be in production at the same time.'),
                                                                                              ('isolated', 'Isolated --- Blue/Green with a downtime but ensures that only one version is in production.')])
-    instance_type = SelectField('Instance Type', validators=[], choices=[])
+    instance_type = BetterSelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
     private_ip_address = StringField('Private IP address', validators=[RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
-    subnet = SelectField('Subnet', validators=[], choices=[])
+    subnet = BetterSelectField('Subnet', validators=[], choices=[])
     prepare_bg_copy_ami = BooleanField('Copy AMI from online app', validators=[])
 
     submit = SubmitField('Run Application Command')
