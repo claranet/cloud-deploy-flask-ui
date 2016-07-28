@@ -17,6 +17,7 @@ from models.jobs import jobs_schema as ghost_job_schema
 from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
 from ghost_tools import b64encode_utf8
+from ghost_tools import config
 
 # Helpers
 def empty_fieldlist(fieldlist):
@@ -105,9 +106,17 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
                 'is-public': 'false'
             }
         )
+        accounts = config.get('display_amis_from_aws_accounts', [])
+        if accounts:
+            amis += c.get_all_images(
+                owners=accounts,
+                filters={
+                    'image_type': 'machine',
+                }
+            )
     except:
         traceback.print_exc()
-    return [(ami.id, ami.id + ' (' + ami.name + ')') for ami in amis]
+    return [(ami.id, ami.owner_id + '/' + ami.id + ' (' + ami.name + ')') for ami in amis]
 
 def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
