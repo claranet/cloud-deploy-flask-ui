@@ -35,6 +35,14 @@ html, body {
 .site-footer span.left {
     float: left;
 }
+.site-footer span.doc {
+    padding-left: 0;
+}
+.site-footer span.doc a {
+    padding-left: 11px;
+    border-left: 2px solid #666;
+    color: #666;
+}
 .navbar.navbar-inverse {
     background-color: #222;
     color: #9D9D9D;
