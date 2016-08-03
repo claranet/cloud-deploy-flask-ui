@@ -341,6 +341,15 @@
             selectElt = $(this).attr('data-target');
             $(selectElt).selectpicker('refresh')
         });
+        $('#role').parent().addClass('select-generic-options');
+        $('#role').parent().attr('data-select-id', 'role');
+        $('#app-form').on('click', '.btn-select-append-option', function(evt) {
+            evt.preventDefault();
+            select_id = $(this).parents('.select-generic-options').attr('data-select-id');
+            new_val = $('#' + select_id).parent().find('.bs-searchbox input').val();
+            $('#' + select_id).append('<option value="'+new_val+'" selected="">'+new_val+'</option>');
+            $('#' + select_id).selectpicker("refresh");
+        });
         $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
             var path = $(this).val();
             if (path == '/' || path == '/tmp' || path == '/var' || path == '/etc') {
