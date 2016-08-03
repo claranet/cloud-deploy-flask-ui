@@ -18,7 +18,7 @@ class BetterSelectField(SelectField):
         self.choices = copy(choices)
 
     def iter_choices(self):
-        if self.choices and not self.data in [k for k,v in self.choices]:
+        if self.choices and self.data and not self.data in [k for k,v in self.choices]:
             self.choices = self.choices + [(self.data, u'⚠ "%s" not available in choices ⚠' % self.data)]
         for value, label in self.choices:
             yield (value, label, self.coerce(value) == self.data)
