@@ -7,6 +7,8 @@ from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
 from wtforms.validators import Regexp as RegexpValidator
+from wtforms.validators import Length as LengthValidator
+from wtforms.validators import NoneOf as NoneOfValidator
 
 from datetime import datetime
 import traceback
@@ -67,6 +69,8 @@ def get_ghost_mod_scopes():
 def get_ghost_optional_volumes():
     return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type']['allowed'])
 
+def get_ghost_instance_tags():
+    return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
 
 def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
     vpcs = []
@@ -364,6 +368,16 @@ class OptionalVolumeForm(Form):
         self.volume_size.data = optional_volume.get('volume_size', '')
         self.iops.data = optional_volume.get('iops', '')
 
+class InstanceTagForm(Form):
+    tag_name = StringField('Tag Name', description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"', validators=[LengthValidator(min= 1, max= 127), DataRequiredValidator(), NoneOfValidator(['app_id', 'env', 'ap', 'role', 'color'])])
+    tag_value = StringField('Tag Value', description='Enter the Tag value(case sensitive) associate with the Tag Name', validators=[LengthValidator(min= 1, max= 255), DataRequiredValidator()])
+
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(InstanceTagForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, instance_tag):
+        self.tag_name.data = instance_tag.get('tag_name', '')
+        self.tag_value.data = instance_tag.get('tag_value', '')
 
 # Forms
 class AutoscaleForm(Form):
@@ -544,6 +558,7 @@ class EnvironmentInfosForm(Form):
 
     optional_volumes = FieldList(FormField(OptionalVolumeForm, validators=[]), min_entries=1)
 
+    instance_tags = FieldList(FormField(InstanceTagForm, validators=[]), min_entries=1)
 
     # Disable CSRF in environment_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -580,6 +595,18 @@ class EnvironmentInfosForm(Form):
                 self.optional_volumes.append_entry()
                 form_opt_vol = self.optional_volumes.entries[-1].form
                 form_opt_vol.map_from_app(opt_vol)
+
+        # Populate form with tags
+        if not 'instance_tags' in environment_infos:# or 'Name' not in [i['tag_name'] for i in  environment_infos['instance_tags']]:
+            instance_tags = [{'tag_name': 'Name', 'tag_value': 'ec2.{GHOST_APP_ENV}.{GHOST_APP_ROLE}.{GHOST_APP_NAME}'}]
+        else:
+            instance_tags = environment_infos.get('instance_tags')
+        empty_fieldlist(self.instance_tags)
+        for tag in instance_tags:
+            self.instance_tags.append_entry()
+            form_tag = self.instance_tags.entries[-1].form
+            form_tag.map_from_app(tag)
+
 
 class ResourceForm(Form):
     # Disable CSRF in resource forms as they are subforms
@@ -920,6 +947,13 @@ class BaseAppForm(Form):
                     opt_vol['iops'] = form_opt_vol.iops.data
                 app['environment_infos']['optional_volumes'].append(opt_vol)
 
+        app['environment_infos']['instance_tags'] = []
+        for form_tag in self.environment_infos.form.instance_tags:
+            tag = {}
+            if form_tag.tag_name.data:
+                tag['tag_name'] = form_tag.tag_name.data
+                tag['tag_value'] = form_tag.tag_value.data
+                app['environment_infos']['instance_tags'].append(tag)
 
     def map_to_app_lifecycle_hooks(self, app):
         """

@@ -40,6 +40,9 @@
                     <a href="#sgs">Security Groups</a>
                 </li>
                 <li>
+                    <a href="#tags">Instance Tags</a>
+                </li>
+                <li>
                     <a href="#subnets">Subnets</a>
                 </li>
                 <li>
@@ -213,6 +216,8 @@
 
                 <a name="sgs" class="anchor">&nbsp;</a>
                 {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group', '', '', "ghost_update_vpc_sgs($('select#region').val(), $('select#vpc_id').val());") }}
+        	<a name="tags" class="anchor">&nbsp;</a>
+        	{{ ghost_fieldlist(form.environment_infos.form.instance_tags, 'instance_tags', 'Instance Tags', 'instance_tag', 'Instance Tag') }}
                 <a name="subnets" class="anchor">&nbsp;</a>
                 {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID', '', '', "ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val(), false);") }}
                 <a name="volumes" class="anchor">&nbsp;</a>
