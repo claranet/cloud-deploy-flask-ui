@@ -35,6 +35,7 @@ app.config.update(
     WTF_CSRF_SECRET_KEY='a random string'
 )
 app.jinja_env.globals.update(ansi_to_html=ansi_to_html)
+app.jinja_env.add_extension('jinja2.ext.do')
 
 Bootstrap(app)
 

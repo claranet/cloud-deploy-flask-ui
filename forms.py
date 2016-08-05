@@ -369,8 +369,11 @@ class OptionalVolumeForm(Form):
         self.iops.data = optional_volume.get('iops', '')
 
 class InstanceTagForm(Form):
-    tag_name = StringField('Tag Name', description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"', validators=[LengthValidator(min= 1, max= 127), DataRequiredValidator(), NoneOfValidator(['app_id', 'env', 'ap', 'role', 'color'])])
-    tag_value = StringField('Tag Value', description='Enter the Tag value(case sensitive) associate with the Tag Name', validators=[LengthValidator(min= 1, max= 255), DataRequiredValidator()])
+    tag_name = StringField('Tag Name', description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"',
+                validators=[LengthValidator(min= 1, max= 127), DataRequiredValidator(), NoneOfValidator(['app_id', 'env', 'ap', 'role', 'color'])])
+    tag_value = StringField('Tag Value', description='Enter the Tag value(case sensitive) associate with the Tag Name.\
+                            You can use GHOST_APP variables to refer to its content(ex: GHOST_APP_ROLE will be replaced by the environement defined in this application)',
+                            validators=[LengthValidator(min= 1, max= 255), DataRequiredValidator()])
 
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(InstanceTagForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
@@ -558,7 +561,7 @@ class EnvironmentInfosForm(Form):
 
     optional_volumes = FieldList(FormField(OptionalVolumeForm, validators=[]), min_entries=1)
 
-    instance_tags = FieldList(FormField(InstanceTagForm, validators=[]), min_entries=1)
+    instance_tags = FieldList(FormField(InstanceTagForm, validators=[]), min_entries=1, max_entries=6)
 
     # Disable CSRF in environment_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -597,15 +600,21 @@ class EnvironmentInfosForm(Form):
                 form_opt_vol.map_from_app(opt_vol)
 
         # Populate form with tags
-        if not 'instance_tags' in environment_infos:# or 'Name' not in [i['tag_name'] for i in  environment_infos['instance_tags']]:
-            instance_tags = [{'tag_name': 'Name', 'tag_value': 'ec2.{GHOST_APP_ENV}.{GHOST_APP_ROLE}.{GHOST_APP_NAME}'}]
-        else:
+        instance_tags = []
+        if 'instance_tags' in environment_infos:
             instance_tags = environment_infos.get('instance_tags')
+        if not instance_tags or 'Name' not in [i['tag_name'] for i in  environment_infos['instance_tags']]:
+            instance_tags.append({'tag_name': 'Name', 'tag_value': 'ec2.GHOST_APP_ENV.GHOST_APP_ROLE.GHOST_APP_NAME', 'tag_editable': True})
         empty_fieldlist(self.instance_tags)
         for tag in instance_tags:
-            self.instance_tags.append_entry()
-            form_tag = self.instance_tags.entries[-1].form
-            form_tag.map_from_app(tag)
+            #Some tags are protected against edition because they are used by Ghost(app_id/env/app/role/color)
+            #They will not be displayed.
+            if 'tag_editable' in tag and not tag['tag_editable']:
+                pass
+            else:
+                self.instance_tags.append_entry()
+                form_tag = self.instance_tags.entries[-1].form
+                form_tag.map_from_app(tag)
 
 
 class ResourceForm(Form):
@@ -849,10 +858,10 @@ class BaseAppForm(Form):
         self.map_to_app_safedeployment(app)
         self.map_to_app_build_infos(app)
         self.map_to_app_resources(app)
-        self.map_to_app_environment_infos(app)
         self.map_to_app_lifecycle_hooks(app)
         self.map_to_app_features(app)
         self.map_to_app_modules(app)
+        self.map_to_app_environment_infos(app)
 
     def map_to_app_log_notifications(self, app):
         """
@@ -953,6 +962,7 @@ class BaseAppForm(Form):
             if form_tag.tag_name.data:
                 tag['tag_name'] = form_tag.tag_name.data
                 tag['tag_value'] = form_tag.tag_value.data
+                tag['tag_editable'] = True
                 app['environment_infos']['instance_tags'].append(tag)
 
     def map_to_app_lifecycle_hooks(self, app):
@@ -1147,6 +1157,10 @@ class CreateAppForm(BaseAppForm):
         self.autoscale.as_name.choices = [('', 'Please select region first')]
         self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
         self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
+        empty_fieldlist(self.environment_infos.instance_tags)
+        self.environment_infos.instance_tags.append_entry()
+        form_tag = self.environment_infos.instance_tags.entries[-1].form
+        form_tag.map_from_app({'tag_name': 'Name', 'tag_value': 'ec2.GHOST_APP_ENV.GHOST_APP_ROLE.GHOST_APP_NAME', 'tag_editable': True})
         self.environment_infos.key_name.choices = [('', 'Please select region first')]
         self.build_infos.source_ami.choices = [('', 'Please select region first')]
         self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
