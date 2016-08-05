@@ -319,6 +319,19 @@
           });
         }
 
+        function ghost_update_feature_presets() {
+          $('select#features-presets').find('option').remove();
+          $.ajax('/web/feature/presets').done(function(data) {
+              $.each(data,function(key, value) {
+                $('select#features-presets').append('<option value=' + key + '>' + value + '</option>');
+              });
+              $('select#features-presets').selectpicker('refresh');
+          }).fail(function() {
+              alert("Failed to retrieve Feature Presets List");
+          });
+        }
+        ghost_update_feature_presets();
+
         $('select#provider').change(function () {
             ghost_update_ec2_regions();
             provider = $(this).val();
@@ -362,7 +375,7 @@
             });
         });
 
-        function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label) {
+        function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to=true) {
             var count = $("tr[data-" + entry_id_prefix + "]").size();
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
 
@@ -411,10 +424,12 @@
                 });
             });
 
-            // ScrollTo the new element
-            $('html, body').animate({
-                scrollTop: $('#' + entry_id_prefix + "_" + count).offset().top - 100
-            }, 1000);
+            if (scroll_to) {
+                // ScrollTo the new element
+                $('html, body').animate({
+                    scrollTop: $('#' + entry_id_prefix + "_" + count).offset().top - 100
+                }, 1000);
+            }
         }
 
         function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {

@@ -5,6 +5,8 @@ from flask.ext.login import LoginManager, UserMixin, login_required
 from base64 import b64decode
 import traceback
 import sys
+import os
+import yaml
 from sh import git
 from settings import DEFAULT_PROVIDER
 from .websocket import ansi_to_html
@@ -104,6 +106,22 @@ except:
         current_revision_date='unknown',
         current_revision_name='unknown'
     )
+
+def load_ghost_feature_presets():
+    presets = {}
+    try:
+        presets_path = config.get('ghost_root_path') + '/ghost-feature-presets/'
+        for file in os.listdir(presets_path):
+            if file.endswith('.yml'):
+                with open(presets_path + file, 'r') as pre_file:
+                    prst = yaml.load(pre_file)
+                    presets[file] = prst
+    except:
+        traceback.print_exc()
+    print presets
+    return presets
+
+FEATURE_PRESETS = load_ghost_feature_presets()
 
 @app.context_processor
 def current_revision():
@@ -208,6 +226,18 @@ def web_app_infos(provider, app_id):
     else:
         ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
         return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
+
+@app.route('/web/feature/presets')
+def web_feature_presets_list():
+    preset_list = []
+    for file in FEATURE_PRESETS:
+        filename, fileext = os.path.splitext(file)
+        preset_list.append((file, filename.replace('-', ' ')))
+    return jsonify(preset_list)
+
+@app.route('/web/feature/presets/import/<config>')
+def web_feature_presets_import(config):
+    return jsonify(FEATURE_PRESETS[config])
 
 @app.route('/web/apps')
 def web_app_list():

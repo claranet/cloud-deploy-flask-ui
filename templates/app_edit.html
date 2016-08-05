@@ -240,8 +240,7 @@
             </div>
         </div>
 
-        <a name="features" class="anchor">&nbsp;</a>
-        {{ ghost_fieldlist(form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
+        {{ ghost_fieldlist_features(form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
 
         <a name="modules" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}
@@ -331,6 +330,26 @@
                 }
             },
         });
+        $('.feature-import').click(function(evt) {
+            evt.preventDefault();
+            preset_file = $('select#features-presets').val();
+            new_index = 0;
+            $.ajax('/web/feature/presets/import/' + preset_file).done(function(data) {
+                desc = data['description'];
+                feats = data['features'];
+                $.each(feats, function(index, feat_object) {
+                    feature_name = Object.keys(feat_object)[0];
+                    feature_val = feat_object[feature_name];
+                    console.log(feature_name + ':' + feature_val);
+                    new_index = $("tr[data-feature]").size();
+                    ghost_add_entry_to_list('features', 'feature', 'Feature', false);
+                    $('#features-'+new_index+'-feature_name').val(feature_name);
+                    $('#features-'+new_index+'-feature_version').val(feature_val);
+                });
+            }).fail(function() {
+                alert("Failed to retrieve Feature Preset " + preset_file);
+            });
+        });
         $('.refresh-select').each(function(index) {
             $(this).prev().addClass('select-panel');
         });
@@ -384,3 +403,29 @@
     })();
     </script>
 {% endblock %}
+
+{% macro ghost_fieldlist_features(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='', refresh_function='') -%}
+    <a name="features" class="anchor">&nbsp;</a>
+    <div class="panel panel-default panel-features">
+        <div class="panel-heading" style="counter-reset: group_entry;">
+            <strong>{{ group_label }}</strong>
+            <a class="btn btn-success add-entry" title="Add {{ entry_label }}"
+                onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}')">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+            <div class="form-group features-presets-group">
+                <label class="control-label" for="features-presets">Feature presets</label>
+                <select id="features-presets">
+                </select>
+                <button class="btn btn-raised btn-success btn-sm feature-import"><i class="glyphicon glyphicon-import"></i>&nbsp;&nbsp;Import</button>
+            </div>
+        </div>
+        <table class="table" id="{{ group_id_prefix }}_list">
+            <tbody>
+            {% for entry in fieldlist %}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{%- endmacro %}
