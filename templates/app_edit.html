@@ -330,16 +330,25 @@
                 }
             },
         });
+        var ghost_client_name = window.location.hostname.replace('.ghost.morea.fr', '');
         $('.feature-import').click(function(evt) {
             evt.preventDefault();
             preset_file = $('select#features-presets').val();
             new_index = 0;
+            var ghost_app_name = $('#name').val();
+            var ghost_app_env = $('#env').val();
+            var ghost_app_role = $('#role').val();
             $.ajax('/web/feature/presets/import/' + preset_file).done(function(data) {
                 desc = data['description'];
                 feats = data['features'];
                 $.each(feats, function(index, feat_object) {
                     feature_name = Object.keys(feat_object)[0];
                     feature_val = feat_object[feature_name];
+                    feature_val = feature_val
+                        .replace('${GHOST_CLIENT}', ghost_client_name)
+                        .replace('${GHOST_ENV}', ghost_app_env)
+                        .replace('${GHOST_ROLE}', ghost_app_role)
+                        .replace('${GHOST_APP}', ghost_app_name);
                     console.log(feature_name + ':' + feature_val);
                     new_index = $("tr[data-feature]").size();
                     ghost_add_entry_to_list('features', 'feature', 'Feature', false);
