@@ -344,7 +344,7 @@
                 feats = data['features'];
                 $.each(feats, function(index, feat_object) {
                     feature_name = Object.keys(feat_object)[0];
-                    feature_val = feat_object[feature_name];
+                    feature_val = '' + feat_object[feature_name];
                     feature_val = feature_val
                         .replace('${GHOST_CLIENT}', ghost_client_name)
                         .replace('${GHOST_ENV}', ghost_app_env)
