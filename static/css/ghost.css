@@ -37,10 +37,15 @@ html, body {
 }
 .site-footer span.doc {
     padding-left: 0;
+    padding-right: 0;
 }
 .site-footer span.doc a {
     padding-left: 11px;
+    padding-right: 11px;
     border-left: 2px solid #666;
+    border-right: 2px solid #666;
+}
+.site-footer span a {
     color: #666;
 }
 .navbar.navbar-inverse {
@@ -668,6 +673,13 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     border-radius: 3px;
 }
 
+/*Halth*/
+.health-elt {
+    text-align: center;
+}
+.health-elt .material-icons {
+    vertical-align: bottom;
+}
 /**
 ** Material fixes
 **/

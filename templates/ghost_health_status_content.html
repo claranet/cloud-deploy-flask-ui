@@ -1,0 +1,50 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">Ghost Health Status</strong></h3>
+</div>
+
+<div class="health-elt col-md-3">
+    <h4><i class="material-icons">multiline_chart</i> CPU</h4>
+    <input type="text" value="{{ status['cpu']['percent'] }}" data-angleOffset="-125" data-angleArc="250" data-fgColor="{{ status['cpu']['color'] }}" class="dial">
+    <p class="health-info">
+        CPU usage: <strong style="color: {{ status['cpu']['color'] }};">{{ status['cpu']['percent'] }}%</strong>
+    <br />
+        Per CPU: {{ status['cpu']['percpu'] }}
+    </p>
+</div>
+<div class="health-elt col-md-3">
+    <h4><i class="material-icons">memory</i> RAM</h4>
+    <input type="text" value="{{ 100 - status['ram']['percent'] }}" data-angleOffset="-125" data-angleArc="250" data-fgColor="{{ status['ram']['color'] }}" class="dial">
+    <p class="health-info">
+        {{ "{:.3f}".format(status['ram']['used']) }} GB used / {{ "{:.3f}".format(status['ram']['total']) }} GB total
+    <br />
+        (<strong>{{ "{:.3f}".format(status['ram']['available']) }} GB available</strong> - {{ "{:.3f}".format(status['ram']['free']) }} GB free - <strong style="color: {{ status['ram']['color'] }};">{{ status['ram']['percent'] }}% free</strong>)
+    </p>
+</div>
+<div class="health-elt col-md-3">
+    <h4><i class="fa fa-hdd-o"></i> DISK</h4>
+    <input type="text" value="{{ status['disk']['percent'] }}" data-angleOffset="-125" data-angleArc="250" data-fgColor="{{ status['disk']['color'] }}" class="dial">
+    <p class="health-info">
+        {{ "{:.3f}".format(status['disk']['used']) }} GB used / {{ "{:.3f}".format(status['disk']['total']) }} GB total
+    <br />
+        (<strong>{{ "{:.3f}".format(status['disk']['free']) }} GB free</strong> - <strong style="color: {{ status['disk']['color'] }};">{{ status['disk']['percent'] }}% used</strong>)
+    </p>
+</div>
+<div class="health-elt col-md-3">
+    <h4><i class="fa fa-clock-o"></i> Boot date</h4>
+    <p class="health-info">Ghost host up since: {{ status['boot_time'] }}</p>
+    <br />
+    <br />
+    <br />
+    <h4><i class="fa fa-wifi"></i> Network</h4>
+    <p class="health-info">Data: {{ status['network']['eth0'] }}</p>
+</div>
+
+<div class="modal-footer" style="clear:both;"></div>
+<script type="text/javascript">
+    $(function() {
+        $('.dial').knob({
+            'readOnly': true
+        });
+    });
+</script>
