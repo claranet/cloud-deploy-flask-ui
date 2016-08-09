@@ -46,6 +46,9 @@
             <a href="#env-infos">Environment Infos</a>
         </li>
         <li>
+            <a href="#env-vars">Environment Variables</a>
+        </li>
+        <li>
             <a href="#root-block">Root Block Device</a>
         </li>
         <li>
@@ -196,6 +199,27 @@
             </div>
         </div>
 
+        <a name="env-vars" class="anchor">&nbsp;</a>
+        <table class="table">
+            <div class="panel-heading">Environment Variables</div>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for envvar in app['env_vars'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ envvar['var_key'] }}</td>
+                        <td>{{ envvar['var_value'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <a name="root-block" class="anchor">&nbsp;</a>
         <div class="panel-heading">Root Block Device</div>
         <div class="panel-body">
@@ -234,7 +258,7 @@
 
         <a name="features" class="anchor">&nbsp;</a>
         <table class="table">
-            <caption>Features</caption>
+            <div class="panel-heading">Features</div>
             <thead>
                 <tr>
                     <th>#</th>
@@ -255,7 +279,7 @@
 
         <a name="modules" class="anchor">&nbsp;</a>
         <table class="table">
-            <caption>Modules</caption>
+            <div class="panel-heading">Modules</div>
             <thead>
                 <tr>
                     <th>#</th>

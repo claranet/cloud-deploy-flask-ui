@@ -51,6 +51,9 @@
             </ul>
         </li>
         <li>
+            <a href="#env-vars">Environment Variables</a>
+        </li>
+        <li>
             <a href="#notifs">Notifications</a>
         </li>
         <li>
@@ -225,6 +228,9 @@
 
             </div>
         </div>
+
+        <a name="env-vars" class="anchor">&nbsp;</a>
+        {{ ghost_fieldlist(form.env_vars, 'env_vars', 'Environment Variables', 'env_var', 'Variable', 'inline') }}
 
         <a name="notifs" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification', html_placeholder='ghost-devops@morea.fr') }}

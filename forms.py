@@ -676,6 +676,24 @@ class FeatureForm(Form):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
 
+class EnvvarForm(Form):
+    var_key = StringField('Key', validators=[
+        RegexpValidator(
+            ghost_app_schema['env_vars']['schema']['schema']['var_key']['regex']
+        ), OptionalValidator()
+    ])
+    var_value = StringField('Value', validators=[
+        OptionalValidator()
+    ])
+
+    # Disable CSRF in feature forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(EnvvarForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+
+    def map_from_app(self, envvar):
+        self.var_key.data = envvar.get('var_key', '')
+        self.var_value.data = envvar.get('var_value', '')
+
 
 class ModuleForm(Form):
     module_name = StringField('Name', description='Module name: should not include special chars', validators=[
@@ -818,6 +836,9 @@ class BaseAppForm(Form):
     # Environment properties
     environment_infos = FormField(EnvironmentInfosForm)
 
+    # Env vars
+    env_vars = FieldList(FormField(EnvvarForm), min_entries=1)
+
     # AWS properties
     region = BetterSelectField('AWS Region', validators=[DataRequiredValidator()], choices=[])
 
@@ -866,6 +887,8 @@ class BaseAppForm(Form):
         self.map_to_app_safedeployment(app)
         self.map_to_app_build_infos(app)
         self.map_to_app_resources(app)
+        self.map_to_app_environment_infos(app)
+        self.map_to_app_env_vars(app)
         self.map_to_app_lifecycle_hooks(app)
         self.map_to_app_features(app)
         self.map_to_app_modules(app)
@@ -973,6 +996,20 @@ class BaseAppForm(Form):
                 tag['tag_editable'] = True
                 app['environment_infos']['instance_tags'].append(tag)
 
+    def map_to_app_env_vars(self, app):
+        """
+        Map Environment variable data from form to app
+        """
+        app['env_vars'] = []
+        for form_envvar in self.env_vars:
+            env_var = {}
+            if form_envvar.var_key.data:
+                env_var['var_key'] = form_envvar.var_key.data
+                if form_envvar.var_value.data:
+                    env_var['var_value'] = form_envvar.var_value.data
+            if env_var:
+                app['env_vars'].append(env_var)
+
     def map_to_app_lifecycle_hooks(self, app):
         """
         Map lifecycle hooks data from form to app
@@ -1062,6 +1099,7 @@ class BaseAppForm(Form):
         self.map_from_app_safedeployment(app)
         self.map_from_app_build_infos(app)
         self.map_from_app_environment_infos(app)
+        self.map_from_app_env_vars(app)
         self.map_from_app_lifecycle_hooks(app)
         self.map_from_app_features(app)
         self.map_from_app_modules(app)
@@ -1097,6 +1135,17 @@ class BaseAppForm(Form):
         Map environment infos data from app to form
         """
         return self.environment_infos.form.map_from_app(app)
+
+    def map_from_app_env_vars(self, app):
+        """
+        Map environment variables data from app to form
+        """
+        if 'env_vars' in app and len(app['env_vars']) > 0:
+            empty_fieldlist(self.env_vars)
+            for envvar in app.get('env_vars', []):
+                self.env_vars.append_entry()
+                form_envvar = self.env_vars.entries[-1].form
+                form_envvar.map_from_app(envvar)
 
     def map_from_app_lifecycle_hooks(self, app):
         """
