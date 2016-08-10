@@ -370,7 +370,7 @@ class OptionalVolumeForm(Form):
 
 class InstanceTagForm(Form):
     tag_name = StringField('Tag Name', description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"',
-                validators=[LengthValidator(min= 1, max= 127), DataRequiredValidator(), NoneOfValidator(['app_id', 'env', 'ap', 'role', 'color'])])
+                validators=[LengthValidator(min= 1, max= 127), DataRequiredValidator(), NoneOfValidator(['app_id', 'env', 'app', 'role', 'color'])])
     tag_value = StringField('Tag Value', description='Enter the Tag value(case sensitive) associate with the Tag Name.\
                             You can use GHOST_APP variables to refer to its content(ex: GHOST_APP_ROLE will be replaced by the environement defined in this application)',
                             validators=[LengthValidator(min= 1, max= 255), DataRequiredValidator()])
