@@ -1,6 +1,10 @@
 from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, login_required
+import threading
+import atexit
+import time
+import psutil
 
 from base64 import b64decode
 import traceback
@@ -31,6 +35,36 @@ from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_gr
 from forms import get_wtforms_selectfield_values, get_aws_subnets_ids_from_app
 from forms import get_aws_connection_data, check_aws_assumed_credentials
 
+GHOST_CPU_PERCENT = 0
+GHOST_CPU_PERCENT_DETAILS = [0]
+POOL_TIME = 5 #Seconds
+
+# thread handler
+cpu_thread = threading.Thread()
+
+def thread_interrupt():
+    global cpu_thread
+    cpu_thread.cancel()
+
+def thread_update_cpu_stats():
+    global GHOST_CPU_PERCENT
+    global GHOST_CPU_PERCENT_DETAILS
+    global cpu_thread
+
+    GHOST_CPU_PERCENT = psutil.cpu_percent(interval=2)
+    GHOST_CPU_PERCENT_DETAILS = psutil.cpu_percent(interval=2, percpu=True)
+
+    # Set the next thread to happen
+    cpu_thread = threading.Timer(POOL_TIME, thread_update_cpu_stats, ())
+    cpu_thread.start()
+
+def cpu_thread_start():
+    # Do initialisation stuff here
+    global cpu_thread
+    # Create your thread
+    cpu_thread = threading.Timer(POOL_TIME, thread_update_cpu_stats, ())
+    cpu_thread.start()
+
 # Web UI App
 app = Flask(__name__)
 
@@ -46,6 +80,11 @@ Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager._login_disabled = False
+
+# Initiate
+cpu_thread_start()
+# When you kill Flask (SIGTERM), clear the trigger for the next thread
+atexit.register(thread_interrupt)
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -87,7 +126,7 @@ def template_context():
                 role_list=ghost_role_default_values,
                 statuses=JOB_STATUSES,
                 ghost_blue_green=ghost_has_blue_green_enabled(),
-                ghost_health_status=get_host_cpu_label(),
+                ghost_health_status=get_host_cpu_label(GHOST_CPU_PERCENT),
                 command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
 
 def load_ghost_feature_presets():
@@ -224,8 +263,10 @@ def web_feature_presets_import(config):
 
 @app.route('/web/ghost/health-status', methods=['GET'])
 def web_ghost_health_status():
+    global GHOST_CPU_PERCENT_DETAILS
     query = request.args.get('json', None)
-    status = get_host_health()
+    print GHOST_CPU_PERCENT_DETAILS
+    status = get_host_health(GHOST_CPU_PERCENT, GHOST_CPU_PERCENT_DETAILS)
     if request.is_xhr and query:
         return jsonify(status)
     return render_template('ghost_health_status_content.html', status=status)

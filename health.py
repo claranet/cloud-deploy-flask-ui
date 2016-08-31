@@ -10,12 +10,11 @@ COLOR_GREEN = '#4caf50'
 COLOR_ORANGE = '#ff5722'
 COLOR_RED = '#f44336'
 
-def get_host_health():
+def get_host_health(cpu_percent, cpu_percent_details):
     status = {}
     cpu = {}
-    cpu_percent = psutil.cpu_percent(interval=3)
     cpu['percent'] = cpu_percent
-    cpu['percpu'] = psutil.cpu_percent(interval=3, percpu=True)
+    cpu['percpu'] = cpu_percent_details
     cpu['color'] = COLOR_GREEN
     if cpu_percent > 60:
         cpu['color'] = COLOR_ORANGE
@@ -56,11 +55,10 @@ def get_host_health():
 
     return status;
 
-def get_host_cpu_label():
+def get_host_cpu_label(cpu_percent):
     status = 'success'
-    cpu = psutil.cpu_percent(interval=3)
-    if cpu > 70:
+    if cpu_percent > 70:
         status = 'warning'
-    if cpu > 85:
+    if cpu_percent > 85:
         status = 'danger'
     return status;
