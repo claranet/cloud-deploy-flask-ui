@@ -257,15 +257,6 @@
     <script src="{{url_for('.static', filename='js/Sortable.min.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
-        $('textarea').each(function(index, elem) {
-            var editor = CodeMirror.fromTextArea(elem, {
-                lineNumbers: true,
-                viewportMargin: Infinity,
-                lineWrapping: true,
-                mode: 'shell',
-            });
-            $(this).parent().parent().addClass('script-panel');
-        });
         $('.quick-submit').click(function (evt) {
             evt.preventDefault();
             $('#app-form #submit').click();
@@ -380,6 +371,18 @@
                 $('#identity_provider').slideUp('slow');
                 $('#app_options_wrapper').slideDown('slow');
             }
+        });
+    })();
+
+    (function() {
+        $('textarea').each(function(index, elem) {
+            var editor = CodeMirror.fromTextArea(elem, {
+                lineNumbers: true,
+                viewportMargin: Infinity,
+                lineWrapping: true,
+                mode: 'shell',
+            });
+            $(this).parent().parent().addClass('script-panel');
         });
     })();
     </script>
