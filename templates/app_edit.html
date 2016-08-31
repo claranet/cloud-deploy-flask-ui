@@ -383,6 +383,7 @@
                 mode: 'shell',
             });
             $(this).parent().parent().addClass('script-panel');
+            setTimeout(function(){ editor.refresh(); }, 3000); // try to hack the editor cursor bug
         });
     })();
     </script>
