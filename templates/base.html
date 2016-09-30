@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "bootstrap/utils.html" as util %}
 
-{% block title %}Morea GHOST - {{ page_title }}{% endblock %}
+{% block title %}Claranet GHOST - {{ page_title }}{% endblock %}
 
 {% block styles %}
     <link rel="apple-touch-icon" sizes="57x57" href="{{url_for('.static', filename='favicon/apple-icon-57x57.png')}}">
@@ -37,7 +37,7 @@
     <nav id="header" class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="pull-left" href="/web/apps"><img height="45" alt="Logo Morea" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a>
+                <a class="pull-left" href="/web/apps"><img height="45" alt="Logo Claranet" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
@@ -80,7 +80,7 @@
     </div>
 </div>
 <footer class="site-footer">
-  <span class="right"><a href="https://www.morea.fr" target="_blank"><img height="10" alt="Logo Morea" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a></span>
+  <span class="right"><a href="http://www.claranet.com" target="_blank"><img height="10" alt="Logo Claranet" src="{{ url_for('static', filename='logo_small.png')}}?v={{current_revision}}" /></a></span>
   <span class="left" title="{{current_revision_date}}">GHOST - {{current_revision_name}}</span>
   <span class="left doc" title="Ghost Documentation"><a href="/docs" target="_blank">Documentation</a></span>
 </footer>
