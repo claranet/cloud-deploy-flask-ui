@@ -303,6 +303,10 @@ def create_ghost_job(app_id, form, headers):
         if form.swapbluegreen_strategy.data:
             options.append(form.swapbluegreen_strategy.data)
 
+    if form.command.data == 'purgebluegreen':
+        if form.purge_delete_elb.data:
+            options.append(form.purge_delete_elb.data)
+
     if len(options) > 0:
         job['options'] = options
 
