@@ -49,6 +49,9 @@
             <a href="#root-block">Root Block Device</a>
         </li>
         <li>
+            <a href="#optional-volumes">Optional Volumes</a>
+        </li>
+        <li>
             <a href="#lifecycle-hooks">Lifecycle Hooks</a>
         </li>
         <li>
@@ -197,6 +200,31 @@
                 {{ ghost_display_field('app-environment_infos-root_block_device_name', 'Name', app.get('environment_infos', {}).get('root_block_device', {})['name']) }}
             </div>
         </div>
+
+        <a name="optional-volumes" class="anchor">&nbsp;</a>
+        <table class="table">
+            <div class="panel-heading">Optional Volumes</div>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Device name</th>
+                    <th>Volume type</th>
+                    <th>Volume size (GB)</th>
+                    <th>IOPS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for volume in app.get('environment_infos', {}).get('optional_volumes', {}) %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ volume['device_name'] }}</td>
+                        <td>{{ volume['volume_type'] }}</td>
+                        <td>{{ volume['volume_size'] }}</td>
+                        <td>{{ volume['iops'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <a name="lifecycle-hooks" class="anchor">&nbsp;</a>
         <div class="panel-heading">Lifecycle Hooks</div>
