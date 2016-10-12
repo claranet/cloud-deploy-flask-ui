@@ -187,6 +187,13 @@
                 {{ ghost_display_field('app-environment_infos-instance_profile', 'Instance Profile', app.get('environment_infos', {})['instance_profile']) }}
                 {{ ghost_display_field('app-environment_infos-key_name', 'Key Name', app.get('environment_infos', {})['key_name']) }}
             </div>
+            <div class="row">
+		{% set tags = [] %}
+		{% for tag in app.get('environment_infos', {})['instance_tags'] %}
+	            {% do tags.append(tag['tag_name'] + ':' + tag['tag_value']) %}
+		{% endfor %}
+                {{ ghost_display_field('app-environment_infos-instance_tags', 'Instance Tags', ' - '.join(tags)) }}
+            </div>
         </div>
 
         <a name="root-block" class="anchor">&nbsp;</a>
