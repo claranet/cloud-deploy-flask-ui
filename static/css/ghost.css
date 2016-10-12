@@ -251,6 +251,20 @@ td.inline {
     padding: 12px;
     margin: 0 0 -45px 0;
 }
+#app-form .features-presets-group {
+    position: relative;
+    padding: 0 15px;
+}
+#app-form .features-presets-group label,
+#app-form .features-presets-group select,
+#app-form .features-presets-group .feature-import,
+#app-form .features-presets-group .bootstrap-select {
+    float: left;
+    margin-right: 10px;
+}
+#app-form .features-presets-group .feature-import {
+    margin-top: 15px
+}
 #app-form .form-group.script-panel,
 #app-form .form-group.select-panel {
     padding-right: 40px;
