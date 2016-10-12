@@ -892,7 +892,6 @@ class BaseAppForm(Form):
         self.map_to_app_lifecycle_hooks(app)
         self.map_to_app_features(app)
         self.map_to_app_modules(app)
-        self.map_to_app_environment_infos(app)
 
     def map_to_app_log_notifications(self, app):
         """
