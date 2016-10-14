@@ -188,11 +188,11 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     asgs = []
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
-        conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
-        asgs = conn_as.get_all_groups()
+        conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
+        asgs = conn_as.describe_auto_scaling_groups()['AutoScalingGroups']
     except:
         traceback.print_exc()
-    return [('', '-- No Autoscale for this app --')]+[(asg.name, asg.name + ' (' + asg.launch_config_name + ')') for asg in asgs]
+    return [('', '-- No Autoscale for this app --')]+[(asg['AutoScalingGroupName'], asg['AutoScalingGroupName'] + ' (' + asg['LaunchConfigurationName'] + ')') for asg in asgs]
 
 def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     try:
