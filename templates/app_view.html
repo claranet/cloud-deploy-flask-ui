@@ -193,14 +193,27 @@
                 {{ ghost_display_field('app-environment_infos-instance_profile', 'Instance Profile', app.get('environment_infos', {})['instance_profile']) }}
                 {{ ghost_display_field('app-environment_infos-key_name', 'Key Name', app.get('environment_infos', {})['key_name']) }}
             </div>
-            <div class="row">
-		{% set tags = [] %}
-		{% for tag in app.get('environment_infos', {})['instance_tags'] %}
-	            {% do tags.append(tag['tag_name'] + ':' + tag['tag_value']) %}
-		{% endfor %}
-                {{ ghost_display_field('app-environment_infos-instance_tags', 'Instance Tags', ' - '.join(tags)) }}
-            </div>
         </div>
+
+        <table class="table">
+            <div class="panel-heading">Instance Tags</div>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for itag in app.get('environment_infos', {})['instance_tags'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ itag['tag_name'] }}</td>
+                        <td>{{ itag['tag_value'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <a name="env-vars" class="anchor">&nbsp;</a>
         <table class="table">
