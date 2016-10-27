@@ -197,8 +197,8 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
 def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
-        conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
-        asgs = conn_as.get_all_groups(names=[as_group_name])
+        conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
+        asgs = conn_as.describe_auto_scaling_groups(AutoScalingGroupNames=[as_group_name], MaxRecords=1)['AutoScalingGroups']
         if len(asgs) > 0:
             return asgs[0]
         return None
@@ -210,9 +210,9 @@ def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn = cloud_connection.get_connection(region, ["ec2"])
     instance_ids = []
-    for i in as_group.instances:
-        if i.health_status != 'Unhealthy':
-            instance_ids.append(i.instance_id)
+    for i in as_group['Instances']:
+        if i['HealthStatus'] != 'Unhealthy':
+            instance_ids.append(i['InstanceId'])
     hosts = []
     if len(instance_ids) > 0:
         instances = conn.get_only_instances(instance_ids=instance_ids)
@@ -224,8 +224,8 @@ def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_elb = cloud_connection.get_connection(region, ["ec2", "elb"])
-        if len(as_group.load_balancers) > 0:
-            as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group.load_balancers)
+        if len(as_group['LoadBalancerNames']) > 0:
+            as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group['LoadBalancerNames'])
             if len(as_elbs) > 0:
                 return as_elbs
             else:
