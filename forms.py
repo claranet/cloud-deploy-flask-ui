@@ -437,7 +437,7 @@ class AutoscaleForm(Form):
 
 class SafedeploymentForm(Form):
 
-    lb_type = BetterSelectField('Load Balancer', validators=[], choices=[('elb','Elastic Load Balancer'), ('haproxy','HAProxy')])
+    lb_type = BetterSelectField('Load Balancer', validators=[], choices=[('elb','Classic Load Balancer (ELB)'), ('alb', 'Application Load Balancer'), ('haproxy','HAProxy')])
     safe_deploy_wait_before = IntegerField('Wait before deploy (s)', description='Time to wait before deployment (in seconds)', validators=[], default = 10)
     safe_deploy_wait_after = IntegerField('Wait after deploy (s)', description='Time to wait after deployment (in seconds)', validators=[], default = 10)
 
