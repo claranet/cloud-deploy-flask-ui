@@ -23,6 +23,8 @@ from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 from ghost_tools import b64encode_utf8
 from ghost_tools import config
 
+from libs.alb import get_target_groups_from_autoscale
+
 # Helpers
 def empty_fieldlist(fieldlist):
     while len(fieldlist) > 0:
@@ -220,9 +222,8 @@ def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
             hosts.append(format_host_infos(host, conn, cloud_connection, region))
     return hosts
 
-def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
+def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_elb = cloud_connection.get_connection(region, ["ec2", "elb"])
         if len(as_group['LoadBalancerNames']) > 0:
             as_elbs = conn_elb.get_all_load_balancers(load_balancer_names=as_group['LoadBalancerNames'])
@@ -238,16 +239,32 @@ def get_elbs_in_as_group(provider, as_group, region, log_file=None, **kwargs):
 
 def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, **kwargs):
     try:
-        elbs = get_elbs_in_as_group(provider, as_group, region, log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        elbs_instances = []
+        albs_instances = []
+
+        elbs = get_elbs_in_as_group(cloud_connection, as_group, region, log_file)
         if elbs:
-            elbs_instances = []
             for elb in elbs:
                 if len(elb.instances) > 0:
                     elb_instance_ids = []
                     for instance in elb.instances:
                         elb_instance_ids.append('#' + instance.id)
-                    elbs_instances.append({'elb_name':elb.name, 'elb_instances':elb_instance_ids})
-            return elbs_instances
+                    elbs_instances.append({'elb_name': elb.name, 'elb_instances': elb_instance_ids})
+
+        conn3_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
+        alb_conn = cloud_connection.get_connection(region, ['elbv2'], boto_version='boto3')
+        alb_tgs = get_target_groups_from_autoscale(as_group['AutoScalingGroupName'], conn3_as)
+        if len(alb_tgs):
+            for tg_arn in alb_tgs:
+                alb_instance_ids = []
+                for target_health in alb_conn.describe_target_health(TargetGroupArn=tg_arn)['TargetHealthDescriptions']:
+                    alb_instance_ids.append('#' + target_health['Target']['Id'])
+                tg_infos = alb_conn.describe_target_groups(TargetGroupArns=[tg_arn])['TargetGroups'][0]
+                albs_instances.append({'elb_name': tg_infos['TargetGroupName'], 'elb_instances': alb_instance_ids})
+
+        if len(elbs_instances) or len (albs_instances):
+            return elbs_instances + albs_instances
         else:
             return None
     except:
