@@ -99,17 +99,24 @@
           });
         }
 
+        function refresh_safe_deploy_options(update_possibilities) {
+            if ($('#safe_deployment').is(':checked')) {
+                $('.wrap.safe_deployment_strategy').show();
+                if (update_possibilities) {
+                    get_app_safe_deployment_possibilities();
+                }
+            } else {
+                $('.wrap.safe_deployment_strategy').hide();
+            }
+        }
+
         show_options_fields();
         $('#command').change(function() {
             show_options_fields();
         });
+        refresh_safe_deploy_options(false);
         $('#safe_deployment').change(function() {
-            if ($(this).is(':checked')) {
-                $('.wrap.safe_deployment_strategy').show();
-                get_app_safe_deployment_possibilities();
-            } else {
-                $('.wrap.safe_deployment_strategy').hide();
-            }
+            refresh_safe_deploy_options(true);
         });
 
         refresh_options_list();
