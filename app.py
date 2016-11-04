@@ -443,10 +443,12 @@ def web_app_command(app_id):
 def web_app_command_from_job(app_id, job_id):
     form = CommandAppForm(app_id)
     app = get_ghost_app(app_id)
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
 
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+        form.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
 
     # Perform validation
     if form.validate_on_submit():
@@ -488,6 +490,11 @@ def web_app_command_from_job(app_id, job_id):
 
     if job['command'] == 'redeploy' and 'options' in job and len(job['options']):
         form.deploy_id.data = job['options'][0]
+
+    if job['command'] == 'createinstance' and 'options' in job and len(job['options']) > 1:
+        form.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
+        form.subnet.data = job['options'][0]
+        form.private_ip_address.data = job['options'][1]
 
     return render_template('app_command.html', form=form, app=app)
 
