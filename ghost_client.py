@@ -61,6 +61,51 @@ def handle_response_status_code(status_code):
 def test_ghost_auth(user):
     return requests.get(url_apps, headers=headers, auth=user.auth)
 
+def get_ghost_envs(query=None):
+    try:
+        envs = set([])
+        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
+        url += '&max_result=999&projection={"env":1}'
+        if query:
+            url += '&where=' + query
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        for item in result.json().get('_items', []):
+            envs.add(item['env'])
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        envs.add('Failed to retrieve Envs')
+
+    return envs
+
+def get_ghost_apps_per_env(query=None, env=None, embed_deployments=False):
+    try:
+        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
+        url += '&max_result=999'
+        if query:
+            url += '&where=' + query
+        if env:
+            url += '&page=' + page
+        if embed_deployments:
+            url += '&embedded={"modules.last_deployment":1}'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        apps = result.json().get('_items', [])
+        for app in apps:
+            try:
+                app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
+                app['_updated'] = datetime.strptime(app['_updated'], RFC1123_DATE_FORMAT)
+            except:
+                traceback.print_exc()
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        apps = ['Failed to retrieve Apps']
+
+    return apps
 
 def get_ghost_apps(query=None, page=None, embed_deployments=False):
     try:
