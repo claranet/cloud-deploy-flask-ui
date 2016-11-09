@@ -171,6 +171,17 @@ ul.nav.navbar-nav {
  .navbar-nav>li.filter .dropdown-menu {
      min-width: auto;
  }
+  .nav .right {
+      float: right;
+  }
+  .nav .right .navbar-nav{
+      margin-top: 15px;
+  }
+  .nav .right .navbar-nav>li.filter> a {
+      margin: 0 10px;
+      padding: 10px 15px;
+  }
+
 /*fixed left-menu*/
 .navbar-fixed-left {
     left: 0;
