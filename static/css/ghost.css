@@ -433,6 +433,30 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     border-radius: 3px;
 }
 
+/* App tabbeb list */
+#tabbed-apps {
+    background: #fafafa;
+    border-left: 2px solid #ddd;
+    border-right: 2px solid #ddd;
+}
+#tabbed-apps ul.nav {
+    background: #fafafa;
+    color: #333;
+    margin-left: -2px;
+    margin-right: -2px;
+}
+#tabbed-apps ul.nav li.active {
+    background: #ddd;
+    border: 2px solid #ddd;
+    border-bottom: 0 none;
+}
+#tabbed-apps ul.nav li a {
+    color: #009688 !important;
+}
+#tabbed-apps ul.nav li.active a {
+    font-weight: bold;
+}
+
 /*Generic List*/
 .top-right {
     float: right;
@@ -447,12 +471,16 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     white-space: nowrap;
 }
 
+#tabbed-apps ul.nav li.active.env-prod,
 .tablelist tr.env-prod {
     background-color: #f3e5f5;
 }
 .tablelist tr.env-prod:hover {
     background-color: #e1bee7;
 }
+#tabbed-apps ul.nav li.active.env-staging,
+#tabbed-apps ul.nav li.active.env-preprod,
+#tabbed-apps ul.nav li.active.env-oat,
 .tablelist tr.env-staging,
 .tablelist tr.env-preprod,
 .tablelist tr.env-oat {
@@ -463,6 +491,9 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .tablelist tr.env-oat:hover {
     background-color: #C4E3F3;
 }
+#tabbed-apps ul.nav li.active.env-dev,
+#tabbed-apps ul.nav li.active.env-demo,
+#tabbed-apps ul.nav li.active.env-int,
 .tablelist tr.env-dev,
 .tablelist tr.env-demo,
 .tablelist tr.env-int {
@@ -473,6 +504,8 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .tablelist tr.env-int:hover {
     background-color: #FAF2CC;
 }
+#tabbed-apps ul.nav li.active.env-test,
+#tabbed-apps ul.nav li.active.env-uat,
 .tablelist tr.env-test,
 .tablelist tr.env-uat {
     background-color: #efebe9;

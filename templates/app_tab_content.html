@@ -1,0 +1,100 @@
+    <table class="table tablelist noscroll">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name / ID / Custom account</th>
+                <th>Created / Modified</th>
+                <th>Environment</th>
+                <th>Role / Features / Modules</th>
+                <th>AWS Region / Instance Type / VPC</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+
+{% for app in apps | sort(reverse=True, attribute='_updated') %}
+{% set app_is_bluegreen = app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] %}
+<tr class="env-{{ app['env'] }} app-row">
+    <th scope="row"><span class="index"></span></th>
+    <td>
+        <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
+        <br>
+        <span class="app-uid">{{ app['_id'] }}</span>
+        {%- if app['assumed_account_id'] and app['assumed_role_name'] -%}
+        {% set app_assumed_arn = "arn:{0}:iam::{1}:role/{2}" %}
+        <br>
+        {{ app_assumed_arn.format('aws-cn' if app.get('assumed_region_name', '').startswith('cn-') else 'aws', app['assumed_account_id'], app['assumed_role_name']) }}
+        {%- endif -%}
+    </td>
+    <td>
+        {{ app['_created'] }}
+        <br>
+        {{ app['_updated'] }}
+        <br>
+        by&nbsp;{{ app.get('user', '-') }}
+    </td>
+    <td>
+        {%- if app_is_bluegreen -%}
+        {% set color_class = 'info' if app['blue_green'].get('color', 'blue') == 'blue' else 'success' %}
+        <p class="" title="Blue green is enabled on this app - associated with {{ app['blue_green']['alter_ego_id'] }}" data-toggle="tooltip">
+            <a href="/web/apps/{{ app['blue_green']['alter_ego_id'] }}">{{ app['env'] }}</a>
+        </p>
+        <p>
+            <span class="sticker label-{{ color_class }}">{{ app['blue_green']['color'] }}</span>
+            {{ app['blue_green']['is_online'] and '&nbsp;&#10004;' | safe or '' }}
+        </p>
+        {%- else -%}
+            {{ app['env'] }}
+        {%- endif %}
+    </td>
+    <td>
+        {{ app['role'] }}
+        <div>
+            {%- if app['features'] | length > 0 -%}
+                <abbr title="{{ app['features'] | map(attribute='name') | join(', ') }}">
+                    {{- app['features'] | map(attribute='name') | join(', ') | truncate(42, True) -}}
+                </abbr>
+            {%- endif %}
+        </div>
+        <div>
+            {%- if app['modules'] | length > 0 -%}
+                <abbr title="{{ app['modules'] | map(attribute='name') | join(', ') }}">
+                    {{- app['modules'] | map(attribute='name') | join(', ') | truncate(42, True) -}}
+                </abbr>
+            {%- endif %}
+        </div>
+    </td>
+    <td>
+        {{ app['region'] }}
+        <br>
+        {{ app['instance_type'] }}
+        <br>
+        {{ app['vpc_id'] }}
+    </td>
+    <td>
+        <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-default btn-raised" title="Run Command" data-toggle="tooltip"><span class="glyphicon glyphicon-console"></span></button></a>
+        <button href="/web/aws/appinfos/{{ app['_id'] }}" class="btn btn-success btn-raised app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app['_id'] }}"><span class="fa fa-sitemap"></span></button>
+        <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-warning btn-raised" title="Edit" data-toggle="tooltip"><span class="glyphicon glyphicon-edit"></span></button></a>
+        <a href="/web/apps/create?clone_from={{ app['_id'] }}"><button class="btn btn-info btn-raised" title="Clone" data-toggle="tooltip"><span class="glyphicon glyphicon-duplicate"></span></button></a>
+        <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-danger btn-raised" title="Delete" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button></a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="app-infos-{{ app['_id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog app-infos" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ app['name'] }} / {{ app['role'] }} / {{ app['env'] }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+            </div>
+            </div>
+        </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+
+        </tbody>
+    </table>

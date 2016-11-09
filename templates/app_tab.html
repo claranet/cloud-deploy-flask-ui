@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Applications' %}
+
+{% block page_header %}
+    <a class="top-right" href="#"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
+    <caption>Sorted by last modification date</caption>
+
+    <ul class="nav nav-stacked action-btns">
+        <li>
+            <a href="/web/apps/create" id="createApp"><button class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</button></a>
+        </li>
+        <li>
+            <ul class="nav navbar-nav filter-group">
+                <li role="presentation" class="dropdown filter first">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="/web/apps" role="button" aria-expanded="false">
+                        {{ request.args.get('g-role') or 'Role' }} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="?">- All -</a></li>
+                        {% for role in role_list: %}
+                        <li><a href="?where=role=={{ role }}&g-role={{ role }}">{{ role }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="filter">
+                    <div class="input-group" id="global-search">
+                        <input type="text" class="form-control" placeholder="Search..." value="{{ request.args.get('g-search') or '' }}"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-xs" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </span>
+                    </div><!-- /input-group -->
+                </li>
+            </ul>
+        </li>
+    </ul>
+{% endblock %}"
+
+{% block page_content %}
+    <div id="tabbed-apps">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            {% for env in env_list: %}
+                {% if env == choosen_env: %}
+            <li role="presentation" class="active env-{{ env }}"><a href="#apps-{{ env }}" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
+                {% else %}
+            <li role="presentation" class="env-{{ env }}"><a href="#apps-{{ env }}" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            {% for env in env_list: %}
+                {% if env == choosen_env: %}
+            <div role="tabpanel" class="tab-pane fade active in" id="apps-{{ env }}">
+                {% include 'app_tab_content.html' %}
+            </div>
+                {% else %}
+            <div role="tabpanel" class="tab-pane fade" id="apps-{{ env }}">
+                <div style="text-align: center; padding: 10px;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></div>
+            </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+{% endblock %}
+{% block page_scripts %}
+    <script type="text/javascript">
+        var getUrlParameter = function getUrlParameter(sParam, sDefault) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+        
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+        
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+            return sDefault;
+        };
+        
+        function searchInList() {
+            var searchValue = $('#global-search input').val();
+            if (searchValue == '' || !searchValue) {
+                window.location.href = 'apps?';
+            } else {
+                var params = {  };
+                params["where"] = '{"name":{"$regex":".*'+searchValue+'.*"}}';
+                params["g-search"] = searchValue;
+                var newUrl = "apps?" + $.param(params);
+                window.location.href = newUrl;
+            }
+        }
+        
+        $(document).ready(function() {
+            $('#global-search').focusin(function () {
+                $('#global-search').addClass('expanded');
+            });
+            $('#global-search').focusout(function () {
+                $('#global-search').removeClass('expanded');
+            });
+            $('#global-search button').click(function (evt) {
+                evt.preventDefault();
+                searchInList();
+            });
+            $('#global-search input').keypress(function (e) {
+                if (e.which == 13) {
+                    searchInList();
+                    return false;  
+                }
+            });
+            $('#global-search input').val(getUrlParameter('search'));
+
+            $(document).on('click', 'button.app-infos-btn', function(evt) {
+                $('#as-instance-details fieldset').addClass('hide');
+            });
+            $(document).on('click', '.instance-item', function(evt) {
+                evt.preventDefault();
+                instance_content = $(this).next().html();
+                $('.instance-item').removeClass('focus');
+                $(this).addClass('focus');
+                $('#as-instance-details fieldset').removeClass('hide');
+                $('#as-instance-details fieldset').html(instance_content);
+            });
+            $(document).on('click', '#as-elb a', function(evt) {
+                evt.preventDefault();
+                $('#as-elb a').removeClass('btn-colored');
+                $(this).addClass('btn-colored');
+
+                $('.instance-item').removeClass(function (index, css) {
+                    return (css.match (/(^|\s)hl-\S+/g) || []).join(' ');
+                });
+                instances = $(this).attr('data-instances');
+                color = $(this).attr('data-color');
+                $(instances).addClass('hl-'+color);
+            });
+            $(document).on('click', '#tabbed-apps ul.nav li a', function(evt) {
+                evt.preventDefault();
+                $(this).tab('show');
+                var currentURI = $(location).attr('origin') + $(location).attr('pathname') + $(location).attr('search');
+                var loadEncAppsUrl = currentURI + '?env=' + $(this).attr('aria-controls');
+                var targetZone = $(this).attr('href');
+                $.ajax({
+                    url: loadEncAppsUrl,
+                    success: function(html)
+                    {
+                        if (html) {
+                            $(targetZone).html(html);
+                        } else {
+                            alert('Cannot fetch apps for this env');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
