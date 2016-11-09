@@ -55,7 +55,7 @@
             {% for env in env_list: %}
                 {% if env == choosen_env: %}
             <div role="tabpanel" class="tab-pane fade active in" id="apps-{{ env }}">
-                {% include 'app_tab_content.html' %}
+                {% include 'app_list_content.html' %}
             </div>
                 {% else %}
             <div role="tabpanel" class="tab-pane fade" id="apps-{{ env }}">

@@ -260,8 +260,8 @@ def web_tab_app_list():
         choosen_env = list(envs)[0]
     apps = get_ghost_apps_per_env(choosen_env)
     if request.is_xhr:
-        return render_template('app_tab_content.html', apps=apps)
-    return render_template('app_tab.html', apps=apps, choosen_env=choosen_env)
+        return render_template('app_list_content.html', apps=apps, table_header=True)
+    return render_template('app_tab.html', apps=apps, choosen_env=choosen_env, table_header=True)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():

@@ -1,3 +1,18 @@
+{% if table_header: %}
+    <table class="table tablelist noscroll">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name / ID / Custom account</th>
+                <th>Created / Modified</th>
+                <th>Environment</th>
+                <th>Role / Features / Modules</th>
+                <th>AWS Region / Instance Type / VPC</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+{% endif %}
 {% for app in apps | sort(reverse=True, attribute='_updated') %}
 {% set app_is_bluegreen = app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] %}
 <tr class="env-{{ app['env'] }} app-row">
@@ -81,3 +96,7 @@
     </td>
 </tr>
 {% endfor %}
+{% if table_header: %}
+        </tbody>
+    </table>
+{% endif %}
