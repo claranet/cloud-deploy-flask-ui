@@ -254,15 +254,16 @@ def web_app_list():
 
 @app.route('/web/t-apps')
 def web_tab_app_list():
-    query = request.args.get('where', None)
     choosen_env = request.args.get('env', None)
-    apps = get_ghost_apps_per_env(query, choosen_env)
+    envs = get_ghost_envs()
+    if not choosen_env:
+        choosen_env = list(envs)[0]
+    apps = get_ghost_apps_per_env(choosen_env)
     if request.is_xhr:
         return render_template('app_list_content.html', apps=apps,
-                               page=int(page))
-    envs = get_ghost_envs()
+                               page=0)
     return render_template('app_list.html', apps=apps,
-                           page=int(page))
+                           page=0)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
