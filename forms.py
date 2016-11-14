@@ -483,7 +483,7 @@ class SafedeploymentForm(Form):
 
 
 class BuildInfosForm(Form):
-    ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Morea Debian AMI', validators=[
+    ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Claranet Debian AMI', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
