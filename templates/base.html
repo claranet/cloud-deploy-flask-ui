@@ -174,7 +174,11 @@
         });
 
         var provider = 'aws';
-        var provider_identity_query = '';
+        if ($('#assumed_account_id').val() && $('#assumed_role_name').val()) {
+            var provider_identity_query = '?assumed_account_id=' + $('#assumed_account_id').val() + '&assumed_role_name=' + $('#assumed_role_name').val() + '&assumed_region_name=' + $('#assumed_region_name').val();
+        } else {
+            var provider_identity_query = '';
+        }
 
         function ghost_update_ec2_regions_confirm() {
             if (confirm('Refreshing region may also refresh all other resources that depends on it.')) {
