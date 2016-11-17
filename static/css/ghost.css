@@ -175,11 +175,10 @@ ul.nav.navbar-nav {
       float: right;
   }
   .nav .right .navbar-nav{
-      margin-top: 15px;
+      margin-top: 20px;
   }
-  .nav .right .navbar-nav>li.filter> a {
-      margin: 0 10px;
-      padding: 10px 15px;
+  .nav .right .navbar-nav>li.filter> .togglebutton label {
+      color: #333;
   }
 
 /*fixed left-menu*/

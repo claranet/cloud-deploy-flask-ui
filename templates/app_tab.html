@@ -10,10 +10,12 @@
         <li class="right">
             <ul class="nav navbar-nav filter-group">
                 <li class="filter">
-                    <a href="/web/apps" role="button" class="btn btn-small btn-raised btn-default" title="Classical App List"><i class="fa fa-bars"></i></a>
-                </li>
-                <li class="filter">
-                    <a href="/web/t-apps" role="button" class="btn btn-small btn-raised btn-default disabled" title="Tabbed per env App List"><i class="fa fa-folder-o"></i></a>
+                    <div class="togglebutton">
+                        <label>
+                            Tabs view
+                            <input checked="checked" type="checkbox" id="appListViewToggle">
+                        </label>
+                    </div>
                 </li>
             </ul>
         </li>
@@ -149,6 +151,10 @@
                 instances = $(this).attr('data-instances');
                 color = $(this).attr('data-color');
                 $(instances).addClass('hl-'+color);
+            });
+            $(document).on('click', '#appListViewToggle', function(evt) {
+                evt.preventDefault();
+                window.location.href = '/web/apps';
             });
             $(document).on('click', '#tabbed-apps ul.nav li a', function(evt) {
                 evt.preventDefault();
