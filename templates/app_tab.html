@@ -156,24 +156,34 @@
                 evt.preventDefault();
                 window.location.href = '/web/apps';
             });
-            $(document).on('click', '#tabbed-apps ul.nav li a', function(evt) {
-                evt.preventDefault();
-                $(this).tab('show');
-                var currentURI = $(location).attr('origin') + $(location).attr('pathname') + $(location).attr('search');
-                var loadEncAppsUrl = currentURI + '?env=' + $(this).attr('aria-controls');
-                var targetZone = $(this).attr('href');
+            function showAppTab(tabLink) {
+                $(tabLink).tab('show');
+                var currentURI = $(location).attr('origin') + $(location).attr('pathname');
+                var loadEncAppsUrl = currentURI + '?env=' + $(tabLink).attr('aria-controls');
+                var targetZone = $(tabLink).attr('href');
                 $.ajax({
                     url: loadEncAppsUrl,
                     success: function(html)
                     {
                         if (html) {
+                            location.hash = targetZone;
                             $(targetZone).html(html);
                         } else {
                             alert('Cannot fetch apps for this env');
                         }
                     }
                 });
+            }
+            $(document).on('click', '#tabbed-apps ul.nav li a', function(evt) {
+                evt.preventDefault();
+                showAppTab(this);
             });
+
+            // Remove the # from the hash, as different browsers may or may not include it
+            var hash = location.hash.replace('#','');
+            if (hash != '') {
+                showAppTab($('#tabbed-apps ul.nav li a[href=#'+hash+']'));
+            }
         });
     </script>
 {% endblock %}
