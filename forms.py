@@ -844,6 +844,8 @@ class BaseAppForm(Form):
 
     instance_type = BetterSelectField('AWS Instance Type', validators=[DataRequiredValidator()], choices=[])
 
+    instance_monitoring = BooleanField('AWS Detailed Instance Monitoring', validators=[])
+
     vpc_id = BetterSelectField('AWS VPC', choices=[], validators=[
         DataRequiredValidator(),
         RegexpValidator(
@@ -879,6 +881,7 @@ class BaseAppForm(Form):
             app['role'] = self.role.data
         app['region'] = self.region.data
         app['instance_type'] = self.instance_type.data
+        app['instance_monitoring'] = self.instance_monitoring.data
         app['vpc_id'] = self.vpc_id.data
 
         self.map_to_app_log_notifications(app)
@@ -1090,6 +1093,7 @@ class BaseAppForm(Form):
         self.role.data = app.get('role', '')
         self.region.data = app.get('region', '')
         self.instance_type.data = app.get('instance_type', '')
+        self.instance_monitoring.data = app.get('instance_monitoring', False)
         self.vpc_id.data = app.get('vpc_id', '')
 
         self.map_from_app_notifications(app)

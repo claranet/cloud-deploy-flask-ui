@@ -108,6 +108,7 @@
             <div class="row">
                 {{ ghost_display_field('app-aws-region', 'AWS Region', app['region']) }}
                 {{ ghost_display_field('app-aws-instance-type', 'AWS Instance Type', app['instance_type']) }}
+                {{ ghost_display_field('app-aws-instance-type', 'AWS Detailed Instance Monitoring', app.get('instance_monitoring')) }}
             </div>
             <div class="row">
                 {{ ghost_display_field('app-aws-vpc', 'AWS VPC', app['vpc_id']) }}
