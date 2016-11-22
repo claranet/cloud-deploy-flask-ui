@@ -16,6 +16,7 @@ from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
 from ghost_tools import config
+from ghost_client import get_ghost_envs, get_ghost_apps_per_env
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
@@ -81,7 +82,7 @@ LEGACY_COMMANDS = ['destroyinstance','rollback']
 
 @app.context_processor
 def env_list():
-    return dict(env_list=ghost_app_schema['env']['allowed'],
+    return dict(env_list=get_ghost_envs(),
                 role_list=ghost_role_default_values,
                 statuses=JOB_STATUSES,
                 ghost_blue_green=ghost_has_blue_green_enabled(),
@@ -250,6 +251,17 @@ def web_app_list():
                                page=int(page))
     return render_template('app_list.html', apps=apps,
                            page=int(page))
+
+@app.route('/web/t-apps')
+def web_tab_app_list():
+    choosen_env = request.args.get('env', None)
+    if not choosen_env:
+        envs = get_ghost_envs()
+        choosen_env = list(envs)[0]
+    apps = get_ghost_apps_per_env(choosen_env)
+    if request.is_xhr:
+        return render_template('app_list_content.html', apps=apps, table_header=True)
+    return render_template('app_tab.html', apps=apps, choosen_env=choosen_env, table_header=True)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
