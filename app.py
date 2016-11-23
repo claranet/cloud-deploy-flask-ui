@@ -81,8 +81,8 @@ def before_request():
 LEGACY_COMMANDS = ['destroyinstance','rollback']
 
 @app.context_processor
-def env_list():
-    return dict(env_list=get_ghost_envs(),
+def template_context():
+    return dict(
                 role_list=ghost_role_default_values,
                 statuses=JOB_STATUSES,
                 ghost_blue_green=ghost_has_blue_green_enabled(),
@@ -247,21 +247,21 @@ def web_app_list():
     page = request.args.get('page', '1')
     apps = get_ghost_apps(query, page)
     if request.is_xhr:
-        return render_template('app_list_content.html', apps=apps,
+        return render_template('app_list_content.html', env_list=get_ghost_envs(), apps=apps,
                                page=int(page))
-    return render_template('app_list.html', apps=apps,
+    return render_template('app_list.html', env_list=get_ghost_envs(), apps=apps,
                            page=int(page))
 
 @app.route('/web/t-apps')
 def web_tab_app_list():
     choosen_env = request.args.get('env', None)
+    envs = get_ghost_envs()
     if not choosen_env:
-        envs = get_ghost_envs()
         choosen_env = list(envs)[0]
     apps = get_ghost_apps_per_env(choosen_env)
     if request.is_xhr:
-        return render_template('app_list_content.html', apps=apps, table_header=True)
-    return render_template('app_tab.html', apps=apps, choosen_env=choosen_env, table_header=True)
+        return render_template('app_list_content.html', env_list=envs, apps=apps, table_header=True)
+    return render_template('app_tab.html', env_list=envs, apps=apps, choosen_env=choosen_env, table_header=True)
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():
