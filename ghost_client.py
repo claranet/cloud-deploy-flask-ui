@@ -59,7 +59,7 @@ def handle_response_status_code(status_code):
 
 
 def test_ghost_auth(user):
-    return requests.get(url_apps, headers=headers, auth=user.auth)
+    return requests.head(API_BASE_URL, headers=headers, auth=user.auth)
 
 def get_ghost_envs(query=None):
     try:
