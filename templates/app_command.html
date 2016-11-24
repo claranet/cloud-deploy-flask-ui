@@ -52,7 +52,10 @@
             } else if ($('#command').val() == 'createinstance') {
                 $('.wrap.subnet').show();
                 $('.wrap.private_ip_address').show();
-                get_app_subnets('{{ app['_id'] }}');
+                if ($('#subnet option').first().val() == '') {
+                    /*only update if needed*/
+                    get_app_subnets('{{ app['_id'] }}');
+                }
             } else if ($('#command').val() == 'preparebluegreen') {
                 $('.wrap.prepare_bg_copy_ami').show();
             } else if ($('#command').val() == 'swapbluegreen') {
