@@ -429,11 +429,12 @@ def web_app_edit(app_id):
 def web_app_command(app_id):
     form = CommandAppForm(app_id)
     app = get_ghost_app(app_id)
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
 
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
-        form.subnet.choices = [('', '')] + get_wtforms_selectfield_values(app['environment_infos']['subnet_ids'])
+        form.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
 
     # Perform validation
     if form.validate_on_submit():
