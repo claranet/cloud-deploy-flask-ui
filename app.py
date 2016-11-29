@@ -7,7 +7,7 @@ import traceback
 import sys
 import os
 import yaml
-from sh import git
+
 from settings import DEFAULT_PROVIDER
 from .websocket import ansi_to_html
 
@@ -15,7 +15,7 @@ from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_ST
 from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
-from ghost_tools import config
+from ghost_tools import config, CURRENT_REVISION
 from ghost_client import get_ghost_envs, get_ghost_apps_per_env
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
@@ -87,27 +87,6 @@ def template_context():
                 statuses=JOB_STATUSES,
                 ghost_blue_green=ghost_has_blue_green_enabled(),
                 command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
-
-try:
-    CURRENT_REVISION_NAME=git('symbolic-ref', '-q', '--short', 'HEAD', _tty_out=False)
-except:
-    try:
-        CURRENT_REVISION_NAME=git('describe', '--tags', '--exact-match', _tty_out=False)
-    except:
-        CURRENT_REVISION_NAME=git('--no-pager', 'rev-parse', '--short', 'HEAD', _tty_out=False).strip()
-
-try:
-    CURRENT_REVISION = dict(
-        current_revision=git('--no-pager', 'rev-parse', '--short', 'HEAD', _tty_out=False).strip(),
-        current_revision_date=git('log', '-1', '--format=%cD', _tty_out=False).strip(),
-        current_revision_name=CURRENT_REVISION_NAME.strip()
-    )
-except:
-    CURRENT_REVISION = dict(
-        current_revision='unknown',
-        current_revision_date='unknown',
-        current_revision_name='unknown'
-    )
 
 def load_ghost_feature_presets():
     presets = {}
