@@ -238,10 +238,9 @@ def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
     return None
 
 def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, **kwargs):
+    lbs_instances = []
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
-        elbs_instances = []
-        albs_instances = []
 
         elbs = get_elbs_in_as_group(cloud_connection, as_group, region, log_file)
         if elbs:
@@ -250,7 +249,7 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
                     elb_instance_ids = []
                     for instance in elb.instances:
                         elb_instance_ids.append('#' + instance.id)
-                    elbs_instances.append({'elb_name': elb.name, 'elb_instances': elb_instance_ids})
+                    lbs_instances.append({'elb_name': elb.name, 'elb_instances': elb_instance_ids})
 
         conn3_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
         alb_conn = cloud_connection.get_connection(region, ['elbv2'], boto_version='boto3')
@@ -261,15 +260,11 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
                 for target_health in alb_conn.describe_target_health(TargetGroupArn=tg_arn)['TargetHealthDescriptions']:
                     alb_instance_ids.append('#' + target_health['Target']['Id'])
                 tg_infos = alb_conn.describe_target_groups(TargetGroupArns=[tg_arn])['TargetGroups'][0]
-                albs_instances.append({'elb_name': tg_infos['TargetGroupName'], 'elb_instances': alb_instance_ids})
+                lbs_instances.append({'elb_name': tg_infos['TargetGroupName'], 'elb_instances': alb_instance_ids})
 
-        if len(elbs_instances) or len (albs_instances):
-            return elbs_instances + albs_instances
-        else:
-            return None
     except:
         traceback.print_exc()
-    return None
+    return lbs_instances
 
 def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=[], log_file=None, **kwargs):
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
