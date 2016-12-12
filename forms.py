@@ -152,7 +152,7 @@ def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwa
         subs = c.get_all_subnets(subnet_ids=subnets)
     except:
         traceback.print_exc()
-    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ' - ' + sub.cidr_block + ')') for sub in subs]
+    return [('', '')] + [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ' - ' + sub.cidr_block + ')') for sub in subs]
 
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
