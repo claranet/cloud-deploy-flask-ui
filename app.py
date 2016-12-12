@@ -257,7 +257,7 @@ def web_tab_app_list():
     choosen_env = request.args.get('env', None)
     envs = get_ghost_envs()
     if not choosen_env:
-        choosen_env = list(envs)[0]
+        choosen_env = list(envs)[0] if envs else ''
     apps = get_ghost_apps_per_env(choosen_env)
     if request.is_xhr:
         return render_template('app_list_content.html', env_list=envs, apps=apps, table_header=True)
