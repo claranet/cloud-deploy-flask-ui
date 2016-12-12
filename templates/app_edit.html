@@ -109,10 +109,11 @@
                 <div class="row">
                     {{ wtf.form_field(form.region, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#region" data-call="ghost_update_ec2_regions_confirm();"><span class="glyphicon glyphicon-refresh"></span></button>
-                    {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
-                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#instance_type" data-call="ghost_update_ec2_instancetypes($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                     {{ wtf.form_field(form.vpc_id, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#vpc_id" data-call="ghost_update_ec2_vpcs($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
+                    {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
+                    <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#instance_type" data-call="ghost_update_ec2_instancetypes($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
+                    {{ wtf.form_field(form.instance_monitoring, form_type='horizontal') }}
                 </div>
             </div>
         </div>
