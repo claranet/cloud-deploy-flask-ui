@@ -1230,10 +1230,6 @@ class CreateAppForm(BaseAppForm):
         self.autoscale.as_name.choices = [('', 'Please select region first')]
         self.environment_infos.security_groups[0].choices = [('', 'Please select region first')]
         self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
-        empty_fieldlist(self.environment_infos.instance_tags)
-        self.environment_infos.instance_tags.append_entry()
-        form_tag = self.environment_infos.instance_tags.entries[-1].form
-        form_tag.map_from_app(get_default_Name_tag())
         self.environment_infos.key_name.choices = [('', 'Please select region first')]
         self.build_infos.source_ami.choices = [('', 'Please select region first')]
         self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
