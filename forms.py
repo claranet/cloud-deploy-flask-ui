@@ -132,7 +132,7 @@ def get_default_Name_tag():
 
         :return dict  The default tag "Name" configuration
     """
-    return {'tag_name': 'Name', 'tag_value': 'ec2.GHOST_APP_ENV.GHOST_APP_ROLE.GHOST_APP_NAME', 'tag_editable': True}
+    return {'tag_name': 'Name', 'tag_value': 'ec2.GHOST_APP_ENV.GHOST_APP_ROLE.GHOST_APP_NAME'}
 
 def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
@@ -628,15 +628,9 @@ class EnvironmentInfosForm(Form):
             instance_tags.append(get_default_Name_tag())
         empty_fieldlist(self.instance_tags)
         for tag in instance_tags:
-            #Some tags are protected against edition because they are used by Ghost(app_id/env/app/role/color)
-            #They will not be displayed.
-            if 'tag_editable' in tag and not tag['tag_editable']:
-                pass
-            else:
-                self.instance_tags.append_entry()
-                form_tag = self.instance_tags.entries[-1].form
-                form_tag.map_from_app(tag)
-
+            self.instance_tags.append_entry()
+            form_tag = self.instance_tags.entries[-1].form
+            form_tag.map_from_app(tag)
 
 class ResourceForm(Form):
     # Disable CSRF in resource forms as they are subforms
@@ -1008,7 +1002,6 @@ class BaseAppForm(Form):
             if form_tag.tag_name.data:
                 tag['tag_name'] = form_tag.tag_name.data
                 tag['tag_value'] = form_tag.tag_value.data
-                tag['tag_editable'] = True
                 app['environment_infos']['instance_tags'].append(tag)
 
     def map_to_app_env_vars(self, app):
