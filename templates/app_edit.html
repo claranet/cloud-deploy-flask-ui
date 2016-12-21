@@ -382,6 +382,14 @@
             $('#' + select_id).append('<option value="'+new_val+'" selected="">'+new_val+'</option>');
             $('#' + select_id).selectpicker("refresh");
         });
+        $('#instance_type').change(function() {
+            big_test = /.[0-9]+xlarge/;
+            if (big_test.test($(this).val())) {
+                $(this).parent().addClass('warning-big-instance-type');
+            } else {
+                $(this).parent().removeClass('warning-big-instance-type');
+            }
+        });
         $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
             var path = $(this).val();
             if (path == '/' || path == '/tmp' || path == '/var' || path == '/etc') {
