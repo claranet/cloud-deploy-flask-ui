@@ -1,10 +1,6 @@
 from flask import Flask, flash, render_template, request, Response, jsonify
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, login_required
-import threading
-import atexit
-import time
-import psutil
 
 from base64 import b64decode
 import traceback
@@ -26,7 +22,7 @@ from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
 from libs.blue_green import ghost_has_blue_green_enabled
-from health import get_host_cpu_label, get_host_health
+from health import get_host_cpu_label, get_host_health, HostHealth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
@@ -34,36 +30,6 @@ from forms import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_i
 from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities, get_ghost_app_roles
 from forms import get_wtforms_selectfield_values, get_aws_subnets_ids_from_app
 from forms import get_aws_connection_data, check_aws_assumed_credentials
-
-GHOST_CPU_PERCENT = 0
-GHOST_CPU_PERCENT_DETAILS = [0]
-POOL_TIME = 5 #Seconds
-
-# thread handler
-cpu_thread = threading.Thread()
-
-def thread_interrupt():
-    global cpu_thread
-    cpu_thread.cancel()
-
-def thread_update_cpu_stats():
-    global GHOST_CPU_PERCENT
-    global GHOST_CPU_PERCENT_DETAILS
-    global cpu_thread
-
-    GHOST_CPU_PERCENT = psutil.cpu_percent(interval=2)
-    GHOST_CPU_PERCENT_DETAILS = psutil.cpu_percent(interval=2, percpu=True)
-
-    # Set the next thread to happen
-    cpu_thread = threading.Timer(POOL_TIME, thread_update_cpu_stats, ())
-    cpu_thread.start()
-
-def cpu_thread_start():
-    # Do initialisation stuff here
-    global cpu_thread
-    # Create your thread
-    cpu_thread = threading.Timer(POOL_TIME, thread_update_cpu_stats, ())
-    cpu_thread.start()
 
 # Web UI App
 app = Flask(__name__)
@@ -75,16 +41,20 @@ app.config.update(
 app.jinja_env.globals.update(ansi_to_html=ansi_to_html)
 app.jinja_env.add_extension('jinja2.ext.do')
 
+CPU_HEALTH = None
+
 Bootstrap(app)
+
+@app.before_first_request
+def create_health(*args, **kwargs):
+    global CPU_HEALTH
+    # thread handler
+    CPU_HEALTH = HostHealth(5, 2)
+    CPU_HEALTH.start()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager._login_disabled = False
-
-# Initiate
-cpu_thread_start()
-# When you kill Flask (SIGTERM), clear the trigger for the next thread
-atexit.register(thread_interrupt)
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -122,11 +92,13 @@ LEGACY_COMMANDS = ['destroyinstance','rollback']
 
 @app.context_processor
 def template_context():
+    global CPU_HEALTH
+    health_stats = CPU_HEALTH.get_stats()
     return dict(
                 role_list=ghost_role_default_values,
                 statuses=JOB_STATUSES,
                 ghost_blue_green=ghost_has_blue_green_enabled(),
-                ghost_health_status=get_host_cpu_label(GHOST_CPU_PERCENT),
+                ghost_health_status=get_host_cpu_label(health_stats[0]),
                 command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
 
 def load_ghost_feature_presets():
@@ -249,6 +221,21 @@ def web_app_infos(provider, app_id):
         ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
         return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
+@app.route('/web/ghost/health-status', methods=['GET'])
+def web_ghost_health_status():
+    global CPU_HEALTH
+    with app.app_context():
+        query = request.args.get('json', None)
+        health = CPU_HEALTH.get_stats()
+        status = get_host_health(health[0], health[1])
+        if request.is_xhr and query:
+            response = jsonify(status)
+        else:
+            response = render_template('ghost_health_status_content.html', status=status)
+        response = Response(response)
+        response.headers['Cache-Control'] = 'private, max-age=0, no-cache'
+        return response
+
 @app.route('/web/feature/presets')
 def web_feature_presets_list():
     preset_list = []
@@ -260,16 +247,6 @@ def web_feature_presets_list():
 @app.route('/web/feature/presets/import/<config>')
 def web_feature_presets_import(config):
     return jsonify(FEATURE_PRESETS[config])
-
-@app.route('/web/ghost/health-status', methods=['GET'])
-def web_ghost_health_status():
-    global GHOST_CPU_PERCENT_DETAILS
-    query = request.args.get('json', None)
-    print GHOST_CPU_PERCENT_DETAILS
-    status = get_host_health(GHOST_CPU_PERCENT, GHOST_CPU_PERCENT_DETAILS)
-    if request.is_xhr and query:
-        return jsonify(status)
-    return render_template('ghost_health_status_content.html', status=status)
 
 @app.route('/web/apps')
 def web_app_list():

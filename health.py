@@ -4,6 +4,7 @@
 
 from __future__ import division
 import psutil
+import threading
 import time
 
 COLOR_GREEN = '#4caf50'
@@ -62,3 +63,26 @@ def get_host_cpu_label(cpu_percent):
     if cpu_percent > 85:
         status = 'danger'
     return status;
+
+class HostHealth:
+    percent = 0
+    percent_details = [0]
+    thread = None
+    pool_time = 5
+    interval = 2
+
+    def __init__(self, pool_time, interval):
+        self.pool_time = pool_time
+        self.interval = interval
+
+    def start(self):
+        self.thread = threading.Timer(self.pool_time, self.update_stats, ())
+        self.thread.start()
+
+    def update_stats(self):
+        self.percent = psutil.cpu_percent(interval=self.interval)
+        self.percent_details = psutil.cpu_percent(interval=self.interval, percpu=True)
+        self.start()
+
+    def get_stats(self):
+        return (self.percent, self.percent_details)
