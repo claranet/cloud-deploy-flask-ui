@@ -14,6 +14,12 @@ COLOR_RED = '#f44336'
 CPU_THRESHOLD_WARNING = 70
 CPU_THRESHOLD_DANGER = 85
 
+duplex_map = {
+    psutil.NIC_DUPLEX_FULL: "full",
+    psutil.NIC_DUPLEX_HALF: "half",
+    psutil.NIC_DUPLEX_UNKNOWN: "?",
+}
+
 def get_host_health(cpu_percent, cpu_percent_details):
     status = {}
     cpu = {}
@@ -56,7 +62,10 @@ def get_host_health(cpu_percent, cpu_percent_details):
 
     status['boot_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(psutil.boot_time()))
 
-    status ['network'] = psutil.net_io_counters(pernic=True)
+    status['network_stats'] = psutil.net_if_stats()
+    for (key, item) in status['network_stats'].items():
+        status['network_stats'][key] = status['network_stats'][key]._replace(duplex=duplex_map[item.duplex])
+    status['network_io'] = psutil.net_io_counters(pernic=True)
 
     return status;
 
