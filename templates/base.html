@@ -167,6 +167,16 @@
         });
     </script>
     <script type="text/javascript">
+        /*
+        health status modal
+         */
+        $(document).ready(function() {
+            $('#ghost-health-status-modal').on('hidden.bs.modal', function() {
+                $(this).removeData();
+            });
+        });
+    </script>
+    <script type="text/javascript">
         $('input#submit').prepend('<span class="glyphicon glyphicon-ok"></span>');
         $('input#submit').addClass('btn-raised btn-info');
 

@@ -46,5 +46,15 @@
         $('.dial').knob({
             'readOnly': true
         });
+        $(".ghost-status i").each(function() {
+            var match = this.className.match(/text-.*/);
+            icone = $(this)
+            if(match) {
+                match.forEach(function(className) {
+                    icone.removeClass(className);
+                });
+            }
+        });
+        $(".ghost-status i").addClass("text-{{ status['cpu']['label'] }}")
     });
 </script>

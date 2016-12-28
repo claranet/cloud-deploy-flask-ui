@@ -11,16 +11,20 @@ COLOR_GREEN = '#4caf50'
 COLOR_ORANGE = '#ff5722'
 COLOR_RED = '#f44336'
 
+CPU_THRESHOLD_WARNING = 70
+CPU_THRESHOLD_DANGER = 85
+
 def get_host_health(cpu_percent, cpu_percent_details):
     status = {}
     cpu = {}
     cpu['percent'] = cpu_percent
     cpu['percpu'] = cpu_percent_details
     cpu['color'] = COLOR_GREEN
-    if cpu_percent > 60:
+    if cpu_percent > CPU_THRESHOLD_WARNING:
         cpu['color'] = COLOR_ORANGE
-    if cpu_percent > 80:
+    if cpu_percent > CPU_THRESHOLD_DANGER:
         cpu['color'] = COLOR_RED
+    cpu['label'] = get_host_cpu_label(cpu_percent)
     status['cpu'] = cpu
 
     ram = {}
@@ -58,9 +62,9 @@ def get_host_health(cpu_percent, cpu_percent_details):
 
 def get_host_cpu_label(cpu_percent):
     status = 'success'
-    if cpu_percent > 70:
+    if cpu_percent > CPU_THRESHOLD_WARNING:
         status = 'warning'
-    if cpu_percent > 85:
+    if cpu_percent > CPU_THRESHOLD_DANGER:
         status = 'danger'
     return status;
 
