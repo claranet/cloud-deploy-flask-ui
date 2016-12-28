@@ -44,7 +44,16 @@
 <script type="text/javascript">
     $(function() {
         $('.dial').knob({
-            'readOnly': true
+            'readOnly': true,
+            'format': function( value ){
+                if(value == undefined || isNaN(value)) {
+                    value = 0;
+                    return value + '%';
+                }
+                else{
+                    return value + '%';
+                }
+            }
         });
         $(".ghost-status i").each(function() {
             var match = this.className.match(/text-.*/);

@@ -69,8 +69,8 @@ def get_host_cpu_label(cpu_percent):
     return status;
 
 class HostHealth:
-    percent = 0
-    percent_details = [0]
+    percent = 'N/A'
+    percent_details = 'N/A'
     thread = None
     pool_time = 5
     interval = 2
