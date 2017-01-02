@@ -15,7 +15,7 @@ from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_ST
 from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
-from ghost_tools import config, CURRENT_REVISION
+from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_client import get_ghost_envs, get_ghost_apps_per_env
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
@@ -517,6 +517,9 @@ def web_app_command_from_job(app_id, job_id):
         form.subnet.data = job['options'][0]
         if len(job['options']) > 1:
             form.private_ip_address.data = job['options'][1]
+
+    if job['command'] == 'purgebluegreen' and 'options' in job and len(job['options']):
+        form.purge_delete_elb.data = boolify(job['options'][0])
 
     return render_template('app_command.html', form=form, app=app)
 
