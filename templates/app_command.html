@@ -157,6 +157,12 @@
             $.each(data, function(key, value) {
                 $('select[id=' + dom_module_prefix + '-avrev]').append('<option value=' + key + '>' + value + '</option>');
             });
+            $('select[id=' + dom_module_prefix + '-avrev]').selectpicker({
+                style: 'btn-default',
+                liveSearch: true,
+                dropupAuto: true,
+                size: 5
+            });
             $('select[id=' + dom_module_prefix + '-avrev]').selectpicker('refresh');
         }).fail(function() {
             alert("Failed to retrieve all available revisions for module " + module_name);
