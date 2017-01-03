@@ -87,16 +87,16 @@
         }
 
         function get_app_safe_deployment_possibilities() {
-          app_id = '{{ app['_id'] }}';
-          $('#safe_deployment_strategy').find('option').remove();
-          $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
-              $.each(data, function(key, value) {
-                $('#safe_deployment_strategy').append('<option value=' + key + '>' + value + '</option>');
-              });
-              refresh_options_list();
-          }).fail(function() {
-              alert("Failed to retrieve Safe Deployment Strategies");
-          });
+            app_id = '{{ app['_id'] }}';
+            $('#safe_deployment_strategy').find('option').remove();
+            $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
+                $.each(data, function(key, value) {
+                    $('#safe_deployment_strategy').append('<option value=' + key + '>' + value + '</option>');
+                });
+                refresh_options_list();
+            }).fail(function() {
+                alert("Failed to retrieve Safe Deployment Strategies");
+            });
         }
 
         function refresh_safe_deploy_options(update_possibilities) {
@@ -137,25 +137,26 @@
     })();
 
     function ghost_update_command_deploy_revision(module_name, revision_id) {
-      $.ajax("command/module/" + module_name).done(function(data) {
-          // Update revision input default
-          $('#' + revision_id).val(data);
-      }).fail(function() {
-          alert("Failed to retrieve last deployed revision for module " + module_name);
-      });
+        app_id = '{{ app['_id'] }}';
+        $.ajax("/web/apps/" + app_id + "/command/module/" + module_name).done(function(data) {
+            // Update revision input default
+            $('#' + revision_id).val(data);
+        }).fail(function() {
+            alert("Failed to retrieve last deployed revision for module " + module_name);
+        });
     }
 
     function ghost_count_checked_modules() {
-       var checked_modules_count = $('input[type="checkbox"][id^="modules"]:checked').length
-       $('#module_counter span').text(checked_modules_count);
+        var checked_modules_count = $('input[type="checkbox"][id^="modules"]:checked').length;
+        $('#module_counter span').text(checked_modules_count);
     }
 
     $('input[type="checkbox"][id^="modules"]').change(function() {
         if ($(this).prop('checked')) {
-            var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"))
-            var name_id = module_prefix + '-name'
-            var revision_id = module_prefix + '-rev'
-            var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value')
+            var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"));
+            var name_id = module_prefix + '-name';
+            var revision_id = module_prefix + '-rev';
+            var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value');
             ghost_update_command_deploy_revision(module_name, revision_id)
         }
         ghost_count_checked_modules()
