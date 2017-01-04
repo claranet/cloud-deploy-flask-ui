@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, request, Response, jsonify
+from flask import Flask, flash, render_template, request, Response, jsonify, redirect, url_for, make_response
 from flask_bootstrap import Bootstrap
 from flask.ext.login import LoginManager, UserMixin, login_required
 
@@ -250,14 +250,21 @@ def web_feature_presets_import(config):
 
 @app.route('/web/apps')
 def web_app_list():
+    use_tabs = boolify(request.cookies.get('use_tabs_app_list', False))
+    unset_tabs = request.args.get('unset_tabs', False)
+    if use_tabs and not unset_tabs:
+        return redirect(url_for('.web_tab_app_list', _scheme='https', _external=True))
     query = request.args.get('where', None)
     page = request.args.get('page', '1')
     apps = get_ghost_apps(query, page)
     if request.is_xhr:
         return render_template('app_list_content.html', env_list=get_ghost_envs(), apps=apps,
                                page=int(page))
-    return render_template('app_list.html', env_list=get_ghost_envs(), apps=apps,
-                           page=int(page))
+    resp = make_response(render_template('app_list.html', env_list=get_ghost_envs(), apps=apps,
+                         page=int(page)))
+    if unset_tabs:
+        resp.set_cookie('use_tabs_app_list', 'False')
+    return resp
 
 @app.route('/web/t-apps')
 def web_tab_app_list():
@@ -268,7 +275,9 @@ def web_tab_app_list():
     apps = get_ghost_apps_per_env(choosen_env)
     if request.is_xhr:
         return render_template('app_list_content.html', env_list=envs, apps=apps, table_header=True)
-    return render_template('app_tab.html', env_list=envs, apps=apps, choosen_env=choosen_env, table_header=True)
+    resp = make_response(render_template('app_tab.html', env_list=envs, apps=apps, choosen_env=choosen_env, table_header=True))
+    resp.set_cookie('use_tabs_app_list', 'True')
+    return resp
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():

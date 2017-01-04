@@ -154,7 +154,9 @@
             });
             $(document).on('click', '#appListViewToggle', function(evt) {
                 evt.preventDefault();
-                window.location.href = '/web/apps';
+                var env = location.hash.replace('#apps-', '');
+                env_filter = (env && env != '') ? ('&where=env=='+env+'&g-env='+env) : '';
+                window.location.href = '/web/apps?unset_tabs=True' + env_filter;
             });
             function showAppTab(tabLink) {
                 $(tabLink).tab('show');
