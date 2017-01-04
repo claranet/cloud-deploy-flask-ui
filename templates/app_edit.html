@@ -428,6 +428,38 @@
         });
     })();
     </script>
+
+    <script type="text/javascript">
+        var positionElementInPage = $('.sidebar').offset().top - 20;
+        function updateMenusPositions() {
+            if ($(window).scrollTop() >= positionElementInPage || $('.app-panel').length > 0) {
+                // fixed
+                $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
+                $('.sidebar').addClass('navbar-fixed-top');
+                $('.app-panel').addClass('fixed-top-menu');
+                $('#header').addClass('no-shadow');
+                $('.site-footer').addClass('fixed');
+            } else {
+                // relative
+                $('.sidebar').removeClass('navbar-fixed-top');
+                $('.app-panel').removeClass('fixed-top-menu');
+                $('.sidebar').next().css('margin-top', '0');
+                $('#header').removeClass('no-shadow');
+                $('.site-footer').removeClass('fixed');
+            }
+            if ($("#left-menu").length > 0) {
+                var headingHeight = $('.sidebar').next().offset().top;
+                $('#left-menu').css('height', ($(window).height()-headingHeight - $('footer').height()) + 'px');
+                $('#left-menu').css('top', headingHeight + 'px');
+            }
+        }
+        $(window).on('resize', function() {
+            updateMenusPositions();
+        });
+        $(document).ready(function() {
+            updateMenusPositions();
+        });
+    </script>
 {% endblock %}
 
 {% macro ghost_fieldlist_features(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='', refresh_function='') -%}
