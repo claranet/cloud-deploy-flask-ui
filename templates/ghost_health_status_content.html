@@ -14,11 +14,11 @@
 </div>
 <div class="health-elt col-md-3">
     <h4><i class="material-icons">memory</i> RAM</h4>
-    <input type="text" value="{{ 100 - status['ram']['percent'] }}" data-angleOffset="-125" data-angleArc="250" data-fgColor="{{ status['ram']['color'] }}" class="dial">
+    <input type="text" value="{{ status['ram']['percent'] }}" data-angleOffset="-125" data-angleArc="250" data-fgColor="{{ status['ram']['color'] }}" class="dial">
     <p class="health-info">
         {{ "{:.3f}".format(status['ram']['used']) }} GB used / {{ "{:.3f}".format(status['ram']['total']) }} GB total
     <br />
-        (<strong>{{ "{:.3f}".format(status['ram']['available']) }} GB available</strong> - {{ "{:.3f}".format(status['ram']['free']) }} GB free - <strong style="color: {{ status['ram']['color'] }};">{{ status['ram']['percent'] }}% free</strong>)
+        (<strong>{{ "{:.3f}".format(status['ram']['available']) }} GB available</strong> - {{ "{:.3f}".format(status['ram']['free']) }} GB free - <strong style="color: {{ status['ram']['color'] }};">{{ status['ram']['percent'] }}% used</strong>)
     </p>
 </div>
 <div class="health-elt col-md-3">

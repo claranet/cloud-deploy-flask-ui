@@ -41,9 +41,9 @@ def get_host_health(cpu_percent, cpu_percent_details):
     ram['used'] = r_used / 1024 / 1024 / 1024
     ram['percent'] = r_percent
     ram['color'] = COLOR_GREEN
-    if r_percent < 30:
+    if r_percent > 70:
         ram['color'] = COLOR_ORANGE
-    if r_percent < 15:
+    if r_percent > 85:
         ram['color'] = COLOR_RED
     status['ram'] = ram
 
