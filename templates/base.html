@@ -144,7 +144,8 @@
         if ($('table.tablelist').not('.noscroll').length > 0) {
             $(window).scroll(function()
             {
-                if ($(window).scrollTop() == $(document).height() - $(window).height()) //bottom of the window
+                //Checking that we are at the bottom even if we have no integer due to zoom
+                if (Math.abs($(window).scrollTop() - $(document).height() + $(window).height()) < 1) //bottom of the window
                 {
                     fetchNextPage();
                 }
