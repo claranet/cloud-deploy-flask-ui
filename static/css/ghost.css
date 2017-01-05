@@ -240,6 +240,10 @@ td.inline {
 .select-generic-options .btn-select-append-option {
     display: inline-block;
 }
+.warning-big-instance-type.bootstrap-select.btn-group > button.dropdown-toggle span {
+    color: darkorange;
+    font-weight: bold;
+}
 #app-form textarea {
     font-family: Consolas, Courier New, Courier, monospace;
 }
