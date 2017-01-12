@@ -152,7 +152,7 @@
     function ghost_update_command_deploy_avrevs(dom_module_prefix, module_name) {
         app_id = "{{ app['_id'] }}";
         $('select[id=' + dom_module_prefix + '-avrev]').find('option').remove();
-        $.ajax("/web/apps/" + app_id + "/module/" + module_name + "/git/ls-remote").done(function(data) {
+        $.ajax("/web/apps/" + app_id + "/module/" + module_name + "/available-revisions").done(function(data) {
             // Update avrevs select
             $.each(data, function(key, value) {
                 $('select[id=' + dom_module_prefix + '-avrev]').append('<option value=' + key + '>' + value + '</option>');

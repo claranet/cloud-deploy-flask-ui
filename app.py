@@ -538,10 +538,10 @@ def web_app_get_safe_deployment_possibilities(app_id):
     app = get_ghost_app(app_id)
     return jsonify(get_safe_deployment_possibilities(app))
 
-@app.route('/web/apps/<app_id>/module/<module_name>/git/ls-remote')
+@app.route('/web/apps/<app_id>/module/<module_name>/available-revisions')
 def web_app_git_ls_remote(app_id,  module_name):
     # Get App data
-    app = get_ghost_app(app_id, embed_deployments=True)
+    app = get_ghost_app(app_id)
     repo = ""
     for mod in app['modules']:
         if mod['name'] == module_name:
