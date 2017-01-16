@@ -154,7 +154,9 @@
         $('select[id=' + dom_module_prefix + '-available_revisions]').find('option').remove();
         $.ajax("/web/apps/" + app_id + "/module/" + module_name + "/available-revisions").done(function(data) {
             // Update available_revisionss select
-            $.each(data, function(key, value) {
+            $.each(JSON.parse(data), function(index, elt) {
+                key = elt[0];
+                value = elt[1];
                 $('select[id=' + dom_module_prefix + '-available_revisions]').append('<option value=' + key + '>' + value + '</option>');
             });
             $('select[id=' + dom_module_prefix + '-available_revisions]').selectpicker({

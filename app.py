@@ -7,6 +7,7 @@ import traceback
 import sys
 import os
 import yaml
+import json
 
 from settings import DEFAULT_PROVIDER
 from .websocket import ansi_to_html
@@ -546,7 +547,8 @@ def web_app_git_ls_remote(app_id,  module_name):
     for mod in app['modules']:
         if mod['name'] == module_name:
             repo = mod['git_repo']
-    return jsonify(git_ls_remote_branches_tags(repo))
+    # We don't use jsonify here because it casts to dict, which is not sortable in Javascript/JSON
+    return json.dumps(git_ls_remote_branches_tags(repo))
 
 @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
 def web_app_delete(app_id):
