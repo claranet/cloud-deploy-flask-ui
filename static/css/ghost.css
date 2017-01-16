@@ -342,9 +342,14 @@ td.inline {
     border-right: 1px solid #ddd;
 }
 
+.command_options #modules_list.table td[id*=available_revisions] {
+    display: none;
+}
+
 .command_options #modules_list.table .checkbox label {
     text-align: left;
 }
+
 #app-form #check_provider_creds {
     float: right;
 }

@@ -169,6 +169,15 @@
         });
     }
 
+    $('button.retrieve-available-revisions').click(function(evt) {
+        evt.preventDefault();
+        var module_prefix = $(this).attr('data-prefix').substr(0, $(this).attr('data-prefix').lastIndexOf("-"));
+        var name_id = module_prefix + '-name';
+        var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value');
+        $('td#td-' + module_prefix + '-available_revisions').show();
+        ghost_update_command_deploy_available_revisions(module_prefix, module_name);
+    });
+
     function ghost_count_checked_modules() {
         var checked_modules_count = $('input[type="checkbox"][id^="modules"]:checked').length;
         $('#module_counter span').text(checked_modules_count);
@@ -181,7 +190,6 @@
             var revision_id = module_prefix + '-rev';
             var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value');
             ghost_update_command_deploy_revision(module_name, revision_id);
-            ghost_update_command_deploy_available_revisions(module_prefix, module_name);
         }
         ghost_count_checked_modules();
     });
@@ -203,9 +211,14 @@
             {% if entry.type == 'FormField' %}
                 {{ entry.hidden_tag() }}
                 {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
-                <td class="{{ form_type }}">
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
-                </td>
+                    <td class="{{ form_type }} td-module-field" id="td-{{ field.id }}">
+                    {% if field.id.endswith('rev') %}
+                        <div class="col-lg-10">{{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}</div>
+                        <div class="col-lg-2"><button data-prefix="{{ field.id }}" class="btn btn-raised btn-xs btn-info retrieve-available-revisions" title="Retrieves all available revisions"><i class="fa fa-history"></i></button></div>
+                    {% else %}
+                        {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                    {% endif %}
+                    </td>
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 <td class="{{ form_type }}">
