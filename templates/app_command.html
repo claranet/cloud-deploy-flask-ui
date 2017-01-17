@@ -203,7 +203,9 @@
     $('select[id^=modules-]').change(function() {
         var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"));
         var revision_id = module_prefix + '-rev';
+        var module_check = module_prefix + '-deploy';
         $('#' + revision_id).val($(this).val());
+        $('#' + module_check).prop('checked', 'checked');
     });
     </script>
 {% endblock %}
