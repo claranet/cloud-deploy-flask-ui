@@ -36,6 +36,7 @@ from health import get_host_cpu_label, get_host_health, HostHealth
 
 from forms.command import CommandAppForm
 from forms.app import CreateAppForm, DeleteAppForm, EditAppForm
+from forms.app import get_container_images
 from forms.job import CancelJobForm, DeleteJobForm
 from forms.form_helper import get_ghost_app_roles, get_ghost_app_envs
 from forms.form_helper import get_app_command_recommendations
@@ -251,6 +252,10 @@ def web_amis_list(provider, region_id):
         else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(dict(get_aws_ami_ids(provider, region_id, **query_string)))
 
+@app.route('/web/container/list')
+def web_container_image_list():
+    return jsonify(get_container_images())
+
 @app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
 def web_app_subnets_list(provider, app_id):
     # Get App data
@@ -341,6 +346,7 @@ def web_app_create():
     except:
         cloud_provider = DEFAULT_PROVIDER
     # Dynamic selections update
+
     if form.is_submitted() and cloud_provider:
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(
@@ -362,6 +368,7 @@ def web_app_create():
         form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
         form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
+        form.build_infos.container.choices = get_container_images()
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
         form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
@@ -370,6 +377,7 @@ def web_app_create():
         for sg in  form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
+    form.build_infos.container.choices = get_container_images()
     # Perform validation
     if form.validate_on_submit():
         app = {}
@@ -405,6 +413,8 @@ def web_app_create():
                 subnet.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
             for sg in  form.environment_infos.security_groups:
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
+
+    form.build_infos.container.choices = get_container_images()
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=False,
@@ -446,6 +456,7 @@ def web_app_edit(app_id):
         form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
         form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
+        form.build_infos.container.choices = get_container_images()
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
         form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
@@ -453,6 +464,8 @@ def web_app_edit(app_id):
             subnet.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         for sg in  form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
+
+    form.build_infos.container.choices = get_container_images()
 
     # Perform validation
     if form.validate_on_submit():
@@ -498,6 +511,7 @@ def web_app_edit(app_id):
     form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
     form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
     form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
+    form.build_infos.container.choices = get_container_images()
     form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
     form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
     form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)

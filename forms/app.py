@@ -188,6 +188,12 @@ class BuildInfosForm(FlaskForm):
                                        )
                                    ])
 
+    container = BetterSelectField('Container', description='Please choose an container source compatible with source_ami', choices=[], validators=[
+        RegexpValidator(
+            ghost_app_schema['build_infos']['schema']['container']['regex']
+        )
+    ])
+
     subnet_id = BetterSelectField('AWS Subnet', description='This subnet for building should be a public one',
                                   choices=[], validators=[
             DataRequiredValidator(),
@@ -207,6 +213,7 @@ class BuildInfosForm(FlaskForm):
         build_infos = app.get('build_infos', {})
         self.ssh_username.data = build_infos.get('ssh_username', '')
         self.source_ami.data = build_infos.get('source_ami', '')
+        self.container.data = build_infos.get('container', '')
         self.subnet_id.data = build_infos.get('subnet_id', '')
 
     def map_to_app(self, app):
@@ -216,6 +223,7 @@ class BuildInfosForm(FlaskForm):
         app['build_infos'] = {}
         app['build_infos']['ssh_username'] = self.ssh_username.data
         app['build_infos']['source_ami'] = self.source_ami.data
+        app['build_infos']['container'] = self.container.data
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 
@@ -982,6 +990,7 @@ class CreateAppForm(BaseAppForm):
         self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
         self.environment_infos.key_name.choices = [('', 'Please select region first')]
         self.build_infos.source_ami.choices = [('', 'Please select region first')]
+        self.build_infos.container.choices = [('', 'Not use container')]
         self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
         self.environment_infos.subnet_ids[0].choices = [('', 'Please select VPC first')]
 
