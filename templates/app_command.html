@@ -27,6 +27,7 @@
             <div class="wrap subnet">{{ wtf.form_field(form.subnet, form_type='horizontal') }}</div>
             <div class="wrap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
             <div class="wrap prepare_bg_copy_ami">{{ wtf.form_field(form.prepare_bg_copy_ami, form_type='horizontal') }}</div>
+            <div class="wrap purge_delete_elb">{{ wtf.form_field(form.purge_delete_elb, form_type='horizontal') }}</div>
         </div>
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
@@ -60,6 +61,8 @@
                 $('.wrap.prepare_bg_copy_ami').show();
             } else if ($('#command').val() == 'swapbluegreen') {
                 $('.wrap.swapbluegreen_strategy').show();
+            } else if ($('#command').val() == 'purgebluegreen') {
+                $('.wrap.purge_delete_elb').show();
             }
         }
 
