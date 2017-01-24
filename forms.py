@@ -1259,6 +1259,7 @@ class DeployModuleForm(Form):
     name = HiddenField('')
     deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
+    available_revisions = BetterSelectField('Available branches and tags', validators=[], choices=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):

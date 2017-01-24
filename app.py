@@ -7,6 +7,7 @@ import traceback
 import sys
 import os
 import yaml
+import json
 
 from settings import DEFAULT_PROVIDER
 from .websocket import ansi_to_html
@@ -22,6 +23,7 @@ from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
 from libs.blue_green import ghost_has_blue_green_enabled, get_blue_green_destroy_temporary_elb_config
+from libs.git_helper import git_ls_remote_branches_tags
 from health import get_host_cpu_label, get_host_health, HostHealth
 
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
@@ -545,6 +547,17 @@ def web_app_get_safe_deployment_possibilities(app_id):
     # Get App data
     app = get_ghost_app(app_id)
     return jsonify(get_safe_deployment_possibilities(app))
+
+@app.route('/web/apps/<app_id>/module/<module_name>/available-revisions')
+def web_app_git_ls_remote(app_id,  module_name):
+    # Get App data
+    app = get_ghost_app(app_id)
+    repo = ""
+    for mod in app['modules']:
+        if mod['name'] == module_name:
+            repo = mod['git_repo']
+    # We don't use jsonify here because it casts to dict, which is not sortable in Javascript/JSON
+    return json.dumps(git_ls_remote_branches_tags(repo))
 
 @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])
 def web_app_delete(app_id):

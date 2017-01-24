@@ -55,7 +55,7 @@
                 $('.wrap.private_ip_address').show();
                 if ($('#subnet option').first().val() == '') {
                     /*only update if needed*/
-                    get_app_subnets('{{ app['_id'] }}');
+                    get_app_subnets("{{ app['_id'] }}");
                 }
             } else if ($('#command').val() == 'preparebluegreen') {
                 $('.wrap.prepare_bg_copy_ami').show();
@@ -90,16 +90,16 @@
         }
 
         function get_app_safe_deployment_possibilities() {
-            app_id = '{{ app['_id'] }}';
-            $('#safe_deployment_strategy').find('option').remove();
-            $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
-                $.each(data, function(key, value) {
-                    $('#safe_deployment_strategy').append('<option value=' + key + '>' + value + '</option>');
-                });
-                refresh_options_list();
-            }).fail(function() {
-                alert("Failed to retrieve Safe Deployment Strategies");
-            });
+          app_id = "{{ app['_id'] }}";
+          $('#safe_deployment_strategy').find('option').remove();
+          $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
+              $.each(data, function(key, value) {
+                $('#safe_deployment_strategy').append('<option value=' + key + '>' + value + '</option>');
+              });
+              refresh_options_list();
+          }).fail(function() {
+              alert("Failed to retrieve Safe Deployment Strategies");
+          });
         }
 
         function refresh_safe_deploy_options(update_possibilities) {
@@ -149,6 +149,37 @@
         });
     }
 
+    function ghost_update_command_deploy_available_revisions(dom_module_prefix, module_name) {
+        app_id = "{{ app['_id'] }}";
+        $('select[id=' + dom_module_prefix + '-available_revisions]').find('option').remove();
+        $.ajax("/web/apps/" + app_id + "/module/" + module_name + "/available-revisions").done(function(data) {
+            // Update available_revisionss select
+            $.each(JSON.parse(data), function(index, elt) {
+                key = elt[0];
+                value = elt[1];
+                $('select[id=' + dom_module_prefix + '-available_revisions]').append('<option value=' + key + '>' + value + '</option>');
+            });
+            $('select[id=' + dom_module_prefix + '-available_revisions]').selectpicker({
+                style: 'btn-default',
+                liveSearch: true,
+                dropupAuto: true,
+                size: 5
+            });
+            $('select[id=' + dom_module_prefix + '-available_revisions]').selectpicker('refresh');
+        }).fail(function() {
+            alert("Failed to retrieve all available revisions for module " + module_name);
+        });
+    }
+
+    $('button.retrieve-available-revisions').click(function(evt) {
+        evt.preventDefault();
+        var module_prefix = $(this).attr('data-prefix').substr(0, $(this).attr('data-prefix').lastIndexOf("-"));
+        var name_id = module_prefix + '-name';
+        var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value');
+        $('td#td-' + module_prefix + '-available_revisions').show();
+        ghost_update_command_deploy_available_revisions(module_prefix, module_name);
+    });
+
     function ghost_count_checked_modules() {
         var checked_modules_count = $('input[type="checkbox"][id^="modules"]:checked').length;
         $('#module_counter span').text(checked_modules_count);
@@ -160,13 +191,21 @@
             var name_id = module_prefix + '-name';
             var revision_id = module_prefix + '-rev';
             var module_name = $('input[type="hidden"][id=' + name_id + ']').attr('value');
-            ghost_update_command_deploy_revision(module_name, revision_id)
+            ghost_update_command_deploy_revision(module_name, revision_id);
         }
-        ghost_count_checked_modules()
+        ghost_count_checked_modules();
     });
 
     $('#deploy_all_modules').change(function () {
         $('input[type="checkbox"][id^="modules"]').prop('checked', $(this).prop('checked')).trigger("change");
+    });
+
+    $('select[id^=modules-]').change(function() {
+        var module_prefix = $(this).attr('id').substr(0, $(this).attr('id').lastIndexOf("-"));
+        var revision_id = module_prefix + '-rev';
+        var module_check = module_prefix + '-deploy';
+        $('#' + revision_id).val($(this).val());
+        $('#' + module_check).prop('checked', 'checked');
     });
     </script>
 {% endblock %}
@@ -176,9 +215,14 @@
             {% if entry.type == 'FormField' %}
                 {{ entry.hidden_tag() }}
                 {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
-                <td class="{{ form_type }}">
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
-                </td>
+                    <td class="{{ form_type }} td-module-field" id="td-{{ field.id }}">
+                    {% if field.id.endswith('rev') %}
+                        <div class="col-lg-10">{{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}</div>
+                        <div class="col-lg-2"><button data-prefix="{{ field.id }}" class="btn btn-raised btn-xs btn-info retrieve-available-revisions" title="Retrieves all available revisions"><i class="fa fa-history"></i></button></div>
+                    {% else %}
+                        {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                    {% endif %}
+                    </td>
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
                 <td class="{{ form_type }}">
