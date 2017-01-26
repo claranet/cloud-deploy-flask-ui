@@ -1259,11 +1259,13 @@ class DeployModuleForm(Form):
     name = HiddenField('')
     deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
-    available_revisions = BetterSelectField('Available branches and tags', validators=[], choices=[])
+    available_revisions = BetterSelectField('Available branches and tags', validators=[], choices=[('', '--')])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(DeployModuleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        # Get the available revisions
+        self.available_revisions.choices = [('', '-- Computing available revisions --')]
 
     def map_from_app(self, module):
         self.name.data = module.get('name', '')
