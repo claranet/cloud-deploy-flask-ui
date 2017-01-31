@@ -381,7 +381,7 @@ class OptionalVolumeForm(Form):
 
     # Disable CSRF in optional_volume forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(OptionalVolumeForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(OptionalVolumeForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, optional_volume):
         self.device_name.data = optional_volume.get('device_name', '')
@@ -397,7 +397,7 @@ class InstanceTagForm(Form):
                             validators=[LengthValidator(min= 1, max= 255), DataRequiredValidator()])
 
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(InstanceTagForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(InstanceTagForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, instance_tag):
         self.tag_name.data = instance_tag.get('tag_name', '')
@@ -424,7 +424,7 @@ class AutoscaleForm(Form):
 
     # Disable CSRF in autoscale forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(AutoscaleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(AutoscaleForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, app):
         # Populate form with autoscale data if available
@@ -462,7 +462,7 @@ class SafedeploymentForm(Form):
 
 
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(SafedeploymentForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(SafedeploymentForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, app):
         # Populate form with safe deployment data if available. If not
@@ -519,7 +519,7 @@ class BuildInfosForm(Form):
 
     # Disable CSRF in build_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(BuildInfosForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(BuildInfosForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, app):
         """
@@ -586,7 +586,7 @@ class EnvironmentInfosForm(Form):
 
     # Disable CSRF in environment_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(EnvironmentInfosForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(EnvironmentInfosForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, app):
         environment_infos = app.get('environment_infos', {})
@@ -635,7 +635,7 @@ class EnvironmentInfosForm(Form):
 class ResourceForm(Form):
     # Disable CSRF in resource forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(ResourceForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(ResourceForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, feature):
         # TODO: implement resource form
@@ -649,7 +649,7 @@ class LifecycleHooksForm(Form):
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(LifecycleHooksForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(LifecycleHooksForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, app):
         if 'lifecycle_hooks' in app:
@@ -677,7 +677,7 @@ class FeatureForm(Form):
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(FeatureForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(FeatureForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, feature):
         self.feature_name.data = feature.get('name', '')
@@ -695,7 +695,7 @@ class EnvvarForm(Form):
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(EnvvarForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(EnvvarForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, envvar):
         self.var_key.data = envvar.get('var_key', '')
@@ -733,7 +733,7 @@ class ModuleForm(Form):
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(ModuleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(ModuleForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, module):
         self.module_name.data = module.get('name', '')
@@ -758,7 +758,7 @@ class BluegreenForm(Form):
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(BluegreenForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(BluegreenForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_app(self, app):
         """
@@ -1263,7 +1263,7 @@ class DeployModuleForm(Form):
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(DeployModuleForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(DeployModuleForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
         # Get the available revisions
         self.available_revisions.choices = [('', '-- Computing available revisions --')]
 
