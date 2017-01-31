@@ -418,11 +418,6 @@ class AutoscaleForm(Form):
         NumberRangeValidator(min=0)
     ])
 
-    current = IntegerField('Desired', description='The number of instances that should be running in the Auto Scaling group', validators=[
-        OptionalValidator(),
-        NumberRangeValidator(min=0)
-    ])
-
     # Disable CSRF in autoscale forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(AutoscaleForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
@@ -432,7 +427,6 @@ class AutoscaleForm(Form):
         autoscale = app.get('autoscale', {})
         self.min.data = autoscale.get('min', '')
         self.max.data = autoscale.get('max', '')
-        self.current.data = autoscale.get('current', '')
         self.as_name.data = autoscale.get('name', '')
 
     def map_to_app(self, app):
@@ -445,8 +439,6 @@ class AutoscaleForm(Form):
             app['autoscale']['min'] = self.min.data
         if isinstance(self.max.data, int):
             app['autoscale']['max'] = self.max.data
-        if isinstance(self.current.data, int):
-            app['autoscale']['current'] = self.current.data
 
 class SafedeploymentForm(Form):
 
