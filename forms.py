@@ -2,7 +2,7 @@ from flask_wtf import Form
 from settings import cloud_connections, DEFAULT_PROVIDER
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
-from form_helper import BetterSelectField
+from form_helper import BetterSelectField, BetterSelectFieldNonValidating
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator
@@ -1259,7 +1259,7 @@ class DeployModuleForm(Form):
     name = HiddenField('')
     deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
-    available_revisions = BetterSelectField('Available branches and tags', validators=[], choices=[('', '--')])
+    available_revisions = BetterSelectFieldNonValidating('Available branches and tags', validators=[], choices=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
