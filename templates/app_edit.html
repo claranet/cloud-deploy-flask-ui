@@ -373,7 +373,8 @@
             selectElt = $(this).attr('data-target');
             $(selectElt).selectpicker('refresh')
         });
-        $('#role').parent().addClass('select-generic-options');
+        $('#role,#env').parent().addClass('select-generic-options');
+        $('#env').parent().attr('data-select-id', 'env');
         $('#role').parent().attr('data-select-id', 'role');
         $('#app-form').on('click', '.btn-select-append-option', function(evt) {
             evt.preventDefault();

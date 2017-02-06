@@ -15,6 +15,7 @@ import traceback
 import aws_data
 
 from models.apps import apps_schema as ghost_app_schema
+from models.env import env as ghost_env_default_values
 from models.instance_role import role as ghost_role_default_values
 from models.jobs import jobs_schema as ghost_job_schema
 
@@ -55,7 +56,7 @@ def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_regio
     return (aws_connection_data)
 
 def get_ghost_app_envs():
-    return get_wtforms_selectfield_values(ghost_app_schema['env']['allowed'])
+    return get_wtforms_selectfield_values(ghost_env_default_values)
 
 def get_ghost_app_providers():
     return get_wtforms_selectfield_values(ghost_app_schema['provider']['allowed'])

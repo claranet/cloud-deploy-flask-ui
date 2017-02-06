@@ -29,7 +29,7 @@ from health import get_host_cpu_label, get_host_health, HostHealth
 from forms import CommandAppForm, CreateAppForm, DeleteAppForm, EditAppForm
 from forms import CancelJobForm, DeleteJobForm
 from forms import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
-from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities, get_ghost_app_roles
+from forms import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities, get_ghost_app_roles, get_ghost_app_envs
 from forms import get_wtforms_selectfield_values, get_aws_subnets_ids_from_app
 from forms import get_aws_connection_data, check_aws_assumed_credentials
 
@@ -308,6 +308,8 @@ def web_app_create():
             form.assumed_region_name.data = ""
             aws_connection_data = {}
         #form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
+        if not form.env.data in form.env.choices:
+            form.env.choices = get_ghost_app_envs() + [(form.env.data, form.env.data)]
         if not form.role.data in form.role.choices:
             form.role.choices = get_ghost_app_roles() + [(form.role.data, form.role.data)]
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
@@ -337,6 +339,8 @@ def web_app_create():
             if clone_from_app.get('assumed_account_id', None) and clone_from_app.get('assumed_role_name', None):
                 form.use_custom_identity.data = True
             aws_connection_data = get_aws_connection_data(clone_from_app.get('assumed_account_id', ''), clone_from_app.get('assumed_role_name', ''), clone_from_app.get('assumed_region_name', ''))
+            if not form.env.data in form.env.choices:
+                form.env.choices = get_ghost_app_envs() + [(form.env.data, form.env.data)]
             if not form.role.data in form.role.choices:
                 form.role.choices = get_ghost_app_roles() + [(form.role.data, form.role.data)]
             form.region.choices = get_aws_ec2_regions(clone_from_app.get('provider', DEFAULT_PROVIDER), **aws_connection_data)
@@ -380,6 +384,8 @@ def web_app_edit(app_id):
             form.assumed_region_name.data = ""
             aws_connection_data = {}
         form.region.choices = get_aws_ec2_regions(cloud_provider, **aws_connection_data)
+        if not form.env.data in form.env.choices:
+            form.env.choices = get_ghost_app_envs() + [(form.env.data, form.env.data)]
         if not form.role.data in form.role.choices:
             form.role.choices = get_ghost_app_roles() + [(form.role.data, form.role.data)]
         form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
@@ -426,6 +432,8 @@ def web_app_edit(app_id):
 
     aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data, form.assumed_region_name.data)
     form.region.choices = get_aws_ec2_regions(cloud_provider, **aws_connection_data)
+    if not form.env.data in form.env.choices:
+        form.env.choices = get_ghost_app_envs() + [(form.env.data, form.env.data)]
     if not form.role.data in form.role.choices:
         form.role.choices = get_ghost_app_roles() + [(form.role.data, form.role.data)]
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
