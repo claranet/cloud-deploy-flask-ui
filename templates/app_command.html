@@ -21,6 +21,8 @@
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
+            <div class="wrap safe_destroy">{{ wtf.form_field(form.safe_destroy, form_type='horizontal') }}</div>
+            <div class="wrap safe_destroy_strategy">{{ wtf.form_field(form.safe_destroy_strategy, form_type='horizontal') }}</div>
             <div class="wrap swapbluegreen_strategy">{{ wtf.form_field(form.swapbluegreen_strategy, form_type='horizontal') }}</div>
             <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
             <div class="wrap skip_salt_bootstrap">{{ wtf.form_field(form.skip_salt_bootstrap, form_type='horizontal') }}</div>
@@ -47,6 +49,8 @@
                 $('.wrap.deploy_id').show();
                 $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.safe_deployment').show();
+            } else if ($('#command').val() == 'destroyallinstances') {
+                $('.wrap.safe_destroy').show();
             } else if ($('#command').val() == 'buildimage') {
                 $('.wrap.instance_type').show();
                 $('.wrap.skip_salt_bootstrap').show();
@@ -67,13 +71,13 @@
         }
 
         function refresh_options_list() {
-            $('#command option, #safe_deployment_strategy option').each(function() {
+            $('#command option, #safe_deployment_strategy option, #safe_destroy_strategy option').each(function() {
                 cmd = $(this).val();
                 desc = $(this).text();
                 $(this).text(cmd);
                 $(this).attr('data-subtext', ' - ' + desc);
             });
-            $('#command, #safe_deployment_strategy').selectpicker('refresh');
+            $('#command, #safe_deployment_strategy, #safe_destroy_strategy').selectpicker('refresh');
         }
 
         function get_app_subnets(app_id) {
@@ -90,16 +94,16 @@
             });
         }
 
-        function get_app_safe_deployment_possibilities() {
+        function get_app_safe_deployment_possibilities(select_id) {
           app_id = "{{ app['_id'] }}";
-          $('#safe_deployment_strategy').find('option').remove();
+          $(select_id).find('option').remove();
           $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
               $.each(data, function(key, value) {
-                $('#safe_deployment_strategy').append('<option value=' + key + '>' + value + '</option>');
+                $(select_id).append('<option value=' + key + '>' + value + '</option>');
               });
               refresh_options_list();
           }).fail(function() {
-              alert("Failed to retrieve Safe Deployment Strategies");
+              alert("Failed to retrieve Safe Strategies");
           });
         }
 
@@ -107,10 +111,18 @@
             if ($('#safe_deployment').is(':checked')) {
                 $('.wrap.safe_deployment_strategy').show();
                 if (update_possibilities) {
-                    get_app_safe_deployment_possibilities();
+                    get_app_safe_deployment_possibilities('#safe_deployment_strategy');
                 }
             } else {
                 $('.wrap.safe_deployment_strategy').hide();
+            }
+            if ($('#safe_destroy').is(':checked')) {
+                $('.wrap.safe_destroy_strategy').show();
+                if (update_possibilities) {
+                    get_app_safe_deployment_possibilities('#safe_destroy_strategy');
+                }
+            } else {
+                $('.wrap.safe_destroy_strategy').hide();
             }
         }
 
@@ -119,7 +131,7 @@
             show_options_fields();
         });
         refresh_safe_deploy_options(false);
-        $('#safe_deployment').change(function() {
+        $('#safe_deployment, #safe_destroy').change(function() {
             refresh_safe_deploy_options(true);
         });
 

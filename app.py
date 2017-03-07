@@ -460,6 +460,7 @@ def web_app_command(app_id):
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+        form.safe_destroy_strategy.choices = form.safe_deployment_strategy.choices
         form.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
 
     # Perform validation
@@ -488,6 +489,7 @@ def web_app_command_from_job(app_id, job_id):
     # Dynamic selections update
     if form.is_submitted():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+        form.safe_destroy_strategy.choices = form.safe_deployment_strategy.choices
         form.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
 
     # Perform validation
@@ -530,6 +532,11 @@ def web_app_command_from_job(app_id, job_id):
 
     if job['command'] == 'redeploy' and 'options' in job and len(job['options']):
         form.deploy_id.data = job['options'][0]
+
+    if job['command'] == 'destroyallinstances' and 'options' in job and len(job['options']):
+        form.safe_destroy.data = True
+        form.safe_destroy_strategy.choices = get_safe_deployment_possibilities(app)
+        form.safe_destroy_strategy.data = job['options'][0]
 
     if job['command'] == 'createinstance' and 'options' in job and len(job['options']) > 0:
         form.subnet.choices = get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)
