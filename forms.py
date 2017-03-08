@@ -1298,7 +1298,7 @@ class CommandAppForm(Form):
         self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
 
         # Get the safe destroy possibilities
-        self.safe_destroy.choices = [('', '-- Computing available strategies --')]
+        self.safe_destroy_strategy.choices = [('', '-- Computing available strategies --')]
 
         # Get the subnets of the current application
         self.subnet.choices = [('', '-- Retrieving available subnets... --')]
