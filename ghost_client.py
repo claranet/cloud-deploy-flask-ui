@@ -228,7 +228,7 @@ def get_ghost_job(job_id):
 def get_ghost_job_commands():
     try:
         result = requests.get(url_commands, headers=headers, auth=current_user.auth)
-        commands = result.json().items()
+        commands = result.json()
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
