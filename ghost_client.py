@@ -288,10 +288,10 @@ def create_ghost_job(app_id, form, headers):
             # option[1] can be the safe deployment type
             options.append(form.safe_deployment_strategy.data)
 
-    if form.command.data == 'destroyallinstances':
-        if form.safe_destroy.data:
+    if form.command.data == 'recreateinstances':
+        if form.rolling_update.data:
             # option[0] can be the safe destroy type
-            options.append(form.safe_destroy_strategy.data)
+            options.append(form.rolling_update_strategy.data)
 
     if form.command.data == 'createinstance':
         if form.subnet.data:

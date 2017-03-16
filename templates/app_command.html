@@ -21,8 +21,8 @@
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
             <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
-            <div class="wrap safe_destroy">{{ wtf.form_field(form.safe_destroy, form_type='horizontal') }}</div>
-            <div class="wrap safe_destroy_strategy">{{ wtf.form_field(form.safe_destroy_strategy, form_type='horizontal') }}</div>
+            <div class="wrap rolling_update">{{ wtf.form_field(form.rolling_update, form_type='horizontal') }}</div>
+            <div class="wrap rolling_update_strategy">{{ wtf.form_field(form.rolling_update_strategy, form_type='horizontal') }}</div>
             <div class="wrap swapbluegreen_strategy">{{ wtf.form_field(form.swapbluegreen_strategy, form_type='horizontal') }}</div>
             <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
             <div class="wrap skip_salt_bootstrap">{{ wtf.form_field(form.skip_salt_bootstrap, form_type='horizontal') }}</div>
@@ -49,8 +49,8 @@
                 $('.wrap.deploy_id').show();
                 $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.safe_deployment').show();
-            } else if ($('#command').val() == 'destroyallinstances') {
-                $('.wrap.safe_destroy').show();
+            } else if ($('#command').val() == 'recreateinstances') {
+                $('.wrap.rolling_update').show();
             } else if ($('#command').val() == 'buildimage') {
                 $('.wrap.instance_type').show();
                 $('.wrap.skip_salt_bootstrap').show();
@@ -71,13 +71,13 @@
         }
 
         function refresh_options_list() {
-            $('#command option, #safe_deployment_strategy option, #safe_destroy_strategy option').each(function() {
+            $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option').each(function() {
                 cmd = $(this).val();
                 desc = $(this).text();
                 $(this).text(cmd);
                 $(this).attr('data-subtext', ' - ' + desc);
             });
-            $('#command, #safe_deployment_strategy, #safe_destroy_strategy').selectpicker('refresh');
+            $('#command, #safe_deployment_strategy, #rolling_update_strategy').selectpicker('refresh');
         }
 
         function get_app_subnets(app_id) {
@@ -116,13 +116,13 @@
             } else {
                 $('.wrap.safe_deployment_strategy').hide();
             }
-            if ($('#safe_destroy').is(':checked')) {
-                $('.wrap.safe_destroy_strategy').show();
+            if ($('#rolling_update').is(':checked')) {
+                $('.wrap.rolling_update_strategy').show();
                 if (update_possibilities) {
-                    get_app_safe_deployment_possibilities('#safe_destroy_strategy');
+                    get_app_safe_deployment_possibilities('#rolling_update_strategy');
                 }
             } else {
-                $('.wrap.safe_destroy_strategy').hide();
+                $('.wrap.rolling_update_strategy').hide();
             }
         }
 
@@ -131,7 +131,7 @@
             show_options_fields();
         });
         refresh_safe_deploy_options(false);
-        $('#safe_deployment, #safe_destroy').change(function() {
+        $('#safe_deployment, #rolling_update').change(function() {
             refresh_safe_deploy_options(true);
         });
 

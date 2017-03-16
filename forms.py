@@ -1269,8 +1269,8 @@ class CommandAppForm(Form):
     fabric_execution_strategy = BetterSelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
     safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
-    safe_destroy = BooleanField('Destroy instances with Safe Strategy', validators=[])
-    safe_destroy_strategy = SelectField('Safe destroy strategy', validators=[], choices=[])
+    rolling_update = BooleanField('Use Rolling Update strategy', validators=[])
+    rolling_update_strategy = SelectField('Rolling Update strategy', validators=[], choices=[])
     swapbluegreen_strategy = SelectField('Blue Green Swap Strategy', validators=[], choices=[('overlap','Overlap --- Blue/Green without downtime but two versions could be in production at the same time.'),
                                                                                              ('isolated', 'Isolated --- Blue/Green with a downtime but ensures that only one version is in production.')])
     instance_type = BetterSelectField('Instance Type', validators=[], choices=[])
@@ -1298,7 +1298,7 @@ class CommandAppForm(Form):
         self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
 
         # Get the safe destroy possibilities
-        self.safe_destroy_strategy.choices = [('', '-- Computing available strategies --')]
+        self.rolling_update_strategy.choices = [('', '-- Computing available strategies --')]
 
         # Get the subnets of the current application
         self.subnet.choices = [('', '-- Retrieving available subnets... --')]
