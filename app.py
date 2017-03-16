@@ -149,60 +149,60 @@ def web_cloud_check_assume_role(provider, account_id, role_name):
 def web_cloud_regions(provider):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_ec2_regions(provider, **query_string))
+    return jsonify(dict(get_aws_ec2_regions(provider, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/instancetypes')
 def web_ec2_instance_types_list(provider, region_id):
-    return jsonify(get_aws_ec2_instance_types(region_id))
+    return jsonify(dict(get_aws_ec2_instance_types(region_id)))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/keypairs')
 def web_ec2_key_pairs_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_ec2_key_pairs(provider, region_id, **query_string))
+    return jsonify(dict(get_aws_ec2_key_pairs(provider, region_id, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/ec2/autoscale/ids')
 def web_ec2_as_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_as_groups(provider, region_id, **query_string))
+    return jsonify(dict(get_aws_as_groups(provider, region_id, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/iam/profiles')
 def web_iam_profiles_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_iam_instance_profiles(provider, region_id, **query_string))
+    return jsonify(dict(get_aws_iam_instance_profiles(provider, region_id, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/ids')
 def web_vpcs_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_vpc_ids(provider, region_id, **query_string))
+    return jsonify(dict(get_aws_vpc_ids(provider, region_id, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/sg/ids')
 def web_sgs_list(provider, region_id, vpc_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_sg_ids(provider, region_id, vpc_id, **query_string))
+    return jsonify(dict(get_aws_sg_ids(provider, region_id, vpc_id, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/vpc/<vpc_id>/subnet/ids')
 def web_subnets_list(provider, region_id, vpc_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_subnet_ids(provider, region_id, vpc_id, **query_string))
+    return jsonify(dict(get_aws_subnet_ids(provider, region_id, vpc_id, **query_string)))
 
 @app.route('/web/<provider>/regions/<region_id>/ami/ids')
 def web_amis_list(provider, region_id):
     query_string = dict((key, request.args.getlist(key) if len(request.args.getlist(key)) > 1
         else request.args.getlist(key)[0]) for key in request.args.keys())
-    return jsonify(get_aws_ami_ids(provider, region_id, **query_string))
+    return jsonify(dict(get_aws_ami_ids(provider, region_id, **query_string)))
 
 @app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
 def web_app_subnets_list(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
     aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
-    return jsonify(get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data))
+    return jsonify(dict(get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'], **aws_connection_data)))
 
 @app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
 def web_app_infos(provider, app_id):
@@ -244,7 +244,7 @@ def web_feature_presets_list():
     for file in FEATURE_PRESETS:
         filename, fileext = os.path.splitext(file)
         preset_list.append((file, filename.replace('-', ' ')))
-    return jsonify(preset_list)
+    return jsonify(dict(preset_list))
 
 @app.route('/web/feature/presets/import/<config>')
 def web_feature_presets_import(config):
@@ -554,7 +554,7 @@ def web_app_module_last_revision(app_id, module):
 def web_app_get_safe_deployment_possibilities(app_id):
     # Get App data
     app = get_ghost_app(app_id)
-    return jsonify(get_safe_deployment_possibilities(app))
+    return jsonify(dict(get_safe_deployment_possibilities(app)))
 
 @app.route('/web/apps/<app_id>/module/<module_name>/available-revisions')
 def web_app_git_ls_remote(app_id,  module_name):
@@ -595,9 +595,9 @@ def web_job_list():
 
     if request.is_xhr:
         return render_template('job_list_content.html', jobs=jobs,
-                           deletable_job_statuses=DELETABLE_JOB_STATUSES,
-                           cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                           page=int(page))
+                               deletable_job_statuses=DELETABLE_JOB_STATUSES,
+                               cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
+                               page=int(page))
 
     return render_template('job_list.html', jobs=jobs,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
