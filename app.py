@@ -1,6 +1,6 @@
 from flask import Flask, flash, render_template, request, Response, jsonify, redirect, url_for, make_response
 from flask_bootstrap import Bootstrap
-from flask.ext.login import LoginManager, UserMixin, login_required
+from flask_login import LoginManager, UserMixin, login_required
 
 from base64 import b64decode
 import traceback

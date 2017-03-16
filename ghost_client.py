@@ -1,5 +1,5 @@
 from flask import flash, Markup
-from flask.ext.login import current_user
+from flask_login import current_user
 from werkzeug.exceptions import default_exceptions
 from eve import RFC1123_DATE_FORMAT
 
