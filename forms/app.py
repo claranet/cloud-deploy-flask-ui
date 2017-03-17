@@ -188,9 +188,9 @@ class BuildInfosForm(FlaskForm):
                                        )
                                    ])
 
-    container = BetterSelectField('Container', description='Please choose an container source compatible with source_ami', choices=[], validators=[
+    container = BetterSelectField('Source Container Image', description='Please choose an container source compatible with source_ami', choices=[], validators=[
         RegexpValidator(
-            ghost_app_schema['build_infos']['schema']['container']['regex']
+            ghost_app_schema['build_infos']['schema']['source_container_image']['regex']
         )
     ])
 
@@ -213,7 +213,7 @@ class BuildInfosForm(FlaskForm):
         build_infos = app.get('build_infos', {})
         self.ssh_username.data = build_infos.get('ssh_username', '')
         self.source_ami.data = build_infos.get('source_ami', '')
-        self.container.data = build_infos.get('container', '')
+        self.container.data = build_infos.get('source_container_image', '')
         self.subnet_id.data = build_infos.get('subnet_id', '')
 
     def map_to_app(self, app):
@@ -223,7 +223,7 @@ class BuildInfosForm(FlaskForm):
         app['build_infos'] = {}
         app['build_infos']['ssh_username'] = self.ssh_username.data
         app['build_infos']['source_ami'] = self.source_ami.data
-        app['build_infos']['container'] = self.container.data
+        app['build_infos']['source_container_image'] = self.container.data
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 
