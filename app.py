@@ -254,7 +254,7 @@ def web_amis_list(provider, region_id):
 
 @app.route('/web/container/list')
 def web_container_image_list():
-    return jsonify(get_container_images())
+    return jsonify(dict(get_container_images()))
 
 @app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
 def web_app_subnets_list(provider, app_id):
