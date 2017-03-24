@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "bootstrap/utils.html" as util %}
 
-{% block title %}Claranet GHOST - {{ page_title }}{% endblock %}
+{% block title %}Claranet Cloud Deploy - {{ page_title }}{% endblock %}
 
 {% block styles %}
     <link rel="apple-touch-icon" sizes="57x57" href="{{url_for('.static', filename='favicon/apple-icon-57x57.png')}}">
@@ -36,9 +36,23 @@
 {% block navbar %}
 <div class="page-wrap">
     <nav id="header" class="navbar navbar-inverse navbar-fixed-top">
+        <div id="topHeader">
         <div class="container">
             <div class="navbar-header">
-                <a class="pull-left" href="/web/apps"><img height="45" alt="Logo Claranet" src="{{ url_for('static', filename='logo.png')}}?v={{current_revision}}" /></a>
+                <a class="pull-left" href="/web/apps">
+                    <img class="site-logo" alt="Claranet" height="35" typeof="foaf:Image" src="//www.claranet.fr/sites/all/themes/claranet_responsive_2015/logo.png" alt="Claranet France">
+                    <img height="40" id="logo_cloud_deploy" alt="Cloud Deploy" src="{{ url_for('static', filename='cloud_deploy.png')}}?v={{current_revision}}" />
+                </a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right ghost-logo">
+                    <li><img height="50" alt="Logo" src="{{ url_for('static', filename='logo_cloud_deploy.png')}}?v={{current_revision}}" /></li>
+                </ul>
+            </div>
+        </div>
+        </div>
+        <div class="container">
+            <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
@@ -52,8 +66,7 @@
                     <li><a href="/web/jobs">Jobs</a></li>
                     <li><a href="/web/deployments">Deployments</a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right ghost-logo">
-                    <li><img height="49" alt="Logo Ghost" src="{{ url_for('static', filename='logo_ghost.png')}}?v={{current_revision}}" /></li>
+                <ul class="nav navbar-nav navbar-right">
                     <li><a href="#" class="">{% if current_user.is_authenticated %}Hi {{ current_user.id }}!{% endif %}</a></li>
                 </ul>
             </div>
