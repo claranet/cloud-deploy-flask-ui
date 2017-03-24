@@ -85,7 +85,7 @@ def get_ghost_apps_per_env(env=None, embed_deployments=False):
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
         url += '&max_result=999'
         if env:
-            url += '&where=env==' + env
+            url += "&where=env=='" + env + "'"
         if embed_deployments:
             url += '&embedded={"modules.last_deployment":1}'
         result = requests.get(url, headers=headers, auth=current_user.auth)

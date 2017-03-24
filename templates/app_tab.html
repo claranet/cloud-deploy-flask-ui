@@ -31,7 +31,7 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="apps?">- All -</a></li>
                         {% for role in role_list: %}
-                        <li><a href="apps?where=role=={{ role }}&g-role={{ role }}">{{ role }}</a></li>
+                        <li><a href="apps?where=role=='{{ role }}'&g-role={{ role }}">{{ role }}</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -155,7 +155,7 @@
             $(document).on('click', '#appListViewToggle', function(evt) {
                 evt.preventDefault();
                 var env = location.hash.replace('#apps-', '');
-                env_filter = (env && env != '') ? ('&where=env=='+env+'&g-env='+env) : '';
+                env_filter = (env && env != '') ? ("&where=env=='"+env+"'&g-env="+env) : '';
                 window.location.href = '/web/apps?unset_tabs=True' + env_filter;
             });
             function showAppTab(tabLink) {
@@ -184,7 +184,7 @@
             // Remove the # from the hash, as different browsers may or may not include it
             var hash = location.hash.replace('#','');
             if (hash != '') {
-                showAppTab($('#tabbed-apps ul.nav li a[href=#'+hash+']'));
+                showAppTab($('#tabbed-apps ul.nav li a[href="#'+hash+'"]'));
             }
         });
     </script>
