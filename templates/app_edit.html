@@ -211,7 +211,7 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            {{ wtf.form_field(form.environment_infos.form.root_block_device_size, form_type='horizontal', placeholder='20') }}
+                            {{ wtf.form_field(form.environment_infos.form.root_block_device_size, form_type='horizontal', placeholder=schema.environment_infos.schema.root_block_device.schema.size.min) }}
                             {{ wtf.form_field(form.environment_infos.form.root_block_device_name, form_type='horizontal', placeholder='') }}
                         </div>
                     </div>

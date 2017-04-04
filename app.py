@@ -357,7 +357,7 @@ def web_app_create():
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=False)
+    return render_template('app_edit.html', form=form, edit=False, schema=ghost_app_schema)
 
 @app.route('/web/apps/<app_id>', methods=['GET'])
 def web_app_view(app_id):
@@ -449,7 +449,7 @@ def web_app_edit(app_id):
         sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=True)
+    return render_template('app_edit.html', form=form, edit=True, schema=ghost_app_schema)
 
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
 def web_app_command(app_id):

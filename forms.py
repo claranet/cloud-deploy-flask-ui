@@ -561,7 +561,7 @@ class EnvironmentInfosForm(Form):
         )
     ])
 
-    root_block_device_size_min = 20
+    root_block_device_size_min = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min']
     root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size (min {min}GiB)'.format(min=root_block_device_size_min), validators=[
         OptionalValidator(),
         NumberRangeValidator(min=root_block_device_size_min, message='To prevent low disk space alerts, disk size should be greater than {min}GiB'.format(min=root_block_device_size_min))
