@@ -561,9 +561,10 @@ class EnvironmentInfosForm(Form):
         )
     ])
 
-    root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size', validators=[
+    root_block_device_size_min = 20
+    root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size (min {min}GiB)'.format(min=root_block_device_size_min), validators=[
         OptionalValidator(),
-        NumberRangeValidator(min=0)
+        NumberRangeValidator(min=root_block_device_size_min, message='To prevent low disk space alerts, disk size should be greater than {min}GiB'.format(min=root_block_device_size_min))
     ]);
 
     root_block_device_name = StringField('Name', description='Empty if you want to use the default one', validators=[
@@ -973,6 +974,8 @@ class BaseAppForm(Form):
         app['environment_infos']['root_block_device'] = {}
         if self.environment_infos.form.root_block_device_size.data:
             app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
+        else:
+            app['environment_infos']['root_block_device']['size'] = 20 # default value to prevent low disk space alerts
         if self.environment_infos.form.root_block_device_name.data:
             app['environment_infos']['root_block_device']['name'] = self.environment_infos.form.root_block_device_name.data
 
