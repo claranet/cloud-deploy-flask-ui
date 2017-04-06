@@ -975,7 +975,7 @@ class BaseAppForm(Form):
         if self.environment_infos.form.root_block_device_size.data:
             app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
         else:
-            app['environment_infos']['root_block_device']['size'] = 20 # default value to prevent low disk space alerts
+            app['environment_infos']['root_block_device']['size'] = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min'] # default value to prevent low disk space alerts
         if self.environment_infos.form.root_block_device_name.data:
             app['environment_infos']['root_block_device']['name'] = self.environment_infos.form.root_block_device_name.data
 
