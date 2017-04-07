@@ -407,6 +407,7 @@ class InstanceTagForm(Form):
 # Forms
 class AutoscaleForm(Form):
     as_name = BetterSelectField('Name', choices=[], validators=[])
+    enable_metrics = BooleanField('Enable Auto Scaling Metrics', validators=[])
 
     min = IntegerField('Min', description='The minimum size of the Auto Scaling group', validators=[
         OptionalValidator(),
@@ -428,6 +429,7 @@ class AutoscaleForm(Form):
         self.min.data = autoscale.get('min', '')
         self.max.data = autoscale.get('max', '')
         self.as_name.data = autoscale.get('name', '')
+        self.enable_metrics.data = autoscale.get('enable_metrics', False)
 
     def map_to_app(self, app):
         """
@@ -435,6 +437,7 @@ class AutoscaleForm(Form):
         """
         app['autoscale'] = {}
         app['autoscale']['name'] = self.as_name.data
+        app['autoscale']['enable_metrics'] = self.enable_metrics.data
         if isinstance(self.min.data, int):
             app['autoscale']['min'] = self.min.data
         if isinstance(self.max.data, int):
