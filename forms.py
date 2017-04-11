@@ -429,7 +429,7 @@ class AutoscaleForm(Form):
         self.min.data = autoscale.get('min', '')
         self.max.data = autoscale.get('max', '')
         self.as_name.data = autoscale.get('name', '')
-        self.enable_metrics.data = autoscale.get('enable_metrics', False)
+        self.enable_metrics.data = autoscale.get('enable_metrics', True)
 
     def map_to_app(self, app):
         """
