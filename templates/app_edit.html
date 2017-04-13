@@ -418,7 +418,7 @@
                 $('#app_options_wrapper').slideUp('slow');
             } else {
                 // Reset custom identity params
-                provider_identity_query = '';
+                clear_provider_identity();
                 app_region = $('select#region').val();
                 if (app_region) {
                     if (confirm('Do you want to refresh all resource fields?\nIt will use the default identity configuration.')) {
