@@ -9,6 +9,10 @@
         <li>
         </li>
     </ul>
+
+{% endblock %}
+
+{% block page_content %}
     <ul class="nav navbar-fixed-left" id="left-menu">
         <li>
             <a href="#properties">Properties</a>
@@ -70,9 +74,7 @@
             <button class="btn btn-raised btn-info btn-xs"><span class="glyphicon glyphicon-ok"></span> {{ form.submit.label.text }}</button>
         </li>
     </ul>
-{% endblock %}
 
-{% block page_content %}
     <form class="form-horizontal app-panel" id="app-form" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 

@@ -21,6 +21,9 @@
             <a href="/web/apps/{{ app['_id'] }}/delete"><button class="btn btn-raised btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
     </ul>
+{% endblock %}
+
+{% block page_content %}
     <ul class="nav navbar-fixed-left" id="left-menu">
         <li>
             <a href="#properties">Properties</a>
@@ -64,9 +67,6 @@
             <a href="#modules">Modules</a>
         </li>
     </ul>
-{% endblock %}
-
-{% block page_content %}
     <div class="panel panel-default app-panel">
         <a name="properties" class="anchor">&nbsp;</a>
         <div class="panel-heading">Properties</div>

@@ -35,7 +35,7 @@
 
 {% block navbar %}
 <div class="page-wrap">
-    <nav id="header" class="navbar navbar-inverse navbar-fixed-top">
+    <nav id="header" class="navbar navbar-inverse">
         <div id="topHeader">
         <div class="container">
             <div class="navbar-header">
@@ -76,7 +76,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="sidebar ghost-titlebar">
+    <div class="ghost-titlebar">
         <h1 title="{{ page_title }}">{{ page_title }}</h1>
 
         <div id="ajaxSpinnerContainer">
@@ -85,13 +85,13 @@
 
         {% block page_header %}
         {% endblock %}
+        {{ util.flashed_messages() }}  
     </div>
 
     <div class="container" role="main">
-        {{ util.flashed_messages() }}
-
         {% block page_content %}
         {% endblock %}
+    </div>
     </div>
 </div>
 <footer class="site-footer">
@@ -140,15 +140,15 @@
                 url: loadMoreUrl,
                 success: function(html)
                 {
-                    if (html) {
+                    if (html.length > 2) {
                         $('tr#loadmoreajaxloader').before(html);
                         $('tr#loadmoreajaxloader td').hide();
-                        if ($('body').innerHeight() < $(window).height()) { //fetchfing next page to fill the document 
+                        if ($('.container[role=main]').innerHeight() < $('.tablelist').outerHeight(true)) { //fetchfing next page to fill the document 
                             fetchNextPage();
                         }
                     } else {
-                        $('tr#loadmoreajaxloader td').html('<a href="#"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>');
-                        $(window).unbind('scroll');
+                        $('tr#loadmoreajaxloader td').html('<a href="#" onclick="javascript:$(\'.container[role=main]\').scrollTop(0);"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>');
+                        $('.container[role=main]').unbind('scroll');
                         $('tr#loadmoreajaxloader td').show();
                     }
                 }
@@ -156,15 +156,15 @@
         }
 
         if ($('table.tablelist').not('.noscroll').length > 0) {
-            $(window).scroll(function()
+            $('.container[role=main]').scroll(function()
             {
                 //Checking that we are at the bottom even if we have no integer due to zoom
-                if (Math.abs($(window).scrollTop() - $(document).height() + $(window).height()) < 1) //bottom of the window
+                if (Math.abs($('.container[role=main]').scrollTop() - $('.tablelist').outerHeight(true) + $('.container[role=main]').innerHeight()) < 1) //bottom of the window
                 {
                     fetchNextPage();
                 }
             });
-            if ($('body').innerHeight() < $(window).height()) { //fetchfing next page to fill the document 
+            if ($('.container[role=main]').innerHeight() < $('.tablelist').height()) { //fetchfing next page to fill the document 
                 fetchNextPage();
             }
         }
@@ -476,9 +476,7 @@
 
             if (scroll_to) {
                 // ScrollTo the new element
-                $('html, body').animate({
-                    scrollTop: $('#' + entry_id_prefix + "_" + count).offset().top - 100
-                }, 1000);
+                $('#' + entry_id_prefix + "_" + count)[0].scrollIntoView();
             }
         }
 
@@ -507,37 +505,16 @@
     </script>
 
     <script type="text/javascript">
-        var positionElementInPage = $('.sidebar').offset().top - 20;
         function updateMenusPositions() {
-            if ($(window).scrollTop() >= positionElementInPage || $('.app-panel').length > 0) {
-                // fixed
-                $('.sidebar').next().css('margin-top', $('.sidebar').height() + 'px');
-                $('.sidebar').addClass('navbar-fixed-top');
-                $('.app-panel').addClass('fixed-top-menu');
-                $('#header').addClass('no-shadow');
-                $('.site-footer').addClass('fixed');
-            } else {
-                // relative
-                $('.sidebar').removeClass('navbar-fixed-top');
-                $('.app-panel').removeClass('fixed-top-menu');
-                $('.sidebar').next().css('margin-top', '0');
-                $('#header').removeClass('no-shadow');
-                $('.site-footer').removeClass('fixed');
-            }
-            if ($("#left-menu").length > 0) {
-                var headingHeight = $('.sidebar').next().offset().top;
-                $('#left-menu').css('height', ($(window).height()-headingHeight - $('footer').height()) + 'px');
-                $('#left-menu').css('top', headingHeight + 'px');
-            }
+            var headerHeight = $("#header").outerHeight(true) + $('.ghost-titlebar').outerHeight(true) + 6;
+            var visibleHeight = $(window).height()- headerHeight - $('footer').height();
+            $('.container[role=main]').css('height', visibleHeight + 'px');
+            $('#left-menu').css('height', visibleHeight + 'px');
+            $("#left-menu").css('top', headerHeight + "px");
         }
-        if ($('.app-panel').length == 0) {
-            $(window).scroll(function() {
-                updateMenusPositions();
-            });
-            $(window).on('resize', function() {
-                updateMenusPositions();
-            });
-        }
+        $(window).on('resize', function() {
+            updateMenusPositions();
+        });
         $(document).ready(function() {
             updateMenusPositions();
         });
