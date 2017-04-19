@@ -139,6 +139,7 @@
                 <div class="row">
                     {{ wtf.form_field(form.autoscale.form.as_name, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#autoscale-as_name" data-call="ghost_update_ec2_asgs($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
+                    {{ wtf.form_field(form.autoscale.form.enable_metrics, form_type='horizontal') }}
                     {{ wtf.form_field(form.autoscale.form.min, form_type='horizontal', placeholder='1') }}
                     {{ wtf.form_field(form.autoscale.form.max, form_type='horizontal', placeholder='3') }}
                 </div>
