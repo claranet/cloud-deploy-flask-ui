@@ -418,6 +418,15 @@
                 $('#identity_provider').slideDown('slow');
                 $('#app_options_wrapper').slideUp('slow');
             } else {
+                // Reset custom identity params
+                clear_provider_identity();
+                app_region = $('select#region').val();
+                if (app_region) {
+                    if (confirm('Do you want to refresh all resource fields?\nIt will use the default identity configuration.')) {
+                        $('select#region').change(); // Will reload all select in the page
+                    }
+                }
+                // UI update
                 $('#identity_provider').slideUp('slow');
                 $('#app_options_wrapper').slideDown('slow');
             }

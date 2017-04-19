@@ -222,6 +222,10 @@
             var provider_identity_query = '';
         }
 
+        function clear_provider_identity() {
+            provider_identity_query = '';
+        }
+
         function ghost_update_ec2_regions_confirm() {
             if (confirm('Refreshing region may also refresh all other resources that depends on it.')) {
                 ghost_update_ec2_regions();
