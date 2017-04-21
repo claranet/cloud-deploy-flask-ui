@@ -90,8 +90,7 @@
 
     <div class="container" role="main">
         {% block page_content %}
-        {% endblock %}
-    </div>
+        {% endblock %}</div>
     </div>
 </div>
 <footer class="site-footer">
@@ -425,7 +424,7 @@
             });
         });
 
-        function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to=true) {
+        function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to) {
             var count = $("tr[data-" + entry_id_prefix + "]").size();
             var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
 
