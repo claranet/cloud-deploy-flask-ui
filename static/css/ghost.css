@@ -117,10 +117,6 @@ button.navbar-toggle {
 .table.tablelist {
     margin-bottom: 0;
 }
-/*.table.tablelist:after {
-    content: "";
-    height: 20px;
-}*/
 
 .theme-showcase .navbar .container {
   width: auto;
@@ -229,16 +225,6 @@ ul.nav.navbar-nav {
     padding: 20px 0;
     text-align: center;
 }
-/*.anchor {
-  display: block;
-  height: 150px; /*same height as header*/
-  /*margin-bottom: -150px; /*same height as header*/
-  /*visibility: hidden;
-}
-.fixed-top-menu .anchor {
-    margin-top: -150px;
-    margin-bottom: 0;
-}*/
 /*AppEdit*/
 td.inline .form-group {
     width: 50%;
