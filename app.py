@@ -532,6 +532,16 @@ def web_app_command_from_job(app_id, job_id):
 
     if job['command'] == 'redeploy' and 'options' in job and len(job['options']):
         form.deploy_id.data = job['options'][0]
+        # Map fabric_execution_strategy
+        if 'options' in job and len(job['options']) > 1:
+            form.fabric_execution_strategy.data = job['options'][1]
+        else:
+            form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+        # Map safe deployment options
+        if 'options' in job and len(job['options']) > 2:
+            form.safe_deployment.data = True
+            form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+            form.safe_deployment_strategy.data = job['options'][2]
 
     if job['command'] == 'recreateinstances' and 'options' in job and len(job['options']):
         form.rolling_update.data = True
@@ -694,6 +704,11 @@ def web_deployment_redeploy(deployment_id):
 
     form.command.data = 'redeploy'
     form.deploy_id.data = deployment_id
+
+    # Dynamic selections update
+    if form.is_submitted():
+        safe_choices = get_safe_deployment_possibilities(app)
+        form.safe_deployment_strategy.choices = list(safe_choices)
 
     # Perform validation
     if form.validate_on_submit():
