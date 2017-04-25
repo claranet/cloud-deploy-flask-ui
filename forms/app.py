@@ -990,7 +990,7 @@ class CreateAppForm(BaseAppForm):
         self.environment_infos.instance_profile.choices = [('', 'Please select region first')]
         self.environment_infos.key_name.choices = [('', 'Please select region first')]
         self.build_infos.source_ami.choices = [('', 'Please select region first')]
-        self.build_infos.container.choices = [('', 'Not use container')]
+        self.build_infos.container.choices = [('', 'No container used')]
         self.build_infos.subnet_id.choices = [('', 'Please select VPC first')]
         self.environment_infos.subnet_ids[0].choices = [('', 'Please select VPC first')]
 
