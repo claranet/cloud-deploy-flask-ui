@@ -141,7 +141,7 @@
                     if (html.length > 2) {
                         $('tr#loadmoreajaxloader').before(html);
                         $('tr#loadmoreajaxloader td').hide();
-                        if ($('.container[role=main]').innerHeight() < $('.tablelist').outerHeight(true)) { //fetchfing next page to fill the document 
+                        if ($('.tablelist').height() <= $('.container[role=main]').innerHeight()) { //fetchfing next page to fill the document
                             fetchNextPage();
                         }
                     } else {
@@ -157,12 +157,11 @@
             $('.container[role=main]').scroll(function()
             {
                 //Checking that we are at the bottom even if we have no integer due to zoom
-                if (Math.abs($('.container[role=main]').scrollTop() - $('.tablelist').outerHeight(true) + $('.container[role=main]').innerHeight()) < 1) //bottom of the window
-                {
+                if (Math.abs($('.container[role=main]').scrollTop() - $('.tablelist').outerHeight(true) + $('.container[role=main]').innerHeight()) < 1) { //bottom of the scrollable container
                     fetchNextPage();
                 }
             });
-            if ($('.container[role=main]').innerHeight() < $('.tablelist').height()) { //fetchfing next page to fill the document 
+            if ($('.tablelist').height() <= $('.container[role=main]').innerHeight()) { //fetchfing next page to fill the document
                 fetchNextPage();
             }
         }
