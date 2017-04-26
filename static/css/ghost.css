@@ -1,30 +1,24 @@
 html, body {
   height: 100%;
+  overflow-y: hidden;
 }
 .page-wrap {
   min-height: 100%;
-  margin-bottom: -43px;
-  padding-top: 80px;
-  padding-bottom: 30px;
   background: #fff;
 }
 .page-wrap:after {
   content: "";
   display: block;
 }
-.site-footer, .page-wrap:after {
-  height: 42px;
-}
-.site-footer.fixed {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
 .site-footer {
   background:  #F2F2F2;
   border-top: 1px solid #e4e4e4;
   z-index: 10000;
+  height: 42px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .site-footer span {
     color: #666;
@@ -74,6 +68,9 @@ button.navbar-toggle {
     color: #9D9D9D;
     background-color: #333;
 }
+.navbar {
+    margin-bottom: 0;
+}
 #navbar .nav.navbar-nav li a {
     padding: 5px 15px;
     font-weight: bold;
@@ -93,13 +90,16 @@ button.navbar-toggle {
 }
 .container[role=main] {
     width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
-.navbar-fixed-top {
+.ghost-titlebar {
     -webkit-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
     -moz-box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
     box-shadow: 0px 5px 5px 0px rgba(2,2,2,0.5);
+    margin-bottom: 5px;
 }
-.navbar-fixed-top.no-shadow {
+.ghost-titlebar.no-shadow {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
@@ -112,6 +112,10 @@ button.navbar-toggle {
 
 .theme-showcase > p > .btn {
   margin: 5px 0;
+}
+
+.table.tablelist {
+    margin-bottom: 0;
 }
 
 .theme-showcase .navbar .container {
@@ -130,22 +134,17 @@ span.index:after {
     border-bottom: 4px solid transparent;
     border-top: 4px solid transparent;
 }
-.sidebar {
-    padding-left: 10px;
-    padding-right: 10px;
- }
-.sidebar-outer {
-    position: relative;
-}
 .ghost-titlebar {
     position: relative;
-}
-.ghost-titlebar.navbar-fixed-top {
-    position: fixed;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: white;
 }
 .ghost-titlebar h1 {
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 20px;
+    margin: 5px 0 0 0;
 }
 #ajaxSpinnerContainer {
     position: absolute;
@@ -157,21 +156,10 @@ span.index:after {
 .panel .row {
   margin: 0;
 }
-
-/*fixed top sidebar*/
-.sidebar.navbar-fixed-top {
-    top: 80px;
-    background: white;
-    z-index: 999;
-}
-.sidebar.navbar-fixed-top h1 {
-    font-size: 20px;
-    margin: 5px 0 0 0;
-}
-.sidebar.navbar-fixed-top .action-btns li a, .action-btns li {
+.ghost-titlebar .action-btns li a, .action-btns li {
     padding: 5px;
 }
-.sidebar.navbar-fixed-top .action-btns li .input-group {
+.ghost-titlebar .action-btns li .input-group {
     padding: 5px;
 }
 ul.nav.navbar-nav {
@@ -221,7 +209,6 @@ ul.nav.navbar-nav {
     width: 15%;
     height: 100%;
     overflow-y: auto;
-    overflow-x: hidden;
 }
 #left-menu .subnav li {
     list-style-type: decimal;
@@ -237,16 +224,6 @@ ul.nav.navbar-nav {
 #left-menu li.quick-submit {
     padding: 20px 0;
     text-align: center;
-}
-.anchor {
-  display: block;
-  height: 150px; /*same height as header*/
-  margin-bottom: -150px; /*same height as header*/
-  visibility: hidden;
-}
-.fixed-top-menu .anchor {
-    margin-top: -150px;
-    margin-bottom: 0;
 }
 /*AppEdit*/
 td.inline .form-group {
