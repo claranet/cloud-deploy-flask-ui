@@ -562,14 +562,23 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 }
 
 .tablelist th.status {
-    background-color: #333;
+    background-color: #415560;
     color: white;
 }
+.tablelist th.status-cancelled {
+    background-color: #333;
+}
+.tablelist th.status-aborted {
+    background-color: #aaa;
+}
+.tablelist th.status-started {
+    background-color: #03A9F4;
+}
 .tablelist th.status-failed {
-    background-color: #c9302c;
+    background-color: #F44336;
 }
 .tablelist th.status-done {
-    background-color: #5cb85c;
+    background-color: #4CAF50;
 }
 .tablelist th span.index:before {
     counter-increment: rowindex;
