@@ -193,11 +193,13 @@
         var socket = io.connect({transports: ['websocket']});
         var last_pos = 0;
         var previous_timespan = false;
+
         socket.on('connect', function() {
             socket.emit('job_logging', {log_id: "{{ job['log_id'] }}", last_pos: last_pos });
         });
         socket.on('job', function(data) {
             last_pos = data['last_pos'];
+            var first_log = last_pos == 0;
             if (last_pos == 0) {
                 last_cmd_date = false;
             } else {
@@ -237,14 +239,26 @@
                 }
                 previous_timespan = $(this).find('span.timeinterval');
             });
-            if (last_pos == 0) {
-                $log.html(content);
-            } else {
-                $log.append(content);
-            }
-            if (scrollActivated) {
-                $log.scrollTop($log.get(0).scrollHeight);
-            }
+
+            // Append new log content asynchronously
+            setTimeout(function() {
+                // Clear log view on first chunk
+                if (first_log) {
+                  $log.html("");
+                }
+
+                // Wrap content in div to limit reflow cost
+                var chunk = document.createElement("div");
+                $(chunk).html(content);
+
+                // Append new chunk of logs
+                $log.append(chunk);
+
+                // Scroll log
+                if (scrollActivated) {
+                    $log.scrollTop($log.get(0).scrollHeight);
+                }
+            }, 10);
         });
 
         $log.on('click', '.expandable em', function(evt) {
