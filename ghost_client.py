@@ -11,7 +11,7 @@ import requests
 import json
 from settings import API_BASE_URL, PAGINATION_LIMIT
 
-from ghost_tools import b64decode_utf8
+from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
@@ -289,6 +289,15 @@ def create_ghost_job(app_id, form, headers):
             options.append(form.subnet.data)
         if form.private_ip_address.data:
             options.append(form.private_ip_address.data)
+
+    if form.command.data == 'executescript':
+        if form.to_execute_script.data:
+            options.append(b64encode_utf8(form.to_execute_script.data.replace('\r\n', '\n')))
+        if form.script_module_context.data:
+            options.append(form.script_module_context.data)
+        if form.fabric_execution_strategy.data:
+            # In case of executescript, option[2] can be the fabric_execution_strategy
+            options.append(form.fabric_execution_strategy.data)
 
     if form.command.data == 'preparebluegreen':
         if isinstance(form.prepare_bg_copy_ami.data, bool):

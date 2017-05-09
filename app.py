@@ -468,6 +468,12 @@ def web_app_command(app_id):
         form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
         form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
         form.purge_delete_elb.data = get_blue_green_destroy_temporary_elb_config(config)
+        form.to_execute_script.data = """
+#!/bin/bash
+
+set -x
+set -e
+"""
         form.command.data = 'deploy'
 
     return render_template('app_command.html', form=form, app=app)

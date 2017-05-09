@@ -222,6 +222,23 @@
         });
     </script>
     <script type="text/javascript">
+        function initCodeMirror() {
+            $('textarea').each(function(index, elem) {
+                $(elem).focus(function() {
+                    $(elem).unbind("focus");
+                    var editor = CodeMirror.fromTextArea(this, {
+                        lineNumbers: true,
+                        viewportMargin: Infinity,
+                        lineWrapping: true,
+                        mode: 'shell',
+                    });
+                    $(this).parent().parent().addClass('script-panel');
+                    // setTimeout(function(){ editor.refresh(); }, 3000); // try to hack the editor cursor bug
+                });
+            });
+        }
+    </script>
+    <script type="text/javascript">
         /*
         health status modal
          */

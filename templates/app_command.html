@@ -3,6 +3,10 @@
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 {% set page_title = 'Run Command on %s (%s)%s' % (app['name'], app['env'], app_color) %}
 
+{% block page_header %}
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
+{% endblock %}
+
 {% block page_content %}
     <form class="form-horizontal" method="POST" enctype="multipart/form-data">
         <div class="form-group">
@@ -30,6 +34,8 @@
             <div class="wrap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
             <div class="wrap prepare_bg_copy_ami">{{ wtf.form_field(form.prepare_bg_copy_ami, form_type='horizontal') }}</div>
             <div class="wrap purge_delete_elb">{{ wtf.form_field(form.purge_delete_elb, form_type='horizontal') }}</div>
+            <div class="wrap to_execute_script">{{ wtf.form_field(form.to_execute_script, form_type='horizontal') }}</div>
+            <div class="wrap script_module_context">{{ wtf.form_field(form.script_module_context, form_type='horizontal') }}</div>
         </div>
         {{ wtf.form_field(form.submit, form_type='horizontal') }}
     </form>
@@ -37,6 +43,8 @@
 
 {% block page_scripts %}
     <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
     (function() {
         function show_options_fields()  {
@@ -61,6 +69,12 @@
                     /*only update if needed*/
                     get_app_subnets("{{ app['_id'] }}");
                 }
+            } else if ($('#command').val() == 'executescript') {
+                $('.wrap.fabric_execution_strategy').show();
+                $('.wrap.to_execute_script').show();
+                $('.wrap.script_module_context').show();
+                initCodeMirror();
+            /* BlueGreen commands */
             } else if ($('#command').val() == 'preparebluegreen') {
                 $('.wrap.prepare_bg_copy_ami').show();
             } else if ($('#command').val() == 'swapbluegreen') {
