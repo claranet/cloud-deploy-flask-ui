@@ -475,6 +475,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 }
 #tabbed-apps ul.nav li a {
     color: #009688 !important;
+    cursor: pointer;
 }
 #tabbed-apps ul.nav li.active a {
     font-weight: bold;
@@ -484,7 +485,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .top-right {
     float: right;
 }
-#loadmoreajaxloader td {
+#loadmoreajaxloader td, #backtotop td {
     text-align: center;
 }
 .tablelist {
@@ -570,6 +571,9 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 }
 .action-btns li a, .action-btns li {
     float: left;
+}
+.action-btns a {    
+    cursor: pointer;
 }
 .action-btns li a:hover {
     background: transparent;

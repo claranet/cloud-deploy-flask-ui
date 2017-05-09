@@ -1,3 +1,4 @@
+from __future__ import print_function
 from flask import flash, Markup
 from flask_login import current_user
 from werkzeug.exceptions import default_exceptions
@@ -50,7 +51,7 @@ def do_request(method, url, data, headers, success_message, failure_message):
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(failure_message, 'danger')
-    print message
+    print(message)
     return message, result_json
 
 def handle_response_status_code(status_code):
@@ -72,44 +73,29 @@ def get_ghost_envs(query=None):
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
             envs.add(item['env'])
+        envs = list(envs)
+        envs.insert(0, '*')
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
-        envs.add('Failed to retrieve Envs')
+        envs[0] = 'Failed to retrieve Envs'
 
     return envs
 
-def get_ghost_apps_per_env(env=None, embed_deployments=False):
+def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name=None):
     try:
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        url += '&max_result=999'
-        if env:
-            url += "&where=env=='" + env + "'"
-        if embed_deployments:
-            url += '&embedded={"modules.last_deployment":1}'
-        result = requests.get(url, headers=headers, auth=current_user.auth)
-        handle_response_status_code(result.status_code)
-        apps = result.json().get('_items', [])
-        for app in apps:
-            try:
-                app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
-                app['_updated'] = datetime.strptime(app['_updated'], RFC1123_DATE_FORMAT)
-            except:
-                traceback.print_exc()
-    except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
-        flash(message, 'danger')
-        apps = ['Failed to retrieve Apps']
-
-    return apps
-
-def get_ghost_apps(query=None, page=None, embed_deployments=False):
-    try:
-        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        if query:
-            url += '&where=' + query
+        # Eve Query building
+        query = []
+        if role != None:
+            query.append('"role":"{role}"'.format(role=role))
+        if env != None:
+            query.append('"env":"{env}"'.format(env=env))
+        if name != None:
+            query.append('"name":{{"$regex":".*{name}.*"}}'.format(name=name))
+        if query.count > 0:
+            url += '&where={' + ",".join(query) + '}'
         if page:
             url += '&page=' + page
         if embed_deployments:

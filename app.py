@@ -17,7 +17,7 @@ from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
 from ghost_tools import config, CURRENT_REVISION, boolify
-from ghost_client import get_ghost_envs, get_ghost_apps_per_env
+from ghost_client import get_ghost_envs
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
@@ -252,34 +252,23 @@ def web_feature_presets_import(config):
 
 @app.route('/web/apps')
 def web_app_list():
-    use_tabs = boolify(request.cookies.get('use_tabs_app_list', False))
-    unset_tabs = request.args.get('unset_tabs', False)
-    if use_tabs and not unset_tabs:
-        return redirect(url_for('.web_tab_app_list', _scheme='https', _external=True))
-    query = request.args.get('where', None)
+    role = request.args.get('role', None)
+    env = request.args.get("env", None)
+    if env != None:
+        selected_env = env
+    else:
+        selected_env = "*"
+    if env == '*':
+        env = None
     page = request.args.get('page', '1')
-    apps = get_ghost_apps(query, page)
-    if request.is_xhr:
-        return render_template('app_list_content.html', env_list=get_ghost_envs(), apps=apps,
-                               page=int(page))
-    resp = make_response(render_template('app_list.html', env_list=get_ghost_envs(), apps=apps,
-                         page=int(page)))
-    if unset_tabs:
-        resp.set_cookie('use_tabs_app_list', 'False')
-    return resp
-
-@app.route('/web/t-apps')
-def web_tab_app_list():
-    choosen_env = request.args.get('env', None)
+    name = request.args.get("name", None)
+    apps = get_ghost_apps(role=role, page=page, env=env, name=name)
     envs = get_ghost_envs()
-    if not choosen_env:
-        choosen_env = list(envs)[0] if envs else ''
-    apps = get_ghost_apps_per_env(choosen_env)
     if request.is_xhr:
-        return render_template('app_list_content.html', env_list=envs, apps=apps, table_header=True)
-    resp = make_response(render_template('app_tab.html', env_list=envs, apps=apps, choosen_env=choosen_env, table_header=True))
-    resp.set_cookie('use_tabs_app_list', 'True')
-    return resp
+        return render_template('app_list_content.html', env_list=envs, apps=apps,
+                               page=int(page))
+    return make_response(render_template('app_list.html', env_list=envs, choosen_env=selected_env, apps=apps,
+                         page=int(page)))
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
 def web_app_create():

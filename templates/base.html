@@ -121,13 +121,18 @@
     <script src="{{url_for('.static', filename='js/ripples.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/material.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/jquery.knob.min.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/uri.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
-    $(document).ready(function() {
-        var currentPage = 1;
-        var withQuery = $(location).attr('search') && $(location).attr('search') != "";
 
-        function fetchNextPage() {
+    var currentPage = null;
+    var bottomReached = false;
+    var withQuery = null;
+
+    function fetchNextPage() {
+        withQuery = $(location).attr('search') && $(location).attr('search') != "";
+        if(!bottomReached) {
             $('tr#loadmoreajaxloader td').show();
+            $('tr#backtotop td').hide();
             currentPage = currentPage + 1;
             // Don't use 'href' attr, because it can contains the 'hash' attribute
             var currentURI = $(location).attr('origin') + $(location).attr('pathname') + $(location).attr('search');
@@ -145,19 +150,35 @@
                             fetchNextPage();
                         }
                     } else {
-                        $('tr#loadmoreajaxloader td').html('<a href="#" onclick="javascript:$(\'.container[role=main]\').scrollTop(0);"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>');
-                        $('.container[role=main]').unbind('scroll');
-                        $('tr#loadmoreajaxloader td').show();
+                        $('tr#backtotop td').show();
+                        $('tr#loadmoreajaxloader td').hide();
+                        bottomReached = true;
                     }
                 }
             });
         }
+    }
+
+    function resetTableList() {
+      currentPage = 0;
+      bottomReached = false;
+      $('table.tablelist .app-row').remove();
+      fetchNextPage();
+    }
+
+    var scrolledToBottom = function() {
+      return Math.abs($('.container[role=main]').scrollTop() - $('.tablelist').outerHeight(true) + $('.container[role=main]').innerHeight()) < 1;
+    }
+
+    $(document).ready(function() {
+        currentPage = 1;
+        withQuery = $(location).attr('search') && $(location).attr('search') != "";
 
         if ($('table.tablelist').not('.noscroll').length > 0) {
             $('.container[role=main]').scroll(function()
             {
                 //Checking that we are at the bottom even if we have no integer due to zoom
-                if (Math.abs($('.container[role=main]').scrollTop() - $('.tablelist').outerHeight(true) + $('.container[role=main]').innerHeight()) < 1) { //bottom of the scrollable container
+                if (scrolledToBottom()) { //bottom of the scrollable container
                     fetchNextPage();
                 }
             });
