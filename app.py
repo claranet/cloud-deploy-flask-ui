@@ -18,6 +18,7 @@ from models.instance_role import role as ghost_role_default_values
 
 from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_client import get_ghost_envs
+from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
@@ -91,6 +92,12 @@ def before_request():
     pass
 
 LEGACY_COMMANDS = ['destroyinstance','rollback']
+DEFAULT_BASH_SHEBANG = """
+#!/bin/bash
+
+set -x
+set -e
+"""
 
 @app.context_processor
 def template_context():
@@ -468,12 +475,7 @@ def web_app_command(app_id):
         form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
         form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
         form.purge_delete_elb.data = get_blue_green_destroy_temporary_elb_config(config)
-        form.to_execute_script.data = """
-#!/bin/bash
-
-set -x
-set -e
-"""
+        form.to_execute_script.data = DEFAULT_BASH_SHEBANG
         form.command.data = 'deploy'
 
     return render_template('app_command.html', form=form, app=app)
@@ -540,6 +542,21 @@ def web_app_command_from_job(app_id, job_id):
             form.safe_deployment.data = True
             form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
             form.safe_deployment_strategy.data = job['options'][2]
+
+    if job['command'] == 'executescript' and 'options' in job and len(job['options']):
+        # Map script
+        if 'options' in job and len(job['options']) > 0:
+            form.to_execute_script.data = b64decode_utf8(job['options'][0])
+        else:
+            form.to_execute_script.data = DEFAULT_BASH_SHEBANG
+        # Map script_module_context
+        if 'options' in job and len(job['options']) > 1:
+            form.script_module_context.data = job['options'][1]
+        # Map fabric_execution_strategy
+        if 'options' in job and len(job['options']) > 2:
+            form.fabric_execution_strategy.data = job['options'][2]
+        else:
+            form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
 
     if job['command'] == 'recreateinstances' and 'options' in job and len(job['options']):
         form.rolling_update.data = True
