@@ -167,7 +167,7 @@
     })();
 
     function ghost_update_command_deploy_revision(module_name, revision_id) {
-        app_id = '{{ app['_id'] }}';
+        app_id = "{{ app['_id'] }}";
         $.ajax("/web/apps/" + app_id + "/command/module/" + module_name).done(function(data) {
             // Update revision input default
             $('#' + revision_id).val(data);
