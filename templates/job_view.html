@@ -54,7 +54,7 @@
                         {% for option in job['options'] %}
                             <tr>
                                 <th scope="row">{{ loop.index }}</th>
-                                <td>{{ option }}</td>
+                                <td>{{ ghost_script(option, 42) }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
