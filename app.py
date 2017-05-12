@@ -557,6 +557,11 @@ def web_app_command_from_job(app_id, job_id):
             form.fabric_execution_strategy.data = job['options'][2]
         else:
             form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+        # Map safe_deployment
+        if 'options' in job and len(job['options']) > 3:
+            form.safe_deployment.data = True
+            form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+            form.safe_deployment_strategy.data = job['options'][3]
 
     if job['command'] == 'recreateinstances' and 'options' in job and len(job['options']):
         form.rolling_update.data = True
