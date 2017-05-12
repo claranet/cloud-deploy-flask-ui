@@ -298,6 +298,9 @@ def create_ghost_job(app_id, form, headers):
         if form.fabric_execution_strategy.data:
             # In case of executescript, option[2] can be the fabric_execution_strategy
             options.append(form.fabric_execution_strategy.data)
+        if form.safe_deployment.data:
+            # option[3] can be the safe deployment type
+            options.append(form.safe_deployment_strategy.data)
 
     if form.command.data == 'preparebluegreen':
         if isinstance(form.prepare_bg_copy_ami.data, bool):
