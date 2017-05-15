@@ -293,14 +293,21 @@ def create_ghost_job(app_id, form, headers):
     if form.command.data == 'executescript':
         if form.to_execute_script.data:
             options.append(b64encode_utf8(form.to_execute_script.data.replace('\r\n', '\n')))
+        else:
+            options.append('')
         if form.script_module_context.data:
             options.append(form.script_module_context.data)
-        if form.fabric_execution_strategy.data:
-            # In case of executescript, option[2] can be the fabric_execution_strategy
-            options.append(form.fabric_execution_strategy.data)
-        if form.safe_deployment.data:
-            # option[3] can be the safe deployment type
-            options.append(form.safe_deployment_strategy.data)
+        else:
+            options.append('')
+        if isinstance(form.single_host.data, bool):
+            options.append(form.single_host_instance.data)
+        else:
+            if form.fabric_execution_strategy.data:
+                # In case of executescript on multiple instances, option[2] can be the fabric_execution_strategy
+                options.append(form.fabric_execution_strategy.data)
+            if form.safe_deployment.data:
+                # option[3] can be the safe deployment type
+                options.append(form.safe_deployment_strategy.data)
 
     if form.command.data == 'preparebluegreen':
         if isinstance(form.prepare_bg_copy_ami.data, bool):

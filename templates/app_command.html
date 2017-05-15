@@ -34,6 +34,8 @@
             <div class="wrap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
             <div class="wrap prepare_bg_copy_ami">{{ wtf.form_field(form.prepare_bg_copy_ami, form_type='horizontal') }}</div>
             <div class="wrap purge_delete_elb">{{ wtf.form_field(form.purge_delete_elb, form_type='horizontal') }}</div>
+            <div class="wrap single_host">{{ wtf.form_field(form.single_host, form_type='horizontal') }}</div>
+            <div class="wrap single_host_instance">{{ wtf.form_field(form.single_host_instance, form_type='horizontal') }}</div>
             <div class="wrap script_module_context">{{ wtf.form_field(form.script_module_context, form_type='horizontal') }}</div>
             <div class="wrap to_execute_script">{{ wtf.form_field(form.to_execute_script, form_type='horizontal') }}</div>
         </div>
@@ -73,6 +75,7 @@
                 $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.to_execute_script').show();
                 $('.wrap.script_module_context').show();
+                $('.wrap.single_host').show();
                 $('.wrap.safe_deployment').show();
                 initCodeMirror();
             /* BlueGreen commands */
@@ -86,13 +89,13 @@
         }
 
         function refresh_options_list() {
-            $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option').each(function() {
+            $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option, #single_host_instance option').each(function() {
                 cmd = $(this).val();
                 desc = $(this).text();
                 $(this).text(cmd);
                 $(this).attr('data-subtext', ' - ' + desc);
             });
-            $('#command, #safe_deployment_strategy, #rolling_update_strategy').selectpicker('refresh');
+            $('#command, #safe_deployment_strategy, #rolling_update_strategy, #single_host_instance').selectpicker('refresh');
         }
 
         function get_app_subnets(app_id) {
@@ -115,6 +118,18 @@
           $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
               $.each(data, function(key, value) {
                 $(select_id).append('<option value=' + key + '>' + value + '</option>');
+              });
+              refresh_options_list();
+          }).fail(function() {
+              alert("Failed to retrieve Safe Strategies");
+          });
+        }
+
+        function get_app_ec2_possibilities() {
+          $('#single_host_instance').find('option').remove();
+          $.ajax("/web/aws/regions/{{ app['region'] }}/ec2/{{ app['_id'] }}/infos").done(function(data) {
+              $.each(data, function(key, value) {
+                $('#single_host_instance').append('<option value=' + key + '>' + value + '</option>');
               });
               refresh_options_list();
           }).fail(function() {
@@ -151,6 +166,23 @@
         });
 
         refresh_options_list();
+
+        $('#single_host').change(function() {
+            if ($(this).is(':checked')) {
+                $('.wrap.fabric_execution_strategy').hide();
+                $('.wrap.safe_deployment').hide();
+                $('.wrap.safe_deployment_strategy').hide();
+
+                $('.wrap.single_host_instance').show();
+                get_app_ec2_possibilities();
+            } else {
+                $('.wrap.fabric_execution_strategy').show();
+                $('.wrap.safe_deployment').show();
+                refresh_safe_deploy_options(false);
+
+                $('.wrap.single_host_instance').hide();
+            }
+        });
 
         $('#private_ip_address').focusout(function (){
             ip_input = $(this).val();
