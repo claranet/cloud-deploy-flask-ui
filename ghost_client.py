@@ -11,8 +11,8 @@ import requests
 import json
 from settings import API_BASE_URL, PAGINATION_LIMIT
 
-from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
+from ghost_tools import b64decode_utf8, b64encode_utf8, boolify
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
@@ -299,7 +299,7 @@ def create_ghost_job(app_id, form, headers):
             options.append(form.script_module_context.data)
         else:
             options.append('')
-        if isinstance(form.single_host.data, bool):
+        if isinstance(form.single_host.data, bool) and boolify(form.single_host.data):
             options.append(form.single_host_instance.data)
         else:
             if form.fabric_execution_strategy.data:

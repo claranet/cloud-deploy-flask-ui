@@ -72,11 +72,10 @@
                     get_app_subnets("{{ app['_id'] }}");
                 }
             } else if ($('#command').val() == 'executescript') {
-                $('.wrap.fabric_execution_strategy').show();
                 $('.wrap.to_execute_script').show();
                 $('.wrap.script_module_context').show();
                 $('.wrap.single_host').show();
-                $('.wrap.safe_deployment').show();
+                refresh_execute_script_fields();
                 initCodeMirror();
             /* BlueGreen commands */
             } else if ($('#command').val() == 'preparebluegreen') {
@@ -167,8 +166,8 @@
 
         refresh_options_list();
 
-        $('#single_host').change(function() {
-            if ($(this).is(':checked')) {
+        function refresh_execute_script_fields() {
+            if ($('#single_host').is(':checked')) {
                 $('.wrap.fabric_execution_strategy').hide();
                 $('.wrap.safe_deployment').hide();
                 $('.wrap.safe_deployment_strategy').hide();
@@ -182,6 +181,10 @@
 
                 $('.wrap.single_host_instance').hide();
             }
+        }
+
+        $('#single_host').change(function() {
+            refresh_execute_script_fields();
         });
 
         $('#private_ip_address').focusout(function (){

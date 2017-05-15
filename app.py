@@ -560,16 +560,19 @@ def web_app_command_from_job(app_id, job_id):
         # Map script_module_context
         if 'options' in job and len(job['options']) > 1:
             form.script_module_context.data = job['options'][1]
-        # Map fabric_execution_strategy
+        # Map fabric_execution_strategy or Single Host IP
         if 'options' in job and len(job['options']) > 2:
-            form.fabric_execution_strategy.data = job['options'][2]
-        else:
-            form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
-        # Map safe_deployment
-        if 'options' in job and len(job['options']) > 3:
-            form.safe_deployment.data = True
-            form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
-            form.safe_deployment_strategy.data = job['options'][3]
+            if job['options'][2] in ['serial', 'parallel']:
+                form.fabric_execution_strategy.data = job['options'][2]
+                # Map safe_deployment
+                if 'options' in job and len(job['options']) > 3:
+                    form.safe_deployment.data = True
+                    form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(app)
+                    form.safe_deployment_strategy.data = job['options'][3]
+            else:
+                form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
+                form.single_host.data = True
+                form.single_host_instance.data = job['options'][2]
 
     if job['command'] == 'recreateinstances' and 'options' in job and len(job['options']):
         form.rolling_update.data = True
