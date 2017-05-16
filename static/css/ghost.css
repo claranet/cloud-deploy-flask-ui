@@ -245,11 +245,15 @@ td.inline {
 }
 #app-form textarea {
     font-family: Consolas, Courier New, Courier, monospace;
+    border: 1px solid #eee;
+    border-left: 30px solid #F7F7F7;
+    min-height: 100px;
+    margin-top: 20px;
 }
 #app-form .CodeMirror {
-  border: 1px solid #eee;
-  height: auto !important;
-  max-width: 1000px;
+    border: 1px solid #eee;
+    height: auto !important;
+    max-width: 1000px;
 }
 #app-form #features_list tr.draggable,
 #menu-modules-list li.draggable {
