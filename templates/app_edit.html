@@ -437,14 +437,17 @@
 
     (function() {
         $('textarea').each(function(index, elem) {
-            var editor = CodeMirror.fromTextArea(elem, {
-                lineNumbers: true,
-                viewportMargin: Infinity,
-                lineWrapping: true,
-                mode: 'shell',
+            $(elem).focus(function() {
+                $(elem).unbind("focus");
+                var editor = CodeMirror.fromTextArea(this, {
+                    lineNumbers: true,
+                    viewportMargin: Infinity,
+                    lineWrapping: true,
+                    mode: 'shell',
+                });
+                $(this).parent().parent().addClass('script-panel');
+                setTimeout(function(){ editor.refresh(); }, 3000); // try to hack the editor cursor bug
             });
-            $(this).parent().parent().addClass('script-panel');
-            setTimeout(function(){ editor.refresh(); }, 3000); // try to hack the editor cursor bug
         });
     })();
     </script>
