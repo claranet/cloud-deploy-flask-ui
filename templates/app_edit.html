@@ -348,18 +348,21 @@
                 desc = data['description'];
                 feats = data['features'];
                 $.each(feats, function(index, feat_object) {
-                    feature_name = Object.keys(feat_object)[0];
-                    feature_val = '' + feat_object[feature_name];
+                    feature_name = '' + feat_object['name'];
+                    feature_val = '' + feat_object['value'];
                     feature_val = feature_val
                         .replace('${GHOST_CLIENT}', ghost_client_name)
-                        .replace('${GHOST_ENV}', ghost_app_env)
-                        .replace('${GHOST_ROLE}', ghost_app_role)
-                        .replace('${GHOST_APP}', ghost_app_name);
-                    console.log(feature_name + ':' + feature_val);
+                        .replace('${GHOST_ENV}',    ghost_app_env)
+                        .replace('${GHOST_ROLE}',   ghost_app_role)
+                        .replace('${GHOST_APP}',    ghost_app_name);
+                    feature_provisioner = '' + feat_object['provisioner'];
+                    window.console && console.log(feature_name + ':' + feature_val);
                     new_index = $("tr[data-feature]").size();
                     ghost_add_entry_to_list('features', 'feature', 'Feature', false);
                     $('#features-'+new_index+'-feature_name').val(feature_name);
                     $('#features-'+new_index+'-feature_version').val(feature_val);
+                    $('#features-'+new_index+'-feature_provisioner').val(feature_provisioner);
+                    $('#features-'+new_index+'-feature_provisioner').selectpicker('refresh');
                 });
             }).fail(function() {
                 alert("Failed to retrieve Feature Preset " + preset_file);
