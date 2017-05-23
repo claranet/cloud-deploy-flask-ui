@@ -149,7 +149,6 @@
         }
 
         scrolledToBottom = function() {
-            console.log(Math.abs($('.container[role=main]').scrollTop() - $('#tabbed-apps').outerHeight(true) + $('.container[role=main]').innerHeight()));
             return Math.abs($('.container[role=main]').scrollTop() - $('#tabbed-apps').outerHeight(true) + $('.container[role=main]').innerHeight()) < 1;
         }
         

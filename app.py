@@ -250,6 +250,11 @@ def web_feature_presets_list():
 def web_feature_presets_import(config):
     return jsonify(FEATURE_PRESETS[config])
 
+@app.route('/web/t-apps')
+def web_t_apps_list():
+    #redirect to apps as the page was unified
+    return redirect('/web/apps', code=301)
+
 @app.route('/web/apps')
 def web_app_list():
     role = request.args.get('role', None)

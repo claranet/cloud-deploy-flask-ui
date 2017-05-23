@@ -355,7 +355,6 @@
                         .replace('${GHOST_ENV}', ghost_app_env)
                         .replace('${GHOST_ROLE}', ghost_app_role)
                         .replace('${GHOST_APP}', ghost_app_name);
-                    console.log(feature_name + ':' + feature_val);
                     new_index = $("tr[data-feature]").size();
                     ghost_add_entry_to_list('features', 'feature', 'Feature', false);
                     $('#features-'+new_index+'-feature_name').val(feature_name);
