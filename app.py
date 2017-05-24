@@ -258,11 +258,8 @@ def web_t_apps_list():
 @app.route('/web/apps')
 def web_app_list():
     role = request.args.get('role', None)
-    env = request.args.get("env", None)
-    if env != None:
-        selected_env = env
-    else:
-        selected_env = "*"
+    env = request.args.get("env", '*')
+    selected_env = env
     if env == '*':
         env = None
     page = request.args.get('page', '1')
@@ -272,7 +269,7 @@ def web_app_list():
     if request.is_xhr:
         return render_template('app_list_content.html', env_list=envs, apps=apps,
                                page=int(page))
-    return make_response(render_template('app_list.html', env_list=envs, choosen_env=selected_env, apps=apps,
+    return make_response(render_template('app_list.html', env_list=envs, selected_env=selected_env, apps=apps,
                          page=int(page)))
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])

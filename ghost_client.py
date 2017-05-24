@@ -51,7 +51,7 @@ def do_request(method, url, data, headers, success_message, failure_message):
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(failure_message, 'danger')
-    print(message)
+    flash(message, 'info')
     return message, result_json
 
 def handle_response_status_code(status_code):
@@ -64,7 +64,8 @@ def test_ghost_auth(user):
 
 def get_ghost_envs(query=None):
     try:
-        envs = set([])
+        envs_list = list()
+        envs_set = set()
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
         url += '&max_result=999&projection={"env":1}'
         if query:
@@ -72,16 +73,16 @@ def get_ghost_envs(query=None):
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
-            envs.add(item['env'])
-        envs = list(envs)
-        envs.insert(0, '*')
+            envs_set.add(item['env'])
+        envs_list.insert(0, '*')
+        envs_list.extend(list(envs_set))
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
-        envs[0] = 'Failed to retrieve Envs'
+        envs_list[0] = 'Failed to retrieve Envs'
 
-    return envs
+    return envs_list
 
 def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name=None):
     try:

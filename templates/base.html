@@ -124,22 +124,26 @@
     <script src="{{url_for('.static', filename='js/uri.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
 
-    var currentPage = null;
-    var bottomReached = false;
-    var withQuery = null;
+
+    var TableList = {
+      currentPage: null,
+      bottomReached: false,
+      withQuery: null,
+      xhrs: []
+    }
 
     function fetchNextPage() {
-        withQuery = $(location).attr('search') && $(location).attr('search') != "";
-        if(!bottomReached) {
+        TableList.withQuery = $(location).attr('search') && $(location).attr('search') != "";
+        if(!TableList.bottomReached) {
             $('tr#loadmoreajaxloader td').show();
             $('tr#backtotop td').hide();
-            currentPage = currentPage + 1;
+            TableList.currentPage++;
             // Don't use 'href' attr, because it can contains the 'hash' attribute
             var currentURI = $(location).attr('origin') + $(location).attr('pathname') + $(location).attr('search');
-            var loadMoreUrl = withQuery
-                ? currentURI + '&page=' + currentPage
-                : currentURI + '?page=' + currentPage;
-            $.ajax({
+            var loadMoreUrl = TableList.withQuery
+                ? currentURI + '&page=' + TableList.currentPage
+                : currentURI + '?page=' + TableList.currentPage;
+            TableList.xhrs.push($.ajax({
                 url: loadMoreUrl,
                 success: function(html)
                 {
@@ -152,16 +156,19 @@
                     } else {
                         $('tr#backtotop td').show();
                         $('tr#loadmoreajaxloader td').hide();
-                        bottomReached = true;
+                        TableList.bottomReached = true;
                     }
                 }
-            });
+            }));
         }
     }
 
     function resetTableList() {
-      currentPage = 0;
-      bottomReached = false;
+      while(TableList.xhrs.length > 0)
+        TableList.xhrs.pop().abort();
+      }
+      TableList.currentPage = 0;
+      TableList.bottomReached = false;
       $('table.tablelist .app-row').remove();
       fetchNextPage();
     }
@@ -171,8 +178,8 @@
     }
 
     $(document).ready(function() {
-        currentPage = 1;
-        withQuery = $(location).attr('search') && $(location).attr('search') != "";
+        TableList.currentPage = 1;
+        TableList.withQuery = $(location).attr('search') && $(location).attr('search') != "";
 
         if ($('table.tablelist').not('.noscroll').length > 0) {
             $('.container[role=main]').scroll(function()
