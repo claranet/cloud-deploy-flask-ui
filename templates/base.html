@@ -187,6 +187,21 @@
             }
         }
     });
+
+    if (typeof(BEHAVIORS)=="undefined") {
+        BEHAVIORS = {};
+    }
+
+    BEHAVIORS['scrollTop'] = function() {
+      $('.container[role=main]').scrollTop(0);
+    };
+
+    $(document).ready(function() {
+      $('[data-behavior]').each(function() {
+          var behavior = $(this).data('behavior');
+          $(this).click(BEHAVIORS[behavior]);
+      });
+    });
     </script>
     <script type="text/javascript">
         $(document).ready(function() {

@@ -3,7 +3,7 @@
 {% set page_title = 'Applications' %}
 
 {% block page_header %}
-    <a class="top-right" href="#" onclick="$('.container[role=main]').scrollTop(0);"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
+    <a class="top-right" href="#" data-behavior="scrollTop"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
     <caption>Sorted by last modification date</caption>
 
     <ul class="nav nav-stacked action-btns">
@@ -17,9 +17,9 @@
                         {{ request.args.get('role') or 'Role' }} <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a onclick="setTableListRole()">- All -</a></li>
+                        <li><a data-behavior="role">- All -</a></li>
                         {% for role in role_list: %}
-                        <li><a onclick="setTableListRole('{{ role }}')">{{ role }}</a></li>
+                        <li><a data-behavior="role" data-role="{{ role }}">{{ role }}</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -43,9 +43,9 @@
         <ul class="nav nav-tabs" role="tablist">
             {% for env in env_list: %}
                 {% if env == choosen_env: %}
-            <li role="presentation" class="active env-{{ env }}"><a onclick="setTableListEnv('{{ env }}')" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
+            <li role="presentation" class="active env-{{ env }}"><a data-behavior="env" data-env="{{ env }}" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
                 {% else %}
-            <li role="presentation" class="env-{{ env }}"><a onclick="setTableListEnv('{{ env }}')" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
+            <li role="presentation" class="env-{{ env }}"><a data-behavior="env" data-env="{{ env }}" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -69,7 +69,7 @@
             </tr>
             <tr id="backtotop">
                 <td colspan="7" style="display:none">
-                    <a href="#" onclick="javascript:$('.container[role=main]').scrollTop(0);"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
+                    <a href="#" data-behavior="scrollTop"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
                 </td>
             </tr>
         </tbody>
@@ -79,6 +79,19 @@
 {% endblock %}
 {% block page_scripts %}
     <script type="text/javascript">
+        if (typeof(BEHAVIORS)=="undefined") {
+            BEHAVIORS = {};
+        }
+
+        BEHAVIORS['role'] = function(){
+            var role = $(this).data('role');
+            setTableListRole(role);
+        };
+        BEHAVIORS['env'] = function() {
+            var env = $(this).data('env');
+            setTableListEnv(env);
+        };
+
         var getUrlParameter = function getUrlParameter(sParam, sDefault) {
             var sPageURL = decodeURIComponent(window.location.search.substring(1)),
                 sURLVariables = sPageURL.split('&'),
