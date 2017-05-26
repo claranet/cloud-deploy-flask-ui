@@ -267,7 +267,8 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
         traceback.print_exc()
     return lbs_instances
 
-def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=[], log_file=None, **kwargs):
+def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=None, log_file=None, **kwargs):
+    filters = filters or []
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
