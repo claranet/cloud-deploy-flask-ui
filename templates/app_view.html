@@ -196,6 +196,9 @@
                 {{ ghost_display_field('app-environment_infos-instance_profile', 'Instance Profile', app.get('environment_infos', {})['instance_profile']) }}
                 {{ ghost_display_field('app-environment_infos-key_name', 'Key Name', app.get('environment_infos', {})['key_name']) }}
             </div>
+            <div class="row">
+                {{ ghost_display_field('app-environment_infos-public_ip_address', 'Associate public IP address', app.get('environment_infos', {})['public_ip_address']) }}
+            </div>
         </div>
 
         <table class="table">
