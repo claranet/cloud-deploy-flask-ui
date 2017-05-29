@@ -292,8 +292,7 @@ td.inline {
     padding-right: 40px;
     margin-top: 10px;
 }
-#app-form .form-group.select-panel .help-block,
-#app-form .form-group.script-panel .help-block {
+#app-form .form-group:hover .help-block {
     display: block;
 }
 #app-form th {
