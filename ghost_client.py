@@ -11,6 +11,7 @@ import json
 from settings import API_BASE_URL
 
 from ghost_tools import b64decode_utf8
+from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
@@ -169,7 +170,10 @@ def get_ghost_app(app_id, embed_deployments=False):
                     module['last_deployment']['_created'] = datetime.utcfromtimestamp(last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
                 except:
                     traceback.print_exc()
-
+        # Features checks
+        for feature in app.get('features', []):
+            if 'provisioner' not in feature:
+                feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])

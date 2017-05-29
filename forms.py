@@ -25,6 +25,7 @@ from ghost_tools import b64encode_utf8
 from ghost_tools import config, get_available_provisioners_from_config
 
 from libs.alb import get_target_groups_from_autoscale
+from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 
 # Helpers
 def empty_fieldlist(fieldlist):
@@ -681,7 +682,7 @@ class FeatureForm(Form):
     def map_from_app(self, feature):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
-        self.feature_provisioner.data = feature.get('provisioner', 'salt')
+        self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
 
 class EnvvarForm(Form):
     var_key = StringField('Key', validators=[

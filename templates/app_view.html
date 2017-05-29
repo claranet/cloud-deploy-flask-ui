@@ -317,7 +317,7 @@
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ feature['name'] }}</td>
                         <td>{{ feature['version'] }}</td>
-                        <td>{{ feature.get('provisioner', 'salt') }}</td>
+                        <td>{{ feature['provisioner'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
