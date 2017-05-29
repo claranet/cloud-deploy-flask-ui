@@ -639,7 +639,7 @@
     </div>
 {%- endmacro %}
 
-{% macro ghost_script(value, maxchars=10) -%}
+{% macro ghost_abbrev_field(value, maxchars=10) -%}
     {%- if value | length > maxchars -%}
         <abbr title="{{ value }}">
     {%- endif -%}
