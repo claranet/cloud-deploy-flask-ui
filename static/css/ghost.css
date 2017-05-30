@@ -230,6 +230,15 @@ td.inline .form-group {
     width: 50%;
     float: left;
 }
+#features_list td.inline .form-group {
+    width: 33.33333333%;
+    margin: 0;
+}
+#features_list td.inline .form-group label {
+    display: block;
+    text-align: left;
+    width: 100%;
+}
 td.inline {
     clear: both;
 }

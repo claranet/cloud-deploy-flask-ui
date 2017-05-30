@@ -164,7 +164,7 @@
     }
 
     function resetTableList() {
-      while(TableList.xhrs.length > 0)
+      while(TableList.xhrs.length > 0) {
         TableList.xhrs.pop().abort();
       }
       TableList.currentPage = 0;

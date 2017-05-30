@@ -308,6 +308,7 @@
                     <th>#</th>
                     <th>Name</th>
                     <th>Value</th>
+                    <th>Provisioner</th>
                 </tr>
             </thead>
             <tbody>
@@ -316,6 +317,7 @@
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ feature['name'] }}</td>
                         <td>{{ feature['version'] }}</td>
+                        <td>{{ feature['provisioner'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

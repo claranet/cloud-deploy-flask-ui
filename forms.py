@@ -22,9 +22,10 @@ from models.jobs import jobs_schema as ghost_job_schema
 from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
 from ghost_tools import b64encode_utf8
-from ghost_tools import config
+from ghost_tools import config, get_available_provisioners_from_config
 
 from libs.alb import get_target_groups_from_autoscale
+from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 
 # Helpers
 def empty_fieldlist(fieldlist):
@@ -267,7 +268,8 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
         traceback.print_exc()
     return lbs_instances
 
-def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=[], log_file=None, **kwargs):
+def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=None, log_file=None, **kwargs):
+    filters = filters or []
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
@@ -671,6 +673,7 @@ class FeatureForm(Form):
             ghost_app_schema['features']['schema']['schema']['version']['regex']
         )
     ])
+    feature_provisioner = BetterSelectFieldNonValidating('Provisioner', validators=[], choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -679,6 +682,7 @@ class FeatureForm(Form):
     def map_from_app(self, feature):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
+        self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
 
 class EnvvarForm(Form):
     var_key = StringField('Key', validators=[
@@ -1054,6 +1058,8 @@ class BaseAppForm(Form):
                 feature['name'] = form_feature.feature_name.data
                 if form_feature.feature_version.data:
                     feature['version'] = form_feature.feature_version.data
+                if form_feature.feature_provisioner.data:
+                    feature['provisioner'] = form_feature.feature_provisioner.data
             if feature:
                 app['features'].append(feature)
 
@@ -1230,7 +1236,7 @@ class CreateAppForm(BaseAppForm):
 
 class EditAppForm(BaseAppForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
-    update_manifest = HiddenField(validators=[]);
+    update_manifest = HiddenField(validators=[])
 
     submit = SubmitField('Update Application')
 
