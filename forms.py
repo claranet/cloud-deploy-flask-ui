@@ -566,11 +566,16 @@ class EnvironmentInfosForm(Form):
         )
     ])
 
+    public_ip_address = BooleanField('Associate a public IP address',
+                                     validators=[],
+                                     default=True
+                                     )
+
     root_block_device_size_min = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min']
     root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size (min {min}GiB)'.format(min=root_block_device_size_min), validators=[
         OptionalValidator(),
         NumberRangeValidator(min=root_block_device_size_min, message='To prevent low disk space alerts, disk size should be greater than {min}GiB'.format(min=root_block_device_size_min))
-    ]);
+    ])
 
     root_block_device_name = StringField('Name', description='Empty if you want to use the default one', validators=[
         OptionalValidator(),
@@ -608,6 +613,7 @@ class EnvironmentInfosForm(Form):
 
         self.instance_profile.data = environment_infos.get('instance_profile', '')
         self.key_name.data = environment_infos.get('key_name', '')
+        self.public_ip_address.data  = environment_infos.get('public_ip_address', True)
 
         self.root_block_device_size.data = environment_infos.get('root_block_device', {}).get('size', '')
         self.root_block_device_name.data = environment_infos.get('root_block_device', {}).get('name', '')
@@ -977,6 +983,7 @@ class BaseAppForm(Form):
 
         app['environment_infos']['instance_profile'] = self.environment_infos.form.instance_profile.data
         app['environment_infos']['key_name'] = self.environment_infos.form.key_name.data
+        app['environment_infos']['public_ip_address'] = self.environment_infos.form.public_ip_address.data
 
         app['environment_infos']['root_block_device'] = {}
         if self.environment_infos.form.root_block_device_size.data:

@@ -203,6 +203,7 @@
                             <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#environment_infos-instance_profile" data-call="ghost_update_iam_profiles($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
                             {{ wtf.form_field(form.environment_infos.form.key_name, form_type='horizontal') }}
                             <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#environment_infos-key_name" data-call="ghost_update_ec2_keys($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
+                            {{ wtf.form_field(form.environment_infos.form.public_ip_address, form_type='horizontal') }}
                         </div>
                     </div>
                 </div>
