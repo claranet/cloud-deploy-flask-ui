@@ -9,7 +9,7 @@ import traceback
 import sys
 import requests
 import json
-from settings import API_BASE_URL
+from settings import API_BASE_URL, PAGINATION_LIMIT
 
 from ghost_tools import b64decode_utf8
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
@@ -68,7 +68,7 @@ def get_ghost_envs(query=None):
         envs_list = list()
         envs_set = set()
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        url += '&max_result=999&projection={"env":1}'
+        url += '&max_results=%s&projection={"env":1}' % PAGINATION_LIMIT
         if query:
             url += '&where=' + query
         result = requests.get(url, headers=headers, auth=current_user.auth)
