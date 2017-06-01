@@ -23,8 +23,6 @@
             <div class="wrap modules">{{ ghost_command_fieldlist(form.modules, 'modules', 'Modules', 'module', 'inline') }}</div>
             <div class="wrap deploy_id">{{ wtf.form_field(form.deploy_id, form_type='horizontal') }}</div>
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
-            <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
-            <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
             <div class="wrap rolling_update">{{ wtf.form_field(form.rolling_update, form_type='horizontal') }}</div>
             <div class="wrap rolling_update_strategy">{{ wtf.form_field(form.rolling_update_strategy, form_type='horizontal') }}</div>
             <div class="wrap swapbluegreen_strategy">{{ wtf.form_field(form.swapbluegreen_strategy, form_type='horizontal') }}</div>
@@ -34,7 +32,9 @@
             <div class="wrap private_ip_address">{{ wtf.form_field(form.private_ip_address, form_type='horizontal') }}</div>
             <div class="wrap prepare_bg_copy_ami">{{ wtf.form_field(form.prepare_bg_copy_ami, form_type='horizontal') }}</div>
             <div class="wrap purge_delete_elb">{{ wtf.form_field(form.purge_delete_elb, form_type='horizontal') }}</div>
-            <div class="wrap single_host">{{ wtf.form_field(form.single_host, form_type='horizontal') }}</div>
+            <div class="wrap execution_strategy">{{ wtf.form_field(form.execution_strategy, form_type='horizontal') }}</div>
+            <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
+            <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal') }}</div>
             <div class="wrap single_host_instance">{{ wtf.form_field(form.single_host_instance, form_type='horizontal') }}</div>
             <div class="wrap script_module_context">{{ wtf.form_field(form.script_module_context, form_type='horizontal') }}</div>
             <div class="wrap to_execute_script">{{ wtf.form_field(form.to_execute_script, form_type='horizontal') }}</div>
@@ -74,9 +74,9 @@
             } else if ($('#command').val() == 'executescript') {
                 $('.wrap.to_execute_script').show();
                 $('.wrap.script_module_context').show();
-                $('.wrap.single_host').show();
-                refresh_execute_script_fields();
+                $('.wrap.execution_strategy').show();
                 initCodeMirror();
+                refresh_execute_script_fields();
             /* BlueGreen commands */
             } else if ($('#command').val() == 'preparebluegreen') {
                 $('.wrap.prepare_bg_copy_ami').show();
@@ -88,13 +88,13 @@
         }
 
         function refresh_options_list() {
-            $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option, #single_host_instance option').each(function() {
+            $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option, #single_host_instance option, #execution_strategy option').each(function() {
                 cmd = $(this).val();
                 desc = $(this).text();
                 $(this).text(cmd);
                 $(this).attr('data-subtext', ' - ' + desc);
             });
-            $('#command, #safe_deployment_strategy, #rolling_update_strategy, #single_host_instance').selectpicker('refresh');
+            $('#command, #safe_deployment_strategy, #rolling_update_strategy, #single_host_instance, #execution_strategy').selectpicker('refresh');
         }
 
         function get_app_subnets(app_id) {
@@ -111,9 +111,11 @@
             });
         }
 
-        function get_app_safe_deployment_possibilities(select_id) {
+        function get_app_safe_deployment_possibilities(select_id, mode) {
           app_id = "{{ app['_id'] }}";
-          $(select_id).find('option').remove();
+          if (mode != 'append') {
+              $(select_id).find('option').remove();
+          }
           $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
               $.each(data, function(key, value) {
                 $(select_id).append('<option value=' + key + '>' + value + '</option>');
@@ -167,23 +169,18 @@
         refresh_options_list();
 
         function refresh_execute_script_fields() {
-            if ($('#single_host').is(':checked')) {
-                $('.wrap.fabric_execution_strategy').hide();
-                $('.wrap.safe_deployment').hide();
-                $('.wrap.safe_deployment_strategy').hide();
-
+            if ($('#execution_strategy').val() == 'single') {
                 $('.wrap.single_host_instance').show();
+                $('.wrap.safe_deployment_strategy').hide();
                 get_app_ec2_possibilities();
             } else {
-                $('.wrap.fabric_execution_strategy').show();
-                $('.wrap.safe_deployment').show();
-                refresh_safe_deploy_options(false);
-
                 $('.wrap.single_host_instance').hide();
+                $('.wrap.safe_deployment_strategy').show();
+                get_app_safe_deployment_possibilities('#safe_deployment_strategy');
             }
         }
 
-        $('#single_host').change(function() {
+        $('#execution_strategy').change(function() {
             refresh_execute_script_fields();
         });
 

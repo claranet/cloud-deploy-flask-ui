@@ -299,14 +299,13 @@ def create_ghost_job(app_id, form, headers):
             options.append(form.script_module_context.data)
         else:
             options.append('')
-        if isinstance(form.single_host.data, bool) and boolify(form.single_host.data):
+
+        options.append(form.execution_strategy.data)
+        if form.execution_strategy.data == 'single':
             options.append(form.single_host_instance.data)
         else:
-            if form.fabric_execution_strategy.data:
-                # In case of executescript on multiple instances, option[2] can be the fabric_execution_strategy
-                options.append(form.fabric_execution_strategy.data)
-            if form.safe_deployment.data:
-                # option[3] can be the safe deployment type
+            if form.safe_deployment_strategy.data:
+                # can be the safe deployment type
                 options.append(form.safe_deployment_strategy.data)
 
     if form.command.data == 'preparebluegreen':

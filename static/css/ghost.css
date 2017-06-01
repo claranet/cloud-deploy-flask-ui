@@ -252,7 +252,8 @@ td.inline {
     color: darkorange;
     font-weight: bold;
 }
-#app-form textarea {
+#app-form textarea,
+.command_options .form-group textarea {
     font-family: Consolas, Courier New, Courier, monospace;
     border: 1px solid #eee;
     border-left: 30px solid #F7F7F7;
