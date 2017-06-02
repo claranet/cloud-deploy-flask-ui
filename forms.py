@@ -26,6 +26,7 @@ from ghost_tools import config, get_available_provisioners_from_config
 
 from libs.alb import get_target_groups_from_autoscale
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
+from libs.blue_green import get_blue_green_from_app
 
 # Helpers
 def empty_fieldlist(fieldlist):
@@ -268,14 +269,16 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
         traceback.print_exc()
     return lbs_instances
 
-def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, region, filters=None, log_file=None, **kwargs):
+def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role, region, filters=None, log_file=None, ghost_app_color=None, **kwargs):
     filters = filters or []
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
 
     # Retrieve running instances
-    running_instance_filters = {"tag:env": ghost_env, "tag:role": ghost_role, "tag:app": ghost_app}
+    running_instance_filters = {"tag:env": ghost_env, "tag:role": ghost_role, "tag:app": ghost_app_name}
+    if ghost_app_color:
+        running_instance_filters["tag:color"] = ghost_app_color
     running_instances = conn.get_only_instances(filters=running_instance_filters)
 
     host_ids_as = []
@@ -342,7 +345,8 @@ def get_safe_deployment_possibilities(app):
     asg_name = app['autoscale']['name']
     if not asg_name or not get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), asg_name, app['region'], **aws_connection_data):
         return [('', '')] + [(None, 'Not Supported because there is no AutoScale Group for this application')]
-    hosts_list = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], [], **aws_connection_data)
+    app_blue_green, app_color = get_blue_green_from_app(app)
+    hosts_list = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], [], None, app_color, **aws_connection_data)
     safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
     return [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
 
@@ -771,12 +775,12 @@ class BluegreenForm(Form):
         """
         Map app data to blue green form
         """
-        blue_green = app.get('blue_green', None)
+        blue_green, app_color = get_blue_green_from_app(app)
         if blue_green:
             self.alter_ego_id.data = blue_green.get('alter_ego_id', '')
-            self.color.data = blue_green.get('color', '')
+            self.color.data = app_color
             # Map if blue/green is enabled
-            self.enable_blue_green.data = blue_green.get('enable_blue_green', blue_green.get('alter_ego_id', None) and blue_green.get('color', None))
+            self.enable_blue_green.data = blue_green.get('enable_blue_green', blue_green.get('alter_ego_id', None) and app_color)
 
     def map_to_app(self, app):
         """

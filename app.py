@@ -22,7 +22,7 @@ from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
-from libs.blue_green import ghost_has_blue_green_enabled, get_blue_green_destroy_temporary_elb_config
+from libs.blue_green import ghost_has_blue_green_enabled, get_blue_green_destroy_temporary_elb_config, get_blue_green_from_app
 from libs.git_helper import git_ls_remote_branches_tags
 from health import get_host_cpu_label, get_host_health, HostHealth
 
@@ -208,19 +208,20 @@ def web_app_subnets_list(provider, app_id):
 def web_app_infos(provider, app_id):
     # Get App data
     app = get_ghost_app(app_id)
+    app_blue_green, app_color = get_blue_green_from_app(app)
     aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
     if app['autoscale']['name']:
         as_group = get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), app['autoscale']['name'], app['region'], **aws_connection_data)
         if as_group:
             as_instances = get_as_group_instances(app.get('provider', DEFAULT_PROVIDER), as_group, app['region'], **aws_connection_data)
             elbs_instances = get_elbs_instances_from_as_group(app.get('provider', DEFAULT_PROVIDER), as_group, app['region'], **aws_connection_data)
-            ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], filters=as_instances, **aws_connection_data)
+            ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], as_instances, None, app_color, **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances, as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
         else:
-            ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
+            ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], [], None, app_color, **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
     else:
-        ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
+        ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], [], None, app_color, **aws_connection_data)
         return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
 @app.route('/web/ghost/health-status', methods=['GET'])
