@@ -283,10 +283,11 @@ def get_ghost_app_ec2_instances(provider, ghost_app, ghost_env, ghost_role, regi
         for h in filters:
             host_ids_as.append(h['id'])
     hosts = []
+    as_instances = conn_as.get_all_autoscaling_instances(instance_ids=[i.id for i in running_instances])
+    autoscale_instances = { a.instance_id: a for a in as_instances}
     for instance in running_instances:
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
-        autoscale_instances = conn_as.get_all_autoscaling_instances(instance_ids=[instance.id])
-        if not autoscale_instances or not autoscale_instances[0].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
+        if not instance.id in autoscale_instances or not autoscale_instances[instance.id].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
             if instance.id not in host_ids_as:
                 hosts.append(format_host_infos(instance, conn, cloud_connection, region))
         else:
