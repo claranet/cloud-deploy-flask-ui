@@ -1,4 +1,5 @@
 from flask_wtf import Form
+
 from settings import cloud_connections, DEFAULT_PROVIDER
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
@@ -24,7 +25,7 @@ from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 from ghost_tools import b64encode_utf8
 from ghost_tools import config, get_available_provisioners_from_config
 
-from libs.alb import get_target_groups_from_autoscale
+from libs import load_balancing
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 from libs.blue_green import get_blue_green_from_app
 
@@ -254,9 +255,11 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
                         elb_instance_ids.append('#' + instance.id)
                     lbs_instances.append({'elb_name': elb.name, 'elb_instances': elb_instance_ids})
 
+        alb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_ALB)
+
         conn3_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
         alb_conn = cloud_connection.get_connection(region, ['elbv2'], boto_version='boto3')
-        alb_tgs = get_target_groups_from_autoscale(as_group['AutoScalingGroupName'], conn3_as)
+        alb_tgs = alb_mgr.get_target_groups_from_autoscale(as_group['AutoScalingGroupName'])
         if len(alb_tgs):
             for tg_arn in alb_tgs:
                 alb_instance_ids = []
