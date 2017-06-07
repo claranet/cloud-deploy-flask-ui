@@ -178,8 +178,9 @@ def web_ec2_as_list(provider, region_id):
 def web_ec2_app_list(provider, region_id, app_id):
     # Get App data
     app = get_ghost_app(app_id)
+    app_blue_green, app_color = get_blue_green_from_app(app)
     aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
-    ec2s = get_ghost_app_ec2_instances(DEFAULT_PROVIDER, app['name'], app['env'], app['role'], app['region'], **aws_connection_data)
+    ec2s = get_ghost_app_ec2_instances(provider, app['name'], app['env'], app['role'], app['region'], None, None, app_color, **aws_connection_data)
     return jsonify({ec2['private_ip_address']: '{ip} - {id} - {size}'.format(ip=ec2['private_ip_address'], id=ec2['id'], size=ec2['instance_type']) for ec2 in ec2s})
 
 @app.route('/web/<provider>/regions/<region_id>/iam/profiles')
