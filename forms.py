@@ -246,28 +246,9 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
 
-        elbs = get_elbs_in_as_group(cloud_connection, as_group, region, log_file)
-        if elbs:
-            for elb in elbs:
-                if len(elb.instances) > 0:
-                    elb_instance_ids = []
-                    for instance in elb.instances:
-                        elb_instance_ids.append('#' + instance.id)
-                    lbs_instances.append({'elb_name': elb.name, 'elb_instances': elb_instance_ids})
-
-        alb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_ALB)
-
-        conn3_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
-        alb_conn = cloud_connection.get_connection(region, ['elbv2'], boto_version='boto3')
-        alb_tgs = alb_mgr.get_target_groups_from_autoscale(as_group['AutoScalingGroupName'])
-        if len(alb_tgs):
-            for tg_arn in alb_tgs:
-                alb_instance_ids = []
-                for target_health in alb_conn.describe_target_health(TargetGroupArn=tg_arn)['TargetHealthDescriptions']:
-                    alb_instance_ids.append('#' + target_health['Target']['Id'])
-                tg_infos = alb_conn.describe_target_groups(TargetGroupArns=[tg_arn])['TargetGroups'][0]
-                lbs_instances.append({'elb_name': tg_infos['TargetGroupName'], 'elb_instances': alb_instance_ids})
-
+        lb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_MIXED)
+        for lb, instances in lb_mgr.get_instance_status_autoscaling_group(as_group['AutoScalingGroupName'], log_file).items():
+            lbs_instances.append({'elb_name': lb, 'elb_instances': [id for id, status in instances.items()]})
     except:
         traceback.print_exc()
     return lbs_instances
