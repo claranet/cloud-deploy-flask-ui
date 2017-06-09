@@ -40,7 +40,7 @@ class CommandAppForm(FlaskForm):
                                                                                              ('isolated',
                                                                                               'Isolated --- Blue/Green with a downtime but ensures that only one version is in production.')])
     instance_type = BetterSelectField('Instance Type', validators=[], choices=[])
-    skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
+    skip_provisioner_bootstrap = BooleanField('Skip Provisioner Bootstrap', validators=[])
     private_ip_address = StringField('Private IP address', validators=[
         RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
     subnet = BetterSelectField('Subnet', validators=[], choices=[])

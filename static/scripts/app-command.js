@@ -12,7 +12,7 @@ function show_options_fields()  {
         $('.wrap.rolling_update').show();
     } else if ($('#command').val() == 'buildimage') {
         $('.wrap.instance_type').show();
-        $('.wrap.skip_salt_bootstrap').show();
+        $('.wrap.skip_provisioner_bootstrap').show();
     } else if ($('#command').val() == 'createinstance') {
         $('.wrap.subnet').show();
         $('.wrap.private_ip_address').show();
