@@ -534,7 +534,7 @@ def web_app_command(app_id, default_command='deploy'):
 
     if not form.is_submitted():
         form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
-        form.skip_provisioner_bootstrap.data = config.get('skip_provisioner_bootstrap', True)
+        form.skip_provisioner_bootstrap.data = config.get('skip_provisioner_bootstrap', config.get('skip_salt_bootstrap', True))
         form.purge_delete_elb.data = get_blue_green_destroy_temporary_elb_config(config)
         form.to_execute_script.data = DEFAULT_BASH_SHEBANG
         form.command.data = default_command
@@ -574,7 +574,7 @@ def web_app_command_from_job(app_id, job_id):
     if job['command'] == 'buildimage' and 'options' in job and len(job['options']):
         form.skip_provisioner_bootstrap.data = job['options'][0]
     else:
-        form.skip_provisioner_bootstrap.data = config.get('skip_provisioner_bootstrap', True)
+        form.skip_provisioner_bootstrap.data = config.get('skip_provisioner_bootstrap', config.get('skip_salt_bootstrap', True))
 
     if job['command'] == 'deploy':
         job_modules = {}
