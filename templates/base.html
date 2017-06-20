@@ -258,7 +258,7 @@
         })
 
         $(document).ready(function() {
-            $('select:not([readonly])').selectpicker({
+            $('select:not([readonly], .classic-select)').selectpicker({
                 style: 'btn-default',
                 noneResultsText: 'No results matched {0} <button title="Create a new entry for this unknown option" class="btn-select-append-option btn btn-raised btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>',
                 liveSearch: true,
@@ -581,7 +581,7 @@
 
 {% endblock %}
 
-{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='', refresh_function='') -%}
+{% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='', refresh_function='', html_class="form-control") -%}
     <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
         <th scope="row" class="col-md-2">
             <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
@@ -590,15 +590,15 @@
         <td class="col-md-9 {{ form_type }}">
             {% if entry.type == 'FormField' %}
                 {% for field in entry if not field.type == 'CSRFTokenField' %}
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder, class=html_class) }}
                 {% endfor %}
             {% elif entry.type == 'TextAreaField' %}
-                {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here', class=html_class) }}
             {% elif entry.type == 'SelectField' and refresh_function %}
-                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder, class=html_class) }}
                 <button title="Refresh select values" class="btn btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
             {% else %}
-                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder, class=html_class) }}
             {% endif %}
         </td>
         <td class="col-md-1">
