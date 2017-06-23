@@ -463,7 +463,7 @@
         <table class="table" id="{{ group_id_prefix }}_list">
             <tbody>
             {% for entry in fieldlist %}
-                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function, "form-control classic-select") }}
+                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
             {% endfor %}
             </tbody>
         </table>

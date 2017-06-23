@@ -668,7 +668,9 @@ class FeatureForm(Form):
             ghost_app_schema['features']['schema']['schema']['version']['regex']
         )
     ])
-    feature_provisioner = BetterSelectFieldNonValidating('Provisioner', validators=[], choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
+    feature_provisioner = BetterSelectFieldNonValidating(
+        'Provisioner', validators=[], render_kw={"data-classic-select": "true"},
+        choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):

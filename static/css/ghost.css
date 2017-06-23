@@ -739,13 +739,13 @@ ul.filter-group {
 li.quick-submit button.btn.btn-xs {
     padding: 4px 6px;
 }
-select.form-control.classic-select,
+select.form-control[data-classic-select],
 button.btn.dropdown-toggle {
     border: 1px solid #CCC;
     padding-left: 5px;
     text-transform: inherit;
 }
-select.form-control.classic-select {
+select.form-control[data-classic-select] {
   background-image:
     linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%);
@@ -760,7 +760,7 @@ select.form-control.classic-select {
   background-repeat: no-repeat;
   border-radius: 2px;
 }
-select.form-control.classic-select:focus {
+select.form-control[data-classic-select]:focus {
   background-image:
     linear-gradient(45deg, green 50%, transparent 50%),
     linear-gradient(135deg, transparent 50%, green 50%);
