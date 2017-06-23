@@ -362,7 +362,6 @@
                     $('#features-'+new_index+'-feature_name').val(feature_name);
                     $('#features-'+new_index+'-feature_version').val(feature_val);
                     $('#features-'+new_index+'-feature_provisioner').val(feature_provisioner);
-                    $('#features-'+new_index+'-feature_provisioner').selectpicker('refresh');
                 });
             }).fail(function() {
                 alert("Failed to retrieve Feature Preset " + preset_file);

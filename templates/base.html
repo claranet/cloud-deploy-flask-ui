@@ -500,12 +500,12 @@
                 }
             });
 
-            var slt = clone.find('select');
+            var slt = clone.find('select:not([readonly], .classic-select)');
             slt.parent().before(slt);
 
             // Bootstrap Dynamic Select - update
             clone.find('.bootstrap-select').remove();
-            clone.find('select').selectpicker({
+            clone.find('select:not([readonly], .classic-select)').selectpicker({
                 style: 'btn-default',
                 liveSearch: true,
                 dropupAuto:  false
