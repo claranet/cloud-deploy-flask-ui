@@ -332,7 +332,7 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Init</th>
+                    <th>&nbsp;</th>
                     <th>Name</th>
                     <th>Git</th>
                     <th>Path</th>
@@ -349,7 +349,7 @@
                     {% set last_deployment = module['last_deployment'] or {} %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
-                        <td>{{ module['initialized'] and '&#10004;' | safe or '' }}</td>
+                        <td>{{ module_state(module) }}</td>
                         <td>{{ module['name'] }}</td>
                         <td>{{ module['git_repo'] }}</td>
                         <td>{{ module['path'] }}</td>

@@ -7,6 +7,11 @@ FULLY_DEPLOYED_STATE_INFOS = ("check", "fully-deployed", "Fully deployed")
 
 
 def app_modules_state(app):
+    """
+    Outputs an html snippet with icon and tooltip that indicates the app deployment status
+    :param app: dict: a ghost applicatiob
+    :return: str: the html snippet
+    """
     icon, state, text = NOT_DEPLOYED_STATE_INFOS
     # If all the modules have been deployed at least once
     if all([bool(module.get('last_deployment', False)) for module in app['modules']]):
@@ -21,6 +26,11 @@ def app_modules_state(app):
 
 
 def module_state(module):
+    """
+    Outputs an html snippet with icon and tooltip that indicates the module deployment status
+    :param module: dict: a ghost module
+    :return: str: the html snippet
+    """
     icon, state, text = NOT_DEPLOYED_STATE_INFOS
     # If the module has been deployed at least once
     if bool(module.get('last_deployment', False)):
