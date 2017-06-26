@@ -110,7 +110,8 @@ def template_context():
                 ghost_blue_green=ghost_has_blue_green_enabled(),
                 ghost_health_status=get_host_cpu_label(health_stats[0]),
                 command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS,
-                app_modules_state=ui_helpers.app_modules_state
+                app_modules_state=ui_helpers.app_modules_state,
+                module_state=ui_helpers.module_state,
     )
 
 def load_ghost_feature_presets():

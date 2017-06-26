@@ -326,8 +326,8 @@ td.inline {
 #app-form #log_notifications_list th {
     vertical-align: middle;
 }
-.command_options #modules_list th {
-    width: 20%;
+.command_options #modules_list.table td {
+    vertical-align: middle;
 }
 
 .command_options #modules_list.table {
@@ -798,7 +798,7 @@ select.form-control[data-classic-select]:focus {
     }
 }
 
-/* Deployment stae icons */
+/* Deployment state icons */
 .state-fully-deployed {
     color: #4caf50;
 }
@@ -809,4 +809,13 @@ select.form-control[data-classic-select]:focus {
 
 .state-not-deployed {
     color: #f44336;
+}
+
+td.module-state {
+    width: 35px;
+    text-align: center;
+}
+
+thead td.module-state span {
+    font-size: 150%;
 }
