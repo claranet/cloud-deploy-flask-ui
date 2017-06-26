@@ -374,7 +374,7 @@ class FeatureForm(FlaskForm):
     ])
     feature_provisioner = BetterSelectFieldNonValidating(
         'Provisioner', validators=[], render_kw={"data-classic-select": "true"},
-        choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
+        choices=get_wtforms_selectfield_values(get_available_provisioners_from_config(config)))
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
