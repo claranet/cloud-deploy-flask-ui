@@ -746,3 +746,7 @@ def web_deployment_redeploy(deployment_id):
 
     # Display default template in GET case
     return render_template('app_command.html', form=form, app=app)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
