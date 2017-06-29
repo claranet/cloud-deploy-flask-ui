@@ -4,9 +4,11 @@
 
 {% block page_header %}
     <ul class="nav nav-stacked action-btns">
+    {% if not form_action == 'delete' %}
         <li>
             <a href='{{request.referer}}'><button class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</button></a>
         </li>
+    {% endif %}
         <li>
             <a href='/web/apps'><button class="btn btn-primary"><span class="glyphicon glyphicon-list"></span> Applications List</button></a>
         </li>
