@@ -1,3 +1,4 @@
+{% from "base.html" import ghost_abbrev_field with context %}
 {% for job in jobs | sort(reverse=True, attribute='_created') %}
     {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
 <tr class="env-{{ app['env'] }}">
