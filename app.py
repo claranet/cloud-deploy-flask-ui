@@ -34,11 +34,11 @@ from forms.command import CommandAppForm
 from forms.app import CreateAppForm, DeleteAppForm, EditAppForm
 from forms.job import CancelJobForm, DeleteJobForm
 from forms.form_helper import get_ghost_app_roles, get_ghost_app_envs
+from forms.form_helper import get_app_command_recommendations
 from forms.form_aws_helper import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms.form_aws_helper import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
 from forms.form_aws_helper import get_aws_subnets_ids_from_app
 from forms.form_aws_helper import get_aws_connection_data, check_aws_assumed_credentials
-
 
 # Web UI App
 app = Flask(__name__)
@@ -433,11 +433,12 @@ def web_app_edit(app_id):
         form.map_to_app(app)
 
         message = update_ghost_app(app_id, local_headers, app)
+        cmd_recommendations = get_app_command_recommendations(app_id)
 
         #if form.update_manifest.data:
         #TODO Perform Manifest update
 
-        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=app_id)
+        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=app_id, cmd_recommendations=cmd_recommendations)
 
     # Get App data on first access
     if not form.etag.data:
@@ -470,8 +471,10 @@ def web_app_edit(app_id):
     return render_template('app_edit.html', form=form, edit=True,
                            schema=ghost_app_schema, forbidden_paths=FORBIDDEN_PATH)
 
+
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
-def web_app_command(app_id):
+@app.route('/web/apps/<app_id>/command/<default_command>', methods=['GET', 'POST'])
+def web_app_command(app_id, default_command='deploy'):
     form = CommandAppForm(app_id)
     app = get_ghost_app(app_id)
     aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
@@ -496,7 +499,7 @@ def web_app_command(app_id):
         form.skip_salt_bootstrap.data = config.get('skip_salt_bootstrap', True)
         form.purge_delete_elb.data = get_blue_green_destroy_temporary_elb_config(config)
         form.to_execute_script.data = DEFAULT_BASH_SHEBANG
-        form.command.data = 'deploy'
+        form.command.data = default_command
 
     return render_template('app_command.html', form=form, app=app)
 

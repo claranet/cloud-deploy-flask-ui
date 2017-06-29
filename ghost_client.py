@@ -22,6 +22,7 @@ headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 url_apps = API_BASE_URL + '/apps'
 url_jobs = API_BASE_URL + '/jobs'
 url_commands = API_BASE_URL + '/commands'
+url_commands_fields = url_commands + '/fields'
 url_deployments = API_BASE_URL + '/deployments'
 
 
@@ -51,14 +52,14 @@ def do_request(method, url, data, headers, success_message, failure_message):
             flash(format_success_message(success_message, result_json), 'success')
         else:
             flash(failure_message, 'warning')
+        if message and message.strip():
+            flash(message, 'info')
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(failure_message, 'danger')
-    if message and message.strip():
-        flash(message, 'info')
+        flash(message, 'danger')
     return message, result_json, status_code
-
 
 
 def handle_response_status_code(status_code):
@@ -241,16 +242,16 @@ def get_ghost_job(job_id):
     return job
 
 
-def get_ghost_job_commands():
+def get_ghost_job_commands(with_fields=False):
     try:
-        result = requests.get(url_commands, headers=headers, auth=current_user.auth)
+        result = requests.get(url_commands_fields if with_fields else url_commands, headers=headers, auth=current_user.auth)
         commands = result.json()
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
-        commands = [('Error', 'Failed to retrieve commands')]
+        commands = [('Error', 'Failed to retrieve commands info')]
     return commands
 
 
