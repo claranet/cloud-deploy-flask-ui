@@ -1,4 +1,4 @@
-from markupsafe import Markup
+from flask import Markup
 
 
 NOT_DEPLOYED_STATE_INFOS = ("exclamation-circle", "not-deployed", "Not deployed")
