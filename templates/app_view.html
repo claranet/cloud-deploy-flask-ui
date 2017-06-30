@@ -27,6 +27,11 @@
 
 {% block page_content %}
     <ul class="nav navbar-fixed-left" id="left-menu">
+        {% if cmd_recommendations: %}
+        <li>
+            <a href="#reco">Recommentations</a>
+        </li>
+        {% endif %}
         <li>
             <a href="#properties">Properties</a>
         </li>
@@ -70,6 +75,11 @@
         </li>
     </ul>
     <div class="panel panel-default app-panel">
+        {% if cmd_recommendations: %}
+            {% set action_object_id = app['_id'] %}
+            <a name="reco" class="anchor">&nbsp;</a>
+            {% include 'app_recommendations_content.html' %}
+        {% endif %}
         <a name="properties" class="anchor">&nbsp;</a>
         <div class="panel-heading">Properties</div>
         <div class="panel-body">

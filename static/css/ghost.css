@@ -843,3 +843,6 @@ thead td.module-state span {
 .bs-callout-info h4{color:#03A9F4}
 .bs-callout-success{border-left-color:#4CAF50}
 .bs-callout-success h4{color:#4CAF50}
+.app-panel .bs-callout{
+    margin: 0;
+}

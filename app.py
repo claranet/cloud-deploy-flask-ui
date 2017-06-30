@@ -381,8 +381,9 @@ def web_app_create():
 def web_app_view(app_id):
     # Get App data
     app = get_ghost_app(app_id, embed_deployments=True)
+    cmd_recommendations = get_app_command_recommendations(app_id, app)
 
-    return render_template('app_view.html', app=app)
+    return render_template('app_view.html', app=app, cmd_recommendations=cmd_recommendations)
 
 @app.route('/web/apps/<app_id>/edit', methods=['GET', 'POST'])
 def web_app_edit(app_id):

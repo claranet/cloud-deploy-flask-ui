@@ -1,0 +1,13 @@
+<div class="bs-callout bs-callout-warning">
+    <h4>Recommended actions:</h4>
+    {% for cmd_field in cmd_recommendations %}
+    {% set cmd   = cmd_field['command'] %}
+    {% set field = cmd_field['field'] %}
+    <p>
+        <span>
+            Because the attribute <strong>{{ field }}</strong> has been modified, you need to run
+            <a href="/web/apps/{{ action_object_id }}/command/{{ cmd }}" target="_blank"><button class="btn btn-xs btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> {{ cmd }}</button></a>
+        </span>
+    </p>
+    {% endfor %}
+</div>

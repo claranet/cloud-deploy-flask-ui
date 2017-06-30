@@ -67,10 +67,11 @@ def get_ghost_instance_tags():
         ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
 
 
-def get_app_command_recommendations(app_id):
+def get_app_command_recommendations(app_id, app=None):
     recommended_cmds = []
 
-    app = get_ghost_app(app_id)
+    if not app:
+        app = get_ghost_app(app_id)
     commands_fields = get_ghost_job_commands(with_fields=True)
     app_modified_fields = app.get('modified_fields', [])
 
