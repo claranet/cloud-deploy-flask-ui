@@ -73,16 +73,18 @@ def get_app_command_recommendations(app_id, app=None):
     if not app:
         app = get_ghost_app(app_id)
     commands_fields = get_ghost_job_commands(with_fields=True)
-    app_modified_fields = app.get('modified_fields', [])
+    app_modified_fields = {ob['field']: ob for ob in app.get('modified_fields', [])}
 
     for cmd in commands_fields:
         cmd_name = cmd[0]
         cmd_fields = cmd[1]
         for field in cmd_fields:
-            if field in app_modified_fields:
+            if field in app_modified_fields.keys():
                 recommended_cmds.append({
                     'command': cmd_name,
                     'field': field,
+                    'user': app_modified_fields[field]['user'],
+                    'updated': app_modified_fields[field]['updated'],
                 })
                 break
 

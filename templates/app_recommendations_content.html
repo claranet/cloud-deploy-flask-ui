@@ -1,12 +1,16 @@
 <div class="bs-callout bs-callout-warning">
     <h4>Recommended actions:</h4>
     {% for cmd_field in cmd_recommendations %}
-    {% set cmd   = cmd_field['command'] %}
-    {% set field = cmd_field['field'] %}
+    {% set cmd     = cmd_field['command'] %}
+    {% set field   = cmd_field['field'] %}
+    {% set user    = cmd_field['user'] %}
+    {% set updated = cmd_field['updated'] %}
     <p>
         <span>
-            Because the attribute <strong>{{ field }}</strong> has been modified, you need to run
             <a href="/web/apps/{{ action_object_id }}/command/{{ cmd }}" target="_blank"><button class="btn btn-xs btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> {{ cmd }}</button></a>
+            Because the <strong>{{ field }}</strong> attribute has been modified
+            on the <strong>{{ updated }}</strong> by <strong>{{ user }}</strong>
+            and the <strong>{{ cmd }}</strong> command was not run since then, the <strong>{{ cmd }}</strong> command has to be run to make sure everything is up to date and prevent unexpected behavior.
         </span>
     </p>
     {% endfor %}
