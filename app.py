@@ -348,7 +348,6 @@ def web_app_create():
     except:
         cloud_provider = DEFAULT_PROVIDER
     # Dynamic selections update
-
     if form.is_submitted() and cloud_provider:
         if form.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(
