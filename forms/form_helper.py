@@ -67,13 +67,24 @@ def get_ghost_instance_tags():
         ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
 
 
-def get_app_command_recommendations(app_id, app=None):
-    recommended_cmds = []
+def get_recommendations(commands_fields, app_modified_fields):
+    """
+    :param commands_fields:
+    :param app_modified_fields:
+    :return: List of object describing command to run
 
-    if not app:
-        app = get_ghost_app(app_id)
-    commands_fields = get_ghost_job_commands(with_fields=True)
-    app_modified_fields = {ob['field']: ob for ob in app.get('modified_fields', [])}
+    >>> cmd_fields = [
+    ...     ['cmd1', ['f1', 'f2']],
+    ...     ['cmd2', ['prop']],
+    ... ]
+    >>> app_fields = {
+    ...     'f2': {'field': 'f2', 'user': 'api', 'updated': '00:00'}
+    ... }
+    >>> from pprint import pprint
+    >>> pprint(get_recommendations(cmd_fields, app_fields))
+    [{'command': 'cmd1', 'field': 'f2', 'updated': '00:00', 'user': 'api'}]
+    """
+    recommended_cmds = []
 
     for cmd in commands_fields:
         cmd_name = cmd[0]
@@ -89,3 +100,20 @@ def get_app_command_recommendations(app_id, app=None):
                 break
 
     return recommended_cmds
+
+
+def get_app_command_recommendations(app_id, app=None):
+    """
+    Compare modified_fields from the app document with the command's fields
+
+    :param app_id:
+    :param app:
+    :return: The commands to launch with "modified_fields" data
+    """
+
+    if not app:
+        app = get_ghost_app(app_id)
+    commands_fields = get_ghost_job_commands(with_fields=True)
+    app_modified_fields = {ob['field']: ob for ob in app.get('modified_fields', [])}
+
+    return get_recommendations(commands_fields, app_modified_fields)
