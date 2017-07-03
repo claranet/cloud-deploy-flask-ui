@@ -623,7 +623,7 @@ def web_app_delete(app_id):
 
         message = delete_ghost_app(app_id, local_headers)
 
-        return render_template('action_completed.html', message=message)
+        return render_template('action_completed.html', message=message, form_action='delete')
 
     # Get Application etag
     app = get_ghost_app(app_id)
@@ -671,7 +671,7 @@ def web_job_delete(job_id):
 
         message = delete_ghost_job(job_id, local_headers)
 
-        return render_template('action_completed.html', message=message)
+        return render_template('action_completed.html', message=message, form_action='delete')
 
     # Get job etag
     job = get_ghost_job(job_id)
@@ -746,3 +746,7 @@ def web_deployment_redeploy(deployment_id):
 
     # Display default template in GET case
     return render_template('app_command.html', form=form, app=app)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
