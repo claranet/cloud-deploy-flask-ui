@@ -3,6 +3,7 @@
         <thead>
             <tr>
                 <th>#</th>
+                <th>&nbsp;</th>
                 <th>Name / ID / Custom account</th>
                 <th>Created / Modified</th>
                 <th>Environment</th>
@@ -17,6 +18,7 @@
 {% set app_is_bluegreen = app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] %}
 <tr class="env-{{ app['env'] }} app-row">
     <th scope="row"><span class="index"></span></th>
+    <td>{{ app_modules_state(app) }}</td>
     <td>
         <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
         <br>

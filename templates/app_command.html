@@ -20,7 +20,7 @@
         {{ wtf.form_field(form.command, form_type='horizontal') }}
 
         <div class="command_options">
-            <div class="wrap modules">{{ ghost_command_fieldlist(form.modules, 'modules', 'Modules', 'module', 'inline') }}</div>
+            <div class="wrap modules">{{ ghost_command_modules_fieldlist(app, form.modules) }}</div>
             <div class="wrap deploy_id">{{ wtf.form_field(form.deploy_id, form_type='horizontal') }}</div>
             <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal') }}</div>
             <div class="wrap rolling_update">{{ wtf.form_field(form.rolling_update, form_type='horizontal') }}</div>
@@ -270,41 +270,18 @@
     </script>
 {% endblock %}
 
-{% macro ghost_command_fieldlist_entry(entry, entry_id_prefix, loop_index, form_type, html_placeholder='') -%}
-    <tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
-            {% if entry.type == 'FormField' %}
-                {{ entry.hidden_tag() }}
-                {% for field in entry if not field.type == 'CSRFTokenField'and not field.type == 'HiddenField' %}
-                    <td class="{{ form_type }} td-module-field" id="td-{{ field.id }}">
-                    {% if field.id.endswith('rev') %}
-                        <div class="col-lg-10">{{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}</div>
-                        <div class="col-lg-2"><button data-prefix="{{ field.id }}" class="btn btn-raised btn-xs btn-info retrieve-available-revisions" title="Retrieves all available revisions"><i class="fa fa-history"></i></button></div>
-                    {% else %}
-                        {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
-                    {% endif %}
-                    </td>
-                {% endfor %}
-            {% elif entry.type == 'TextAreaField' %}
-                <td class="{{ form_type }}">
-                    {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-                </td>
-            {% else %}
-                <td class="{{ form_type }}">
-                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
-                </td>
-            {% endif %}
-    </tr>
-{%- endmacro %}
-
-{% macro ghost_command_fieldlist(fieldlist, group_id_prefix, group_label, entry_id_prefix, form_type, html_placeholder='') -%}
+{% macro ghost_command_modules_fieldlist(app, modules_fields) -%}
     <div class="form-group">
-        <label class="control-label col-lg-2">{{ group_label }}</label>
+        <label class="control-label col-lg-2">Modules</label>
           <div class="col-lg-10">
             <div class="modules_list">
-            <table class="table" id="{{ group_id_prefix }}_list">
+            <table class="table" id="modules_list">
                 <thead>
                     <tr>
-                        <td>
+                        <td class="module-state">
+                            {{ app_modules_state(app) }}
+                        </td>
+                        <td colspan="2">
                             <div class="checkbox">
                                 <label>
                                     <input id="deploy_all_modules" type="checkbox"> Deploy all modules
@@ -314,9 +291,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for entry in fieldlist %}
-                    {{ ghost_command_fieldlist_entry(entry, entry_id_prefix, loop.index, form_type, html_placeholder) }}
-                {% endfor %}
+                    {% for subform in modules_fields %}
+                        <tr id="module_{{ loop.index0 }}" data-modules>
+                            {{ subform.hidden_tag() }}
+                            <td class="module-state">
+                                {{ module_state(app['modules'][loop.index0]) }}
+                            </td>
+                            <td class="inline td-module-field" id="td-modules-{{ loop.index0 }}-deploy">
+                                {{ wtf.form_field(subform['deploy'], form_type='horizontal') }}
+                            </td>
+                            <td class="inline td-module-field" id="td-modules-{{ loop.index0 }}-rev">
+                                <div class="col-lg-10">{{ wtf.form_field(subform['rev'], form_type='horizontal') }}</div>
+                                <div class="col-lg-2">
+                                    <button data-prefix="modules-{{ loop.index0 }}-rev" class="btn btn-raised btn-xs btn-info retrieve-available-revisions" title="Retrieves all available revisions">
+                                        <i class="fa fa-history"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             </div>

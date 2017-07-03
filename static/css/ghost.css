@@ -326,8 +326,8 @@ td.inline {
 #app-form #log_notifications_list th {
     vertical-align: middle;
 }
-.command_options #modules_list th {
-    width: 20%;
+.command_options #modules_list.table td {
+    vertical-align: middle;
 }
 
 .command_options #modules_list.table {
@@ -707,7 +707,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     border-radius: 3px;
 }
 
-/*Halth*/
+/*Health*/
 .health-elt {
     text-align: center;
 }
@@ -796,4 +796,26 @@ select.form-control[data-classic-select]:focus {
     .nav-stacked>li {
         float: left;
     }
+}
+
+/* Deployment state icons */
+.state-fully-deployed {
+    color: #4caf50;
+}
+
+.state-half-deployed {
+    color: #f0ad4e;
+}
+
+.state-not-deployed {
+    color: #f44336;
+}
+
+td.module-state {
+    width: 35px;
+    text-align: center;
+}
+
+thead td.module-state span {
+    font-size: 150%;
 }

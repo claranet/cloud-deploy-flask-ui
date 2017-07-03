@@ -8,6 +8,7 @@ import sys
 import os
 import yaml
 import json
+import ui_helpers
 
 from settings import DEFAULT_PROVIDER
 from .websocket import ansi_to_html
@@ -108,7 +109,10 @@ def template_context():
                 statuses=JOB_STATUSES,
                 ghost_blue_green=ghost_has_blue_green_enabled(),
                 ghost_health_status=get_host_cpu_label(health_stats[0]),
-                command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS)
+                command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS,
+                app_modules_state=ui_helpers.app_modules_state,
+                module_state=ui_helpers.module_state,
+    )
 
 def load_ghost_feature_presets():
     presets = {}
@@ -281,7 +285,7 @@ def web_app_list():
         env = None
     page = request.args.get('page', '1')
     name = request.args.get("name", None)
-    apps = get_ghost_apps(role=role, page=page, env=env, name=name)
+    apps = get_ghost_apps(role=role, page=page, env=env, name=name, embed_deployments=True)
     envs = get_ghost_envs()
     if request.is_xhr:
         return render_template('app_list_content.html', env_list=envs, apps=apps,
