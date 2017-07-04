@@ -128,7 +128,7 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
             )
     except:
         traceback.print_exc()
-    return [(ami.id, ami.owner_id + '/' + ami.id + ' (' + ami.name + ')') for ami in amis]
+    return [(ami.id, "{}/{} ({})".format(ami.owner_id, ami.id, ami.name)) for ami in amis]
 
 
 def get_default_Name_tag():
