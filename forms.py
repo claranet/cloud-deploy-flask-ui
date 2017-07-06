@@ -29,6 +29,7 @@ from libs import load_balancing
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 from libs.blue_green import get_blue_green_from_app
 
+
 # Helpers
 def empty_fieldlist(fieldlist):
     while len(fieldlist) > 0:
@@ -48,21 +49,27 @@ def get_wtforms_selectfield_values(allowed_schema_values):
     """
     return [(value, value) for value in allowed_schema_values]
 
+
 def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_region_name=""):
     """
     Build a key-value dictionnatiory args for aws cross  connections
     """
     if assumed_account_id and assumed_role_name:
-        aws_connection_data = dict([("assumed_account_id", assumed_account_id), ("assumed_role_name", assumed_role_name), ("assumed_region_name", assumed_region_name)])
+        aws_connection_data = dict(
+            [("assumed_account_id", assumed_account_id), ("assumed_role_name", assumed_role_name),
+             ("assumed_region_name", assumed_region_name)])
     else:
         aws_connection_data = {}
     return (aws_connection_data)
 
+
 def get_ghost_app_envs():
     return get_wtforms_selectfield_values(ghost_env_default_values)
 
+
 def get_ghost_app_providers():
     return get_wtforms_selectfield_values(ghost_app_schema['provider']['allowed'])
+
 
 def get_ghost_app_roles():
     return get_wtforms_selectfield_values(ghost_role_default_values)
@@ -73,10 +80,15 @@ def get_ghost_mod_scopes():
 
 
 def get_ghost_optional_volumes():
-    return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type']['allowed'])
+    return get_wtforms_selectfield_values(
+        ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type'][
+            'allowed'])
+
 
 def get_ghost_instance_tags():
-    return get_wtforms_selectfield_values(ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
+    return get_wtforms_selectfield_values(
+        ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
+
 
 def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
     vpcs = []
@@ -86,16 +98,18 @@ def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
         vpcs = c.get_all_vpcs()
     except:
         traceback.print_exc()
-    return [(vpc.id, vpc.id + ' (' + vpc.tags.get('Name', '') + ')') for vpc in vpcs]
+    return [(vpc.id, '{} ({})'.format(vpc.id, vpc.tags.get('Name', ''))) for vpc in vpcs]
+
 
 def check_aws_assumed_credentials(provider, account_id, role_name, region_name="", log_file=None):
     cloud_connection = cloud_connections.get(provider)(
-            log_file,
-            assumed_account_id=account_id,
-            assumed_role_name=role_name,
-            assumed_region_name=region_name
-            )
+        log_file,
+        assumed_account_id=account_id,
+        assumed_role_name=role_name,
+        assumed_region_name=region_name
+    )
     return (cloud_connection.check_credentials())
+
 
 def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
     sgs = []
@@ -105,7 +119,8 @@ def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
         traceback.print_exc()
-    return [(sg.id, sg.id + ' (' + sg.name + ')') for sg in sgs]
+    return [(sg.id, '{} ({})'.format(sg.id, sg.name)) for sg in sgs]
+
 
 def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
     amis = []
@@ -145,6 +160,7 @@ def get_default_name_tag(app):
     }
 
 
+
 def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
     try:
@@ -153,7 +169,8 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
     except:
         traceback.print_exc()
-    return [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ')') for sub in subs]
+    return [(sub.id, '{} ({})'.format(sub.id, sub.tags.get('Name', ''))) for sub in subs]
+
 
 def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwargs):
     subs = []
@@ -163,7 +180,9 @@ def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwa
         subs = c.get_all_subnets(subnet_ids=subnets)
     except:
         traceback.print_exc()
-    return [('', '')] + [(sub.id, sub.id + ' (' + sub.tags.get('Name', '') + ' - ' + sub.cidr_block + ')') for sub in subs]
+    return [('', '')] + [(sub.id, '{} ({} - {})'.format( sub.id, sub.tags.get('Name', ''), sub.cidr_block))
+                         for sub in subs]
+
 
 def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     profiles = []
@@ -174,9 +193,11 @@ def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
     except:
         traceback.print_exc()
     if len(profiles):
-        return [(profile.instance_profile_name, profile.instance_profile_name + ' (' + profile.arn + ')') for profile in profiles.instance_profiles]
+        return [(profile.instance_profile_name, '{} ({})'.format(profile.instance_profile_name, profile.arn))
+                for profile in profiles.instance_profiles]
     else:
         return []
+
 
 def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
     keys = []
@@ -186,7 +207,8 @@ def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
         keys = c.get_all_key_pairs()
     except:
         traceback.print_exc()
-    return [(key.name, key.name + ' (' + key.fingerprint + ')') for key in keys]
+    return [(key.name, '{} ({})'.format(key.name, key.fingerprint)) for key in keys]
+
 
 def get_aws_ec2_regions(provider, log_file=None, **kwargs):
     regions = []
@@ -195,7 +217,9 @@ def get_aws_ec2_regions(provider, log_file=None, **kwargs):
         regions = sorted(cloud_connection.get_regions(["ec2"]), key=lambda region: region.name)
     except:
         traceback.print_exc()
-    return [(region.name, '{name} ({endpoint})'.format(name=region.name, endpoint=region.endpoint)) for region in regions]
+    return [(region.name, '{} ({})'.format(region.name, region.endpoint))
+            for region in regions]
+
 
 def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     asgs = []
@@ -205,19 +229,24 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
         asgs = conn_as.describe_auto_scaling_groups()['AutoScalingGroups']
     except:
         traceback.print_exc()
-    return [('', '-- No Autoscale for this app --')]+[(asg['AutoScalingGroupName'], asg['AutoScalingGroupName'] + ' (' + asg['LaunchConfigurationName'] + ')') for asg in asgs]
+    return [('', '-- No Autoscale for this app --')] + [
+        (asg['AutoScalingGroupName'], '{} ({})'.format(asg['AutoScalingGroupName'], asg['LaunchConfigurationName']))
+        for asg in asgs]
+
 
 def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
-        asgs = conn_as.describe_auto_scaling_groups(AutoScalingGroupNames=[as_group_name], MaxRecords=1)['AutoScalingGroups']
+        asgs = conn_as.describe_auto_scaling_groups(AutoScalingGroupNames=[as_group_name], MaxRecords=1)[
+            'AutoScalingGroups']
         if len(asgs) > 0:
             return asgs[0]
         return None
     except:
         traceback.print_exc()
     return None
+
 
 def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
@@ -232,6 +261,7 @@ def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
         for host in instances:
             hosts.append(format_host_infos(host, conn, cloud_connection, region))
     return hosts
+
 
 def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
     try:
@@ -248,19 +278,23 @@ def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
         traceback.print_exc()
     return None
 
+
 def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, **kwargs):
     lbs_instances = []
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
 
         lb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_MIXED)
-        for lb, instances in lb_mgr.get_instances_status_from_autoscale(as_group['AutoScalingGroupName'], log_file).items():
+        for lb, instances in lb_mgr.get_instances_status_from_autoscale(as_group['AutoScalingGroupName'],
+                                                                        log_file).items():
             lbs_instances.append({'elb_name': lb, 'elb_instances': [id for id, status in instances.items()]})
     except:
         traceback.print_exc()
     return lbs_instances
 
-def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role, region, filters=None, log_file=None, ghost_app_color=None, **kwargs):
+
+def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role, region, filters=None, log_file=None,
+                                ghost_app_color=None, **kwargs):
     filters = filters or []
     cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
@@ -278,10 +312,11 @@ def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role,
             host_ids_as.append(h['id'])
     hosts = []
     as_instances = conn_as.get_all_autoscaling_instances(instance_ids=[i.id for i in running_instances])
-    autoscale_instances = { a.instance_id: a for a in as_instances}
+    autoscale_instances = {a.instance_id: a for a in as_instances}
     for instance in running_instances:
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
-        if not instance.id in autoscale_instances or not autoscale_instances[instance.id].lifecycle_state in ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
+        if not instance.id in autoscale_instances or not autoscale_instances[instance.id].lifecycle_state in [
+            'Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
             if instance.id not in host_ids_as:
                 hosts.append(format_host_infos(instance, conn, cloud_connection, region))
         else:
@@ -289,10 +324,12 @@ def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role,
 
     return hosts
 
+
 def format_host_infos(instance, conn, cloud_connection, region):
     sg_string = None
     image = conn.get_image(instance.image_id)
-    image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id, ami_name=image.name if image is not None else 'deregistered')
+    image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id,
+                                                  ami_name=image.name if image is not None else 'deregistered')
     sg_string = ', '.join(["{sg_id} ({sg_name})".format(sg_id=sg.id, sg_name=sg.name) for sg in instance.groups])
 
     if instance.subnet_id:
@@ -302,29 +339,31 @@ def format_host_infos(instance, conn, cloud_connection, region):
         subnet_string = '-'
 
     host = {
-      'id': instance.id,
-      'private_ip_address': instance.private_ip_address,
-      'public_ip_address': instance.ip_address,
-      'status': instance.state,
-      'launch_time': datetime.strptime(instance.launch_time, "%Y-%m-%dT%H:%M:%S.%fZ"),
-      'security_group':sg_string,
-      'subnet_id':subnet_string,
-      'image_id':image_string,
-      'instance_type':instance.instance_type,
-      'instance_profile':str(instance.instance_profile['arn']).split("/")[1] if instance.instance_profile else '-'
+        'id': instance.id,
+        'private_ip_address': instance.private_ip_address,
+        'public_ip_address': instance.ip_address,
+        'status': instance.state,
+        'launch_time': datetime.strptime(instance.launch_time, "%Y-%m-%dT%H:%M:%S.%fZ"),
+        'security_group': sg_string,
+        'subnet_id': subnet_string,
+        'image_id': image_string,
+        'instance_type': instance.instance_type,
+        'instance_profile': str(instance.instance_profile['arn']).split("/")[1] if instance.instance_profile else '-'
     }
     return host
+
 
 def get_aws_ec2_instance_types(region):
     # TODO: use `get_all_instance_types()` once implemented on AWS side
     # cf. https://github.com/boto/boto/issues/3137
     types = aws_data.instance_types[region]
     return [(instance_type.name,
-         '{name} (cores:{cores}, memory:{memory}, disk:{disk})'.format(name=instance_type.name,
-                                                                       cores=instance_type.cores,
-                                                                       memory=instance_type.memory,
-                                                                       disk=instance_type.disk)
-         ) for instance_type in types]
+             '{name} (cores:{cores}, memory:{memory}, disk:{disk})'.format(name=instance_type.name,
+                                                                           cores=instance_type.cores,
+                                                                           memory=instance_type.memory,
+                                                                           disk=instance_type.disk)
+             ) for instance_type in types]
+
 
 def get_safe_deployment_possibilities(app):
     """ Return the list of items needed by the interface for
@@ -333,14 +372,18 @@ def get_safe_deployment_possibilities(app):
         :param app: Ghost app object
         :return array of pair
     """
-    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''), app.get('assumed_region_name', ''))
+    aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''),
+                                                  app.get('assumed_region_name', ''))
     asg_name = app['autoscale']['name']
-    if not asg_name or not get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), asg_name, app['region'], **aws_connection_data):
+    if not asg_name or not get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), asg_name, app['region'],
+                                                  **aws_connection_data):
         return [('', '')] + [(None, 'Not Supported because there is no AutoScale Group for this application')]
     app_blue_green, app_color = get_blue_green_from_app(app)
-    hosts_list = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'], app['role'], app['region'], [], None, app_color, **aws_connection_data)
+    hosts_list = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'],
+                                             app['role'], app['region'], [], None, app_color, **aws_connection_data)
     safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
-    return [('', '')] + [(k, v) for k,v in safe_possibilities.items()]
+    return [('', '')] + [(k, v) for k, v in safe_possibilities.items()]
+
 
 def safe_deployment_possibilities(hosts_list):
     """ Return a dict with split types as key and string as value
@@ -357,26 +400,34 @@ def safe_deployment_possibilities(hosts_list):
             groups_one = ['Group' + str(i[0] + 1) + ' : 1 |' for i in enumerate(hosts_list)]
             if len(groups_one) > 5:
                 groups_one = groups_one[0:5] + ['.....']
-            possibilities['1by1'] = '{0} | {1} ' .format(msg, str(' '.join(groups_one))[:-2])
+            possibilities['1by1'] = '{0} | {1} '.format(msg, str(' '.join(groups_one))[:-2])
         elif split_type == '1/3' and len(hosts_list) > 2:
             split_list = [hosts_list[i::3] for i in range(3)]
-            possibilities['1/3'] =  '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]))
+            possibilities['1/3'] = '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3}'.format(msg, len(split_list[0]),
+                                                                                             len(split_list[1]),
+                                                                                             len(split_list[2]))
         elif split_type == '25%' and len(hosts_list) > 3:
             split_list = [hosts_list[i::4] for i in range(4)]
-            possibilities['25%'] = '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3} | Group4 : {4}' .format(msg, len(split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
+            possibilities['25%'] = '{0} | Group1 : {1} | Group2 : {2} | Group3 : {3} | Group4 : {4}'.format(msg, len(
+                split_list[0]), len(split_list[1]), len(split_list[2]), len(split_list[3]))
         elif split_type == '50%' and len(hosts_list) >= 2:
             split_list = [hosts_list[i::2] for i in range(2)]
-            possibilities['50%'] = '{0} | Group1 : {1} | Group2 : {2}' .format(msg, len(split_list[0]), len(split_list[1]))
+            possibilities['50%'] = '{0} | Group1 : {1} | Group2 : {2}'.format(msg, len(split_list[0]),
+                                                                              len(split_list[1]))
     if not possibilities:
         possibilities = {'None': 'Not Supported because at least two instances must be running for this application'}
     return possibilities
 
 
 class OptionalVolumeForm(Form):
-    device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]', validators=[])
-    volume_type = BetterSelectField('Volume Type', description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>', validators=[], choices=get_ghost_optional_volumes())
+    device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]',
+                              validators=[])
+    volume_type = BetterSelectField('Volume Type',
+                                    description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>',
+                                    validators=[], choices=get_ghost_optional_volumes())
     volume_size = IntegerField('Volume Size', description='In GiB', validators=[OptionalValidator()])
-    iops = IntegerField('IOPS', description='For information, 1TiB volume size is 3000 IOPS in GP2 type', validators=[OptionalValidator()])
+    iops = IntegerField('IOPS', description='For information, 1TiB volume size is 3000 IOPS in GP2 type',
+                        validators=[OptionalValidator()])
 
     # Disable CSRF in optional_volume forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -388,12 +439,15 @@ class OptionalVolumeForm(Form):
         self.volume_size.data = optional_volume.get('volume_size', '')
         self.iops.data = optional_volume.get('iops', '')
 
+
 class InstanceTagForm(Form):
-    tag_name = StringField('Tag Name', description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"',
-                            validators=[LengthValidator(min= 1, max= 127), DataRequiredValidator(), NoneOfValidator(['app_id', 'env', 'app', 'role', 'color'])])
+    tag_name = StringField('Tag Name',
+                           description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"',
+                           validators=[LengthValidator(min=1, max=127), DataRequiredValidator(),
+                                       NoneOfValidator(['app_id', 'env', 'app', 'role', 'color'])])
     tag_value = StringField('Tag Value', description='Enter the Tag value(case sensitive) associate with the Tag Name.\
                             You can use GHOST_APP variables to refer to its content(ex: GHOST_APP_ROLE will be replaced by the role defined in this application)',
-                            validators=[LengthValidator(min= 1, max= 255), DataRequiredValidator()])
+                            validators=[LengthValidator(min=1, max=255), DataRequiredValidator()])
 
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(InstanceTagForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
@@ -401,6 +455,7 @@ class InstanceTagForm(Form):
     def map_from_app(self, instance_tag):
         self.tag_name.data = instance_tag.get('tag_name', '')
         self.tag_value.data = instance_tag.get('tag_value', '')
+
 
 # Forms
 class AutoscaleForm(Form):
@@ -441,19 +496,26 @@ class AutoscaleForm(Form):
         if isinstance(self.max.data, int):
             app['autoscale']['max'] = self.max.data
 
-class SafedeploymentForm(Form):
 
-    lb_type = BetterSelectField('Load Balancer', validators=[], choices=[('elb','Classic Load Balancer (ELB)'), ('alb', 'Application Load Balancer'), ('haproxy','HAProxy')])
-    safe_deploy_wait_before = IntegerField('Wait before deploy (s)', description='Time to wait before deployment (in seconds)', validators=[], default = 10)
-    safe_deploy_wait_after = IntegerField('Wait after deploy (s)', description='Time to wait after deployment (in seconds)', validators=[], default = 10)
+class SafedeploymentForm(Form):
+    lb_type = BetterSelectField('Load Balancer', validators=[],
+                                choices=[('elb', 'Classic Load Balancer (ELB)'), ('alb', 'Application Load Balancer'),
+                                         ('haproxy', 'HAProxy')])
+    safe_deploy_wait_before = IntegerField('Wait before deploy (s)',
+                                           description='Time to wait before deployment (in seconds)', validators=[],
+                                           default=10)
+    safe_deploy_wait_after = IntegerField('Wait after deploy (s)',
+                                          description='Time to wait after deployment (in seconds)', validators=[],
+                                          default=10)
 
     haproxy_app_tag = StringField('HAProxy app tag', validators=[], description="Enter the value set for the HAproxy tag 'app'.\
                                 A filter will be perform on Haproxy instances with this app tag value, running in the same environment \
                                 as this application and with the tag role set to 'loadbalancer'")
-    haproxy_api_port = IntegerField('HAProxy API port', validators=[], description="Enter the port number for the HAproxy API. Default is 5001", default = 5001)
+    haproxy_api_port = IntegerField('HAProxy API port', validators=[],
+                                    description="Enter the port number for the HAproxy API. Default is 5001",
+                                    default=5001)
     haproxy_backend = StringField('HAProxy backend name', validators=[], description="Enter the Haproxy backend name where the \
                                                                                         application's instances will be registered")
-
 
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(SafedeploymentForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
@@ -490,26 +552,31 @@ class SafedeploymentForm(Form):
 
 
 class BuildInfosForm(Form):
-    ssh_username = StringField('SSH Username', description='ec2-user by default on AWS AMI and admin on Claranet Debian AMI', validators=[
-        DataRequiredValidator(),
-        RegexpValidator(
-            ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
-        )
-    ], default='admin')
+    ssh_username = StringField('SSH Username',
+                               description='ec2-user by default on AWS AMI and admin on Claranet Debian AMI',
+                               validators=[
+                                   DataRequiredValidator(),
+                                   RegexpValidator(
+                                       ghost_app_schema['build_infos']['schema']['ssh_username']['regex']
+                                   )
+                               ], default='admin')
 
-    source_ami = BetterSelectField('Source AWS AMI', description='Please choose an AMI compatible with Ghost provisioning', choices=[], validators=[
-        DataRequiredValidator(),
-        RegexpValidator(
-            ghost_app_schema['build_infos']['schema']['source_ami']['regex']
-        )
-    ])
+    source_ami = BetterSelectField('Source AWS AMI',
+                                   description='Please choose an AMI compatible with Ghost provisioning', choices=[],
+                                   validators=[
+                                       DataRequiredValidator(),
+                                       RegexpValidator(
+                                           ghost_app_schema['build_infos']['schema']['source_ami']['regex']
+                                       )
+                                   ])
 
-    subnet_id = BetterSelectField('AWS Subnet', description='This subnet for building should be a public one', choices=[], validators=[
-        DataRequiredValidator(),
-        RegexpValidator(
-            ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
-        )
-    ])
+    subnet_id = BetterSelectField('AWS Subnet', description='This subnet for building should be a public one',
+                                  choices=[], validators=[
+            DataRequiredValidator(),
+            RegexpValidator(
+                ghost_app_schema['build_infos']['schema']['subnet_id']['regex']
+            )
+        ])
 
     # Disable CSRF in build_infos forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -533,6 +600,7 @@ class BuildInfosForm(Form):
         app['build_infos']['source_ami'] = self.source_ami.data
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
+
 class EnvironmentInfosForm(Form):
     security_groups = FieldList(BetterSelectField('Security Group', choices=[], validators=[
         OptionalValidator(),
@@ -548,30 +616,40 @@ class EnvironmentInfosForm(Form):
         )
     ]), min_entries=1)
 
-    instance_profile = BetterSelectField('Instance Profile', description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policy on the Ghost bucket', validators=[
-        OptionalValidator(),
-        RegexpValidator(
-            ghost_app_schema['environment_infos']['schema']['instance_profile']['regex']
-        )
-    ])
+    instance_profile = BetterSelectField('Instance Profile',
+                                         description='EC2 IAM should have at minimum ec2-describe-tags and s3-read-only policy on the Ghost bucket',
+                                         validators=[
+                                             OptionalValidator(),
+                                             RegexpValidator(
+                                                 ghost_app_schema['environment_infos']['schema']['instance_profile'][
+                                                     'regex']
+                                             )
+                                         ])
 
-    key_name = BetterSelectField('Key Name', description='Ghost should have the associated private key to deploy on instances', validators=[
-        OptionalValidator(),
-        RegexpValidator(
-            ghost_app_schema['environment_infos']['schema']['key_name']['regex']
-        )
-    ])
+    key_name = BetterSelectField('Key Name',
+                                 description='Ghost should have the associated private key to deploy on instances',
+                                 validators=[
+                                     OptionalValidator(),
+                                     RegexpValidator(
+                                         ghost_app_schema['environment_infos']['schema']['key_name']['regex']
+                                     )
+                                 ])
 
     public_ip_address = BooleanField('Associate a public IP address',
                                      validators=[],
                                      default=True
                                      )
 
-    root_block_device_size_min = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min']
-    root_block_device_size = IntegerField('Size (GiB)', description='Must be equal or greater than the source AMI root block size (min {min}GiB)'.format(min=root_block_device_size_min), validators=[
-        OptionalValidator(),
-        NumberRangeValidator(min=root_block_device_size_min, message='To prevent low disk space alerts, disk size should be greater than {min}GiB'.format(min=root_block_device_size_min))
-    ])
+    root_block_device_size_min = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size'][
+        'min']
+    root_block_device_size = IntegerField('Size (GiB)',
+                                          description='Must be equal or greater than the source AMI root block size (min {min}GiB)'.format(
+                                              min=root_block_device_size_min), validators=[
+            OptionalValidator(),
+            NumberRangeValidator(min=root_block_device_size_min,
+                                 message='To prevent low disk space alerts, disk size should be greater than {min}GiB'.format(
+                                     min=root_block_device_size_min))
+        ])
 
     root_block_device_name = StringField('Name', description='Empty if you want to use the default one', validators=[
         OptionalValidator(),
@@ -609,7 +687,7 @@ class EnvironmentInfosForm(Form):
 
         self.instance_profile.data = environment_infos.get('instance_profile', '')
         self.key_name.data = environment_infos.get('key_name', '')
-        self.public_ip_address.data  = environment_infos.get('public_ip_address', True)
+        self.public_ip_address.data = environment_infos.get('public_ip_address', True)
 
         self.root_block_device_size.data = environment_infos.get('root_block_device', {}).get('size', '')
         self.root_block_device_name.data = environment_infos.get('root_block_device', {}).get('name', '')
@@ -633,6 +711,7 @@ class EnvironmentInfosForm(Form):
             form_tag = self.instance_tags.entries[-1].form
             form_tag.map_from_app(tag)
 
+
 class ResourceForm(Form):
     # Disable CSRF in resource forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -642,11 +721,16 @@ class ResourceForm(Form):
         # TODO: implement resource form
         pass
 
+
 class LifecycleHooksForm(Form):
-    pre_buildimage = TextAreaField('Pre Build Image', description='Script executed at bake before SALT provisioning', validators=[])
-    post_buildimage = TextAreaField('Post Build Image', description='Script executed at bake after SALT provisioning', validators=[])
-    pre_bootstrap = TextAreaField('Pre Bootstrap', description='Script executed at bootstrap before modules deploy', validators=[])
-    post_bootstrap = TextAreaField('Post Bootstrap', description='Script executed at bootstrap after modules deploy', validators=[])
+    pre_buildimage = TextAreaField('Pre Build Image', description='Script executed at bake before SALT provisioning',
+                                   validators=[])
+    post_buildimage = TextAreaField('Post Build Image', description='Script executed at bake after SALT provisioning',
+                                    validators=[])
+    pre_bootstrap = TextAreaField('Pre Bootstrap', description='Script executed at bootstrap before modules deploy',
+                                  validators=[])
+    post_bootstrap = TextAreaField('Post Bootstrap', description='Script executed at bootstrap after modules deploy',
+                                   validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -663,6 +747,7 @@ class LifecycleHooksForm(Form):
                 self.pre_bootstrap.data = lifecycle_hooks['pre_bootstrap']
             if 'pre_bootstrap' in lifecycle_hooks:
                 self.post_bootstrap.data = lifecycle_hooks['post_bootstrap']
+
 
 class FeatureForm(Form):
     feature_name = StringField('Name', validators=[
@@ -687,6 +772,7 @@ class FeatureForm(Form):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
+
 
 class EnvvarForm(Form):
     var_key = StringField('Key', validators=[
@@ -721,20 +807,32 @@ class ModuleForm(Form):
             ghost_app_schema['modules']['schema']['schema']['path']['regex']
         )
     ])
-    module_uid = IntegerField('UID', description='File UID (User), by default it uses the ID of Ghost user on the Ghost instance', validators=[
-        OptionalValidator(),
-        NumberRangeValidator(min=0)
-    ])
-    module_gid = IntegerField('GID', description='File GID (Group), by default it uses the ID of Ghost group on the Ghost instance', validators=[
-        OptionalValidator(),
-        NumberRangeValidator(min=0)
-    ])
+    module_uid = IntegerField('UID',
+                              description='File UID (User), by default it uses the ID of Ghost user on the Ghost instance',
+                              validators=[
+                                  OptionalValidator(),
+                                  NumberRangeValidator(min=0)
+                              ])
+    module_gid = IntegerField('GID',
+                              description='File GID (Group), by default it uses the ID of Ghost group on the Ghost instance',
+                              validators=[
+                                  OptionalValidator(),
+                                  NumberRangeValidator(min=0)
+                              ])
 
     module_scope = BetterSelectField('Scope', validators=[DataRequiredValidator()], choices=get_ghost_mod_scopes())
-    module_build_pack = TextAreaField('Build Pack', description='Script executed on Ghost in order to build artifacts before packaging.', validators=[])
-    module_pre_deploy = TextAreaField('Pre Deploy', description='Script executed on each target instance *before* deploying the module.', validators=[])
-    module_post_deploy = TextAreaField('Post Deploy', description='Script executed on each target instance *after* deploying the module.', validators=[])
-    module_after_all_deploy = TextAreaField('After All Deploy', description='Script executed on Ghost after deploying the module on every instances.', validators=[])
+    module_build_pack = TextAreaField('Build Pack',
+                                      description='Script executed on Ghost in order to build artifacts before packaging.',
+                                      validators=[])
+    module_pre_deploy = TextAreaField('Pre Deploy',
+                                      description='Script executed on each target instance *before* deploying the module.',
+                                      validators=[])
+    module_post_deploy = TextAreaField('Post Deploy',
+                                       description='Script executed on each target instance *after* deploying the module.',
+                                       validators=[])
+    module_after_all_deploy = TextAreaField('After All Deploy',
+                                            description='Script executed on Ghost after deploying the module on every instances.',
+                                            validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -756,6 +854,7 @@ class ModuleForm(Form):
         if 'after_all_deploy' in module:
             self.module_after_all_deploy.data = module['after_all_deploy']
 
+
 class BluegreenForm(Form):
     alter_ego_id = HiddenField(validators=[])
     color = HiddenField(validators=[])
@@ -774,30 +873,37 @@ class BluegreenForm(Form):
             self.alter_ego_id.data = blue_green.get('alter_ego_id', '')
             self.color.data = app_color
             # Map if blue/green is enabled
-            self.enable_blue_green.data = blue_green.get('enable_blue_green', blue_green.get('alter_ego_id', None) and app_color)
+            self.enable_blue_green.data = blue_green.get('enable_blue_green',
+                                                         blue_green.get('alter_ego_id', None) and app_color)
 
     def map_to_app(self, app):
         """
         Map blue green data form to app
         """
         app['blue_green'] = {}
-        app['blue_green']['enable_blue_green'] = isinstance(self.enable_blue_green.data, bool) and self.enable_blue_green.data
+        app['blue_green']['enable_blue_green'] = isinstance(self.enable_blue_green.data,
+                                                            bool) and self.enable_blue_green.data
+
 
 class BaseAppForm(Form):
     # App properties
-    name = StringField('App name', description='This mandatory field will not be editable after app creation', validators=[
-        DataRequiredValidator(),
-        RegexpValidator(
-            ghost_app_schema['name']['regex']
-        )
-    ])
+    name = StringField('App name', description='This mandatory field will not be editable after app creation',
+                       validators=[
+                           DataRequiredValidator(),
+                           RegexpValidator(
+                               ghost_app_schema['name']['regex']
+                           )
+                       ])
 
-    env = BetterSelectField('App environment', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
-    role = BetterSelectField('App role', description='This mandatory field will not be editable after app creation', validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    env = BetterSelectField('App environment',
+                            description='This mandatory field will not be editable after app creation',
+                            validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
+    role = BetterSelectField('App role', description='This mandatory field will not be editable after app creation',
+                             validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
     # Cloud Provider
-    #Leave the following line commented to remember for further
-    #dev to manage other cloud providers than aws
-    #provider = BetterSelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
+    # Leave the following line commented to remember for further
+    # dev to manage other cloud providers than aws
+    # provider = BetterSelectField('Provider', validators=[DataRequiredValidator()], choices=get_ghost_app_providers())
     use_custom_identity = BooleanField('Use a custom Identity', validators=[])
 
     assumed_account_id = StringField('Assumed Account ID', validators=[
@@ -873,14 +979,13 @@ class BaseAppForm(Form):
     # Modules
     modules = FieldList(FormField(ModuleForm), min_entries=1)
 
-
     def map_to_app(self, app):
         """
         Map app data from form to app
         """
         if self.name:
             app['name'] = self.name.data
-        #app['provider'] = self.provider.data
+        # app['provider'] = self.provider.data
         if self.assumed_account_id:
             app['assumed_account_id'] = self.assumed_account_id.data
         if self.assumed_role_name:
@@ -985,11 +1090,15 @@ class BaseAppForm(Form):
 
         app['environment_infos']['root_block_device'] = {}
         if self.environment_infos.form.root_block_device_size.data:
-            app['environment_infos']['root_block_device']['size'] = self.environment_infos.form.root_block_device_size.data
+            app['environment_infos']['root_block_device'][
+                'size'] = self.environment_infos.form.root_block_device_size.data
         else:
-            app['environment_infos']['root_block_device']['size'] = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min'] # default value to prevent low disk space alerts
+            app['environment_infos']['root_block_device']['size'] = \
+            ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size'][
+                'min']  # default value to prevent low disk space alerts
         if self.environment_infos.form.root_block_device_name.data:
-            app['environment_infos']['root_block_device']['name'] = self.environment_infos.form.root_block_device_name.data
+            app['environment_infos']['root_block_device'][
+                'name'] = self.environment_infos.form.root_block_device_name.data
 
         app['environment_infos']['optional_volumes'] = []
         for form_opt_vol in self.environment_infos.form.optional_volumes:
@@ -1033,22 +1142,26 @@ class BaseAppForm(Form):
         app['lifecycle_hooks'] = {}
         form_lifecycle_hooks = self.lifecycle_hooks
         if form_lifecycle_hooks.pre_buildimage.data:
-            app['lifecycle_hooks']['pre_buildimage'] = b64encode_utf8(form_lifecycle_hooks.pre_buildimage.data.replace('\r\n', '\n'))
+            app['lifecycle_hooks']['pre_buildimage'] = b64encode_utf8(
+                form_lifecycle_hooks.pre_buildimage.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['pre_buildimage'] = ''
 
         if form_lifecycle_hooks.post_buildimage.data:
-            app['lifecycle_hooks']['post_buildimage'] = b64encode_utf8(form_lifecycle_hooks.post_buildimage.data.replace('\r\n', '\n'))
+            app['lifecycle_hooks']['post_buildimage'] = b64encode_utf8(
+                form_lifecycle_hooks.post_buildimage.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['post_buildimage'] = ''
 
         if form_lifecycle_hooks.pre_bootstrap.data:
-            app['lifecycle_hooks']['pre_bootstrap'] = b64encode_utf8(form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
+            app['lifecycle_hooks']['pre_bootstrap'] = b64encode_utf8(
+                form_lifecycle_hooks.pre_bootstrap.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['pre_bootstrap'] = ''
 
         if form_lifecycle_hooks.post_bootstrap.data:
-            app['lifecycle_hooks']['post_bootstrap'] = b64encode_utf8(form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
+            app['lifecycle_hooks']['post_bootstrap'] = b64encode_utf8(
+                form_lifecycle_hooks.post_bootstrap.data.replace('\r\n', '\n'))
         else:
             app['lifecycle_hooks']['post_bootstrap'] = ''
 
@@ -1067,7 +1180,6 @@ class BaseAppForm(Form):
                     feature['provisioner'] = form_feature.feature_provisioner.data
             if feature:
                 app['features'].append(feature)
-
 
     def map_to_app_modules(self, app):
         """
@@ -1091,7 +1203,8 @@ class BaseAppForm(Form):
             if form_module.module_post_deploy.data:
                 module['post_deploy'] = b64encode_utf8(form_module.module_post_deploy.data.replace('\r\n', '\n'))
             if form_module.module_after_all_deploy.data:
-                module['after_all_deploy'] = b64encode_utf8(form_module.module_after_all_deploy.data.replace('\r\n', '\n'))
+                module['after_all_deploy'] = b64encode_utf8(
+                    form_module.module_after_all_deploy.data.replace('\r\n', '\n'))
             app['modules'].append(module)
 
     def map_from_app(self, app):
@@ -1101,7 +1214,7 @@ class BaseAppForm(Form):
 
         # Populate form with app data
         self.name.data = app.get('name', '')
-        #self.provider.data = app.get('provider', DEFAULT_PROVIDER)
+        # self.provider.data = app.get('provider', DEFAULT_PROVIDER)
         self.assumed_account_id.data = app.get('assumed_account_id', '')
         self.assumed_role_name.data = app.get('assumed_role_name', '')
         self.assumed_region_name.data = app.get('assumed_region_name', '')
@@ -1213,21 +1326,22 @@ class CreateAppForm(BaseAppForm):
         super(CreateAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists
-        #Leave the following line commented to remember for further
-        #The following commented lines intend to manage other cloud providers than aws
-        #self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
-        #self.provider.data = DEFAULT_PROVIDER
+        # Leave the following line commented to remember for further
+        # The following commented lines intend to manage other cloud providers than aws
+        # self.provider.choices = [('', 'Please select a cloud provider')] + get_ghost_app_providers()
+        # self.provider.data = DEFAULT_PROVIDER
         if self.use_custom_identity.data:
             aws_connection_data = get_aws_connection_data(
-                                                            self.assumed_account_id.data,
-                                                            self.assumed_role_name.data,
-                                                            self.assumed_region_name.data
-                                                         )
+                self.assumed_account_id.data,
+                self.assumed_role_name.data,
+                self.assumed_region_name.data
+            )
         else:
-           aws_connection_data = {}
-        #provider is intended to be an application attribute
-        #self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection_data)
-        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(DEFAULT_PROVIDER, **aws_connection_data)
+            aws_connection_data = {}
+        # provider is intended to be an application attribute
+        # self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(self.provider.data, **aws_connection_data)
+        self.region.choices = [('', 'Please select region')] + get_aws_ec2_regions(DEFAULT_PROVIDER,
+                                                                                   **aws_connection_data)
         self.instance_type.choices = [('', 'Please select region first')]
         self.vpc_id.choices = [('', 'Please select region first')]
         self.autoscale.as_name.choices = [('', 'Please select region first')]
@@ -1249,8 +1363,7 @@ class EditAppForm(BaseAppForm):
         super(EditAppForm, self).__init__(*args, **kwargs)
 
         # Refresh AWS lists, check what to refresh exactly in this new version,
-        #self.provider.choices = get_ghost_app_providers()
-
+        # self.provider.choices = get_ghost_app_providers()
 
     def map_from_app(self, app):
         """
@@ -1265,11 +1378,13 @@ class EditAppForm(BaseAppForm):
 
         super(EditAppForm, self).map_from_app(app)
 
+
 class DeployModuleForm(Form):
     name = HiddenField('')
     deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
-    available_revisions = BetterSelectFieldNonValidating('Available branches and tags', validators=[], choices=[('', '-- Retrieving available revisions --')])
+    available_revisions = BetterSelectFieldNonValidating('Available branches and tags', validators=[],
+                                                         choices=[('', '-- Retrieving available revisions --')])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -1279,28 +1394,40 @@ class DeployModuleForm(Form):
         self.name.data = module.get('name', '')
         self.deploy.label.text = module.get('name', '')
 
+
 class CommandAppForm(Form):
     command = BetterSelectField('Command', validators=[DataRequiredValidator()], choices=[])
     modules = FieldList(FormField(DeployModuleForm), min_entries=1)
     deploy_id = StringField('Deploy ID', validators=[])
-    fabric_execution_strategy = BetterSelectField('Deployment strategy', validators=[], choices=[('serial', 'serial'), ('parallel', 'parallel')])
+    fabric_execution_strategy = BetterSelectField('Deployment strategy', validators=[],
+                                                  choices=[('serial', 'serial'), ('parallel', 'parallel')])
     safe_deployment = BooleanField('Deploy with Safe Deployment', validators=[])
     safe_deployment_strategy = SelectField('Safe Deployment Strategy', validators=[], choices=[])
     rolling_update = BooleanField('Use Rolling Update strategy', validators=[])
     rolling_update_strategy = SelectField('Rolling Update strategy', validators=[], choices=[])
-    swapbluegreen_strategy = SelectField('Blue Green Swap Strategy', validators=[], choices=[('overlap','Overlap --- Blue/Green without downtime but two versions could be in production at the same time.'),
-                                                                                             ('isolated', 'Isolated --- Blue/Green with a downtime but ensures that only one version is in production.')])
+    swapbluegreen_strategy = SelectField('Blue Green Swap Strategy', validators=[], choices=[('overlap',
+                                                                                              'Overlap --- Blue/Green without downtime but two versions could be in production at the same time.'),
+                                                                                             ('isolated',
+                                                                                              'Isolated --- Blue/Green with a downtime but ensures that only one version is in production.')])
     instance_type = BetterSelectField('Instance Type', validators=[], choices=[])
     skip_salt_bootstrap = BooleanField('Skip Salt Bootstrap', validators=[])
-    private_ip_address = StringField('Private IP address', validators=[RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
+    private_ip_address = StringField('Private IP address', validators=[
+        RegexpValidator("^$|^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$")])
     subnet = BetterSelectField('Subnet', validators=[], choices=[])
     prepare_bg_copy_ami = BooleanField('Copy AMI from online app', validators=[])
     purge_delete_elb = BooleanField('Destroy the temporary ELB generated by the prepare command', validators=[])
-    to_execute_script = TextAreaField('Script to execute', description='Script executed on every instance.', validators=[])
-    script_module_context = BetterSelectFieldNonValidating('Module context', validators=[], choices=[('', '-- No module context --')])
+    to_execute_script = TextAreaField('Script to execute', description='Script executed on every instance.',
+                                      validators=[])
+    script_module_context = BetterSelectFieldNonValidating('Module context', validators=[],
+                                                           choices=[('', '-- No module context --')])
 
-    execution_strategy = BetterSelectField('Execution strategy', validators=[], choices=[('single', 'On a single host'), ('serial', 'On every host in *serial*'), ('parallel', 'On every host in *parallel*')])
-    single_host_instance = BetterSelectFieldNonValidating('Instance private IP', validators=[], choices=[('', '-- Retrieving available instances --')])
+    execution_strategy = BetterSelectField('Execution strategy', validators=[], choices=[('single', 'On a single host'),
+                                                                                         ('serial',
+                                                                                          'On every host in *serial*'),
+                                                                                         ('parallel',
+                                                                                          'On every host in *parallel*')])
+    single_host_instance = BetterSelectFieldNonValidating('Instance private IP', validators=[],
+                                                          choices=[('', '-- Retrieving available instances --')])
 
     submit = SubmitField('Run Application Command')
 
@@ -1344,22 +1471,28 @@ class CommandAppForm(Form):
                 self.modules.append_entry()
                 form_module = self.modules.entries[-1].form
                 form_module.map_from_app(module)
-                self.script_module_context.choices.append( (module.get('name', ''), module.get('name', '')) )
+                self.script_module_context.choices.append((module.get('name', ''), module.get('name', '')))
+
 
 class DeleteAppForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])
-    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()], choices=[('yes', 'Yes'), ('no', 'No')])
+    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()],
+                              choices=[('yes', 'Yes'), ('no', 'No')])
 
     submit = SubmitField('Delete Application')
 
+
 class DeleteJobForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])
-    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()], choices=[('yes', 'Yes'), ('no', 'No')])
+    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()],
+                              choices=[('yes', 'Yes'), ('no', 'No')])
 
     submit = SubmitField('Delete Job')
 
+
 class CancelJobForm(Form):
     etag = HiddenField(validators=[DataRequiredValidator()])
-    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()], choices=[('yes', 'Yes'), ('no', 'No')])
+    confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()],
+                              choices=[('yes', 'Yes'), ('no', 'No')])
 
     submit = SubmitField('Cancel Job')
