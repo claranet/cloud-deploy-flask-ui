@@ -131,12 +131,19 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
     return [(ami.id, "{}/{} ({})".format(ami.owner_id, ami.id, ami.name)) for ami in amis]
 
 
-def get_default_Name_tag():
+def get_default_name_tag(app):
     """ Return the default configuration for the tag "Name"
 
         :return dict  The default tag "Name" configuration
     """
-    return {'tag_name': 'Name', 'tag_value': 'ec2.GHOST_APP_ENV.GHOST_APP_ROLE.GHOST_APP_NAME'}
+    return {
+        'tag_name': 'Name',
+        'tag_value': 'ec2.{GHOST_APP_ENV}.{GHOST_APP_ROLE}.{GHOST_APP_NAME}'.format(
+            GHOST_APP_ENV=app['env'],
+            GHOST_APP_ROLE=app['role'],
+            GHOST_APP_NAME=app['name'])
+    }
+
 
 def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     subs = []
@@ -618,8 +625,8 @@ class EnvironmentInfosForm(Form):
         instance_tags = []
         if 'instance_tags' in environment_infos:
             instance_tags = environment_infos.get('instance_tags')
-        if not instance_tags or 'Name' not in [i['tag_name'] for i in  environment_infos['instance_tags']]:
-            instance_tags.append(get_default_Name_tag())
+        if not instance_tags or 'Name' not in [i['tag_name'] for i in environment_infos['instance_tags']]:
+            instance_tags.append(get_default_name_tag(app))
         empty_fieldlist(self.instance_tags)
         for tag in instance_tags:
             self.instance_tags.append_entry()
