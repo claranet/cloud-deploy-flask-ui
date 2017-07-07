@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import ghost_display_field with context %}
 
 {% set page_title = 'Deployment %s' % (deployment['_id'] or '-')  %}
 

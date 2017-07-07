@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% from "macros.html" import ghost_menulist with context %}
+{% from "macros.html" import ghost_fieldlist with context %}
+{% from "macros.html" import ghost_fieldlist_features with context %}
 
 {% set app_color = " [{0}]".format(form.blue_green.form.color.data) if form.blue_green.form.enable_blue_green.data else "" %}
 {% set page_title = edit and ('Edit %s (%s)%s' % (form.name.data, form.env.data, app_color)) or 'Create an Application' %}
@@ -443,29 +446,3 @@
     </script>
 
 {% endblock %}
-
-{% macro ghost_fieldlist_features(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='', refresh_function='') -%}
-    <a name="features" class="anchor">&nbsp;</a>
-    <div class="panel panel-default panel-features">
-        <div class="panel-heading" style="counter-reset: group_entry;">
-            <strong>{{ group_label }}</strong>
-            <a class="btn btn-success add-entry" title="Add {{ entry_label }}"
-                onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}', true)">
-                <span class="glyphicon glyphicon-plus"></span>
-            </a>
-            <div class="form-group features-presets-group">
-                <label class="control-label" for="features-presets">Feature presets</label>
-                <select id="features-presets">
-                </select>
-                <button class="btn btn-raised btn-success btn-sm feature-import"><i class="glyphicon glyphicon-import"></i>&nbsp;&nbsp;Import</button>
-            </div>
-        </div>
-        <table class="table" id="{{ group_id_prefix }}_list">
-            <tbody>
-            {% for entry in fieldlist %}
-                {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-{%- endmacro %}

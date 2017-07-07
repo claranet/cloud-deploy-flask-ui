@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% from "macros.html" import ghost_display_field with context %}
+{% from "macros.html" import ghost_abbrev_field with context %}
 
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 {% set page_title = 'Application: %s%s' % (app['name'], app_color) %}
