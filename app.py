@@ -480,7 +480,7 @@ def web_app_edit(app_id):
         sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=True,
+    return render_template('app_edit.html', form=form, edit=True, app_id=app_id,
                            schema=ghost_app_schema, forbidden_paths=FORBIDDEN_PATH)
 
 

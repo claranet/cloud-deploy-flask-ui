@@ -4,14 +4,29 @@
 {% from "macros.html" import ghost_fieldlist_features with context %}
 
 {% set app_color = " [{0}]".format(form.blue_green.form.color.data) if form.blue_green.form.enable_blue_green.data else "" %}
-{% set page_title = edit and ('Edit %s (%s)%s' % (form.name.data, form.env.data, app_color)) or 'Create an Application' %}
+{% set page_title = edit and ('Edit %s (%s/%s) %s' % (form.name.data, form.env.data, form.role.data, app_color)) or 'Create an Application' %}
 
 {% block page_header %}
     <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
-    <ul class="nav nav-stacked">
+    {% if app_id %}
+    <ul class="nav nav-stacked action-btns">
         <li>
+            <a href="/web/apps/{{ app_id }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
+        </li>
+        <li>
+            <a href="javascript:void(0)"><button href="/web/aws/appinfos/{{ app_id }}" class="btn btn-raised btn-success app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app_id }}"><span class="fa fa-sitemap"></span> Resources details</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/{{ app_id }}/edit"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/create?clone_from={{ app_id }}"><button class="btn btn-raised btn-info"><span class="glyphicon glyphicon-duplicate"></span> Clone</button></a>
+        </li>
+        <li>
+            <a href="/web/apps/{{ app_id }}/delete"><button class="btn btn-raised btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
     </ul>
+    {% endif %}
 
 {% endblock %}
 
@@ -266,6 +281,22 @@
         {{ wtf.form_field(form.submit) }}
     </div>
     </form>
+{% if app_id %}
+<!-- Modal -->
+<div class="modal fade" id="app-infos-{{ app_id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog app-infos" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ form.name.data }} / {{ form.role.data }} / {{ form.env.data }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block page_scripts %}
@@ -277,5 +308,6 @@
         var forbidden_paths = {{ forbidden_paths | safe }}
     </script>
     <script src="{{url_for('.static', filename='scripts/app-edit.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='scripts/app-infos.js')}}?v={{current_revision}}"></script>
 
 {% endblock %}

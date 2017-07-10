@@ -3,7 +3,7 @@
 {% from "macros.html" import ghost_abbrev_field with context %}
 
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
-{% set page_title = 'Application: %s%s' % (app['name'], app_color) %}
+{% set page_title = 'Application: %s (%s/%s) %s' % (app['name'], app['env'], app['role'], app_color) %}
 
 {% block page_header %}
     <ul class="nav nav-stacked action-btns">
@@ -396,31 +396,5 @@
     </div>
 {% endblock %}
 {% block page_scripts %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(document).on('click', 'button.app-infos-btn', function(evt) {
-                $('#as-instance-details fieldset').addClass('hide');
-            });
-            $(document).on('click', '.instance-item', function(evt) {
-                evt.preventDefault();
-                instance_content = $(this).next().html();
-                $('.instance-item').removeClass('focus');
-                $(this).addClass('focus');
-                $('#as-instance-details fieldset').removeClass('hide');
-                $('#as-instance-details fieldset').html(instance_content);
-            });
-            $(document).on('click', '#as-elb a', function(evt) {
-                evt.preventDefault();
-                $('#as-elb a').removeClass('btn-colored');
-                $(this).addClass('btn-colored');
-
-                $('.instance-item').removeClass(function (index, css) {
-                    return (css.match (/(^|\s)hl-\S+/g) || []).join(' ');
-                });
-                instances = $(this).attr('data-instances');
-                color = $(this).attr('data-color');
-                $(instances).addClass('hl-'+color);
-            });
-        });
-    </script>
+    <script src="{{url_for('.static', filename='scripts/app-infos.js')}}?v={{current_revision}}"></script>
 {% endblock %}
