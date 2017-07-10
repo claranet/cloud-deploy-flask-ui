@@ -92,10 +92,10 @@
             <span>Console Output</span>
             <p>
                 <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
-                <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top"><span class="glyphicon glyphicon-arrow-up"></span></button></a>
-                <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom"><span class="glyphicon glyphicon-arrow-down"></span></button></a>
-                <a href="#" id="logCollapseAll"><button class="btn btn-default btn-xs" title="Collapse log details"><span class="fa fa-compress"></span></button></a>
-                <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode"><span class="glyphicon glyphicon-new-window"></span></button></a>
+                <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top" data-toggle="tooltip"><span class="fa fa-arrow-up"></span></button></a>
+                <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom" data-toggle="tooltip"><span class="fa fa-arrow-down"></span></button></a>
+                <a href="#" id="logCollapseAll"><button class="btn btn-default btn-xs" title="Collapse log details" data-toggle="tooltip"><span class="fa fa-compress"></span></button></a>
+                <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode" data-toggle="tooltip"><span class="fa fa-window-maximize"></span></button></a>
             </p>
         </div>
         <div id="log" class="panel-body"><p style="text-align: center; padding: 20px;">
@@ -219,7 +219,7 @@
 
                 // Color Style
                 if (cmd.indexOf(': CMD:') == -1) {
-                    $(this).addClass('info');
+                    $(this).addClass('log-info');
                 }
                 if (cmd.indexOf(': Deployment OK:') > -1
                  || cmd.indexOf(': Build image OK:') > -1) {

@@ -20,7 +20,7 @@ def app_modules_state(app):
             icon, state, text = FULLY_DEPLOYED_STATE_INFOS
         else:
             icon, state, text = HALF_DEPLOYED_STATE_INFOS
-    return Markup('<span class="fa fa-{icon} state-{state}" title="{text}"></span>'.format(
+    return Markup('<span class="fa fa-{icon} state-{state}" title="{text}" data-toggle="tooltip"></span>'.format(
         icon=icon, state=state, text=text
     ))
 
@@ -39,7 +39,7 @@ def module_state(module):
             icon, state, text = FULLY_DEPLOYED_STATE_INFOS
         else:
             icon, state, text = HALF_DEPLOYED_STATE_INFOS
-    return Markup('<span class="fa fa-{icon} state-{state}" title="{text}"></span>'.format(
+    return Markup('<span class="fa fa-{icon} state-{state}" title="{text}" data-toggle="tooltip"></span>'.format(
         icon=icon, state=state, text=text
     ))
 
