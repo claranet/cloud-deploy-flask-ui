@@ -256,7 +256,7 @@ def web_amis_list(provider, region_id):
 
 @app.route('/web/container/list')
 def web_container_image_list():
-    return jsonify(dict(get_container_images()))
+    return jsonify(dict(get_container_images(config)))
 
 @app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
 def web_app_subnets_list(provider, app_id):
@@ -369,7 +369,7 @@ def web_app_create():
         form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
         form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
-        form.build_infos.container.choices = get_container_images()
+        form.build_infos.container.choices = get_container_images(config)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
         form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
@@ -378,7 +378,7 @@ def web_app_create():
         for sg in  form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
-    form.build_infos.container.choices = get_container_images()
+    form.build_infos.container.choices = get_container_images(config)
     # Perform validation
     if form.validate_on_submit():
         app = {}
@@ -415,7 +415,7 @@ def web_app_create():
             for sg in  form.environment_infos.security_groups:
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
-    form.build_infos.container.choices = get_container_images()
+    form.build_infos.container.choices = get_container_images(config)
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=False,
@@ -457,7 +457,7 @@ def web_app_edit(app_id):
         form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
         form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
-        form.build_infos.container.choices = get_container_images()
+        form.build_infos.container.choices = get_container_images(config)
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
         form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)
@@ -466,7 +466,7 @@ def web_app_edit(app_id):
         for sg in  form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
-    form.build_infos.container.choices = get_container_images()
+    form.build_infos.container.choices = get_container_images(config)
 
     # Perform validation
     if form.validate_on_submit():
@@ -512,7 +512,7 @@ def web_app_edit(app_id):
     form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
     form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
     form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
-    form.build_infos.container.choices = get_container_images()
+    form.build_infos.container.choices = get_container_images(config)
     form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
     form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data, **aws_connection_data)
     form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(cloud_provider, form.region.data, **aws_connection_data)

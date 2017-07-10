@@ -31,7 +31,6 @@ from settings import DEFAULT_PROVIDER
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 from libs.blue_green import get_blue_green_from_app
 
-
 class OptionalVolumeForm(FlaskForm):
     device_name_block_regex = ghost_block_schema['schema']['device_name']['regex']
     device_name = StringField('Device Name',
