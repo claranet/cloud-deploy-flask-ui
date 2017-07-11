@@ -230,16 +230,16 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
     except:
         traceback.print_exc()
     return [('', '-- No Autoscale for this app --')] + [
-        (asg['AutoScalingGroupName'], '{} ({})'.format(asg['AutoScalingGroupName'], asg['LaunchConfigurationName']))
-        for asg in asgs]
+            (asg['AutoScalingGroupName'], '{} ({})'.format(asg['AutoScalingGroupName'], asg['LaunchConfigurationName']))
+            for asg in asgs]
 
 
 def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
-        asgs = conn_as.describe_auto_scaling_groups(AutoScalingGroupNames=[as_group_name], MaxRecords=1)[
-            'AutoScalingGroups']
+        asgs_page = conn_as.describe_auto_scaling_groups(AutoScalingGroupNames=[as_group_name], MaxRecords=1)
+        asgs = asgs_page['AutoScalingGroups']
         if len(asgs) > 0:
             return asgs[0]
         return None
@@ -285,8 +285,9 @@ def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, 
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
 
         lb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_MIXED)
-        for lb, instances in lb_mgr.get_instances_status_from_autoscale(as_group['AutoScalingGroupName'],
-                                                                        log_file).items():
+        lb_as_instances = lb_mgr.get_instances_status_from_autoscale(as_group['AutoScalingGroupName'],
+                                                                     log_file)
+        for lb, instances in lb_as_instances.items():
             lbs_instances.append({'elb_name': lb, 'elb_instances': [id for id, status in instances.items()]})
     except:
         traceback.print_exc()
@@ -315,8 +316,8 @@ def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role,
     autoscale_instances = {a.instance_id: a for a in as_instances}
     for instance in running_instances:
         # Instances in autoscale "Terminating:*" states are still "running" but no longer in the Load Balancer
-        if not instance.id in autoscale_instances or not autoscale_instances[instance.id].lifecycle_state in [
-            'Terminating', 'Terminating:Wait', 'Terminating:Proceed']:
+        terminating_states = ['Terminating', 'Terminating:Wait', 'Terminating:Proceed']
+        if not instance.id in autoscale_instances or not autoscale_instances[instance.id].lifecycle_state in terminating_states:
             if instance.id not in host_ids_as:
                 hosts.append(format_host_infos(instance, conn, cloud_connection, region))
         else:
@@ -562,7 +563,7 @@ class BuildInfosForm(Form):
                                ], default='admin')
 
     source_ami = BetterSelectField('Source AWS AMI',
-                                   description='Please choose an AMI compatible with Ghost provisioning', choices=[],
+                                   description='Please choose a compatible AMI', choices=[],
                                    validators=[
                                        DataRequiredValidator(),
                                        RegexpValidator(
@@ -1093,12 +1094,12 @@ class BaseAppForm(Form):
             app['environment_infos']['root_block_device'][
                 'size'] = self.environment_infos.form.root_block_device_size.data
         else:
-            app['environment_infos']['root_block_device']['size'] = \
-            ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size'][
-                'min']  # default value to prevent low disk space alerts
+            # default value to prevent low disk space alerts
+            block_min_size = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min']
+            app['environment_infos']['root_block_device']['size'] = block_min_size
         if self.environment_infos.form.root_block_device_name.data:
-            app['environment_infos']['root_block_device'][
-                'name'] = self.environment_infos.form.root_block_device_name.data
+            root_block_name = self.environment_infos.form.root_block_device_name.data
+            app['environment_infos']['root_block_device']['name'] = root_block_name
 
         app['environment_infos']['optional_volumes'] = []
         for form_opt_vol in self.environment_infos.form.optional_volumes:
