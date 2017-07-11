@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 
 from web_ui.forms.form_helper import empty_fieldlist
 from web_ui.forms.form_helper import get_wtforms_selectfield_values
@@ -31,7 +31,7 @@ from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 from libs.blue_green import get_blue_green_from_app
 
 
-class OptionalVolumeForm(Form):
+class OptionalVolumeForm(FlaskForm):
     device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]',
                               validators=[])
     volume_type = BetterSelectField('Volume Type',
@@ -52,7 +52,7 @@ class OptionalVolumeForm(Form):
         self.iops.data = optional_volume.get('iops', '')
 
 
-class InstanceTagForm(Form):
+class InstanceTagForm(FlaskForm):
     tag_name = StringField('Tag Name',
                            description='Enter a Tag name(case sensitive) except these reserved names "app_id/env/app/role/color"',
                            validators=[LengthValidator(min=1, max=127), DataRequiredValidator(),
@@ -70,7 +70,7 @@ class InstanceTagForm(Form):
 
 
 # Forms
-class AutoscaleForm(Form):
+class AutoscaleForm(FlaskForm):
     as_name = BetterSelectField('Name', choices=[], validators=[])
     enable_metrics = BooleanField('Enable Auto Scaling Metrics', validators=[])
 
@@ -109,7 +109,7 @@ class AutoscaleForm(Form):
             app['autoscale']['max'] = self.max.data
 
 
-class SafedeploymentForm(Form):
+class SafedeploymentForm(FlaskForm):
     lb_type = BetterSelectField('Load Balancer', validators=[],
                                 choices=[('elb', 'Classic Load Balancer (ELB)'), ('alb', 'Application Load Balancer'),
                                          ('haproxy', 'HAProxy')])
@@ -163,7 +163,7 @@ class SafedeploymentForm(Form):
             app['safe-deployment']['api_port'] = self.haproxy_api_port.data
 
 
-class BuildInfosForm(Form):
+class BuildInfosForm(FlaskForm):
     ssh_username = StringField('SSH Username',
                                description='ec2-user by default on AWS AMI and admin on Claranet Debian AMI',
                                validators=[
@@ -213,7 +213,7 @@ class BuildInfosForm(Form):
         app['build_infos']['subnet_id'] = self.subnet_id.data
 
 
-class EnvironmentInfosForm(Form):
+class EnvironmentInfosForm(FlaskForm):
     security_groups = FieldList(BetterSelectField('Security Group', choices=[], validators=[
         OptionalValidator(),
         RegexpValidator(
@@ -324,7 +324,7 @@ class EnvironmentInfosForm(Form):
             form_tag.map_from_app(tag)
 
 
-class ResourceForm(Form):
+class ResourceForm(FlaskForm):
     # Disable CSRF in resource forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(ResourceForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
@@ -334,7 +334,7 @@ class ResourceForm(Form):
         pass
 
 
-class LifecycleHooksForm(Form):
+class LifecycleHooksForm(FlaskForm):
     pre_buildimage = TextAreaField('Pre Build Image', description='Script executed at bake before SALT provisioning',
                                    validators=[])
     post_buildimage = TextAreaField('Post Build Image', description='Script executed at bake after SALT provisioning',
@@ -361,7 +361,7 @@ class LifecycleHooksForm(Form):
                 self.post_bootstrap.data = lifecycle_hooks['post_bootstrap']
 
 
-class FeatureForm(Form):
+class FeatureForm(FlaskForm):
     feature_name = StringField('Name', validators=[
         RegexpValidator(
             ghost_app_schema['features']['schema']['schema']['name']['regex']
@@ -386,7 +386,7 @@ class FeatureForm(Form):
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
 
 
-class EnvvarForm(Form):
+class EnvvarForm(FlaskForm):
     var_key = StringField('Key', validators=[
         RegexpValidator(
             ghost_app_schema['env_vars']['schema']['schema']['var_key']['regex']
@@ -405,7 +405,7 @@ class EnvvarForm(Form):
         self.var_value.data = envvar.get('var_value', '')
 
 
-class ModuleForm(Form):
+class ModuleForm(FlaskForm):
     module_name = StringField('Name', description='Module name: should not include special chars', validators=[
         DataRequiredValidator(),
         RegexpValidator(
@@ -467,7 +467,7 @@ class ModuleForm(Form):
             self.module_after_all_deploy.data = module['after_all_deploy']
 
 
-class BluegreenForm(Form):
+class BluegreenForm(FlaskForm):
     alter_ego_id = HiddenField(validators=[])
     color = HiddenField(validators=[])
     enable_blue_green = BooleanField('Enable Blue/Green deployment', validators=[])
@@ -497,7 +497,7 @@ class BluegreenForm(Form):
                                                             bool) and self.enable_blue_green.data
 
 
-class BaseAppForm(Form):
+class BaseAppForm(FlaskForm):
     # App properties
     name = StringField('App name', description='This mandatory field will not be editable after app creation',
                        validators=[
@@ -991,7 +991,7 @@ class EditAppForm(BaseAppForm):
         super(EditAppForm, self).map_from_app(app)
 
 
-class DeleteAppForm(Form):
+class DeleteAppForm(FlaskForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
     confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()],
                               choices=[('yes', 'Yes'), ('no', 'No')])

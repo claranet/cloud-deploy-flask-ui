@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, HiddenField, SelectField, StringField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import Regexp as RegexpValidator
@@ -9,7 +9,7 @@ from web_ui.forms.form_aws_helper import get_aws_ec2_instance_types
 from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
 
-class DeployModuleForm(Form):
+class DeployModuleForm(FlaskForm):
     name = HiddenField('')
     deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
@@ -25,7 +25,7 @@ class DeployModuleForm(Form):
         self.deploy.label.text = module.get('name', '')
 
 
-class CommandAppForm(Form):
+class CommandAppForm(FlaskForm):
     command = BetterSelectField('Command', validators=[DataRequiredValidator()], choices=[])
     modules = FieldList(FormField(DeployModuleForm), min_entries=1)
     deploy_id = StringField('Deploy ID', validators=[])

@@ -1,10 +1,10 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 
 from wtforms import HiddenField, RadioField, SubmitField
 from wtforms.validators import DataRequired as DataRequiredValidator
 
 
-class DeleteJobForm(Form):
+class DeleteJobForm(FlaskForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
     confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()],
                               choices=[('yes', 'Yes'), ('no', 'No')])
@@ -12,7 +12,7 @@ class DeleteJobForm(Form):
     submit = SubmitField('Delete Job')
 
 
-class CancelJobForm(Form):
+class CancelJobForm(FlaskForm):
     etag = HiddenField(validators=[DataRequiredValidator()])
     confirmation = RadioField('Are you sure?', validators=[DataRequiredValidator()],
                               choices=[('yes', 'Yes'), ('no', 'No')])
