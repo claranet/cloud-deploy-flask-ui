@@ -37,10 +37,10 @@ from health import get_host_cpu_label, get_host_health, HostHealth
 
 from forms.command import CommandAppForm
 from forms.app import CreateAppForm, DeleteAppForm, EditAppForm
-from forms.app import get_container_images
 from forms.job import CancelJobForm, DeleteJobForm
 from forms.form_helper import get_ghost_app_roles, get_ghost_app_envs
 from forms.form_helper import get_app_command_recommendations
+from forms.form_helper import get_container_images
 from forms.form_aws_helper import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids, get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs, get_aws_iam_instance_profiles, get_aws_as_groups
 from forms.form_aws_helper import get_ghost_app_ec2_instances, get_ghost_app_as_group, get_as_group_instances, get_elbs_instances_from_as_group, get_safe_deployment_possibilities
 from forms.form_aws_helper import get_aws_subnets_ids_from_app
