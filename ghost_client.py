@@ -55,7 +55,8 @@ def do_request(method, url, data, headers, success_message, failure_message):
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(failure_message, 'danger')
-    flash(message, 'info')
+    if message and message.strip():
+        flash(message, 'info')
     return message, result_json, status_code
 
 
