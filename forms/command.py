@@ -3,9 +3,9 @@ from wtforms import FieldList, FormField, HiddenField, SelectField, StringField,
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import Regexp as RegexpValidator
 
-from web_ui.form_helper import BetterSelectField, BetterSelectFieldNonValidating
-from web_ui.forms import empty_fieldlist
-from web_ui.forms import get_aws_ec2_instance_types
+from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating
+from web_ui.forms.form_helper import empty_fieldlist
+from web_ui.forms.form_aws_helper import get_aws_ec2_instance_types
 from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
 

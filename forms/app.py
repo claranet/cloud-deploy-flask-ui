@@ -1,18 +1,19 @@
 from flask_wtf import Form
 
-from web_ui.forms import empty_fieldlist
-from web_ui.forms import get_wtforms_selectfield_values
+from web_ui.forms.form_helper import empty_fieldlist
+from web_ui.forms.form_helper import get_wtforms_selectfield_values
 
-from web_ui.forms import get_aws_connection_data
-from web_ui.forms import get_aws_ec2_regions
-from web_ui.forms import get_default_name_tag
-from web_ui.forms import get_ghost_app_envs
-from web_ui.forms import get_ghost_app_roles
-from web_ui.forms import get_ghost_optional_volumes
-from web_ui.forms import get_ghost_mod_scopes
+from web_ui.forms.form_helper import get_default_name_tag
+from web_ui.forms.form_helper import get_ghost_app_envs
+from web_ui.forms.form_helper import get_ghost_app_roles
+from web_ui.forms.form_helper import get_ghost_optional_volumes
+from web_ui.forms.form_helper import get_ghost_mod_scopes
+
+from web_ui.forms.form_aws_helper import get_aws_connection_data
+from web_ui.forms.form_aws_helper import get_aws_ec2_regions
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField, TextAreaField, BooleanField
-from web_ui.form_helper import BetterSelectField, BetterSelectFieldNonValidating
+from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator

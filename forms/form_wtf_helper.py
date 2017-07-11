@@ -14,6 +14,7 @@ __all__ = (
     'BetterSelectFieldNonValidating',
     )
 
+
 class BetterSelectField(SelectField):
     def __init__(self, label=None, validators=None, coerce=text_type, choices=None, **kwargs):
         super(BetterSelectField, self).__init__(label, validators, **kwargs)
@@ -28,6 +29,7 @@ class BetterSelectField(SelectField):
             self.choices = self.choices + [(self.data, u'⚠ "%s" not available in choices ⚠' % self.data)]
         for value, label in self.choices:
             yield (value, label, self.coerce(value) == self.data)
+
 
 class BetterSelectFieldNonValidating(BetterSelectField):
     """
