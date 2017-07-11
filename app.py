@@ -627,9 +627,12 @@ def web_app_delete(app_id):
         local_headers = headers.copy()
         local_headers['If-Match'] = form.etag.data
 
-        message = delete_ghost_app(app_id, local_headers)
+        message, status_code = delete_ghost_app(app_id, local_headers)
 
-        return render_template('action_completed.html', message=message, form_action='delete')
+        if status_code in [200, 201, 204]:
+            return redirect(url_for('web_app_list'))
+        else:
+            return render_template('action_completed.html', message=message, form_action='delete')
     elif form.validate_on_submit and form.confirmation.data == 'no':
         flash('App "%s" has not been deleted' % app_id, 'info')
         return redirect(url_for('web_app_list'), code=301)
@@ -678,9 +681,12 @@ def web_job_delete(job_id):
         local_headers = headers.copy()
         local_headers['If-Match'] = form.etag.data
 
-        message = delete_ghost_job(job_id, local_headers)
+        message, status_code = delete_ghost_job(job_id, local_headers)
 
-        return render_template('action_completed.html', message=message, form_action='delete')
+        if status_code in [200, 201, 204]:
+            return redirect(url_for('web_job_list'))
+        else:
+            return render_template('action_completed.html', message=message, form_action='delete')
     elif form.validate_on_submit and form.confirmation.data == 'no':
         flash('Job "%s" has not been deleted' % job_id, 'info')
         return redirect(url_for('web_job_list'), code=301)
