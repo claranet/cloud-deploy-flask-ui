@@ -1,6 +1,7 @@
 from flask import Flask, flash, render_template, request, Response, jsonify, redirect, url_for, make_response
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, UserMixin, login_required
+from werkzeug.contrib.fixers import ProxyFix
 
 from base64 import b64decode
 import traceback
@@ -37,6 +38,7 @@ from forms import get_aws_connection_data, check_aws_assumed_credentials
 
 # Web UI App
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 app.config.update(
     SECRET_KEY='a random string',
@@ -274,7 +276,7 @@ def web_feature_presets_import(config):
 @app.route('/web/t-apps')
 def web_t_apps_list():
     #redirect to apps as the page was unified
-    return redirect(url_for('web_app_list', _scheme='https', _external=True), code=301)
+    return redirect(url_for('web_app_list', _scheme=request.scheme, _external=True), code=301)
 
 @app.route('/web/apps')
 def web_app_list():
@@ -630,7 +632,7 @@ def web_app_delete(app_id):
         return render_template('action_completed.html', message=message, form_action='delete')
     elif form.validate_on_submit and form.confirmation.data == 'no':
         flash('App "%s" has not been deleted' % app_id, 'info')
-        return redirect(url_for('web_app_list', _scheme='https', _external=True), code=301)
+        return redirect(url_for('web_app_list', _scheme=request.scheme, _external=True), code=301)
 
     # Get Application etag
     app = get_ghost_app(app_id)
@@ -681,7 +683,7 @@ def web_job_delete(job_id):
         return render_template('action_completed.html', message=message, form_action='delete')
     elif form.validate_on_submit and form.confirmation.data == 'no':
         flash('Job "%s" has not been deleted' % job_id, 'info')
-        return redirect(url_for('web_job_list', _scheme='https', _external=True), code=301)
+        return redirect(url_for('web_job_list', _scheme=request.scheme, _external=True), code=301)
 
     # Get job etag
     job = get_ghost_job(job_id)
