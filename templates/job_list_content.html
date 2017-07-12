@@ -42,10 +42,10 @@
         {%- endif -%}
     </td>
     <td>
-        <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-raised btn-danger" title="Cancel this job" data-toggle="tooltip" {%- if job['status'] not in cancellable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-ban-circle"></span></button></a>
-        <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-raised btn-danger" title="Delete this job" data-toggle="tooltip" {%- if job['status'] not in deletable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-trash"></span></button></a>
+        <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-raised btn-danger" title="Cancel this job" data-toggle="tooltip" {%- if job['status'] not in cancellable_job_statuses -%}disabled{%-endif-%}><i class="fa fa-stop-circle"></i></button></a>
+        <a href="/web/jobs/{{ job['_id'] }}/delete"><button class="btn btn-raised btn-danger" title="Delete this job" data-toggle="tooltip" {%- if job['status'] not in deletable_job_statuses -%}disabled{%-endif-%}><i class="fa fa-trash"></i></button></a>
         {% if app['_id'] %}
-        <a href="/web/apps/{{ app['_id'] }}/command/job/{{ job['_id'] }}"><button class="btn btn-raised btn-default" title="Run more like this" data-toggle="tooltip"><span class="fa fa-share"></span></button></a>
+        <a href="/web/apps/{{ app['_id'] }}/command/job/{{ job['_id'] }}"><button class="btn btn-raised btn-default" title="Run more like this" data-toggle="tooltip"><i class="fa fa-share"></i></button></a>
         {% endif %}
     </td>
 </tr>
