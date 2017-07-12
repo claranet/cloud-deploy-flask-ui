@@ -700,11 +700,19 @@ button.btn.dropdown-toggle {
     text-transform: inherit;
 }
 select.form-control[data-classic-select] {
-    color: white;
-    background: #999999;
     border-radius: 2px;
 }
-/*
+select.form-control[data-classic-select] {
+    /*for firefox*/
+    -moz-appearance: none;
+    /*for chrome*/
+    -webkit-appearance:none;
+}
+select.form-control[data-classic-select]::-ms-expand {
+    /*for IE10*/
+    display: none;
+}
+
 select.form-control[data-classic-select] {
   background-image:
     linear-gradient(45deg, transparent 50%, gray 50%),
@@ -734,7 +742,7 @@ select.form-control[data-classic-select]:focus {
   background-repeat: no-repeat;
   border-color: green;
   outline: 0;
-}*/
+}
 
 #as-elb {
     margin-bottom: 10px;
