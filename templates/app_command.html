@@ -308,6 +308,9 @@
                                     </button>
                                 </div>
                             </td>
+                            <td class="inline td-module-field" id="td-modules-{{ loop.index0 }}-available_revisions">
+                                {{ wtf.form_field(subform['available_revisions'], form_type='horizontal') }}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
