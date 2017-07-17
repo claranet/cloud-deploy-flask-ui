@@ -92,17 +92,23 @@
 .bootstrap-select > .dropdown-toggle.bs-placeholder:active,
 .bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
 .bootstrap-select > .dropdown-toggle.bs-placeholder:hover {
-    color:#777;
+    color:#555;
     background-color: #eee;
 }
 
-button.btn.dropdown-toggle.btn-default {
-    color: #777;
+button.btn.dropdown-toggle.btn-default,
+button.btn.dropdown-toggle.btn-default:focus {
+    color: #555;
     background-color: #eee;
+    font-size: 14px;
 }
 select.form-control[data-classic-select] {
-    color: #777;
+    color: #555;
     background-color: #eee;
+}
+.btn-group.open > .dropdown-toggle.btn, .btn-group.open > .dropdown-toggle.btn.btn-default, .btn-group-vertical.open > .dropdown-toggle.btn, .btn-group-vertical.open > .dropdown-toggle.btn.btn-default {
+    color: #555;
+    font-size: 14px;
 }
 
 /* Bootstrap Primary color - Claranet bluegrey */

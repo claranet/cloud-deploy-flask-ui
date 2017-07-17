@@ -702,13 +702,13 @@ button.btn.dropdown-toggle {
 select.form-control[data-classic-select] {
     border-radius: 2px;
 }
-select.form-control[data-classic-select] {
+select.form-control {
     /*for firefox*/
     -moz-appearance: none;
     /*for chrome*/
     -webkit-appearance:none;
 }
-select.form-control[data-classic-select]::-ms-expand {
+select.form-control::-ms-expand {
     /*for IE10*/
     display: none;
 }
