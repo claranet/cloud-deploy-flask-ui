@@ -38,7 +38,7 @@ $('input#submit').addClass('btn-raised btn-info');
 
 $.material.init();
 $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
 })
 
 $(document).ready(function() {

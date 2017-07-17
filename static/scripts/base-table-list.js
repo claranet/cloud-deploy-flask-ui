@@ -31,6 +31,7 @@ function fetchNextPage() {
                     $('tr#loadmoreajaxloader td').hide();
                     TableList.bottomReached = true;
                 }
+                $('[data-toggle="tooltip"]').tooltip();
             }
         }));
     }
