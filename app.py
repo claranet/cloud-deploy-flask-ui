@@ -346,9 +346,13 @@ def web_app_create():
         app = {}
         form.map_to_app(app)
 
-        message, result = create_ghost_app(app)
+        message, result, status_code = create_ghost_app(app)
         app_id = result['_id'] if '_id' in result else None
-        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=app_id)
+        cmd_recommendations = get_app_command_recommendations(app_id)
+        return render_template('action_completed.html', message=message, action_object_type='apps',
+                               action_object_id=app_id,
+                               status_code=status_code,
+                               cmd_recommendations=cmd_recommendations)
 
     if clone_from_app:
         form.map_from_app(clone_from_app)
@@ -435,13 +439,16 @@ def web_app_edit(app_id):
         app = {}
         form.map_to_app(app)
 
-        message = update_ghost_app(app_id, local_headers, app)
+        message, status_code = update_ghost_app(app_id, local_headers, app)
         cmd_recommendations = get_app_command_recommendations(app_id)
 
         #if form.update_manifest.data:
         #TODO Perform Manifest update
 
-        return render_template('action_completed.html', message=message, action_object_type='apps', action_object_id=app_id, cmd_recommendations=cmd_recommendations)
+        return render_template('action_completed.html', message=message, action_object_type='apps',
+                               action_object_id=app_id,
+                               status_code=status_code,
+                               cmd_recommendations=cmd_recommendations)
 
     # Get App data on first access
     if not form.etag.data:

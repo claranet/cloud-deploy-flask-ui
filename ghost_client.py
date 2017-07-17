@@ -184,7 +184,7 @@ def create_ghost_app(app):
     message, result, status_code = do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers,
                                               success_message='Application created',
                                               failure_message='Application creation failed')
-    return message, result
+    return message, result, status_code
 
 
 def update_ghost_app(app_id, local_headers, app):
@@ -192,7 +192,7 @@ def update_ghost_app(app_id, local_headers, app):
                                               headers=local_headers,
                                               success_message='Application "{}" updated'.format(app_id),
                                               failure_message='Application "{}" update failed'.format(app_id))
-    return message
+    return message, status_code
 
 
 def delete_ghost_app(app_id, local_headers):

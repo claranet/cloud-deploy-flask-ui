@@ -29,7 +29,7 @@
         </li>
     </ul>
     {% endif %}
-    {% if action_object_type == 'apps' and cmd_recommendations and not message.startswith('{"_status": "ERR"'): %}
+    {% if cmd_recommendations and status_code and status_code in [200, 201, 204] %}
         {% include 'app_recommendations_content.html' %}
     {% endif %}
 {% endblock %}
