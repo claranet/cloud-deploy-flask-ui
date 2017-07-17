@@ -149,9 +149,10 @@
             $('#app_options_wrapper').slideDown('slow');
         }
     });
-})();
+    $('.app-actions a, #navbar li a').click(function(evt) {
+        return confirm('Do you want to leave this page without saving your modifications?');
+    });
 
-(function() {
     initCodeMirror();
 })();
 

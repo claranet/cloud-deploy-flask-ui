@@ -11,18 +11,15 @@
     {% if app_id %}
     <ul class="nav nav-stacked action-btns">
         <li>
-            <a href="/web/apps/{{ app_id }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
+            <a href="/web/apps/{{ app_id }}/command" target="_blank"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
         </li>
         <li>
             <a href="javascript:void(0)"><button href="/web/aws/appinfos/{{ app_id }}" class="btn btn-raised btn-success app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app_id }}"><span class="fa fa-sitemap"></span> Resources details</button></a>
         </li>
-        <li>
-            <a href="/web/apps/{{ app_id }}/edit"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
-        </li>
-        <li>
+        <li class="app-actions">
             <a href="/web/apps/create?clone_from={{ app_id }}"><button class="btn btn-raised btn-info"><span class="glyphicon glyphicon-duplicate"></span> Clone</button></a>
         </li>
-        <li>
+        <li class="app-actions">
             <a href="/web/apps/{{ app_id }}/delete"><button class="btn btn-raised btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
     </ul>
