@@ -8,10 +8,11 @@
     <p>
         <span>
             <a href="/web/apps/{{ action_object_id }}/command/{{ cmd }}" target="_blank"><button class="btn btn-xs btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> {{ cmd }}</button></a>
-            Because the <strong>{{ field }}</strong> attribute has been modified
-            on the <strong>{{ updated }}</strong> by <strong>{{ user }}</strong>
-            and the <strong>{{ cmd }}</strong> command was not run since then, the <strong>{{ cmd }}</strong> command has to be run to make sure everything is up to date and prevent unexpected behavior.
+            <strong>{{ field }}</strong> modified: command <strong>{{ cmd }}</strong> should be ran again.
         </span>
+        <small>
+            Changes made by <strong>{{ user }}</strong> on the <strong>{{ updated }}</strong>.
+        </small>
     </p>
     {% endfor %}
 </div>
