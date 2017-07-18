@@ -24,6 +24,7 @@ url_jobs = API_BASE_URL + '/jobs'
 url_commands = API_BASE_URL + '/commands'
 url_deployments = API_BASE_URL + '/deployments'
 
+
 # Helpers
 def format_success_message(success_message, result):
     """
@@ -35,8 +36,10 @@ def format_success_message(success_message, result):
     links = result.get('_links', [])
     if 'self' in links:
         link = links['self']
-        formatted_message += ": <a href='/web/{href}' title='{title}'>{href}</a>".format(href=link.get('href', ''), title=link.get('title', ''))
+        formatted_message += ": <a href='/web/{href}' title='{title}'>{href}</a>".format(href=link.get('href', ''),
+                                                                                         title=link.get('title', ''))
     return Markup(formatted_message)
+
 
 def do_request(method, url, data, headers, success_message, failure_message):
     try:
@@ -55,6 +58,7 @@ def do_request(method, url, data, headers, success_message, failure_message):
     flash(message, 'info')
     return message, result_json
 
+
 def handle_response_status_code(status_code):
     if status_code >= 300:
         raise default_exceptions[status_code]
@@ -62,6 +66,7 @@ def handle_response_status_code(status_code):
 
 def test_ghost_auth(user):
     return requests.head(API_BASE_URL, headers=headers, auth=user.auth)
+
 
 def get_ghost_envs(query=None):
     try:
@@ -84,6 +89,7 @@ def get_ghost_envs(query=None):
         envs_list[0] = 'Failed to retrieve Envs'
 
     return envs_list
+
 
 def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name=None):
     try:
@@ -118,6 +124,7 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
         apps = ['Failed to retrieve Apps']
 
     return apps
+
 
 def get_ghost_app(app_id, embed_deployments=False):
     try:
@@ -154,7 +161,8 @@ def get_ghost_app(app_id, embed_deployments=False):
             if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
                 try:
                     last_deployment_timestamp = module['last_deployment'].get('timestamp', None)
-                    module['last_deployment']['_created'] = datetime.utcfromtimestamp(last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
+                    module['last_deployment']['_created'] = datetime.utcfromtimestamp(
+                        last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
                 except:
                     traceback.print_exc()
         # Features checks
@@ -168,16 +176,24 @@ def get_ghost_app(app_id, embed_deployments=False):
         app = {}
     return app
 
+
 def create_ghost_app(app):
-    return do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers, success_message='Application created', failure_message='Application creation failed')
+    return do_request(requests.post, url=url_apps, data=json.dumps(app), headers=headers,
+                      success_message='Application created', failure_message='Application creation failed')
+
 
 def update_ghost_app(app_id, local_headers, app):
-    message, result = do_request(requests.patch, url=url_apps + '/' + app_id, data=json.dumps(app), headers=local_headers, success_message='Application updated', failure_message='Application update failed')
+    message, result = do_request(requests.patch, url=url_apps + '/' + app_id, data=json.dumps(app),
+                                 headers=local_headers, success_message='Application updated',
+                                 failure_message='Application update failed')
     return message
 
+
 def delete_ghost_app(app_id, local_headers):
-    message, result = do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers, success_message='Application deleted', failure_message='Application deletion failed')
+    message, result = do_request(requests.delete, url=url_apps + '/' + app_id, data=None, headers=local_headers,
+                                 success_message='Application deleted', failure_message='Application deletion failed')
     return message
+
 
 def get_ghost_jobs(query=None, page=None):
     try:
@@ -185,7 +201,7 @@ def get_ghost_jobs(query=None, page=None):
         if query:
             url += "&where=" + query
         if page:
-            url += "&page="  + page
+            url += "&page=" + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         jobs = result.json().get('_items', [])
@@ -203,6 +219,7 @@ def get_ghost_jobs(query=None, page=None):
 
     return jobs
 
+
 def get_ghost_job(job_id):
     try:
         url = url_jobs + '/' + job_id + '?embedded={"app_id": 1}'
@@ -216,6 +233,7 @@ def get_ghost_job(job_id):
         job = {}
     return job
 
+
 def get_ghost_job_commands():
     try:
         result = requests.get(url_commands, headers=headers, auth=current_user.auth)
@@ -227,6 +245,7 @@ def get_ghost_job_commands():
         flash(message, 'danger')
         commands = [('Error', 'Failed to retrieve commands')]
     return commands
+
 
 def create_ghost_job(app_id, form, headers):
     job = {}
@@ -324,17 +343,24 @@ def create_ghost_job(app_id, form, headers):
     if len(options) > 0:
         job['options'] = options
 
-    message, result = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers, success_message='Job created', failure_message='Job creation failed')
+    message, result = do_request(requests.post, url=url_jobs, data=json.dumps(job), headers=headers,
+                                 success_message='Job created', failure_message='Job creation failed')
 
     return message
+
 
 def delete_ghost_job(job_id, local_headers):
-    message, result = do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers, success_message='Job deleted', failure_message='Job deletion failed')
+    message, result = do_request(requests.delete, url=url_jobs + '/' + job_id, data=None, headers=local_headers,
+                                 success_message='Job deleted', failure_message='Job deletion failed')
     return message
 
+
 def cancel_ghost_job(job_id, local_headers):
-    message, result = do_request(requests.delete, url=url_jobs + '/' + job_id + '/enqueueings', data=None, headers=local_headers, success_message='Job cancelled', failure_message='Job cancellation failed')
+    message, result = do_request(requests.delete, url=url_jobs + '/' + job_id + '/enqueueings', data=None,
+                                 headers=local_headers, success_message='Job cancelled',
+                                 failure_message='Job cancellation failed')
     return message
+
 
 def get_ghost_deployments(query=None, page=None):
     try:
@@ -342,7 +368,7 @@ def get_ghost_deployments(query=None, page=None):
         if query:
             url += "&where=" + query
         if page:
-            url += "&page="  + page
+            url += "&page=" + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         deployments = result.json().get('_items', [])
@@ -358,6 +384,7 @@ def get_ghost_deployments(query=None, page=None):
         deployments = ['Failed to retrieve Deployments']
 
     return deployments
+
 
 def get_ghost_deployment(deployment_id):
     try:
