@@ -19,6 +19,7 @@ from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
 from ghost_tools import config, CURRENT_REVISION, boolify
+from ghost_api import FORBIDDEN_PATH
 from ghost_client import get_ghost_envs
 from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
@@ -374,7 +375,8 @@ def web_app_create():
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=False, schema=ghost_app_schema)
+    return render_template('app_edit.html', form=form, edit=False,
+                           schema=ghost_app_schema, forbidden_paths=FORBIDDEN_PATH)
 
 @app.route('/web/apps/<app_id>', methods=['GET'])
 def web_app_view(app_id):
@@ -466,7 +468,8 @@ def web_app_edit(app_id):
         sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
     # Display default template in GET case
-    return render_template('app_edit.html', form=form, edit=True, schema=ghost_app_schema)
+    return render_template('app_edit.html', form=form, edit=True,
+                           schema=ghost_app_schema, forbidden_paths=FORBIDDEN_PATH)
 
 @app.route('/web/apps/<app_id>/command', methods=['GET', 'POST'])
 def web_app_command(app_id):
