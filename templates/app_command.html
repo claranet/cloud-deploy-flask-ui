@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
-{% set page_title = 'Run Command on %s (%s)%s' % (app['name'], app['env'], app_color) %}
+{% set page_title = 'Run Command on %s (%s/%s) %s' % (app['name'], app['env'], app['role'], app_color) %}
 
 {% block page_header %}
     <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">

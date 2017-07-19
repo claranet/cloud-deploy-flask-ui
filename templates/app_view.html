@@ -4,9 +4,10 @@
 
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 {% set page_title = 'Application: %s (%s/%s) %s' % (app['name'], app['env'], app['role'], app_color) %}
+{% set page_title_class = 'to-left' %}
 
 {% block page_header %}
-    <ul class="nav nav-stacked action-btns">
+    <ul class="nav nav-stacked action-btns to-right">
         <li>
             <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
         </li>

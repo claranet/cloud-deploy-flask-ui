@@ -5,11 +5,12 @@
 
 {% set app_color = " [{0}]".format(form.blue_green.form.color.data) if form.blue_green.form.enable_blue_green.data else "" %}
 {% set page_title = edit and ('Edit %s (%s/%s) %s' % (form.name.data, form.env.data, form.role.data, app_color)) or 'Create an Application' %}
+{% set page_title_class = 'to-left' %}
 
 {% block page_header %}
     <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
     {% if app_id %}
-    <ul class="nav nav-stacked action-btns">
+    <ul class="nav nav-stacked action-btns to-right">
         <li>
             <a href="/web/apps/{{ app_id }}/command" target="_blank"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
         </li>

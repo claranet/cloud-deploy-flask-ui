@@ -69,7 +69,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#" class="">{% if current_user.is_authenticated %}Hi {{ current_user.id }}!{% endif %}</a></li>
-                    <li>{% if current_user.is_authenticated %}<a href="https://login:@{{request.headers['Host']}}/web/apps" class="" title="Logout"><i class="fa fa-sign-out"></i></a>{% endif %}</li>
+                    <li>{% if current_user.is_authenticated %}<a href="https://login:@{{request.headers['Host']}}/web/apps" class="" title="Logout" data-toggle="tooltip"><i class="fa fa-sign-out"></i></a>{% endif %}</li>
                 </ul>
             </div>
         </div>
@@ -77,7 +77,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="ghost-titlebar">
+    <div class="ghost-titlebar {{ page_title_class }}">
         <h1 title="{{ page_title }}">{{ page_title }}</h1>
 
         <div id="ajaxSpinnerContainer">
@@ -86,7 +86,8 @@
 
         {% block page_header %}
         {% endblock %}
-        {{ util.flashed_messages() }}  
+        {{ util.flashed_messages() }}
+        <hr />
     </div>
 
     <div class="container" role="main">

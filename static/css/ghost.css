@@ -84,9 +84,9 @@ button.navbar-toggle {
     padding: 5px 15px;
     font-weight: bold;
 }
-.nav.navbar-nav li > a:hover {
+/*.nav.navbar-nav li > a:hover {
     background-color: #eee;
-}
+}*/
 #navbar ul.nav.navbar-nav {
     height: auto;
 }
@@ -154,6 +154,19 @@ span.index:after {
     text-overflow: ellipsis;
     font-size: 20px;
     margin: 5px 0 0 0;
+}
+.ghost-titlebar.to-left h1 {
+    float: left;
+    padding-top: 17px;
+}
+.ghost-titlebar .action-btns.to-right {
+    float: right;
+}
+.ghost-titlebar hr {
+    clear: both;
+    border: none;
+    margin: 0;
+    padding: 0;
 }
 #ajaxSpinnerContainer {
     position: absolute;
@@ -633,7 +646,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .log-panel.fullscreen {
     position: fixed;
     bottom: 30px;
-    top: 130px;
+    top: 85px;
     left: 10px;
     right: 10px;
 }
@@ -679,7 +692,7 @@ label.control-label
     color: #555;
     padding-top: 0;
 }
-#app-view label.control-label {
+label.control-label {
     margin-top: 5px;
 }
 .navbar-nav>li.filter> .input-group input::-webkit-input-placeholder { font-size: 12px; }
@@ -762,6 +775,15 @@ select.form-control[data-classic-select]:focus {
 @media (max-width: 1769px) {
     .nav-stacked>li {
         float: left;
+    }
+}
+
+@media (max-width: 768px) {
+    .ghost-titlebar .action-btns li a .btn {
+        font-size: 0;
+    }
+    .ghost-titlebar .action-btns li a .btn .glyphicon {
+        font-size: 12px;
     }
 }
 

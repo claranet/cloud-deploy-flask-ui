@@ -3,11 +3,12 @@
 {% from "macros.html" import ghost_abbrev_field with context %}
 
 {% set page_title = 'Job %s' % (job['_id'] or '-')  %}
+{% set page_title_class = 'to-left' %}
 {% set app = job['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 
 {% block page_header %}
-    <ul class="nav nav-stacked action-btns">
+    <ul class="nav nav-stacked action-btns to-right">
         <li>
             <a href="/web/jobs/{{ job['_id'] }}/cancel"><button class="btn btn-raised btn-danger" {%- if job['status'] not in cancellable_job_statuses -%}disabled{%-endif-%}><span class="glyphicon glyphicon-ban-circle"></span> Cancel</button></a>
         </li>
