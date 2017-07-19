@@ -126,8 +126,4 @@ $(document).ready(function() {
         color = $(this).attr('data-color');
         $(instances).addClass('hl-'+color);
     });
-    $(document).on('click', '#appListViewToggle', function(evt) {
-        evt.preventDefault();
-        window.location.href = '/web/t-apps#apps-{{ request.args.get("g-env") }}';
-    });
 });

@@ -608,6 +608,10 @@ def web_app_module_last_revision(app_id, module):
 def web_app_get_safe_deployment_possibilities(app_id):
     # Get App data
     app = get_ghost_app(app_id)
+    if not app:
+        r = jsonify({'error': 'invalid app ID'})
+        r.status_code = 400
+        return r
     return jsonify(dict(get_safe_deployment_possibilities(app)))
 
 @app.route('/web/apps/<app_id>/module/<module_name>/available-revisions')

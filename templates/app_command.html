@@ -47,6 +47,10 @@
     <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
+    <script type="text/javascript">
+        var app_id = "{{ app['_id'] }}";
+        var app_region = "{{ app['region'] }}";
+    </script>
     <script src="{{url_for('.static', filename='scripts/app-command.js')}}?v={{current_revision}}"></script>
 {% endblock %}
 

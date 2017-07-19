@@ -1,112 +1,123 @@
+function show_options_fields()  {
+    $('.wrap').hide();
+    if ($('#command').val() == 'deploy') {
+        $('.wrap.modules').show();
+        $('.wrap.fabric_execution_strategy').show();
+        $('.wrap.safe_deployment').show();
+    } else if ($('#command').val() == 'redeploy') {
+        $('.wrap.deploy_id').show();
+        $('.wrap.fabric_execution_strategy').show();
+        $('.wrap.safe_deployment').show();
+    } else if ($('#command').val() == 'recreateinstances') {
+        $('.wrap.rolling_update').show();
+    } else if ($('#command').val() == 'buildimage') {
+        $('.wrap.instance_type').show();
+        $('.wrap.skip_salt_bootstrap').show();
+    } else if ($('#command').val() == 'createinstance') {
+        $('.wrap.subnet').show();
+        $('.wrap.private_ip_address').show();
+        if ($('#subnet option').first().val() == '') {
+            /*only update if needed*/
+            get_app_subnets(app_id);
+        }
+    } else if ($('#command').val() == 'executescript') {
+        $('.wrap.to_execute_script').show();
+        $('.wrap.script_module_context').show();
+        $('.wrap.execution_strategy').show();
+        initCodeMirror();
+        refresh_execute_script_fields();
+    /* BlueGreen commands */
+    } else if ($('#command').val() == 'preparebluegreen') {
+        $('.wrap.prepare_bg_copy_ami').show();
+    } else if ($('#command').val() == 'swapbluegreen') {
+        $('.wrap.swapbluegreen_strategy').show();
+    } else if ($('#command').val() == 'purgebluegreen') {
+        $('.wrap.purge_delete_elb').show();
+    }
+}
+
+function refresh_options_list() {
+    $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option, #single_host_instance option, #execution_strategy option').each(function() {
+        cmd = $(this).val();
+        desc = $(this).text();
+        $(this).text(cmd);
+        $(this).attr('data-subtext', ' - ' + desc);
+    });
+    $('#command, #safe_deployment_strategy, #rolling_update_strategy, #single_host_instance, #execution_strategy').selectpicker('refresh');
+}
+
+function get_app_subnets(app_id) {
+    $('#subnet').find('option').remove();
+    $.ajax("/web/aws/appinfos/" + app_id +"/subnet/ids").done(function(data) {
+        // Update Subnets select input options
+        $.each(data, function(key, value) {
+            $('#subnet').append('<option value=' + key + '>' + value + '</option>');
+        });
+        $("#subnet option:nth-child(2)").attr("selected", "selected");
+        $('#subnet').selectpicker('refresh');
+    }).fail(function() {
+        alert("Failed to retrieve Subnet for App " + app_id);
+    });
+}
+
+function get_app_safe_deployment_possibilities(select_id, mode) {
+    if (mode != 'append') {
+        $(select_id).find('option').remove();
+    }
+    $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
+        $.each(data, function(key, value) {
+        $(select_id).append('<option value=' + key + '>' + value + '</option>');
+        });
+        refresh_options_list();
+    }).fail(function() {
+        alert("Failed to retrieve Safe Strategies");
+    });
+}
+
+function get_app_ec2_possibilities() {
+    $('#single_host_instance').find('option').remove();
+    $.ajax("/web/aws/regions/" + app_region + "/ec2/" + app_id + "/infos").done(function(data) {
+        $.each(data, function(key, value) {
+        $('#single_host_instance').append('<option value=' + key + '>' + value + '</option>');
+        });
+        refresh_options_list();
+    }).fail(function() {
+        alert("Failed to retrieve Safe Strategies");
+    });
+}
+
+function refresh_safe_deploy_options(update_possibilities) {
+    if ($('#safe_deployment').is(':checked')) {
+        $('.wrap.safe_deployment_strategy').show();
+        if (update_possibilities) {
+            get_app_safe_deployment_possibilities('#safe_deployment_strategy');
+        }
+    } else {
+        $('.wrap.safe_deployment_strategy').hide();
+    }
+    if ($('#rolling_update').is(':checked')) {
+        $('.wrap.rolling_update_strategy').show();
+        if (update_possibilities) {
+            get_app_safe_deployment_possibilities('#rolling_update_strategy');
+        }
+    } else {
+        $('.wrap.rolling_update_strategy').hide();
+    }
+}
+
+function refresh_execute_script_fields() {
+    if ($('#execution_strategy').val() == 'single') {
+        $('.wrap.single_host_instance').show();
+        $('.wrap.safe_deployment_strategy').hide();
+        get_app_ec2_possibilities();
+    } else {
+        $('.wrap.single_host_instance').hide();
+        $('.wrap.safe_deployment_strategy').show();
+        get_app_safe_deployment_possibilities('#safe_deployment_strategy');
+    }
+}
+
 (function() {
-    function show_options_fields()  {
-        $('.wrap').hide();
-        if ($('#command').val() == 'deploy') {
-            $('.wrap.modules').show();
-            $('.wrap.fabric_execution_strategy').show();
-            $('.wrap.safe_deployment').show();
-        } else if ($('#command').val() == 'redeploy') {
-            $('.wrap.deploy_id').show();
-            $('.wrap.fabric_execution_strategy').show();
-            $('.wrap.safe_deployment').show();
-        } else if ($('#command').val() == 'recreateinstances') {
-            $('.wrap.rolling_update').show();
-        } else if ($('#command').val() == 'buildimage') {
-            $('.wrap.instance_type').show();
-            $('.wrap.skip_salt_bootstrap').show();
-        } else if ($('#command').val() == 'createinstance') {
-            $('.wrap.subnet').show();
-            $('.wrap.private_ip_address').show();
-            if ($('#subnet option').first().val() == '') {
-                /*only update if needed*/
-                get_app_subnets("{{ app['_id'] }}");
-            }
-        } else if ($('#command').val() == 'executescript') {
-            $('.wrap.to_execute_script').show();
-            $('.wrap.script_module_context').show();
-            $('.wrap.execution_strategy').show();
-            initCodeMirror();
-            refresh_execute_script_fields();
-        /* BlueGreen commands */
-        } else if ($('#command').val() == 'preparebluegreen') {
-            $('.wrap.prepare_bg_copy_ami').show();
-        } else if ($('#command').val() == 'swapbluegreen') {
-            $('.wrap.swapbluegreen_strategy').show();
-        } else if ($('#command').val() == 'purgebluegreen') {
-            $('.wrap.purge_delete_elb').show();
-        }
-    }
-
-    function refresh_options_list() {
-        $('#command option, #safe_deployment_strategy option, #rolling_update_strategy option, #single_host_instance option, #execution_strategy option').each(function() {
-            cmd = $(this).val();
-            desc = $(this).text();
-            $(this).text(cmd);
-            $(this).attr('data-subtext', ' - ' + desc);
-        });
-        $('#command, #safe_deployment_strategy, #rolling_update_strategy, #single_host_instance, #execution_strategy').selectpicker('refresh');
-    }
-
-    function get_app_subnets(app_id) {
-        $('#subnet').find('option').remove();
-        $.ajax("/web/aws/appinfos/" + app_id +"/subnet/ids").done(function(data) {
-            // Update Subnets select input options
-            $.each(data, function(key, value) {
-                $('#subnet').append('<option value=' + key + '>' + value + '</option>');
-            });
-            $("#subnet option:nth-child(2)").attr("selected", "selected");
-            $('#subnet').selectpicker('refresh');
-        }).fail(function() {
-            alert("Failed to retrieve Subnet for App " + app_id);
-        });
-    }
-
-    function get_app_safe_deployment_possibilities(select_id, mode) {
-        app_id = "{{ app['_id'] }}";
-        if (mode != 'append') {
-            $(select_id).find('option').remove();
-        }
-        $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
-            $.each(data, function(key, value) {
-            $(select_id).append('<option value=' + key + '>' + value + '</option>');
-            });
-            refresh_options_list();
-        }).fail(function() {
-            alert("Failed to retrieve Safe Strategies");
-        });
-    }
-
-    function get_app_ec2_possibilities() {
-        $('#single_host_instance').find('option').remove();
-        $.ajax("/web/aws/regions/{{ app['region'] }}/ec2/{{ app['_id'] }}/infos").done(function(data) {
-            $.each(data, function(key, value) {
-            $('#single_host_instance').append('<option value=' + key + '>' + value + '</option>');
-            });
-            refresh_options_list();
-        }).fail(function() {
-            alert("Failed to retrieve Safe Strategies");
-        });
-    }
-
-    function refresh_safe_deploy_options(update_possibilities) {
-        if ($('#safe_deployment').is(':checked')) {
-            $('.wrap.safe_deployment_strategy').show();
-            if (update_possibilities) {
-                get_app_safe_deployment_possibilities('#safe_deployment_strategy');
-            }
-        } else {
-            $('.wrap.safe_deployment_strategy').hide();
-        }
-        if ($('#rolling_update').is(':checked')) {
-            $('.wrap.rolling_update_strategy').show();
-            if (update_possibilities) {
-                get_app_safe_deployment_possibilities('#rolling_update_strategy');
-            }
-        } else {
-            $('.wrap.rolling_update_strategy').hide();
-        }
-    }
-
     show_options_fields();
     $('#command').change(function() {
         show_options_fields();
@@ -117,18 +128,6 @@
     });
 
     refresh_options_list();
-
-    function refresh_execute_script_fields() {
-        if ($('#execution_strategy').val() == 'single') {
-            $('.wrap.single_host_instance').show();
-            $('.wrap.safe_deployment_strategy').hide();
-            get_app_ec2_possibilities();
-        } else {
-            $('.wrap.single_host_instance').hide();
-            $('.wrap.safe_deployment_strategy').show();
-            get_app_safe_deployment_possibilities('#safe_deployment_strategy');
-        }
-    }
 
     $('#execution_strategy').change(function() {
         refresh_execute_script_fields();
@@ -150,7 +149,6 @@
 })();
 
 function ghost_update_command_deploy_revision(module_name, revision_id) {
-    app_id = "{{ app['_id'] }}";
     $.ajax("/web/apps/" + app_id + "/command/module/" + module_name).done(function(data) {
         // Update revision input default
         $('#' + revision_id).val(data);
@@ -160,7 +158,6 @@ function ghost_update_command_deploy_revision(module_name, revision_id) {
 }
 
 function ghost_update_command_deploy_available_revisions(dom_module_prefix, module_name) {
-    app_id = "{{ app['_id'] }}";
     $('select[id=' + dom_module_prefix + '-available_revisions]').find('option').remove();
     $.ajax("/web/apps/" + app_id + "/module/" + module_name + "/available-revisions").done(function(data) {
         // Update available_revisionss select
