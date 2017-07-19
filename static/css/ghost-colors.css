@@ -86,6 +86,19 @@
 #as-elb a.btn-success.btn-colored, .hl-success {border: 1px solid #4caf50}
 #as-elb a.btn-info.btn-colored,    .hl-info    {border: 1px solid #03a9f4}
 #as-elb a.btn-warning.btn-colored, .hl-warning {border: 1px solid #fbc02d}
+#as-elb a.btn-danger.btn-colored,  .hl-danger  {border: 1px solid #F44336}
+
+/* Bootstrap callout colors */
+.bs-callout-primary{border-left-color:#415560}
+.bs-callout-primary h4{color:#415560}
+.bs-callout-danger{border-left-color:#F44336}
+.bs-callout-danger h4{color:#F44336}
+.bs-callout-warning{border-left-color:#fbc02d}
+.bs-callout-warning h4{color:#fbc02d}
+.bs-callout-info{border-left-color:#03a9f4}
+.bs-callout-info h4{color:#03a9f4}
+.bs-callout-success{border-left-color:#4caf50}
+.bs-callout-success h4{color:#4caf50}
 
 /* Bootstrap Select */
 .bootstrap-select > .dropdown-toggle.bs-placeholder,
