@@ -93,10 +93,10 @@
             <span>Console Output</span>
             <p>
                 <span class="text-muted"><small id="scrollstate"></small>&nbsp;</span>
-                <a href="#" id="logScrollTop"><button class="btn btn-default btn-xs" title="Scroll top" data-toggle="tooltip"><span class="fa fa-arrow-up"></span></button></a>
-                <a href="#" id="logScrollBottom"><button class="btn btn-default btn-xs" title="Scroll bottom" data-toggle="tooltip"><span class="fa fa-arrow-down"></span></button></a>
-                <a href="#" id="logCollapseAll"><button class="btn btn-default btn-xs" title="Collapse log details" data-toggle="tooltip"><span class="fa fa-compress"></span></button></a>
-                <a href="#" id="logFullscreen"><button class="btn btn-default btn-xs" title="Fullscreen mode" data-toggle="tooltip"><span class="fa fa-window-maximize"></span></button></a>
+                <a href="#" id="logScrollTop"><button class="btn btn-simple btn-default btn-xs" title="Scroll top" data-toggle="tooltip"><span class="fa fa-arrow-up"></span></button></a>
+                <a href="#" id="logScrollBottom"><button class="btn btn-simple btn-default btn-xs" title="Scroll bottom" data-toggle="tooltip"><span class="fa fa-arrow-down"></span></button></a>
+                <a href="#" id="logCollapseAll"><button class="btn btn-simple btn-default btn-xs" title="Collapse log details" data-toggle="tooltip"><span class="fa fa-compress"></span></button></a>
+                <a href="#" id="logFullscreen"><button class="btn btn-simple btn-default btn-xs" title="Fullscreen mode" data-toggle="tooltip"><span class="fa fa-window-maximize"></span></button></a>
             </p>
         </div>
         <div id="log" class="panel-body"><p style="text-align: center; padding: 20px;">
@@ -107,8 +107,7 @@
 {% endblock %}
 
 {% block page_scripts %}
-    <script type="text/javascript"
-        src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
+    <script type="text/javascript"  src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             var currentStatus = "{{ job['status'] }}";
@@ -152,7 +151,7 @@
         $('#logScrollTop').click(function(evt) {
             evt.preventDefault();
             scrollActivated = false;
-            $('#logScrollBottom button').removeClass('active');
+            $('#logScrollBottom button').addClass('btn-simple');
             $('#scrollstate').html(textNoScrolling);
             $log.animate({ scrollTop: 0 }, "slow");
         });
@@ -160,29 +159,29 @@
             evt.preventDefault();
             scrollActivated = !scrollActivated;
             if (scrollActivated) {
-                $('#logScrollBottom button').addClass('active');
+                $('#logScrollBottom button').removeClass('btn-simple');
                 $('#scrollstate').html(textScrolling);
             } else {
-                $('#logScrollBottom button').removeClass('active');
+                $('#logScrollBottom button').addClass('btn-simple');
                 $('#scrollstate').html(textNoScrolling);
             }
             $log.animate({ scrollTop: $log.get(0).scrollHeight }, "slow");
         });
         $('#logFullscreen').click(function(evt) {
             evt.preventDefault();
-            $('#logFullscreen button').toggleClass('active');
+            $('#logFullscreen button').toggleClass('btn-simple');
             $('.log-panel').toggleClass('fullscreen');
         });
 
         if (scrollActivated) {
-            $('#logScrollBottom button').addClass('active');
+            $('#logScrollBottom button').removeClass('btn-simple');
             $('#scrollstate').html(textScrolling);
         }
 
         $log.bind('scroll mousedown wheel DOMMouseScroll mousewheel keyup', function(e){
             if (e.which > 0 || e.type == "mousedown" || e.type == "mousewheel" || e.type == "wheel") {
                 scrollActivated = false;
-                $('#logScrollBottom button').removeClass('active');
+                $('#logScrollBottom button').addClass('btn-simple');
                 $('#scrollstate').html(textNoScrolling);
             }
         });
