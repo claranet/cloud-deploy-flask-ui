@@ -84,9 +84,6 @@ button.navbar-toggle {
     padding: 5px 15px;
     font-weight: bold;
 }
-/*.nav.navbar-nav li > a:hover {
-    background-color: #eee;
-}*/
 #navbar ul.nav.navbar-nav {
     height: auto;
 }
@@ -603,8 +600,6 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Ik0yLDksOSw1LDIsMXoiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIwLjUiIGZpbGw9IiM2NjYiLz4KPC9zdmc+Cgo=) 5px 10px no-repeat #333;
 }
 .jobview #log .panel.closed .panel-body {
-/*    height: 0;
-    visibility: hidden;*/
     display: none;
 }
 .jobview #log .log-info em {
@@ -639,9 +634,6 @@ fieldset.well.the-fieldset legend.the-legend h4 {
     top: -10px;
     margin: 0;
     height: 30px;
-}
-.jobview #logCollapseAll {
-/*    font-size: 1.5em;*/
 }
 .log-panel.fullscreen {
     position: fixed;
@@ -699,16 +691,12 @@ label.control-label {
 .navbar-nav>li.filter> .input-group input:-moz-placeholder { font-size: 12px; }
 .navbar-nav>li.filter> .input-group input::-moz-placeholder { font-size: 12px; }
 .navbar-nav>li.filter> .input-group input:-ms-input-placeholder { font-size: 12px; }
-/*ul.filter-group {
-    margin-top: 10px;
-}*/
 li.quick-submit button.btn.btn-xs {
     padding: 4px 6px;
 }
 select.form-control[readonly],
 select.form-control[data-classic-select],
 button.btn.dropdown-toggle {
-    /*border: 1px solid #CCC;*/
     padding: 9px 25px 9px 5px;
     text-transform: inherit;
 }
