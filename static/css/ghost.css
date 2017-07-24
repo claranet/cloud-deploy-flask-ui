@@ -250,6 +250,12 @@ ul.nav.navbar-nav {
     padding: 20px 0;
     text-align: center;
 }
+/*AppView*/
+.jobview table th,
+#app-view table th {
+    font-weight: 300;
+    font-size: 11px;
+}
 /*AppEdit*/
 td.inline .form-group {
     width: 50%;
@@ -766,7 +772,7 @@ select.form-control[data-classic-select]:focus {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     .ghost-titlebar .action-btns li a .btn {
         font-size: 0;
     }
