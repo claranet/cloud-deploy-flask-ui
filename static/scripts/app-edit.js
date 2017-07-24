@@ -123,20 +123,6 @@
             $(this).parent().removeClass('warning-big-instance-type');
         }
     });
-    $('#modules_list').on('focusout', 'td input[name$="path"]', function () {
-        var path = $(this).val();
-        if (path == '/' || path == '/tmp' || path == '/var' || path == '/etc') {
-            $(this).popover({
-                content: '<span><i class="glyphicon glyphicon-warning-sign">&nbsp;</i>Module path should not be "/", "/tmp", "/etc" or "/var"</span>',
-                html: true,
-                placement: 'top'
-            });
-            $(this).popover('show');
-        } else {
-            $(this).popover('hide');
-            $(this).popover('destroy');
-        }
-    });
 
     $('#safedeployment-lb_type').change(function() {
         if ($(this).val() == 'haproxy') {
@@ -168,3 +154,21 @@
 (function() {
     initCodeMirror();
 })();
+
+Array.prototype.contains = function(element){
+    return this.indexOf(element) > -1;
+};
+$('#modules_list').on('focusout', 'td input[name$="path"]', function () {
+    var path = $(this).val();
+    if (forbidden_paths.contains(path)) {
+        $(this).popover({
+            content: '<span><i class="glyphicon glyphicon-warning-sign">&nbsp;</i>Module path must not be in '+forbidden_paths.join()+'</span>',
+            html: true,
+            placement: 'top'
+        });
+        $(this).popover('show');
+    } else {
+        $(this).popover('hide');
+        $(this).popover('destroy');
+    }
+});
