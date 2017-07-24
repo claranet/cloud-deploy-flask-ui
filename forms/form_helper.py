@@ -67,10 +67,10 @@ def get_ghost_instance_tags():
         ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
 
 
-def get_recommendations(commands_fields, app_modified_fields):
+def get_recommendations(commands_fields, app_pending_changes):
     """
     :param commands_fields:
-    :param app_modified_fields:
+    :param app_pending_changes:
     :return: List of object describing command to run
 
     >>> cmd_fields = [
@@ -90,12 +90,12 @@ def get_recommendations(commands_fields, app_modified_fields):
         cmd_name = cmd[0]
         cmd_fields = cmd[1]
         for field in cmd_fields:
-            if field in app_modified_fields.keys():
+            if field in app_pending_changes.keys():
                 recommended_cmds.append({
                     'command': cmd_name,
                     'field': field,
-                    'user': app_modified_fields[field]['user'],
-                    'updated': app_modified_fields[field]['updated'],
+                    'user': app_pending_changes[field]['user'],
+                    'updated': app_pending_changes[field]['updated'],
                 })
                 break
 
@@ -104,16 +104,16 @@ def get_recommendations(commands_fields, app_modified_fields):
 
 def get_app_command_recommendations(app_id, app=None):
     """
-    Compare modified_fields from the app document with the command's fields
+    Compare pending_changes from the app document with the command's fields
 
     :param app_id:
     :param app:
-    :return: The commands to launch with "modified_fields" data
+    :return: The commands to launch with "pending_changes" data
     """
 
     if not app:
         app = get_ghost_app(app_id)
     commands_fields = get_ghost_job_commands(with_fields=True)
-    app_modified_fields = {ob['field']: ob for ob in app.get('modified_fields', [])}
+    app_pending_changes = {ob['field']: ob for ob in app.get('pending_changes', [])}
 
-    return get_recommendations(commands_fields, app_modified_fields)
+    return get_recommendations(commands_fields, app_pending_changes)
