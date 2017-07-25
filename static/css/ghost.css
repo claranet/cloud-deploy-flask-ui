@@ -254,7 +254,7 @@ ul.nav.navbar-nav {
 .jobview table th,
 #app-view table th {
     font-weight: 300;
-    font-size: 11px;
+    font-size: 12px;
 }
 /*AppEdit*/
 td.inline .form-group {
@@ -692,6 +692,7 @@ label.control-label
 }
 label.control-label {
     margin-top: 5px;
+    font-size: 12px;
 }
 .navbar-nav>li.filter> .input-group input::-webkit-input-placeholder { font-size: 12px; }
 .navbar-nav>li.filter> .input-group input:-moz-placeholder { font-size: 12px; }
