@@ -72,7 +72,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content modal-lg">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
                 <h4 class="modal-title">Script - <strong>{{ name }}</strong></h4>
             </div>
             <div class="modal-body">
@@ -95,7 +95,7 @@
 </div>
 {%- endmacro %}
 
-{% macro ghost_fieldlist_features(fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='', refresh_function='') -%}
+{% macro ghost_fieldlist_features(form, fieldlist, group_id_prefix, group_label, entry_id_prefix, entry_label, form_type, html_placeholder='', refresh_function='') -%}
 <a name="features" class="anchor">&nbsp;</a>
 <div class="panel panel-default panel-features">
     <div class="panel-heading" style="counter-reset: group_entry;">

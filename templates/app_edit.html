@@ -76,10 +76,13 @@
             <a href="#notifs">Notifications</a>
         </li>
         <li>
-            <a href="#lifecycle-hooks">Lifecycle Hooks</a>
+            <a href="#features">Features</a>
         </li>
         <li>
-            <a href="#features">Features</a>
+            <a href="#lifecycle-hooks-bake">Lifecycle Hooks <small>- Build</small></a>
+        </li>
+        <li>
+            <a href="#lifecycle-hooks-boot">Lifecycle Hooks <small>- Bootstrap</small></a>
         </li>
         <li>
             <a href="#modules">Modules</a>
@@ -238,8 +241,8 @@
 
                 <a name="sgs" class="anchor">&nbsp;</a>
                 {{ ghost_fieldlist(form.environment_infos.form.security_groups, 'security_groups', 'Security Groups', 'security_group', 'Security Group', '', '', "ghost_update_vpc_sgs($('select#region').val(), $('select#vpc_id').val());") }}
-        	<a name="tags" class="anchor">&nbsp;</a>
-        	{{ ghost_fieldlist(form.environment_infos.form.instance_tags, 'instance_tags', 'Instance Tags', 'instance_tag', 'Instance Tag') }}
+                <a name="tags" class="anchor">&nbsp;</a>
+                {{ ghost_fieldlist(form.environment_infos.form.instance_tags, 'instance_tags', 'Instance Tags', 'instance_tag', 'Instance Tag') }}
                 <a name="subnets" class="anchor">&nbsp;</a>
                 {{ ghost_fieldlist(form.environment_infos.form.subnet_ids, 'subnet_ids', 'Subnets', 'subnet_id', 'Subnet ID', '', '', "ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val(), false);") }}
                 <a name="volumes" class="anchor">&nbsp;</a>
@@ -254,23 +257,35 @@
         <a name="notifs" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.log_notifications, 'log_notifications', 'Log Notifications', 'log_notification', 'Log Notification', html_placeholder='ghost-devops@morea.fr') }}
 
-        <a name="lifecycle-hooks" class="anchor">&nbsp;</a>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <strong>Lifecycle hooks</strong>
-                <span class="subtitle"> - instance bootstrap scripts</span>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    {{ wtf.form_field(form.lifecycle_hooks.form.pre_buildimage, form_type='horizontal') }}
-                    {{ wtf.form_field(form.lifecycle_hooks.form.post_buildimage, form_type='horizontal') }}
-                    {{ wtf.form_field(form.lifecycle_hooks.form.pre_bootstrap, form_type='horizontal') }}
-                    {{ wtf.form_field(form.lifecycle_hooks.form.post_bootstrap, form_type='horizontal') }}
-                </div>
-            </div>
-        </div>
+        {{ ghost_fieldlist_features(form, form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
 
-        {{ ghost_fieldlist_features(form.features, 'features', 'Features', 'feature', 'Feature', 'inline') }}
+         <a name="lifecycle-hooks-bake" class="anchor">&nbsp;</a>
+         <div class="panel panel-default">
+             <div class="panel-heading">
+                 <strong>Lifecycle hooks</strong>
+                 <span class="subtitle"> - bake image scripts</span>
+             </div>
+             <div class="panel-body">
+                 <div class="row">
+                     {{ wtf.form_field(form.lifecycle_hooks.form.pre_buildimage, form_type='horizontal') }}
+                     {{ wtf.form_field(form.lifecycle_hooks.form.post_buildimage, form_type='horizontal') }}
+                 </div>
+             </div>
+         </div>
+
+         <a name="lifecycle-hooks-boot" class="anchor">&nbsp;</a>
+         <div class="panel panel-default">
+             <div class="panel-heading">
+                 <strong>Lifecycle hooks</strong>
+                 <span class="subtitle"> - instance bootstrap scripts</span>
+             </div>
+             <div class="panel-body">
+                 <div class="row">
+                     {{ wtf.form_field(form.lifecycle_hooks.form.pre_bootstrap, form_type='horizontal') }}
+                     {{ wtf.form_field(form.lifecycle_hooks.form.post_bootstrap, form_type='horizontal') }}
+                 </div>
+             </div>
+         </div>
 
         <a name="modules" class="anchor">&nbsp;</a>
         {{ ghost_fieldlist(form.modules, 'modules', 'Modules', 'module', 'Module') }}

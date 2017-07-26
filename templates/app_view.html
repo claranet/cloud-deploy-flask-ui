@@ -66,10 +66,10 @@
             <a href="#optional-volumes">Optional Volumes</a>
         </li>
         <li>
-            <a href="#lifecycle-hooks">Lifecycle Hooks</a>
+            <a href="#features">Features</a>
         </li>
         <li>
-            <a href="#features">Features</a>
+            <a href="#lifecycle-hooks">Lifecycle Hooks</a>
         </li>
         <li>
             <a href="#modules">Modules</a>
@@ -289,6 +289,29 @@
             </tbody>
         </table>
 
+        <a name="features" class="anchor">&nbsp;</a>
+        <table class="table">
+            <div class="panel-heading">Features</div>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Provisioner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature in app['features'] %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ feature['name'] }}</td>
+                        <td>{{ feature['version'] }}</td>
+                        <td>{{ feature['provisioner'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <a name="lifecycle-hooks" class="anchor">&nbsp;</a>
         <div class="panel-heading">Lifecycle Hooks</div>
         <div class="panel-body">
@@ -315,29 +338,6 @@
                 </div>
             </div>
         </div>
-
-        <a name="features" class="anchor">&nbsp;</a>
-        <table class="table">
-            <div class="panel-heading">Features</div>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Provisioner</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for feature in app['features'] %}
-                    <tr>
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ feature['name'] }}</td>
-                        <td>{{ feature['version'] }}</td>
-                        <td>{{ feature['provisioner'] }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
         <a name="modules" class="anchor">&nbsp;</a>
         <table class="table">
