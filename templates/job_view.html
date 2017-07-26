@@ -57,7 +57,7 @@
                         {% for option in job['options'] %}
                             <tr>
                                 <th scope="row">{{ loop.index }}</th>
-                                <td>{{ ghost_abbrev_field(option, maxchars=42) }}</td>
+                                <td>{{ ghost_abbrev_field('Job option', option, maxchars=42) }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

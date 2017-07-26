@@ -250,6 +250,9 @@ ul.nav.navbar-nav {
     padding: 20px 0;
     text-align: center;
 }
+.ghost_abbrev_field .script-panel textarea {
+    visibility: hidden;
+}
 /*AppView*/
 .jobview table th,
 #app-view table th {

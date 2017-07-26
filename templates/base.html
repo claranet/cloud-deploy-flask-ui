@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{{url_for('.static', filename='css/bootstrap-select.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/material-kit.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ripples.min.css')}}?v={{current_revision}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/font-awesome.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ionicons.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
@@ -125,10 +126,14 @@
     <script src="{{url_for('.static', filename='js/jquery.knob.min.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='js/uri.js')}}?v={{current_revision}}"></script>
 
+    <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
+
     <script src="{{url_for('.static', filename='scripts/base-table-list.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='scripts/base-init.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='scripts/base-aws.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='scripts/base-menu.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='scripts/script-modal.js')}}?v={{current_revision}}"></script>
 
     {% block page_scripts %}
     {% endblock %}

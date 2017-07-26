@@ -295,23 +295,23 @@
             <div class="row">
                 <label class="control-label col-md-2" for="lifecycle_hooks-pre_buildimage">Pre Build Image</label>
                 <div class="col-md-4" id="lifecycle_hooks-pre_buildimage">
-                    {{ ghost_abbrev_field(app.get('lifecycle_hooks', {}).get('pre_buildimage', ''), maxchars=42) }}
+                    {{ ghost_abbrev_field('Pre Buildimage', app.get('lifecycle_hooks', {}).get('pre_buildimage', ''), maxchars=42) }}
                 </div>
 
                 <label class="control-label col-md-2" for="lifecycle_hooks-pre_bootstrap">Pre Bootstrap</label>
                 <div class="col-md-4" id="lifecycle_hooks-pre_bootstrap">
-                    {{ ghost_abbrev_field(app.get('lifecycle_hooks', {}).get('pre_bootstrap', ''), maxchars=42) }}
+                    {{ ghost_abbrev_field('Pre Bootstrap', app.get('lifecycle_hooks', {}).get('pre_bootstrap', ''), maxchars=42) }}
                 </div>
             </div>
             <div class="row">
                 <label class="control-label col-md-2" for="lifecycle_hooks-post_buildimage">Post Build Image</label>
                 <div class="col-md-4" id="lifecycle_hooks-post_buildimage">
-                    {{ ghost_abbrev_field(app.get('lifecycle_hooks', {}).get('post_buildimage', ''), maxchars=42) }}
+                    {{ ghost_abbrev_field('Post Buildimage', app.get('lifecycle_hooks', {}).get('post_buildimage', ''), maxchars=42) }}
                 </div>
 
                 <label class="control-label col-md-2" for="lifecycle_hooks-post_bootstrap">Post Bootstrap</label>
                 <div class="col-md-4" id="lifecycle_hooks-post_bootstrap">
-                    {{ ghost_abbrev_field(app.get('lifecycle_hooks', {}).get('post_bootstrap', ''), maxchars=42) }}
+                    {{ ghost_abbrev_field('Post Bootstrap', app.get('lifecycle_hooks', {}).get('post_bootstrap', ''), maxchars=42) }}
                 </div>
             </div>
         </div>
@@ -354,6 +354,7 @@
                     <th>Build Pack</th>
                     <th>Pre Deploy</th>
                     <th>Post Deploy</th>
+                    <th>After All Deploy</th>
                     <th>Last Deployment</th>
                 </tr>
             </thead>
@@ -368,9 +369,10 @@
                         <td>{{ module['path'] }}</td>
                         <td>{{ module['scope'] }}</td>
                         <td>{{ module['uid'] }} / {{ module['gid'] }}</td>
-                        <td>{{ ghost_abbrev_field(module.get('build_pack', '')) }}</td>
-                        <td>{{ ghost_abbrev_field(module.get('pre_deploy', '')) }}</td>
-                        <td>{{ ghost_abbrev_field(module.get('post_deploy', '')) }}</td>
+                        <td>{{ ghost_abbrev_field('{} / {}'.format(module['name'], 'Build Pack'), module.get('build_pack', '')) }}</td>
+                        <td>{{ ghost_abbrev_field('{} / {}'.format(module['name'], 'Pre Deploy'), module.get('pre_deploy', '')) }}</td>
+                        <td>{{ ghost_abbrev_field('{} / {}'.format(module['name'], 'Post Deploy'), module.get('post_deploy', '')) }}</td>
+                        <td>{{ ghost_abbrev_field('{} / {}'.format(module['name'], 'After All Deploy'), module.get('after_all_deploy', '')) }}</td>
                         <td>
                             <a {% if last_deployment['_id'] %}href="/web/deployments/{{ last_deployment['_id'] }}"{% endif %}>{{ last_deployment['_id'] or '-' }}</a>
                             <br>

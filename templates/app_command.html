@@ -4,7 +4,6 @@
 {% set page_title = 'Run Command on %s (%s/%s) %s' % (app['name'], app['env'], app['role'], app_color) %}
 
 {% block page_header %}
-    <link rel="stylesheet" href="{{url_for('.static', filename='css/codemirror.css')}}?v={{current_revision}}">
 {% endblock %}
 
 {% block page_content %}
@@ -45,8 +44,6 @@
 
 {% block page_scripts %}
     <script src="{{url_for('.static', filename='js/cidr_match.js')}}?v={{current_revision}}"></script>
-    <script src="{{url_for('.static', filename='js/codemirror.js')}}?v={{current_revision}}"></script>
-    <script src="{{url_for('.static', filename='js/mode/shell.js')}}?v={{current_revision}}"></script>
     <script type="text/javascript">
         var app_id = "{{ app['_id'] }}";
         var app_region = "{{ app['region'] }}";

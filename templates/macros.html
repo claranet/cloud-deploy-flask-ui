@@ -9,16 +9,16 @@
     </th>
     <td class="col-md-9 {{ form_type }}">
         {% if entry.type == 'FormField' %}
-        {% for field in entry if not field.type == 'CSRFTokenField' %}
-        {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
-        {% endfor %}
+            {% for field in entry if not field.type == 'CSRFTokenField' %}
+                {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+            {% endfor %}
         {% elif entry.type == 'TextAreaField' %}
-        {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+            {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
         {% elif entry.type == 'SelectField' and refresh_function %}
-        {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+            {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
         <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
         {% else %}
-        {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+            {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
         {% endif %}
     </td>
     <td class="col-md-1">
@@ -52,20 +52,37 @@
     <table class="table" id="{{ group_id_prefix }}_list">
         <tbody>
         {% for entry in fieldlist %}
-        {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
+            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
         {% endfor %}
         </tbody>
     </table>
 </div>
 {%- endmacro %}
 
-{% macro ghost_abbrev_field(value, maxchars=10) -%}
+{% macro ghost_abbrev_field(name, value, maxchars=10) -%}
+{%- set id = get_md5_hash(value) -%}
 {%- if value | length > maxchars -%}
-<abbr title="{{ value }}">
-    {%- endif -%}
+    <a href="#script-{{ id }}" data-toggle="modal" data-target="#script-{{ id }}"><abbr>
+{%- endif -%}
     {{ value[:maxchars] }}
-    {%- if value | length > maxchars -%}
-    &hellip;</abbr>
+{%- if value | length > maxchars -%}
+    &hellip;</abbr></a>
+<!-- Modal -->
+<div class="modal fade ghost_abbrev_field" id="script-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="script-{{ id }}">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Script - <strong>{{ name }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="script-panel">
+                    <textarea id="txt-{{ id }}">{{ value }}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {%- endif %}
 {%- endmacro %}
 
@@ -97,7 +114,7 @@
     <table class="table" id="{{ group_id_prefix }}_list">
         <tbody>
         {% for entry in fieldlist %}
-        {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
+            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
         {% endfor %}
         </tbody>
     </table>

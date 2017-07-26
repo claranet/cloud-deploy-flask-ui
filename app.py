@@ -9,6 +9,7 @@ import sys
 import os
 import yaml
 import json
+import hashlib
 import ui_helpers
 
 from settings import DEFAULT_PROVIDER
@@ -140,6 +141,14 @@ FEATURE_PRESETS = load_ghost_feature_presets()
 @app.context_processor
 def current_revision():
     return CURRENT_REVISION
+
+
+@app.context_processor
+def hash_string_md5():
+    def get_md5_hash(value):
+        return hashlib.md5(value).hexdigest() if value else ''
+    return dict(get_md5_hash=get_md5_hash)
+
 
 @app.route('/web/<provider>/identity/check/<account_id>/<role_name>/<region_name>')
 def web_cloud_check_assume_role_region(provider, account_id, role_name, region_name):

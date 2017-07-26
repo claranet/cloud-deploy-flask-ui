@@ -26,7 +26,7 @@
     <td>{{ job['user'] }}</td>
     <td>
         {% for option in job['options'] %}
-            {{ ghost_abbrev_field(option) }}</br>
+            {{ ghost_abbrev_field('Job option', option) }}</br>
         {% endfor %}
     </td>
     <td>
