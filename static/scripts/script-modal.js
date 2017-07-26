@@ -9,6 +9,7 @@ $(document).ready(function() {
             var editor = CodeMirror.fromTextArea(area, {
                 lineNumbers: true,
                 lineWrapping: true,
+                styleActiveLine: true,
                 mode: 'shell',
                 readOnly: true,
             });

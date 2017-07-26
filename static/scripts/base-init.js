@@ -15,6 +15,7 @@ function initCodeMirror() {
             var editor = CodeMirror.fromTextArea(this, {
                 lineNumbers: true,
                 viewportMargin: Infinity,
+                styleActiveLine: true,
                 lineWrapping: true,
                 mode: 'shell',
             });
