@@ -111,14 +111,16 @@ def template_context():
     global CPU_HEALTH
     health_stats = CPU_HEALTH.get_stats()
     return dict(
-                role_list=ghost_role_default_values,
-                statuses=JOB_STATUSES,
-                ghost_blue_green=ghost_has_blue_green_enabled(),
-                ghost_health_status=get_host_cpu_label(health_stats[0]),
-                command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS,
-                app_modules_state=ui_helpers.app_modules_state,
-                module_state=ui_helpers.module_state,
+        role_list=ghost_role_default_values,
+        statuses=JOB_STATUSES,
+        ghost_blue_green=ghost_has_blue_green_enabled(),
+        ghost_health_status=get_host_cpu_label(health_stats[0]),
+        command_list=ghost_jobs_schema['command']['allowed']+LEGACY_COMMANDS,
+        app_modules_state=ui_helpers.app_modules_state,
+        module_state=ui_helpers.module_state,
+        check_status_code=ui_helpers.check_status_code,
     )
+
 
 def load_ghost_feature_presets():
     presets = {}
@@ -348,7 +350,7 @@ def web_app_create():
 
         message, result, status_code = create_ghost_app(app)
         app_id = result['_id'] if '_id' in result else None
-        cmd_recommendations = get_app_command_recommendations(app_id)
+        cmd_recommendations = get_app_command_recommendations(app_id) if ui_helpers.check_status_code(status_code) else None
         return render_template('action_completed.html', message=message, action_object_type='apps',
                                action_object_id=app_id,
                                status_code=status_code,
@@ -440,7 +442,7 @@ def web_app_edit(app_id):
         form.map_to_app(app)
 
         message, status_code = update_ghost_app(app_id, local_headers, app)
-        cmd_recommendations = get_app_command_recommendations(app_id)
+        cmd_recommendations = get_app_command_recommendations(app_id) if ui_helpers.check_status_code(status_code) else None
 
         #if form.update_manifest.data:
         #TODO Perform Manifest update
@@ -651,7 +653,7 @@ def web_app_delete(app_id):
 
         message, status_code = delete_ghost_app(app_id, local_headers)
 
-        if status_code in [200, 201, 204]:
+        if ui_helpers.check_status_code(status_code):
             return redirect(url_for('web_app_list'))
         else:
             return render_template('action_completed.html', message=message, form_action='delete')
@@ -705,7 +707,7 @@ def web_job_delete(job_id):
 
         message, status_code = delete_ghost_job(job_id, local_headers)
 
-        if status_code in [200, 201, 204]:
+        if ui_helpers.check_status_code(status_code):
             return redirect(url_for('web_job_list'))
         else:
             return render_template('action_completed.html', message=message, form_action='delete')

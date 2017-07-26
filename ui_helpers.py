@@ -42,3 +42,12 @@ def module_state(module):
     return Markup('<span class="fa fa-{icon} state-{state}" title="{text}"></span>'.format(
         icon=icon, state=state, text=text
     ))
+
+
+def check_status_code(code):
+    """
+    Checks if the code is HTTP OK
+    :param code:
+    :return:
+    """
+    return code and code in [200, 201, 204]

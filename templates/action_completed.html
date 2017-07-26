@@ -29,7 +29,7 @@
         </li>
     </ul>
     {% endif %}
-    {% if cmd_recommendations and status_code and status_code in [200, 201, 204] %}
+    {% if cmd_recommendations %}
         {% include 'app_recommendations_content.html' %}
     {% endif %}
 {% endblock %}
