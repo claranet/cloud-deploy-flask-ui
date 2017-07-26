@@ -294,6 +294,22 @@ td.inline {
     min-height: 100px;
     margin-top: 20px;
 }
+#app-form .script-textarea > div:first-of-type:hover textarea {
+    background: #F7F7F7;
+    color: #AAA;
+    position: relative;
+}
+#app-form .script-textarea > div:first-of-type:hover:after {
+    content: "Click to expand";
+    color: #777;
+    position: absolute;
+    left: 40%;
+    top: 40px;
+    white-space: nowrap;
+    z-index: 999;
+    text-align: center;
+    font-weight: bold;
+}
 #app-form .CodeMirror {
     border: 1px solid #eee;
     height: auto !important;

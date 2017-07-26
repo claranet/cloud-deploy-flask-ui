@@ -10,6 +10,7 @@ $(document).ready(function() {
 
 function initCodeMirror() {
     $('textarea').each(function(index, elem) {
+        $(elem).parent().parent().addClass('script-textarea');
         $(elem).focus(function() {
             $(elem).unbind("focus");
             var editor = CodeMirror.fromTextArea(this, {
@@ -19,8 +20,8 @@ function initCodeMirror() {
                 lineWrapping: true,
                 mode: 'shell',
             });
-            $(this).parent().parent().addClass('script-panel');
-            // setTimeout(function(){ editor.refresh(); }, 3000); // try to hack the editor cursor bug
+            $(elem).parent().parent().removeClass('script-textarea');
+            $(elem).parent().parent().addClass('script-panel');
         });
     });
 }
