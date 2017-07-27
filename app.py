@@ -131,7 +131,6 @@ def load_ghost_feature_presets():
                     presets[file] = prst
     except:
         traceback.print_exc()
-    print presets
     return presets
 
 FEATURE_PRESETS = load_ghost_feature_presets()
