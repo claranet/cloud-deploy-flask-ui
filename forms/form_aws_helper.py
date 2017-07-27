@@ -195,16 +195,16 @@ def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
     return None
 
 
-def get_elbs_instances_from_as_group(provider, as_group, region, log_file=None, **kwargs):
+def get_elbs_instances_from_as_group(provider, as_group_name, region, log_file=None, **kwargs):
     lbs_instances = []
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
 
         lb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_MIXED)
-        lb_as_instances = lb_mgr.get_instances_status_from_autoscale(as_group['AutoScalingGroupName'],
+        lb_as_instances = lb_mgr.get_instances_status_from_autoscale(as_group_name,
                                                                      log_file)
         for lb, instances in lb_as_instances.items():
-            lbs_instances.append({'elb_name': lb, 'elb_instances': [id for id, status in instances.items()]})
+            lbs_instances.append({'elb_name': lb, 'elb_instances': [i_id for i_id, status in instances.items()]})
     except:
         traceback.print_exc()
     return lbs_instances
