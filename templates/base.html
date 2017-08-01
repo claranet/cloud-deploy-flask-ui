@@ -70,7 +70,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#" class="">{% if current_user.is_authenticated %}Hi {{ current_user.id }}!{% endif %}</a></li>
-                    <li>{% if current_user.is_authenticated %}<a href="https://login:@{{request.headers['Host']}}/web/apps" class="" title="Logout" data-toggle="tooltip"><i class="fa fa-sign-out"></i></a>{% endif %}</li>
+                    <li>{% if current_user.is_authenticated %}<a id="logout" href="#" title="Logout" data-toggle="tooltip"><i class="fa fa-sign-out"></i></a>{% endif %}</li>
                 </ul>
             </div>
         </div>

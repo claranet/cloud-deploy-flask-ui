@@ -58,3 +58,15 @@ $(document).ajaxStart(function () {
 }).ajaxStop(function () {
     $loading.hide();
 });
+
+$(document).ready(function() {
+    $('#logout').on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: new URI(document.URL).username('logout').password('xxxxx').toString(),
+            complete: function() {
+                window.location.reload();
+            }
+        })
+    });
+});
