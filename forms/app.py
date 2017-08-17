@@ -263,7 +263,7 @@ class EnvironmentInfosForm(FlaskForm):
                                      min=root_block_device_size_min))
         ])
 
-    root_block_device_name = StringField('Name', description='Empty if you want to use the default one', validators=[
+    root_block_device_name = StringField('Block Device Name', description='Empty if you want to use the default one', validators=[
         OptionalValidator(),
         RegexpValidator(
             ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
@@ -708,9 +708,9 @@ class BaseAppForm(FlaskForm):
             # default value to prevent low disk space alerts
             block_min_size = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['size']['min']
             app['environment_infos']['root_block_device']['size'] = block_min_size
-        if self.environment_infos.form.root_block_device_name.data:
-            root_block_name = self.environment_infos.form.root_block_device_name.data
-            app['environment_infos']['root_block_device']['name'] = root_block_name
+
+        root_block_name = self.environment_infos.form.root_block_device_name.data
+        app['environment_infos']['root_block_device']['name'] = root_block_name or ''
 
         app['environment_infos']['optional_volumes'] = []
         for form_opt_vol in self.environment_infos.form.optional_volumes:
