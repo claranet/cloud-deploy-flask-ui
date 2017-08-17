@@ -68,7 +68,7 @@ class CommandAppForm(FlaskForm):
         app = get_ghost_app(app_id)
 
         # Get the list of commands at construction time because it requires a request context
-        self.command.choices = get_ghost_job_commands()
+        self.command.choices = get_ghost_job_commands(app_id=app_id)
 
         # Get the instance types in the Ghost application's region
         self.instance_type.choices = get_aws_ec2_instance_types(app["region"])
