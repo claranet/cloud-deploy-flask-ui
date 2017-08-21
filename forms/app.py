@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
 
+import json
+
 from web_ui.forms.form_helper import empty_fieldlist
 from web_ui.forms.form_helper import get_wtforms_selectfield_values
 
@@ -389,6 +391,7 @@ class FeatureForm(FlaskForm):
     feature_provisioner = BetterSelectFieldNonValidating(
         'Provisioner', validators=[], render_kw={"data-classic-select": "true"},
         choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
+    feature_parameters = StringField()
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -398,6 +401,7 @@ class FeatureForm(FlaskForm):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
+        self.feature_parameters.data = json.dump(feature.get('parameters', {}))
 
 
 class EnvvarForm(FlaskForm):
@@ -819,6 +823,8 @@ class BaseAppForm(FlaskForm):
                     feature['version'] = form_feature.feature_version.data
                 if form_feature.feature_provisioner.data:
                     feature['provisioner'] = form_feature.feature_provisioner.data
+                if form_feature.feature_parameters.data:
+                    feature['parameters'] = json.load(form_feature.feature_parameters.data)
             if feature:
                 app['features'].append(feature)
 
