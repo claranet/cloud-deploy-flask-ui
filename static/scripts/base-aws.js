@@ -248,14 +248,7 @@ function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, 
     clone.appendTo("table#" + group_id_prefix + "_list");
 
     // CodeMirror update
-    $('#' + entry_id_prefix + "_" + count).find('textarea').each(function(index, elem) {
-        var editor = CodeMirror.fromTextArea(elem, {
-            lineNumbers: true,
-            viewportMargin: Infinity,
-            lineWrapping: true,
-            mode: 'shell',
-        });
-    });
+    initCodeMirror();
 
     if (scroll_to) {
         // ScrollTo the new element
