@@ -247,9 +247,8 @@ def get_ghost_job_commands(with_fields=False, app_id=''):
         result = requests.get('{}/{}'.format(url_commands_fields if with_fields else url_commands, app_id), headers=headers, auth=current_user.auth)
         commands = result.json()
 
-        # Dict sort trick
-        commands_dict = dict(commands)
-        commands = sorted(commands_dict.items())
+        # Dict sort
+        commands = sorted(commands)
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
