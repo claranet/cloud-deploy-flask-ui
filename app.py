@@ -146,7 +146,7 @@ def current_revision():
 @app.context_processor
 def hash_string_md5():
     def get_md5_hash(value):
-        return hashlib.md5(value).hexdigest() if value else ''
+        return hashlib.md5(value.encode('utf-8')).hexdigest() if value else ''
     return dict(get_md5_hash=get_md5_hash)
 
 
