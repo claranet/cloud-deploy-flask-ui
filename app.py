@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, flash, render_template, request, Response, jsonify, redirect, url_for, make_response
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, UserMixin, login_required
@@ -143,10 +145,25 @@ def current_revision():
     return CURRENT_REVISION
 
 
+def get_md5_hash(value):
+    """
+    >>> get_md5_hash('hello')
+    '5d41402abc4b2a76b9719d911017c592'
+
+    >>> get_md5_hash(u'hello')
+    '5d41402abc4b2a76b9719d911017c592'
+
+    >>> get_md5_hash(u'Hé ho du bateau!')
+    'ef67594ec96664e539a1ee2a8903d734'
+
+    :param value: string to hash
+    :return: md5 hash
+    """
+    return hashlib.md5(value.encode('utf-8')).hexdigest() if value else ''
+
+
 @app.context_processor
 def hash_string_md5():
-    def get_md5_hash(value):
-        return hashlib.md5(value).hexdigest() if value else ''
     return dict(get_md5_hash=get_md5_hash)
 
 
