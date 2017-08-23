@@ -12,7 +12,7 @@ import json
 from settings import API_BASE_URL, PAGINATION_LIMIT
 
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
-from ghost_tools import b64decode_utf8, b64encode_utf8, boolify
+from ghost_tools import b64decode_utf8, b64encode_utf8
 
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
@@ -242,10 +242,13 @@ def get_ghost_job(job_id):
     return job
 
 
-def get_ghost_job_commands(with_fields=False):
+def get_ghost_job_commands(with_fields=False, app_id=''):
     try:
-        result = requests.get(url_commands_fields if with_fields else url_commands, headers=headers, auth=current_user.auth)
+        result = requests.get('{}/{}'.format(url_commands_fields if with_fields else url_commands, app_id), headers=headers, auth=current_user.auth)
         commands = result.json()
+
+        # Dict sort
+        commands = sorted(commands)
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
