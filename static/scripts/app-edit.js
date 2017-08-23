@@ -21,10 +21,6 @@
                                 $(this).attr('id', newModAttr);
                             });
                         });
-                        /* -- TODO Update Manifest trigger
-                        if (confirm('Module order has changed. Do you want to update the App MANIFEST ? If No, the MANIFEST will be updated on the next deploy command.')) {
-                            $('#app-form').append('<input type="hidden" id="update_manifest" name="update_manifest" value="1">');
-                        }*/
                     });
                 }
 

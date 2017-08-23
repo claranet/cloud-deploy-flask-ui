@@ -11,6 +11,7 @@ $(document).ready(function() {
 function initCodeMirror() {
     $('textarea').each(function(index, elem) {
         $(elem).parent().parent().addClass('script-textarea');
+        $(elem).unbind('focus');
         $(elem).focus(function() {
             $(elem).unbind("focus");
             var editor = CodeMirror.fromTextArea(this, {
