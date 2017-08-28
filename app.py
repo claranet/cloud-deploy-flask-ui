@@ -29,7 +29,8 @@ from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import headers, test_ghost_auth
-from libs.blue_green import ghost_has_blue_green_enabled, get_blue_green_destroy_temporary_elb_config, get_blue_green_from_app
+from libs.blue_green import ghost_has_blue_green_enabled, get_blue_green_from_app, get_blue_green_copy_ami_config
+from libs.blue_green import get_blue_green_create_temporary_elb_config
 from libs.git_helper import git_ls_remote_branches_tags
 from health import get_host_cpu_label, get_host_health, HostHealth
 
@@ -535,7 +536,8 @@ def web_app_command(app_id, default_command='deploy'):
     if not form.is_submitted():
         form.fabric_execution_strategy.data = config.get('fabric_execution_strategy', 'serial')
         form.skip_provisioner_bootstrap.data = config.get('skip_provisioner_bootstrap', config.get('skip_salt_bootstrap', True))
-        form.purge_delete_elb.data = get_blue_green_destroy_temporary_elb_config(config)
+        form.prepare_bg_copy_ami.data = get_blue_green_copy_ami_config(config)
+        form.prepare_create_temp_elb.data = get_blue_green_create_temporary_elb_config(config)
         form.to_execute_script.data = DEFAULT_BASH_SHEBANG
         form.command.data = default_command
 
@@ -634,8 +636,11 @@ def web_app_command_from_job(app_id, job_id):
         if len(job['options']) > 1:
             form.private_ip_address.data = job['options'][1]
 
-    if job['command'] == 'purgebluegreen' and 'options' in job and len(job['options']):
-        form.purge_delete_elb.data = boolify(job['options'][0])
+    if job['command'] == 'preparebluegreen' and 'options' in job:
+        if len(job['options']) > 0:
+            form.prepare_bg_copy_ami.data = boolify(job['options'][0])
+        if len(job['options']) > 1:
+            form.prepare_create_temp_elb.data = boolify(job['options'][1])
 
     return render_template('app_command.html', form=form, app=app)
 

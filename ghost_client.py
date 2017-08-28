@@ -339,17 +339,14 @@ def create_ghost_job(app_id, form, headers):
                 options.append(form.safe_deployment_strategy.data)
 
     if form.command.data == 'preparebluegreen':
-        if isinstance(form.prepare_bg_copy_ami.data, bool):
-            # In case of preparebluegreen, option[0] can be the prepare_bg_copy_ami
-            options.append(str(form.prepare_bg_copy_ami.data))
+        options.append(str(form.prepare_bg_copy_ami.data
+                           if isinstance(form.prepare_bg_copy_ami.data, bool) else False))
+        options.append(str(form.prepare_create_temp_elb.data
+                           if isinstance(form.prepare_create_temp_elb.data, bool) else False))
 
     if form.command.data == 'swapbluegreen':
         if form.swapbluegreen_strategy.data:
             options.append(form.swapbluegreen_strategy.data)
-
-    if form.command.data == 'purgebluegreen':
-        if isinstance(form.purge_delete_elb.data, bool):
-            options.append(str(form.purge_delete_elb.data))
 
     if len(options) > 0:
         job['options'] = options

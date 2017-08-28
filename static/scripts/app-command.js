@@ -29,10 +29,11 @@ function show_options_fields()  {
     /* BlueGreen commands */
     } else if ($('#command').val() == 'preparebluegreen') {
         $('.wrap.prepare_bg_copy_ami').show();
+        $('.wrap.prepare_create_temp_elb').show();
     } else if ($('#command').val() == 'swapbluegreen') {
         $('.wrap.swapbluegreen_strategy').show();
     } else if ($('#command').val() == 'purgebluegreen') {
-        $('.wrap.purge_delete_elb').show();
+        // No option available
     }
 }
 
