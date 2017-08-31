@@ -147,6 +147,10 @@
                 <div class="row">
                     {{ wtf.form_field(form.blue_green.form.enable_blue_green, form_type='horizontal') }}
                 </div>
+                <div id="swap_scripts" class="row" style="{{ 'display:none;' if not form.blue_green.form.enable_blue_green.data }}">
+                    {{ wtf.form_field(form.blue_green.form.pre_swap, form_type='horizontal') }}
+                    {{ wtf.form_field(form.blue_green.form.post_swap, form_type='horizontal') }}
+                </div>
             </div>
         </div>
 {% endif %}

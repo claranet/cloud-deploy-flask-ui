@@ -145,6 +145,9 @@
             $('#app_options_wrapper').slideDown('slow');
         }
     });
+    $('#blue_green-enable_blue_green').change(function(e) {
+        $('#swap_scripts').slideToggle('slow');
+    });
     $('.app-actions a, #navbar li a').click(function(evt) {
         return confirm('Do you want to leave this page without saving your modifications?');
     });

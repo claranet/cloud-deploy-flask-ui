@@ -150,6 +150,14 @@ def get_ghost_app(app_id, embed_deployments=False):
             if 'post_bootstrap' in lifecycle_hooks:
                 lifecycle_hooks['post_bootstrap'] = b64decode_utf8(lifecycle_hooks['post_bootstrap'])
 
+        # Decode blue/green hooks scripts
+        hooks = app.get('blue_green', {}).get('hooks', None)
+        if hooks:
+            if 'pre_swap' in hooks:
+                hooks['pre_swap'] = b64decode_utf8(hooks['pre_swap'])
+            if 'post_swap' in hooks:
+                hooks['post_swap'] = b64decode_utf8(hooks['post_swap'])
+
         # Decode module scripts
         for module in app.get('modules', []):
             if 'build_pack' in module:

@@ -473,6 +473,12 @@ class BluegreenForm(FlaskForm):
     alter_ego_id = HiddenField(validators=[])
     color = HiddenField(validators=[])
     enable_blue_green = BooleanField('Enable Blue/Green deployment', validators=[])
+    pre_swap = TextAreaField('Pre Swap',
+                             description='Script executed before the application swap for both applications',
+                             validators=[])
+    post_swap = TextAreaField('Post Swap',
+                              description='Script executed after the application swap for both applications',
+                              validators=[])
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -489,14 +495,21 @@ class BluegreenForm(FlaskForm):
             # Map if blue/green is enabled
             self.enable_blue_green.data = blue_green.get('enable_blue_green',
                                                          blue_green.get('alter_ego_id', None) and app_color)
+            if 'hooks' in blue_green:
+                self.pre_swap.data = blue_green['hooks'].get('pre_swap', '')
+                self.post_swap.data = blue_green['hooks'].get('post_swap', '')
 
     def map_to_app(self, app):
         """
         Map blue green data form to app
         """
-        app['blue_green'] = {}
+        app['blue_green'] = {'hooks': {}}
         app['blue_green']['enable_blue_green'] = isinstance(self.enable_blue_green.data,
                                                             bool) and self.enable_blue_green.data
+        app['blue_green']['hooks']['pre_swap'] = (b64encode_utf8(self.pre_swap.data.replace('\r\n', '\n'))
+                                                  if self.pre_swap.data else '')
+        app['blue_green']['hooks']['post_swap'] = (b64encode_utf8(self.post_swap.data.replace('\r\n', '\n'))
+                                                   if self.post_swap.data else '')
 
 
 class BaseAppForm(FlaskForm):
