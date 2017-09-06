@@ -40,6 +40,7 @@ class OptionalVolumeForm(FlaskForm):
     volume_size = IntegerField('Volume Size', description='In GiB', validators=[OptionalValidator()])
     iops = IntegerField('IOPS', description='For information, 1TiB volume size is 3000 IOPS in GP2 type',
                         validators=[OptionalValidator()])
+    launch_block_device_mappings = BooleanField('Attach volume during buildimage', validators=[])
 
     # Disable CSRF in optional_volume forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -50,6 +51,7 @@ class OptionalVolumeForm(FlaskForm):
         self.volume_type.data = optional_volume.get('volume_type', '')
         self.volume_size.data = optional_volume.get('volume_size', '')
         self.iops.data = optional_volume.get('iops', '')
+        self.launch_block_device_mappings.data = optional_volume.get('launch_block_device_mappings', False)
 
 
 class InstanceTagForm(FlaskForm):
@@ -723,6 +725,8 @@ class BaseAppForm(FlaskForm):
                     opt_vol['volume_size'] = form_opt_vol.volume_size.data
                 if form_opt_vol.iops.data:
                     opt_vol['iops'] = form_opt_vol.iops.data
+                if form_opt_vol.launch_block_device_mappings.data:
+                    opt_vol['launch_block_device_mappings'] = form_opt_vol.launch_block_device_mappings.data
                 app['environment_infos']['optional_volumes'].append(opt_vol)
 
         app['environment_infos']['instance_tags'] = []
