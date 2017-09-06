@@ -274,6 +274,7 @@
                     <th>Volume type</th>
                     <th>Volume size (GB)</th>
                     <th>IOPS</th>
+                    <th>Attach volume during buildimage</th>
                 </tr>
             </thead>
             <tbody>
@@ -284,6 +285,7 @@
                         <td>{{ volume['volume_type'] }}</td>
                         <td>{{ volume['volume_size'] }}</td>
                         <td>{{ volume['iops'] }}</td>
+                        <td>{{ volume['launch_block_device_mappings'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
