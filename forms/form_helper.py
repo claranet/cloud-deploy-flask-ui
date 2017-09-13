@@ -1,4 +1,5 @@
 from libs.lxd import list_lxd_images
+import requests
 
 from models.apps import apps_schema as ghost_app_schema
 from models.env import env as ghost_env_default_values
@@ -6,6 +7,8 @@ from models.instance_role import role as ghost_role_default_values
 
 from web_ui.ghost_client import get_ghost_app
 from web_ui.ghost_client import get_ghost_job_commands
+
+from ghost_tools import config
 
 
 # Helpers
@@ -123,3 +126,17 @@ def get_app_command_recommendations(app_id, app=None):
 
 def get_container_images(config=None):
     return list_lxd_images(config)
+
+
+DEFAULT_ANSIBLE_ROLES_INVENTORY_URL = 'http://claranet-ansible-inventory.s3-website-eu-west-1.amazonaws.com/requirements.json'
+
+
+def get_ansible_role_inventory():
+    """
+    Requests to load the Ansible Role Inventory file (JSON Format)
+    :return: json parsed object
+    """
+    inventory_url = config.get('features_provisioners', {}).get('ansible', {}).get('ansible_role_inventory_url', DEFAULT_ANSIBLE_ROLES_INVENTORY_URL)
+    json_obj = requests.get(inventory_url)
+    inventory = {role_info.get('name', 'Unknown'): role_info for role_info in json_obj.json()}
+    return inventory

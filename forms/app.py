@@ -10,6 +10,7 @@ from web_ui.forms.form_helper import get_ghost_app_envs
 from web_ui.forms.form_helper import get_ghost_app_roles
 from web_ui.forms.form_helper import get_ghost_optional_volumes
 from web_ui.forms.form_helper import get_ghost_mod_scopes
+from web_ui.forms.form_helper import get_ansible_role_inventory
 
 from web_ui.forms.form_aws_helper import get_aws_connection_data
 from web_ui.forms.form_aws_helper import get_aws_ec2_regions
@@ -383,6 +384,10 @@ class FeatureForm(FlaskForm):
             ghost_app_schema['features']['schema']['schema']['name']['regex']
         )
     ])
+    feature_selected_name = BetterSelectFieldNonValidating('Name', validators=[],
+       render_kw={"data-classic-select": "true"},
+       choices=get_wtforms_selectfield_values(get_ansible_role_inventory().keys())
+    )
     feature_version = StringField('Value', validators=[
         RegexpValidator(
             ghost_app_schema['features']['schema']['schema']['version']['regex']
@@ -391,7 +396,7 @@ class FeatureForm(FlaskForm):
     feature_provisioner = BetterSelectFieldNonValidating(
         'Provisioner', validators=[], render_kw={"data-classic-select": "true"},
         choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
-    feature_parameters = StringField()
+    feature_parameters = HiddenField(' ')
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -401,7 +406,7 @@ class FeatureForm(FlaskForm):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
-        self.feature_parameters.data = json.dump(feature.get('parameters', {}))
+        self.feature_parameters.data = json.dumps(feature.get('parameters', {}))
 
 
 class EnvvarForm(FlaskForm):
