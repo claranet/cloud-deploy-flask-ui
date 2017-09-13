@@ -404,6 +404,7 @@ class FeatureForm(FlaskForm):
 
     def map_from_app(self, feature):
         self.feature_name.data = feature.get('name', '')
+        self.feature_selected_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
         self.feature_parameters.data = json.dumps(feature.get('parameters', {}))
@@ -828,6 +829,9 @@ class BaseAppForm(FlaskForm):
                     feature['version'] = form_feature.feature_version.data
                 if form_feature.feature_provisioner.data:
                     feature['provisioner'] = form_feature.feature_provisioner.data
+                    if feature['provisioner'] != DEFAULT_PROVIDER:
+                        # With ansible, uses the select/dropdown choosen value
+                        feature['name'] = form_feature.feature_selected_name.data
                 if form_feature.feature_parameters.data:
                     feature['parameters'] = json.load(form_feature.feature_parameters.data)
             if feature:
