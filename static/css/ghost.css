@@ -266,14 +266,9 @@ td.inline .form-group {
     width: 50%;
     float: left;
 }
-#features_list td.inline .form-group {
-    width: 33.33333333%;
-    margin: 0;
-}
-#features_list td.inline .form-group label {
-    display: block;
+#features_list td.inline label {
+    display: inline-block;
     text-align: left;
-    width: 100%;
 }
 td.inline {
     clear: both;
@@ -335,8 +330,13 @@ td.inline {
     padding: 10px;
     margin: 0 0 -45px 0;
 }
+#app-form .edit-entry,
 #app-form .delete-entry {
     padding: 9px 12px;
+}
+#app-form .edit-entry:hover,
+#app-form .delete-entry:hover {
+    border: 1px solid;
 }
 #app-form .features-presets-group {
     position: relative;

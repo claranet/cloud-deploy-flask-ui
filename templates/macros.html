@@ -2,9 +2,9 @@
 {% import "bootstrap/utils.html" as util %}
 
 {% macro ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop_index, form_type, html_placeholder='', refresh_function='') -%}
-<tr id="{{ entry_id_prefix }}_{{ loop_index - 1 }}" data-{{ entry_id_prefix }}>
+<tr id="{{ entry_id_prefix }}_{{ loop_index }}" data-{{ entry_id_prefix }}>
     <th scope="row" class="col-md-2">
-        <a name="{{ entry_id_prefix }}-{{ loop_index - 1 }}" class="anchor">&nbsp</a>
+        <a name="{{ entry_id_prefix }}-{{ loop_index }}" class="anchor">&nbsp</a>
         <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
     </th>
     <td class="col-md-9 {{ form_type }}">
@@ -36,7 +36,7 @@
 <ul class="subnav" id="menu-modules-list">
     {% for entry in fieldlist %}
     <li>
-        <a href="#{{ entry_id_prefix }}-{{ loop.index - 1 }}"><i class="glyphicon glyphicon-move"></i> <span>{{ entry.data['module_name'] or 'New module' }}</span></a>
+        <a href="#{{ entry_id_prefix }}-{{ loop.index0 }}"><i class="glyphicon glyphicon-move"></i> <span>{{ entry.data['module_name'] or 'New module' }}</span></a>
     </li>
     {% endfor %}
 </ul>
@@ -54,7 +54,7 @@
     <table class="table" id="{{ group_id_prefix }}_list">
         <tbody>
         {% for entry in fieldlist %}
-            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
+            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index0, form_type, html_placeholder, refresh_function) }}
         {% endfor %}
         </tbody>
     </table>
@@ -116,9 +116,63 @@
     <table class="table" id="{{ group_id_prefix }}_list">
         <tbody>
         {% for entry in fieldlist %}
-            {{ ghost_fieldlist_entry(entry, entry_id_prefix, entry_label, loop.index, form_type, html_placeholder, refresh_function) }}
+            <tr id="{{ entry_id_prefix }}_{{ loop.index0 }}" data-{{ entry_id_prefix }}>
+                <th scope="row" class="col-md-2">
+                    <a name="{{ entry_id_prefix }}-{{ loop.index0 }}" class="anchor">&nbsp</a>
+                    <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
+                </th>
+                <td class="col-md-9 {{ form_type }}">
+                    <div class="row">
+                        <label class="control-label col-lg-4" for="features-{{ loop.index0 }}-feature_name">Name</label>
+                        <label class="control-label col-lg-8" for="features-{{ loop.index0 }}-feature_val">Parameters</label>
+                    </div>
+                    <div class="row">
+                        <p class="col-lg-4" id="features-{{ loop.index0 }}-feature_name">{{ entry.feature_name.data }}</p>
+                        <p class="col-lg-8" id="features-{{ loop.index0 }}-feature_val">{{ entry.feature_version.data }}</p>
+                    </div>
+                </td>
+                <td class="col-md-1">
+                    <a class="btn btn-warning btn-simple edit-entry" title="Edit {{ entry_label }}"
+                       data-toggle="modal" data-target="#feature-details-{{ loop.index0 }}">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                    <a class="btn btn-danger btn-simple delete-entry" title="Delete {{ entry_label }}"
+                       onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
+    {% for entry in fieldlist %}
+    <!-- Modal per feature -->
+    <div class="modal fade" id="feature-details-{{ loop.index0 }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFeature{{ loop.index0 }}">
+        <div class="modal-dialog feature-details" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+                    <h4 class="modal-title" id="myModalLabelFeature{{ loop.index0 }}">Feature details of <strong>{{ entry.feature_name.data }}</strong></h4>
+                </div>
+                <div class="modal-body">
+                    {% if entry.type == 'FormField' %}
+                    {% for field in entry if not field.type == 'CSRFTokenField' %}
+                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
+                    {% endfor %}
+                    {% elif entry.type == 'TextAreaField' %}
+                    {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
+                    {% elif entry.type == 'SelectField' and refresh_function %}
+                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                    <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
+                    {% elif entry.type == 'HiddenField' %}
+                    {{ wtf.form_field(entry, form_type='inline', placeholder=html_placeholder) }}
+                    {% else %}
+                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 {%- endmacro %}
