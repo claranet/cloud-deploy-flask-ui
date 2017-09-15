@@ -1,3 +1,10 @@
+function ghost_update_feature_form_details(provisioner_select) {
+    provisioner_type = $(provisioner_select).val();
+    container = $(provisioner_select).parent().parent().parent().parent().parent();
+    $(container).find('.provisioner_type:not(.' + provisioner_type + ')').hide();
+    $(container).find('.provisioner_type.' + provisioner_type).show();
+}
+
 (function() {
     $('.quick-submit').click(function (evt) {
         evt.preventDefault();
@@ -59,6 +66,12 @@
                 });
             }
         },
+    });
+    $('.panel-features').on('change', 'select[name$="feature_provisioner"]', function () {
+        ghost_update_feature_form_details($(this));
+    });
+    $('.feature-details-modal').on('show.bs.modal', function (event) {
+        ghost_update_feature_form_details($(this).find('.modal-body select[name$="feature_provisioner"]'));
     });
     ghost_update_feature_presets();
     var ghost_client_name = window.location.hostname.replace('.ghost.morea.fr', '');

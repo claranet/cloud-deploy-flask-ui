@@ -293,23 +293,23 @@
         </table>
 
         <a name="features" class="anchor">&nbsp;</a>
-        <table class="table">
+        <table class="table table-features">
             <div class="panel-heading">Features</div>
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th class="index">#</th>
+                    <th class="provisioner">Provisioner</th>
                     <th>Name</th>
                     <th>Value</th>
-                    <th>Provisioner</th>
                 </tr>
             </thead>
             <tbody>
                 {% for feature in app['features'] %}
                     <tr>
-                        <th scope="row">{{ loop.index }}</th>
+                        <th scope="row" class="index">{{ loop.index }}</th>
+                        <td class="provisioner"><img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ feature['provisioner'] }}" alt="{{ feature['provisioner'] }}" src="{{ url_for('static', filename='img/%s.png' % feature['provisioner']) }}?v={{current_revision}}" /></td>
                         <td>{{ feature['name'] }}</td>
                         <td>{{ feature['version'] }}</td>
-                        <td>{{ feature['provisioner'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

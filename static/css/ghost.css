@@ -261,7 +261,14 @@ ul.nav.navbar-nav {
     font-weight: 300;
     font-size: 12px;
 }
-/*AppEdit*/
+#app-view table.table-features .index {
+    width: 32px;
+}
+#app-view table.table-features .provisioner {
+    width: 100px;
+    text-align: center;
+}
+    /*AppEdit*/
 td.inline .form-group {
     width: 50%;
     float: left;
@@ -336,6 +343,7 @@ td.inline {
 }
 #app-form .edit-entry:hover,
 #app-form .delete-entry:hover {
+    padding: 8px 11px;
     border: 1px solid;
 }
 #app-form .features-presets-group {
@@ -380,6 +388,9 @@ td.inline {
 #app-form #features_list th,
 #app-form #log_notifications_list th {
     vertical-align: middle;
+}
+#app-form #features_list th img.feature-provisioner {
+    float: right;
 }
 .command_options #modules_list.table td {
     vertical-align: middle;

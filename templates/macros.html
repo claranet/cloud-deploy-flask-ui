@@ -120,6 +120,7 @@
                 <th scope="row" class="col-md-2">
                     <a name="{{ entry_id_prefix }}-{{ loop.index0 }}" class="anchor">&nbsp</a>
                     <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
+                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ entry.feature_provisioner.data or 'salt' }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.png' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" />
                 </th>
                 <td class="col-md-9 {{ form_type }}">
                     <div class="row">
@@ -147,7 +148,7 @@
     </table>
     {% for entry in fieldlist %}
     <!-- Modal per feature -->
-    <div class="modal fade" id="feature-details-{{ loop.index0 }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFeature{{ loop.index0 }}">
+    <div class="modal fade feature-details-modal" id="feature-details-{{ loop.index0 }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFeature{{ loop.index0 }}">
         <div class="modal-dialog feature-details" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -155,20 +156,15 @@
                     <h4 class="modal-title" id="myModalLabelFeature{{ loop.index0 }}">Feature details of <strong>{{ entry.feature_name.data }}</strong></h4>
                 </div>
                 <div class="modal-body">
-                    {% if entry.type == 'FormField' %}
-                    {% for field in entry if not field.type == 'CSRFTokenField' %}
-                    {{ wtf.form_field(field, form_type='horizontal', placeholder=html_placeholder) }}
-                    {% endfor %}
-                    {% elif entry.type == 'TextAreaField' %}
-                    {{ wtf.form_field(entry, form_type='horizontal', dropzone='copy s:text/plain', ondrop='dropHandler(event)', placeholder='Drag and drop a text file here') }}
-                    {% elif entry.type == 'SelectField' and refresh_function %}
-                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
-                    <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
-                    {% elif entry.type == 'HiddenField' %}
-                    {{ wtf.form_field(entry, form_type='inline', placeholder=html_placeholder) }}
-                    {% else %}
-                    {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
-                    {% endif %}
+                    <div class="feature_provisioner">{{ wtf.form_field(entry.feature_provisioner, form_type='horizontal', placeholder=html_placeholder) }}</div>
+                    <div class="provisioner_type salt">
+                        {{ wtf.form_field(entry.feature_name, form_type='horizontal', placeholder=html_placeholder) }}
+                        {{ wtf.form_field(entry.feature_version, form_type='horizontal', placeholder=html_placeholder) }}
+                    </div>
+                    <div class="provisioner_type ansible">
+                        {{ wtf.form_field(entry.feature_selected_name, form_type='horizontal', placeholder=html_placeholder) }}
+                        {{ wtf.form_field(entry.feature_parameters, form_type='horizontal', placeholder=html_placeholder) }}
+                    </div>
                 </div>
             </div>
         </div>
