@@ -5,6 +5,23 @@ function ghost_update_feature_form_details(provisioner_select) {
     $(container).find('.provisioner_type.' + provisioner_type).show();
 }
 
+function ghost_update_feature_view(provisioner_select) {
+    provisioner_type = $(provisioner_select).val();
+    feature_index = $(provisioner_select).parent().parent().parent().parent().attr('data-index');
+    container = $('#feature_' + feature_index);
+    img = $(container).find('img.feature-provisioner');
+    img.attr('src', img.attr('data-base-uri').replace('[]', provisioner_type));
+    img.attr('title', 'Provisioner ' + provisioner_type);
+    img.attr('alt', provisioner_type);
+    if (provisioner_type == 'salt') {
+        $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
+        $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_version').val());
+    } else {
+        $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
+        $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_parameters').val());
+    }
+}
+
 (function() {
     $('.quick-submit').click(function (evt) {
         evt.preventDefault();
@@ -72,6 +89,9 @@ function ghost_update_feature_form_details(provisioner_select) {
     });
     $('.feature-details-modal').on('show.bs.modal', function (event) {
         ghost_update_feature_form_details($(this).find('.modal-body select[name$="feature_provisioner"]'));
+    });
+    $('.feature-details-modal').on('hide.bs.modal', function (event) {
+        ghost_update_feature_view($(this).find('.modal-body select[name$="feature_provisioner"]'));
     });
     ghost_update_feature_presets();
     var ghost_client_name = window.location.hostname.replace('.ghost.morea.fr', '');

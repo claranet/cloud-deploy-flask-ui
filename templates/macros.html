@@ -120,16 +120,16 @@
                 <th scope="row" class="col-md-2">
                     <a name="{{ entry_id_prefix }}-{{ loop.index0 }}" class="anchor">&nbsp</a>
                     <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
-                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ entry.feature_provisioner.data or 'salt' }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.png' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" />
+                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ entry.feature_provisioner.data or 'salt' }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.png' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].png?v={{current_revision }}" />
                 </th>
                 <td class="col-md-9 {{ form_type }}">
                     <div class="row">
-                        <label class="control-label col-lg-4" for="features-{{ loop.index0 }}-feature_name">Name</label>
-                        <label class="control-label col-lg-8" for="features-{{ loop.index0 }}-feature_val">Parameters</label>
+                        <label class="control-label col-lg-4" for="features-{{ loop.index0 }}-view-feature_name">Name</label>
+                        <label class="control-label col-lg-8" for="features-{{ loop.index0 }}-view-feature_val">Parameters</label>
                     </div>
                     <div class="row">
-                        <p class="col-lg-4" id="features-{{ loop.index0 }}-feature_name">{{ entry.feature_name.data }}</p>
-                        <p class="col-lg-8" id="features-{{ loop.index0 }}-feature_val">{{ entry.feature_version.data }}</p>
+                        <p class="col-lg-4" id="features-{{ loop.index0 }}-view-feature_name">{{ entry.feature_name.data }}</p>
+                        <p class="col-lg-8" id="features-{{ loop.index0 }}-view-feature_val">{{ entry.feature_version.data }}</p>
                     </div>
                 </td>
                 <td class="col-md-1">
@@ -156,7 +156,7 @@
                     <h4 class="modal-title" id="myModalLabelFeature{{ loop.index0 }}">Feature details of <strong>{{ entry.feature_name.data }}</strong></h4>
                 </div>
                 <div class="modal-body">
-                    <div class="feature_provisioner">{{ wtf.form_field(entry.feature_provisioner, form_type='horizontal', placeholder=html_placeholder) }}</div>
+                    <div class="feature_provisioner" data-index="{{ loop.index0 }}">{{ wtf.form_field(entry.feature_provisioner, form_type='horizontal', placeholder=html_placeholder) }}</div>
                     <div class="provisioner_type salt">
                         {{ wtf.form_field(entry.feature_name, form_type='horizontal', placeholder=html_placeholder) }}
                         {{ wtf.form_field(entry.feature_version, form_type='horizontal', placeholder=html_placeholder) }}
