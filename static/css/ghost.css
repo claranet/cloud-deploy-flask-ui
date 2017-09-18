@@ -439,6 +439,7 @@ td.inline {
     width: 50%;
     max-width: 50%;
 }
+.feature-details,
 .app-infos {
     width: 90%;
 }
@@ -840,4 +841,14 @@ thead td.module-state span {
 .bs-callout+.bs-callout{margin-top:-5px}
 .app-panel .bs-callout{
     margin: 0;
+}
+
+/**
+** JSON Form schema
+**/
+.jsonform .form-group {
+    margin: 0;
+}
+.jsonform .btn {
+    padding: 6px 12px;
 }

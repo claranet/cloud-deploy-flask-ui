@@ -3,6 +3,9 @@ function ghost_update_feature_form_details(provisioner_select) {
     container = $(provisioner_select).parent().parent().parent().parent().parent();
     $(container).find('.provisioner_type:not(.' + provisioner_type + ')').hide();
     $(container).find('.provisioner_type.' + provisioner_type).show();
+    if (provisioner_type == 'ansible') {
+        ghost_update_feature_ansible_role_parameters(container);
+    }
 }
 
 function ghost_update_feature_view(provisioner_select) {
@@ -20,6 +23,26 @@ function ghost_update_feature_view(provisioner_select) {
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_parameters').val());
     }
+}
+
+function ghost_update_feature_ansible_role_parameters(container) {
+    role_select = $(container).find('select[name$="feature_selected_name"]')
+    role = $(role_select).val();
+    $(container).find('.ansible-role-parameters-form').html('');
+    $.ajax('/web/feature/ansible/role-schema/'+role).done(function(data) {
+        $(container).find('.ansible-role-parameters-form').jsonForm({
+            schema: data,
+            onSubmit: function (errors, values) {
+                if (errors) {
+                    alert(errors);
+                } else {
+                    console.log('ok');
+                }
+            }
+        });
+    }).fail(function() {
+        alert("Failed to retrieve Ansible role schema");
+    });
 }
 
 (function() {

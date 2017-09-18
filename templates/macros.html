@@ -164,6 +164,13 @@
                     <div class="provisioner_type ansible">
                         {{ wtf.form_field(entry.feature_selected_name, form_type='horizontal', placeholder=html_placeholder) }}
                         {{ wtf.form_field(entry.feature_parameters, form_type='horizontal', placeholder=html_placeholder) }}
+                        <div class="ansible-role-parameters-form-wrapper">
+                            <div class="form-group">
+                                <label class="control-label  col-lg-2">Parameters</label>
+                                <div class="ansible-role-parameters-form col-lg-10">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

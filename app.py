@@ -21,9 +21,9 @@ from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_ST
 from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
-from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_api import FORBIDDEN_PATH
 from ghost_client import get_ghost_envs
+from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
@@ -43,6 +43,7 @@ from forms.job import CancelJobForm, DeleteJobForm
 from forms.form_helper import get_ghost_app_roles, get_ghost_app_envs
 from forms.form_helper import get_app_command_recommendations
 from forms.form_helper import get_container_images
+from forms.form_helper import get_ansible_role_inventory
 from forms.form_aws_helper import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids
 from forms.form_aws_helper import get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs
 from forms.form_aws_helper import get_aws_iam_instance_profiles, get_aws_as_groups
@@ -361,6 +362,11 @@ def web_feature_presets_list():
 @app.route('/web/feature/presets/import/<config>')
 def web_feature_presets_import(config):
     return jsonify(FEATURE_PRESETS[config])
+
+
+@app.route('/web/feature/ansible/role-schema/<role>')
+def web_feature_ansible_role_schema(role):
+    return jsonify(get_ansible_role_inventory().get(role))
 
 
 @app.route('/web/t-apps')
