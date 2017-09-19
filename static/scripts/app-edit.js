@@ -23,8 +23,7 @@ function ghost_update_feature_view(provisioner_select) {
         ansible_role_parameter_form = $('#ansible-role-parameters-form-'+feature_index);
         $(ansible_role_parameter_form).submit();
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
-        $(container).find('#features-'+feature_index+'-view-feature_val span').attr('title', $('#features-'+feature_index+'-feature_parameters').val());
-        $(container).find('#features-'+feature_index+'-view-feature_val span').html($('#features-'+feature_index+'-feature_parameters').val().substring(0, 64));
+        $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_parameters').val());
     }
 }
 
@@ -119,10 +118,10 @@ function ghost_update_feature_ansible_role_parameters(container) {
     $('.panel-features').on('change', 'select[name$="feature_selected_name"]', function () {
         ghost_update_feature_ansible_role_parameters($(this).parent().parent().parent().parent().parent());
     });
-    $('.feature-details-modal').on('show.bs.modal', function (event) {
+    $('.panel-features').on('show.bs.modal', '.feature-details-modal', function (event) {
         ghost_update_feature_form_details($(this).find('.modal-body select[name$="feature_provisioner"]'));
     });
-    $('.feature-details-modal').on('hide.bs.modal', function (event) {
+    $('.panel-features').on('hide.bs.modal', '.feature-details-modal', function (event) {
         ghost_update_feature_view($(this).find('.modal-body select[name$="feature_provisioner"]'));
     });
     ghost_update_feature_presets();

@@ -222,12 +222,47 @@ $('#check_provider_creds').click(function(evt) {
     });
 });
 
+function ghost_add_feature_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to) {
+    var count = $("div.feature-details-modal").size();
+    var clone = $("div.feature-details-modal:last").clone();
+    clone.attr("id", "feature-details-" + count);
+
+    clone = ghost_update_entry(clone, count);
+    clone.find('.feature_provisioner').attr('data-index', count);
+    clone.find('input[name$="feature_parameters"]').val('{}');
+
+    // DOM Insert
+    clone.appendTo(".panel-features");
+
+    ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to);
+    $('tr[data-' + entry_id_prefix + ']:last').find('a.edit-entry').attr('data-target', '#feature-details-' + count);
+
+    ghost_update_feature_form_details($('#feature-details-' + count).find('select[name$="feature_provisioner"]'));
+    $('#feature-details-' + count).modal('show');
+}
+
 function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to) {
     var count = $("tr[data-" + entry_id_prefix + "]").size();
     var clone = $("tr[data-" + entry_id_prefix + "]:first").clone();
 
     clone.attr("id", entry_id_prefix + "_" + count);
-    clone.find("input, select, textarea").each(function() {
+
+    clone = ghost_update_entry(clone, count);
+
+    // DOM Insert
+    clone.appendTo("table#" + group_id_prefix + "_list");
+    
+    // CodeMirror update
+    initCodeMirror();
+
+    if (scroll_to) {
+        // ScrollTo the new element
+        $('#' + entry_id_prefix + "_" + count)[0].scrollIntoView();
+    }
+}
+
+function ghost_update_entry(clone, count) {
+    clone.find("form, input, select, textarea, p.readonly").each(function() {
         var old_id = $(this).attr('id');
         $(this).val(null);
         if (old_id) {
@@ -239,9 +274,13 @@ function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, 
             field_label.attr("for", new_id);
         }
     });
+    clone.find("p.readonly").each(function() {
+        $(this).html('');
+    });
 
-    var slt = clone.find('select:not([readonly], [data-classic-select])');
-    slt.parent().before(slt);
+    var slt = clone.find('select:not([readonly], [data-classic-select])').each(function() {
+        $(this).parent().before($(this));
+    });
 
     // Bootstrap Dynamic Select - update
     clone.find('.bootstrap-select').remove();
@@ -258,16 +297,7 @@ function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, 
         $(elem).unbind();
     });
 
-    // DOM Insert
-    clone.appendTo("table#" + group_id_prefix + "_list");
-
-    // CodeMirror update
-    initCodeMirror();
-
-    if (scroll_to) {
-        // ScrollTo the new element
-        $('#' + entry_id_prefix + "_" + count)[0].scrollIntoView();
-    }
+    return clone;
 }
 
 function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {

@@ -103,7 +103,7 @@
     <div class="panel-heading" style="counter-reset: group_entry;">
         <strong>{{ group_label }}</strong>
         <a class="btn btn-success btn-simple add-entry" title="Add {{ entry_label }}"
-           onclick="javascript:ghost_add_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}', true)">
+           onclick="javascript:ghost_add_feature_entry_to_list('{{ group_id_prefix }}', '{{ entry_id_prefix }}', '{{ entry_label }}', true)">
             <span class="glyphicon glyphicon-plus"></span>
         </a>
         <div class="form-group features-presets-group">
@@ -128,12 +128,12 @@
                         <label class="control-label col-lg-8" for="features-{{ loop.index0 }}-view-feature_val">Parameters</label>
                     </div>
                     <div class="row">
-                        <p class="col-lg-4" id="features-{{ loop.index0 }}-view-feature_name">{{ entry.feature_name.data }}</p>
-                        <p class="col-lg-8" id="features-{{ loop.index0 }}-view-feature_val">
+                        <p class="col-lg-4 readonly" id="features-{{ loop.index0 }}-view-feature_name">{{ entry.feature_name.data }}</p>
+                        <p class="col-lg-8 readonly" id="features-{{ loop.index0 }}-view-feature_val">
                         {%- if (entry.feature_provisioner.data or 'salt') == 'salt' -%}
                             {{ entry.feature_version.data }}
                         {%- else -%}
-                            <span data-target="tooltip" title="{{ entry.feature_parameters.data }}">{{ entry.feature_parameters.data[:64] }}</span>&hellip;
+                            {{ entry.feature_parameters.data }}
                         {%- endif -%}
                         </p>
                     </div>
