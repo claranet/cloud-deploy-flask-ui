@@ -309,7 +309,13 @@
                         <th scope="row" class="index">{{ loop.index }}</th>
                         <td class="provisioner"><img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ feature['provisioner'] }}" alt="{{ feature['provisioner'] }}" src="{{ url_for('static', filename='img/%s.png' % feature['provisioner']) }}?v={{current_revision}}" /></td>
                         <td>{{ feature['name'] }}</td>
-                        <td>{{ feature['version'] }}</td>
+                        <td>
+                        {%- if feature['provisioner'] == 'salt' -%}
+                            {{ feature['version'] }}
+                        {%- else -%}
+                            <span data-target="tooltip" title="{{ feature['parameters'] }}">{{ feature['parameters'][:64] }}</span>&hellip;
+                        {%- endif -%}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

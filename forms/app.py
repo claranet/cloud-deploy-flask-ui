@@ -405,7 +405,7 @@ class FeatureForm(FlaskForm):
         self.feature_selected_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
-        self.feature_parameters.data = json.dumps(feature.get('parameters', {}))
+        self.feature_parameters.data = feature.get('parameters', {})
 
 
 class EnvvarForm(FlaskForm):
@@ -831,7 +831,7 @@ class BaseAppForm(FlaskForm):
                         # With ansible, uses the select/dropdown choosen value
                         feature['name'] = form_feature.feature_selected_name.data
                 if form_feature.feature_parameters.data:
-                    feature['parameters'] = json.load(form_feature.feature_parameters.data)
+                    feature['parameters'] = form_feature.feature_parameters.data
             if feature:
                 app['features'].append(feature)
 

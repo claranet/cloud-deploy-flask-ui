@@ -21,20 +21,30 @@ function ghost_update_feature_view(provisioner_select) {
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_version').val());
     } else {
         ansible_role_parameter_form = $('#ansible-role-parameters-form-'+feature_index);
-        json_role_data = JSON.stringify( $(ansible_role_parameter_form).serializeArray() );
-        $('#features-'+feature_index+'-feature_parameters').val(json_role_data);
+        $(ansible_role_parameter_form).submit();
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
-        $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_parameters').val());
+        $(container).find('#features-'+feature_index+'-view-feature_val span').attr('title', $('#features-'+feature_index+'-feature_parameters').val());
+        $(container).find('#features-'+feature_index+'-view-feature_val span').html($('#features-'+feature_index+'-feature_parameters').val().substring(0, 64));
     }
 }
 
 function ghost_update_feature_ansible_role_parameters(container) {
-    role_select = $(container).find('select[name$="feature_selected_name"]')
+    role_select = $(container).find('select[name$="feature_selected_name"]');
+    feature_index = $(container).find('.feature_provisioner').attr('data-index');
     role = $(role_select).val();
     $(container).find('.ansible-role-parameters-form').html('');
     $.ajax('/web/feature/ansible/role-schema/'+role).done(function(data) {
         $(container).find('.ansible-role-parameters-form').jsonForm({
-            schema: data
+            schema: data,
+            value: JSON.parse($(container).find('input[name$="feature_parameters"]').val()),
+            onSubmit: function (errors, values) {
+                if (errors) {
+                    console.log(errors);
+                }
+                else {
+                    $('#features-'+feature_index+'-feature_parameters').val(JSON.stringify(values));
+                }
+              }
         });
     }).fail(function() {
         alert("Failed to retrieve Ansible role schema");

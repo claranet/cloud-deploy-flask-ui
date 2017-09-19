@@ -133,7 +133,7 @@
                         {%- if (entry.feature_provisioner.data or 'salt') == 'salt' -%}
                             {{ entry.feature_version.data }}
                         {%- else -%}
-                            {{ entry.feature_parameters.data }}
+                            <span data-target="tooltip" title="{{ entry.feature_parameters.data }}">{{ entry.feature_parameters.data[:64] }}</span>&hellip;
                         {%- endif -%}
                         </p>
                     </div>
