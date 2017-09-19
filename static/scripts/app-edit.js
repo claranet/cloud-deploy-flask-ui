@@ -20,6 +20,9 @@ function ghost_update_feature_view(provisioner_select) {
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_version').val());
     } else {
+        ansible_role_parameter_form = $('#ansible-role-parameters-form-'+feature_index);
+        json_role_data = JSON.stringify( $(ansible_role_parameter_form).serializeArray() );
+        $('#features-'+feature_index+'-feature_parameters').val(json_role_data);
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_parameters').val());
     }
@@ -31,14 +34,7 @@ function ghost_update_feature_ansible_role_parameters(container) {
     $(container).find('.ansible-role-parameters-form').html('');
     $.ajax('/web/feature/ansible/role-schema/'+role).done(function(data) {
         $(container).find('.ansible-role-parameters-form').jsonForm({
-            schema: data,
-            onSubmit: function (errors, values) {
-                if (errors) {
-                    alert(errors);
-                } else {
-                    console.log('ok');
-                }
-            }
+            schema: data
         });
     }).fail(function() {
         alert("Failed to retrieve Ansible role schema");
@@ -109,6 +105,9 @@ function ghost_update_feature_ansible_role_parameters(container) {
     });
     $('.panel-features').on('change', 'select[name$="feature_provisioner"]', function () {
         ghost_update_feature_form_details($(this));
+    });
+    $('.panel-features').on('change', 'select[name$="feature_selected_name"]', function () {
+        ghost_update_feature_ansible_role_parameters($(this).parent().parent().parent().parent().parent());
     });
     $('.feature-details-modal').on('show.bs.modal', function (event) {
         ghost_update_feature_form_details($(this).find('.modal-body select[name$="feature_provisioner"]'));

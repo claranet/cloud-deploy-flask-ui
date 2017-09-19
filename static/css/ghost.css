@@ -852,3 +852,10 @@ thead td.module-state span {
 .jsonform .btn {
     padding: 6px 12px;
 }
+.jsonform input[type=submit].btn {
+    display: none;
+}
+.modal-content .modal-footer button.save-feature-details {
+    float: right;
+    margin: 15px;
+}

@@ -129,7 +129,13 @@
                     </div>
                     <div class="row">
                         <p class="col-lg-4" id="features-{{ loop.index0 }}-view-feature_name">{{ entry.feature_name.data }}</p>
-                        <p class="col-lg-8" id="features-{{ loop.index0 }}-view-feature_val">{{ entry.feature_version.data }}</p>
+                        <p class="col-lg-8" id="features-{{ loop.index0 }}-view-feature_val">
+                        {%- if (entry.feature_provisioner.data or 'salt') == 'salt' -%}
+                            {{ entry.feature_version.data }}
+                        {%- else -%}
+                            {{ entry.feature_parameters.data }}
+                        {%- endif -%}
+                        </p>
                     </div>
                 </td>
                 <td class="col-md-1">
@@ -167,11 +173,14 @@
                         <div class="ansible-role-parameters-form-wrapper">
                             <div class="form-group">
                                 <label class="control-label  col-lg-2">Parameters</label>
-                                <div class="ansible-role-parameters-form col-lg-10">
-                                </div>
+                                <form id="ansible-role-parameters-form-{{ loop.index0 }}" class="ansible-role-parameters-form col-lg-10">
+                                </form>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-xs save-feature-details" data-dismiss="modal" aria-label="Close"><i class="fa fa-check"></i> Save</button>
                 </div>
             </div>
         </div>
