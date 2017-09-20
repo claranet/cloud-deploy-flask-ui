@@ -827,11 +827,14 @@ class BaseAppForm(FlaskForm):
                     feature['version'] = form_feature.feature_version.data
                 if form_feature.feature_provisioner.data:
                     feature['provisioner'] = form_feature.feature_provisioner.data
-                    if feature['provisioner'] != DEFAULT_PROVIDER:
+                    if feature['provisioner'] == 'ansible':
                         # With ansible, uses the select/dropdown choosen value
                         feature['name'] = form_feature.feature_selected_name.data
-                if form_feature.feature_parameters.data:
-                    feature['parameters'] = form_feature.feature_parameters.data
+                        if form_feature.feature_parameters.data:
+                            feature['parameters'] = form_feature.feature_parameters.data
+                            feature['version'] = ''
+                    else:
+                        feature['parameters'] = ''
             if feature:
                 app['features'].append(feature)
 

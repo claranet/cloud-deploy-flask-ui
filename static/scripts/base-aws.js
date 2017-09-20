@@ -300,9 +300,20 @@ function ghost_update_entry(clone, count) {
     return clone;
 }
 
+function ghost_del_feature_entry_from_list(entry_del_link, entry_id_prefix) {
+    ghost_del_entry_from_list(entry_del_link, entry_id_prefix);
+    var count = $("div.feature-details-modal").size();
+    var entry = $($(entry_del_link).attr('data-target'));
+    ghost_cleanup_entry(count, entry);
+}
+
 function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
     var count = $("tr[data-" + entry_id_prefix + "]").size();
     var entry = $(entry_del_link).parent().parent();
+    ghost_cleanup_entry(count, entry);
+}
+
+function ghost_cleanup_entry(count, entry) {
     if (count > 1) {
         entry.remove();
     } else {

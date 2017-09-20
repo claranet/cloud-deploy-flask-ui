@@ -144,7 +144,8 @@
                         <span class="glyphicon glyphicon-edit"></span>
                     </a>
                     <a class="btn btn-danger btn-simple delete-entry" title="Delete {{ entry_label }}"
-                       onclick="javascript:ghost_del_entry_from_list(this, '{{ entry_id_prefix }}')">
+                       onclick="javascript:ghost_del_feature_entry_from_list(this, '{{ entry_id_prefix }}')"
+                       data-target="#feature-details-{{ loop.index0 }}">
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
                 </td>

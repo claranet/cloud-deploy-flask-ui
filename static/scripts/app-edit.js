@@ -31,8 +31,8 @@ function ghost_update_feature_ansible_role_parameters(container) {
     role_select = $(container).find('select[name$="feature_selected_name"]');
     feature_index = $(container).find('.feature_provisioner').attr('data-index');
     role = $(role_select).val();
-    $(container).find('.ansible-role-parameters-form').html('');
     $.ajax('/web/feature/ansible/role-schema/'+role).done(function(data) {
+        $(container).find('.ansible-role-parameters-form').html('');
         $(container).find('.ansible-role-parameters-form').jsonForm({
             schema: data,
             value: JSON.parse($(container).find('input[name$="feature_parameters"]').val()),
