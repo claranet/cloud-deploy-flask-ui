@@ -229,7 +229,7 @@ function ghost_add_feature_entry_to_list(group_id_prefix, entry_id_prefix, entry
 
     clone = ghost_update_entry(clone, count);
     clone.find('.feature_provisioner').attr('data-index', count);
-    clone.find('input[name$="feature_parameters"]').val('{}');
+    clone.find('.ansible-role-parameters-form').attr('id', 'ansible-role-parameters-form-'+count);
 
     // DOM Insert
     clone.appendTo(".panel-features");
@@ -262,7 +262,7 @@ function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, 
 }
 
 function ghost_update_entry(clone, count) {
-    clone.find("form, input, select, textarea, p.readonly").each(function() {
+    clone.find("input, select, textarea, p.readonly").each(function() {
         var old_id = $(this).attr('id');
         $(this).val(null);
         if (old_id) {

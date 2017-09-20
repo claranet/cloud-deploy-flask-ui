@@ -1,7 +1,5 @@
 from flask_wtf import FlaskForm
 
-import json
-
 from web_ui.forms.form_helper import empty_fieldlist
 from web_ui.forms.form_helper import get_wtforms_selectfield_values
 
@@ -15,7 +13,7 @@ from web_ui.forms.form_helper import get_ansible_role_inventory
 from web_ui.forms.form_aws_helper import get_aws_connection_data
 from web_ui.forms.form_aws_helper import get_aws_ec2_regions
 
-from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField, TextAreaField, BooleanField
+from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField, TextAreaField, BooleanField, SelectField
 from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
@@ -392,7 +390,7 @@ class FeatureForm(FlaskForm):
             ghost_app_schema['features']['schema']['schema']['version']['regex']
         )
     ])
-    feature_provisioner = BetterSelectFieldNonValidating('Provisioner', validators=[],
+    feature_provisioner = SelectField('Provisioner', validators=[],
         choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
     feature_parameters = HiddenField(' ')
 
@@ -405,7 +403,7 @@ class FeatureForm(FlaskForm):
         self.feature_selected_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
-        self.feature_parameters.data = feature.get('parameters', {})
+        self.feature_parameters.data = feature.get('parameters', '')
 
 
 class EnvvarForm(FlaskForm):
@@ -823,18 +821,18 @@ class BaseAppForm(FlaskForm):
             feature = {}
             if form_feature.feature_name.data:
                 feature['name'] = form_feature.feature_name.data
-                if form_feature.feature_version.data:
-                    feature['version'] = form_feature.feature_version.data
-                if form_feature.feature_provisioner.data:
-                    feature['provisioner'] = form_feature.feature_provisioner.data
-                    if feature['provisioner'] == 'ansible':
-                        # With ansible, uses the select/dropdown choosen value
-                        feature['name'] = form_feature.feature_selected_name.data
-                        if form_feature.feature_parameters.data:
-                            feature['parameters'] = form_feature.feature_parameters.data
-                            feature['version'] = ''
-                    else:
-                        feature['parameters'] = ''
+            if form_feature.feature_version.data:
+                feature['version'] = form_feature.feature_version.data
+            if form_feature.feature_provisioner.data:
+                feature['provisioner'] = form_feature.feature_provisioner.data
+                if feature['provisioner'] == 'ansible':
+                    # With ansible, uses the select/dropdown choosen value
+                    feature['name'] = form_feature.feature_selected_name.data
+                    if form_feature.feature_parameters.data:
+                        feature['parameters'] = form_feature.feature_parameters.data
+                        feature['version'] = ''
+                else:
+                    feature['parameters'] = ''
             if feature:
                 app['features'].append(feature)
 

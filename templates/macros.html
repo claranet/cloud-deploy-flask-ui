@@ -154,7 +154,7 @@
         </tbody>
     </table>
     {% for entry in fieldlist %}
-    <!-- Modal per feature -->
+    <!-- Modal for feature-{{ loop.index0 }} -->
     <div class="modal fade feature-details-modal" id="feature-details-{{ loop.index0 }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFeature{{ loop.index0 }}">
         <div class="modal-dialog feature-details" role="document">
             <div class="modal-content">
@@ -173,9 +173,8 @@
                         {{ wtf.form_field(entry.feature_parameters, form_type='horizontal', placeholder=html_placeholder) }}
                         <div class="ansible-role-parameters-form-wrapper">
                             <div class="form-group">
-                                <label class="control-label  col-lg-2">Parameters</label>
-                                <form id="ansible-role-parameters-form-{{ loop.index0 }}" class="ansible-role-parameters-form col-lg-10">
-                                </form>
+                                <label class="control-label col-lg-2">Parameters</label>
+                                <div id="ansible-role-parameters-form-{{ loop.index0 }}" class="ansible-role-parameters-form col-lg-10"></div>
                             </div>
                         </div>
                     </div>
