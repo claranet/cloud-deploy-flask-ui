@@ -313,7 +313,11 @@
                         {%- if feature['provisioner'] == 'salt' -%}
                             {{ feature['version'] }}
                         {%- else -%}
-                            <span data-target="tooltip" title="{{ feature['parameters'] }}">{{ feature['parameters'][:64] }}</span>&hellip;
+                            <a tabindex="0" title="" role="button" data-toggle="popover" data-placement="top" data-trigger="focus"  data-container="body"
+                               title="Feature {{ feature['name'] }}" data-content="<pre>{{ feature['parameters_pretty'] }}</pre>">
+                                {{ feature['parameters_pretty'][:32] }}
+                                {%- if feature['parameters_pretty'] | length > 32 -%}&hellip;{%- endif -%}
+                            </a>
                         {%- endif -%}
                         </td>
                     </tr>
@@ -409,4 +413,5 @@
 {% endblock %}
 {% block page_scripts %}
     <script src="{{url_for('.static', filename='scripts/app-infos.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='scripts/app-view.js')}}?v={{current_revision}}"></script>
 {% endblock %}

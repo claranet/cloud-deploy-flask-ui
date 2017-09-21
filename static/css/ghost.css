@@ -859,3 +859,10 @@ thead td.module-state span {
     float: right;
     margin: 15px;
 }
+
+/**
+** BS popover
+**/
+.popover.top {
+    max-width: 500px;
+}

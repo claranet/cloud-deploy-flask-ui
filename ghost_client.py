@@ -8,6 +8,7 @@ import json
 import requests
 import sys
 import traceback
+import yaml
 
 from ghost_tools import b64decode_utf8, b64encode_utf8, config
 from libs.lxd import list_lxd_images
@@ -131,7 +132,7 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
     return apps
 
 
-def get_ghost_app(app_id, embed_deployments=False):
+def get_ghost_app(app_id, embed_deployments=False, pretty_feature=False):
     try:
         url = url_apps + '/' + app_id
         if embed_deployments:
@@ -182,6 +183,9 @@ def get_ghost_app(app_id, embed_deployments=False):
         for feature in app.get('features', []):
             if 'provisioner' not in feature:
                 feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
+            if pretty_feature:
+                feature['parameters_pretty'] = yaml.safe_dump(json.loads(feature.get('parameters') or '{}'),
+                                                              indent=4, allow_unicode=True)
         # Container enhancements
         if 'source_container_image' in app.get('build_infos'):
             fingerprint = app['build_infos']['source_container_image']
