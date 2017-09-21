@@ -262,7 +262,7 @@ function ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, 
 }
 
 function ghost_update_entry(clone, count) {
-    clone.find("input, select, textarea, p.readonly").each(function() {
+    clone.find("input, select, textarea, .readonly").each(function() {
         var old_id = $(this).attr('id');
         $(this).val(null);
         if (old_id) {
@@ -274,7 +274,7 @@ function ghost_update_entry(clone, count) {
             field_label.attr("for", new_id);
         }
     });
-    clone.find("p.readonly").each(function() {
+    clone.find(".readonly").each(function() {
         $(this).html('');
     });
 
