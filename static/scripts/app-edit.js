@@ -23,7 +23,11 @@ function ghost_update_feature_view(provisioner_select) {
         ansible_role_parameter_form = $('#ansible-role-parameters-form-'+feature_index);
         $(ansible_role_parameter_form).submit();
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
-        $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_parameters').val());
+        parameters_obj = JSON.parse($('#features-'+feature_index+'-feature_parameters').val());
+        $(container).find('#features-'+feature_index+'-view-feature_val').html('');
+        for (var key in parameters_obj) {
+            $(container).find('#features-'+feature_index+'-view-feature_val').append(key+': '+ parameters_obj[key]+ '\n');
+        }
     }
 }
 

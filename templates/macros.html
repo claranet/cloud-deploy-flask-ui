@@ -128,13 +128,15 @@
                         <label class="control-label col-lg-8" for="features-{{ loop.index0 }}-view-feature_val">Parameters</label>
                     </div>
                     <div class="row">
-                        <p class="col-lg-4 readonly" id="features-{{ loop.index0 }}-view-feature_name">{{ entry.feature_name.data }}</p>
-                        <p class="col-lg-8 readonly" id="features-{{ loop.index0 }}-view-feature_val">
+                        <p class="col-lg-4"><span class="readonly" id="features-{{ loop.index0 }}-view-feature_name">{{ entry.feature_name.data }}</span></p>
+                        <p class="col-lg-8">
+                            <span class="readonly" id="features-{{ loop.index0 }}-view-feature_val">
                         {%- if (entry.feature_provisioner.data or 'salt') == 'salt' -%}
                             {{ entry.feature_version.data }}
                         {%- else -%}
-                            {{ entry.feature_parameters.data }}
+                            {{ get_pretty_yaml_from_json(entry.feature_parameters.data) }}
                         {%- endif -%}
+                            </span>
                         </p>
                     </div>
                 </td>

@@ -255,6 +255,7 @@ ul.nav.navbar-nav {
     height: 1px;
     border: 0 none;
 }
+
 /*AppView*/
 .jobview table th,
 #app-view table th {
@@ -268,7 +269,8 @@ ul.nav.navbar-nav {
     width: 100px;
     text-align: center;
 }
-    /*AppEdit*/
+
+/*AppEdit*/
 td.inline .form-group {
     width: 50%;
     float: left;
@@ -359,6 +361,13 @@ td.inline {
 }
 #app-form .features-presets-group .feature-import {
     margin-top: 15px
+}
+#app-form #features_list .readonly {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 500px;
+    max-height: 20px;
+    display: inline-block;
 }
 #app-form .form-group.script-panel,
 #app-form .form-group.select-panel {

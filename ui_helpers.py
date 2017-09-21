@@ -1,4 +1,6 @@
+import json
 from flask import Markup
+import yaml
 
 
 NOT_DEPLOYED_STATE_INFOS = ("exclamation-circle", "not-deployed", "Not deployed")
@@ -51,3 +53,7 @@ def check_status_code(code):
     :return:
     """
     return code and code in [200, 201, 204]
+
+
+def get_pretty_yaml_from_json(json_string):
+    return yaml.safe_dump(json.loads(json_string), indent=4, allow_unicode=True)

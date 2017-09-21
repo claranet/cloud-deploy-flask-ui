@@ -139,6 +139,7 @@ def template_context():
         app_modules_state=ui_helpers.app_modules_state,
         module_state=ui_helpers.module_state,
         check_status_code=ui_helpers.check_status_code,
+        get_pretty_yaml_from_json=ui_helpers.get_pretty_yaml_from_json,
     )
 
 

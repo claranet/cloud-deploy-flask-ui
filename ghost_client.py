@@ -9,6 +9,7 @@ import requests
 import sys
 import traceback
 import yaml
+from ui_helpers import get_pretty_yaml_from_json
 
 from ghost_tools import b64decode_utf8, b64encode_utf8, config
 from libs.lxd import list_lxd_images
@@ -184,8 +185,7 @@ def get_ghost_app(app_id, embed_deployments=False, pretty_feature=False):
             if 'provisioner' not in feature:
                 feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
             if pretty_feature:
-                feature['parameters_pretty'] = yaml.safe_dump(json.loads(feature.get('parameters') or '{}'),
-                                                              indent=4, allow_unicode=True)
+                feature['parameters_pretty'] = get_pretty_yaml_from_json(feature.get('parameters') or '{}')
         # Container enhancements
         if 'source_container_image' in app.get('build_infos'):
             fingerprint = app['build_infos']['source_container_image']
