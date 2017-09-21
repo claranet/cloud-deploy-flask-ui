@@ -855,7 +855,11 @@ thead td.module-state span {
 /**
 ** JSON Form schema
 **/
-.jsonform .form-group {
+.jsonform > div {
+    display: flex;
+    flex-wrap: wrap;
+}
+.form-horizontal .jsonform .form-group {
     margin: 0;
 }
 .jsonform .btn {
@@ -863,6 +867,22 @@ thead td.module-state span {
 }
 .jsonform input[type=submit].btn {
     display: none;
+}
+.jsonform > div > .form-actions {
+    display: none;
+    clear: both;
+}
+.jsonform > div > .jsonform-node {
+    width: 30%;
+    margin: 5px !important;
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 2px;
+    border: 0;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
+}
+.jsonform legend {
+    font-size: 12px;
 }
 .modal-content .modal-footer button.save-feature-details {
     float: right;
