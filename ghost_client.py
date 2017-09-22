@@ -84,7 +84,7 @@ def get_ghost_envs(query=None):
         for item in result.json().get('_items', []):
             envs_set.add(item['env'])
         envs_list.insert(0, '*')
-        envs_list.extend(list(envs_set)) 
+        envs_list.extend(list(envs_set))
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
