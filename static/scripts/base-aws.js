@@ -263,7 +263,12 @@ function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
         entry.remove();
     } else {
         // Do not remove element, just clear inputs
-        entry.find("input, select, textarea").val(null);
+        entry.find("input, textarea").val(null);
+        entry.find("select").each(function(index, elem) {
+            $(this).val($(this).children("option:first").val());
+            $(this).selectpicker('refresh');
+        });
+        entry.find("input[type=checkbox]").prop("checked", "");
     }
 }
 
