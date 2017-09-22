@@ -115,6 +115,7 @@ button.btn.dropdown-toggle.btn-default:focus {
     background-color: #eee;
     font-size: 14px;
 }
+.jsonform select.form-control,
 select.form-control[data-classic-select] {
     color: #555;
     background-color: #eee;

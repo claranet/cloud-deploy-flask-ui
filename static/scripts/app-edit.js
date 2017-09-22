@@ -50,6 +50,7 @@ function ghost_update_feature_ansible_role_parameters(container) {
                 }
               }
         });
+        $.material.checkbox();
     }).fail(function() {
         alert("Failed to retrieve Ansible role schema");
     });
