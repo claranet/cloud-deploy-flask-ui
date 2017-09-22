@@ -22,6 +22,7 @@ from wtforms.validators import Length as LengthValidator
 from wtforms.validators import NoneOf as NoneOfValidator
 
 from models.apps import apps_schema as ghost_app_schema
+from models.volumes import block as ghost_block_schema
 
 from ghost_tools import get_available_provisioners_from_config
 from ghost_tools import b64encode_utf8
@@ -32,7 +33,9 @@ from libs.blue_green import get_blue_green_from_app
 
 
 class OptionalVolumeForm(FlaskForm):
-    device_name = StringField('Device Name', description='Should match /dev/sd[a-z] or /dev/xvd[b-c][a-z]',
+    device_name_block_regex = ghost_block_schema['schema']['device_name']['regex']
+    device_name = StringField('Device Name',
+                              description='Mount point must match %s' % device_name_block_regex,
                               validators=[])
     volume_type = BetterSelectField('Volume Type',
                                     description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>',
@@ -60,7 +63,8 @@ class InstanceTagForm(FlaskForm):
                            validators=[LengthValidator(min=1, max=127), DataRequiredValidator(),
                                        NoneOfValidator(['app_id', 'env', 'app', 'role', 'color'])])
     tag_value = StringField('Tag Value', description='Enter the Tag value(case sensitive) associate with the Tag Name.\
-                            You can use GHOST_APP variables to refer to its content(ex: GHOST_APP_ROLE will be replaced by the role defined in this application)',
+                            You can use GHOST_APP variables to refer to its content(ex: GHOST_APP_ROLE will be replaced \
+                            by the role defined in this application)',
                             validators=[LengthValidator(min=1, max=255), DataRequiredValidator()])
 
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -264,13 +268,13 @@ class EnvironmentInfosForm(FlaskForm):
                                  message='To prevent low disk space alerts, disk size should be greater than {min}GiB'.format(
                                      min=root_block_device_size_min))
         ])
-
-    root_block_device_name = StringField('Block Device Name', description='Empty if you want to use the default one', validators=[
-        OptionalValidator(),
-        RegexpValidator(
-            ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
-        )
-    ])
+    root_block_device_name_regex = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
+    root_block_device_name = StringField('Block Device Name',
+                                         description='Empty if you want to use the default one. Otherwise must match %s' % root_block_device_name_regex,
+                                         validators=[
+                                            OptionalValidator(),
+                                            RegexpValidator(root_block_device_name_regex),
+                                         ])
 
     optional_volumes = FieldList(FormField(OptionalVolumeForm, validators=[]), min_entries=1)
 
