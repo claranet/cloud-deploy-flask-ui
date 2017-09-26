@@ -251,7 +251,9 @@ ul.nav.navbar-nav {
     text-align: center;
 }
 .ghost_abbrev_field .script-panel textarea {
-    visibility: hidden;
+    width: 1px;
+    height: 1px;
+    border: 0 none;
 }
 /*AppView*/
 .jobview table th,
