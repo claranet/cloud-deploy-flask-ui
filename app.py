@@ -504,7 +504,7 @@ def web_app_create():
 @app.route('/web/apps/<app_id>', methods=['GET'])
 def web_app_view(app_id):
     # Get App data
-    app = get_ghost_app(app_id, embed_deployments=True, pretty_feature=True)
+    app = get_ghost_app(app_id, embed_deployments=True, embed_features_params_as_yml=True)
     cmd_recommendations = get_app_command_recommendations(app_id, app)
 
     return render_template('app_view.html', app=app, cmd_recommendations=cmd_recommendations)

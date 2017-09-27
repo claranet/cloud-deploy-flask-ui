@@ -133,7 +133,7 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
     return apps
 
 
-def get_ghost_app(app_id, embed_deployments=False, pretty_feature=False):
+def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=False):
     try:
         url = url_apps + '/' + app_id
         if embed_deployments:
@@ -184,7 +184,7 @@ def get_ghost_app(app_id, embed_deployments=False, pretty_feature=False):
         for feature in app.get('features', []):
             if 'provisioner' not in feature:
                 feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
-            if pretty_feature:
+            if embed_features_params_as_yml:
                 feature['parameters_pretty'] = get_pretty_yaml_from_json(feature.get('parameters') or '{}')
         # Container enhancements
         if 'source_container_image' in app.get('build_infos'):
