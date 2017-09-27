@@ -1,3 +1,4 @@
+// Depending on provisioner type, this function shows/enables the right DOM elements
 function ghost_update_feature_form_details(provisioner_select) {
     provisioner_type = $(provisioner_select).val();
     container = $(provisioner_select).parent().parent().parent().parent().parent();
@@ -8,6 +9,7 @@ function ghost_update_feature_form_details(provisioner_select) {
     }
 }
 
+// When the Feature details Modal is closed, we need to update the associated table>tr feature element
 function ghost_update_feature_view(provisioner_select) {
     provisioner_type = $(provisioner_select).val();
     feature_index = $(provisioner_select).parent().parent().parent().parent().attr('data-index');
@@ -31,6 +33,7 @@ function ghost_update_feature_view(provisioner_select) {
     }
 }
 
+// When selecting an Ansible Role from the Select, get the associated Schema and generates the appropriate form.
 function ghost_update_feature_ansible_role_parameters(container) {
     role_select = $(container).find('select[name$="feature_selected_name"]');
     feature_index = $(container).find('.feature_provisioner').attr('data-index');

@@ -13,7 +13,8 @@ from web_ui.forms.form_helper import get_ansible_role_inventory
 from web_ui.forms.form_aws_helper import get_aws_connection_data
 from web_ui.forms.form_aws_helper import get_aws_ec2_regions
 
-from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField, TextAreaField, BooleanField, SelectField
+from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField
+from wtforms import TextAreaField, BooleanField, SelectField
 from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
@@ -392,7 +393,7 @@ class FeatureForm(FlaskForm):
     ])
     feature_provisioner = SelectField('Provisioner', validators=[],
         choices=get_wtforms_selectfield_values(get_available_provisioners_from_config()))
-    feature_parameters = HiddenField(' ')
+    feature_parameters = HiddenField(validators=[])
 
     # Disable CSRF in feature forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):

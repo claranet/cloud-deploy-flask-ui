@@ -17,8 +17,6 @@
         {% elif entry.type == 'SelectField' and refresh_function %}
             {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
         <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#{{ entry.id }}" data-call="{{ refresh_function }}"><span class="glyphicon glyphicon-refresh"></span></button>
-        {% elif entry.type == 'HiddenField' %}
-        {{ wtf.form_field(entry, form_type='inline', placeholder=html_placeholder) }}
         {% else %}
             {{ wtf.form_field(entry, form_type='horizontal', placeholder=html_placeholder) }}
         {% endif %}
@@ -120,7 +118,7 @@
                 <th scope="row" class="col-md-2">
                     <a name="{{ entry_id_prefix }}-{{ loop.index0 }}" class="anchor">&nbsp</a>
                     <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
-                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ entry.feature_provisioner.data or 'salt' }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.png' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].png?v={{current_revision }}" />
+                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ (entry.feature_provisioner.data or 'salt')|capitalize }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.png' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].png?v={{current_revision }}" />
                 </th>
                 <td class="col-md-9 {{ form_type }}">
                     <div class="row">
@@ -172,7 +170,7 @@
                     </div>
                     <div class="provisioner_type ansible">
                         {{ wtf.form_field(entry.feature_selected_name, form_type='horizontal', placeholder=html_placeholder) }}
-                        {{ wtf.form_field(entry.feature_parameters, form_type='horizontal', placeholder=html_placeholder) }}
+                        {{ entry.hidden_tag() }}
                         <div class="ansible-role-parameters-form-wrapper">
                             <div class="form-group">
                                 <label class="control-label col-lg-2">Parameters</label>

@@ -1,7 +1,7 @@
 import json
-from flask import Markup
 import yaml
 
+from flask import Markup
 
 NOT_DEPLOYED_STATE_INFOS = ("exclamation-circle", "not-deployed", "Not deployed")
 HALF_DEPLOYED_STATE_INFOS = ("warning", "half-deployed", "Deployment outdated")
