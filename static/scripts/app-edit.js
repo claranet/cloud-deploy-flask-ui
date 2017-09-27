@@ -51,13 +51,27 @@ function ghost_update_feature_ansible_role_parameters(container) {
                 else {
                     $('#features-'+feature_index+'-feature_parameters').val(JSON.stringify(values));
                 }
-              }
+            },
         });
         $.material.checkbox();
     }).fail(function() {
         alert("Failed to retrieve Ansible role schema");
     });
 }
+
+// Backport escapeSelector function from JSONForm
+var JSONForm_escapeSelector = function (selector) {
+    return selector.replace(/([ \!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;<\=\>\?\@\[\\\]\^\`\{\|\}\~])/g, '\\$1');
+};
+// Extends JSONForm.elementTypes['array']['onInsert'] function with our custom behavior
+var jsonform_array_insert_fct = JSONForm.elementTypes['array']['onInsert'];
+JSONForm.elementTypes['array']['onInsert'] = function (evt, node) {
+    jsonform_array_insert_fct(evt, node);
+    var $nodeid = $(node.el).find('#' + JSONForm_escapeSelector(node.id));
+    $('> span > a._jsonform-array-addmore', $nodeid).click(function (evt) {
+        $.material.checkbox();
+    });
+};
 
 (function() {
     $('.quick-submit').click(function (evt) {
