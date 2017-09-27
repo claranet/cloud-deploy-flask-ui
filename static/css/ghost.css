@@ -448,7 +448,6 @@ td.inline {
     width: 50%;
     max-width: 50%;
 }
-.feature-details,
 .app-infos {
     width: 90%;
 }
@@ -858,6 +857,10 @@ thead td.module-state span {
     margin: 0;
 }
 
+.feature-details {
+    width: 66%;
+}
+
 /**
 ** JSON Form schema
 **/
@@ -898,7 +901,7 @@ thead td.module-state span {
     clear: both;
 }
 .jsonform > div > .jsonform-node {
-    width: 32%;
+    width: 100%;
     margin: 5px !important;
     padding: 10px;
     border-radius: 2px;
