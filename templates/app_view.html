@@ -307,7 +307,7 @@
                 {% for feature in app['features'] %}
                     <tr>
                         <th scope="row" class="index">{{ loop.index }}</th>
-                        <td class="provisioner"><img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ feature['provisioner']|capitalize }}" alt="{{ feature['provisioner'] }}" src="{{ url_for('static', filename='img/%s.png' % feature['provisioner']) }}?v={{current_revision}}" /></td>
+                        <td class="provisioner"><img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ feature['provisioner']|capitalize }}" alt="{{ feature['provisioner'] }}" src="{{ url_for('static', filename='img/%s.svg' % feature['provisioner']) }}?v={{current_revision}}" /></td>
                         <td>{{ feature['name'] }}</td>
                         <td>
                         {%- if feature['provisioner'] == 'salt' -%}

@@ -118,7 +118,7 @@
                 <th scope="row" class="col-md-2">
                     <a name="{{ entry_id_prefix }}-{{ loop.index0 }}" class="anchor">&nbsp</a>
                     <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
-                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ (entry.feature_provisioner.data or 'salt')|capitalize }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.png' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].png?v={{current_revision }}" />
+                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ (entry.feature_provisioner.data or 'salt')|capitalize }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.svg' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].svg?v={{current_revision }}" />
                 </th>
                 <td class="col-md-9 {{ form_type }}">
                     <div class="row">
