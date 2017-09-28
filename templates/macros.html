@@ -118,7 +118,7 @@
                 <th scope="row" class="col-md-2">
                     <a name="{{ entry_id_prefix }}-{{ loop.index0 }}" class="anchor">&nbsp</a>
                     <span class="index" style="counter-increment: group_entry;">{{ entry_label }}</span>
-                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="Provisioner {{ (entry.feature_provisioner.data or 'salt')|capitalize }}" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.svg' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].svg?v={{current_revision }}" />
+                    <img height="25" class="feature-provisioner" data-toggle="tooltip" title="{{ (entry.feature_provisioner.data or 'salt')|capitalize }} provisioner" alt="{{ entry.feature_provisioner.data or 'salt' }}" src="{{ url_for('static', filename='img/%s.svg' % (entry.feature_provisioner.data or 'salt')) }}?v={{current_revision }}" data-base-uri="{{ url_for('static', filename='img/') }}[].svg?v={{current_revision }}" />
                 </th>
                 <td class="col-md-9 {{ form_type }}">
                     <div class="row">
@@ -164,11 +164,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="feature_provisioner" data-index="{{ loop.index0 }}">{{ wtf.form_field(entry.feature_provisioner, form_type='horizontal', placeholder=html_placeholder) }}</div>
-                    <div class="provisioner_type salt">
+                    <div data-provisioner-type="salt">
                         {{ wtf.form_field(entry.feature_name, form_type='horizontal', placeholder=html_placeholder) }}
                         {{ wtf.form_field(entry.feature_version, form_type='horizontal', placeholder=html_placeholder) }}
                     </div>
-                    <div class="provisioner_type ansible">
+                    <div data-provisioner-type="ansible">
                         {{ wtf.form_field(entry.feature_selected_name, form_type='horizontal', placeholder=html_placeholder) }}
                         {{ entry.hidden_tag() }}
                         <div class="ansible-role-parameters-form-wrapper">

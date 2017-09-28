@@ -1,9 +1,9 @@
 // Depending on provisioner type, this function shows/enables the right DOM elements
 function ghost_update_feature_form_details(provisioner_select) {
     provisioner_type = $(provisioner_select).val();
-    container = $(provisioner_select).parent().parent().parent().parent().parent();
-    $(container).find('.provisioner_type:not(.' + provisioner_type + ')').hide();
-    $(container).find('.provisioner_type.' + provisioner_type).show();
+    container = $(provisioner_select).parents('.modal-body');
+    container.find('div[data-provisioner-type]:not([data-provisioner-type="' + provisioner_type + '"])').hide();
+    container.find('div[data-provisioner-type="' + provisioner_type + '"]').show();
     if (provisioner_type == 'ansible') {
         ghost_update_feature_ansible_role_parameters(container);
     }
@@ -12,11 +12,11 @@ function ghost_update_feature_form_details(provisioner_select) {
 // When the Feature details Modal is closed, we need to update the associated table>tr feature element
 function ghost_update_feature_view(provisioner_select) {
     provisioner_type = $(provisioner_select).val();
-    feature_index = $(provisioner_select).parent().parent().parent().parent().attr('data-index');
+    feature_index = $(provisioner_select).parents('.feature_provisioner').attr('data-index');
     container = $('#feature_' + feature_index);
     img = $(container).find('img.feature-provisioner');
     img.attr('src', img.attr('data-base-uri').replace('[]', provisioner_type));
-    img.attr('title', 'Provisioner ' + provisioner_type);
+    img.attr('title', provisioner_type);
     img.attr('alt', provisioner_type);
     if (provisioner_type == 'salt') {
         $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
