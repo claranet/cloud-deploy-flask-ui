@@ -378,13 +378,8 @@ class LifecycleHooksForm(FlaskForm):
 
 
 class FeatureForm(FlaskForm):
-    feature_name = StringField('Name', validators=[
-        RegexpValidator(
-            ghost_app_schema['features']['schema']['schema']['name']['regex']
-        )
-    ])
-    feature_selected_name = BetterSelectFieldNonValidating('Name', validators=[],
-       choices=get_wtforms_selectfield_values(get_ansible_role_inventory().keys())
+    feature_name = BetterSelectFieldNonValidating('Name', validators=[],
+       choices=[('', '-- Retrieving available features --')]
     )
     feature_version = StringField('Value', validators=[
         RegexpValidator(
@@ -401,7 +396,6 @@ class FeatureForm(FlaskForm):
 
     def map_from_app(self, feature):
         self.feature_name.data = feature.get('name', '')
-        self.feature_selected_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
         self.feature_parameters.data = feature.get('parameters', '')
@@ -826,12 +820,9 @@ class BaseAppForm(FlaskForm):
                 feature['version'] = form_feature.feature_version.data
             if form_feature.feature_provisioner.data:
                 feature['provisioner'] = form_feature.feature_provisioner.data
-                if feature['provisioner'] == 'ansible':
-                    # With Ansible, use the select/dropdown chosen value
-                    feature['name'] = form_feature.feature_selected_name.data
-                    if form_feature.feature_parameters.data:
-                        feature['parameters'] = form_feature.feature_parameters.data
-                        feature['version'] = ''
+                if form_feature.feature_parameters.data:
+                    feature['parameters'] = form_feature.feature_parameters.data
+                    feature['version'] = ''
                 else:
                     feature['parameters'] = ''
             if feature:

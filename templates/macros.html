@@ -164,12 +164,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="feature_provisioner" data-index="{{ loop.index0 }}">{{ wtf.form_field(entry.feature_provisioner, form_type='horizontal', placeholder=html_placeholder) }}</div>
+                    {{ wtf.form_field(entry.feature_name, form_type='horizontal', placeholder=html_placeholder) }}
                     <div data-provisioner-type="salt">
-                        {{ wtf.form_field(entry.feature_name, form_type='horizontal', placeholder=html_placeholder) }}
                         {{ wtf.form_field(entry.feature_version, form_type='horizontal', placeholder=html_placeholder) }}
                     </div>
                     <div data-provisioner-type="ansible">
-                        {{ wtf.form_field(entry.feature_selected_name, form_type='horizontal', placeholder=html_placeholder) }}
                         {{ entry.hidden_tag() }}
                         <div class="ansible-role-parameters-form-wrapper">
                             <div class="form-group">

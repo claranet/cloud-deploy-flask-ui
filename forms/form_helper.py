@@ -10,6 +10,9 @@ from web_ui.ghost_client import get_ghost_job_commands
 
 from ghost_tools import config
 
+DEFAULT_ANSIBLE_ROLES_INVENTORY_URL = 'http://claranet-ansible-inventory.s3-website-eu-west-1.amazonaws.com/requirements.json'
+DEFAULT_SALT_FORMULAS_INVENTORY_URL = 'http://claranet-ansible-inventory.s3-website-eu-west-1.amazonaws.com/morea-salt-formulas.json'
+
 
 # Helpers
 def empty_fieldlist(fieldlist):
@@ -128,9 +131,6 @@ def get_container_images(config=None):
     return list_lxd_images(config)
 
 
-DEFAULT_ANSIBLE_ROLES_INVENTORY_URL = 'http://claranet-ansible-inventory.s3-website-eu-west-1.amazonaws.com/requirements.json'
-
-
 def get_ansible_role_inventory():
     """
     Requests to load the Ansible Role Inventory file (JSON Format)
@@ -140,3 +140,13 @@ def get_ansible_role_inventory():
     json_obj = requests.get(inventory_url)
     inventory = {role_info.get('name', 'Unknown'): role_info for role_info in json_obj.json()}
     return inventory
+
+
+def get_salt_formula_inventory():
+    """
+    Requests to load the Salt formula Inventory file (JSON Format)
+    :return: json parsed object
+    """
+    inventory_url = config.get('features_provisioners', {}).get('salt', {}).get('salt_inventory_url', DEFAULT_SALT_FORMULAS_INVENTORY_URL)
+    json_obj = requests.get(inventory_url)
+    return json_obj.json()

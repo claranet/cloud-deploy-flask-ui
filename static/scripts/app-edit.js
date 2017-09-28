@@ -2,11 +2,29 @@
 function ghost_update_feature_form_details(provisioner_select) {
     provisioner_type = $(provisioner_select).val();
     container = $(provisioner_select).parents('.modal-body');
+    ghost_update_feature_list_name(provisioner_type, container);
     container.find('div[data-provisioner-type]:not([data-provisioner-type="' + provisioner_type + '"])').hide();
     container.find('div[data-provisioner-type="' + provisioner_type + '"]').show();
     if (provisioner_type == 'ansible') {
         ghost_update_feature_ansible_role_parameters(container);
     }
+}
+
+// Reload feature list depending on Salt or Ansible
+function ghost_update_feature_list_name(provisioner_type, container) {
+    feature_name_list = container.find('[id$=feature_name]');
+    cur_val = feature_name_list.val();
+    feature_name_list.find('option').remove();
+    $.ajax('/web/feature/' + provisioner_type + '/inventory').done(function(data) {
+        // Update instance types select input options
+        $.each(data,function(key, value) {
+            feature_name_list.append('<option value=' + key + '>' + value + '</option>');
+        });
+        feature_name_list.val(cur_val);
+        feature_name_list.selectpicker('refresh');
+    }).fail(function() {
+        alert("Failed to retrieve features");
+    });
 }
 
 // When the Feature details Modal is closed, we need to update the associated table>tr feature element
@@ -18,13 +36,14 @@ function ghost_update_feature_view(provisioner_select) {
     img.attr('src', img.attr('data-base-uri').replace('[]', provisioner_type));
     img.attr('title', provisioner_type);
     img.attr('alt', provisioner_type);
+    $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
     if (provisioner_type == 'salt') {
-        $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_version').val());
+        $('#features-'+feature_index+'-feature_parameters').val('');
     } else {
+        $('#features-'+feature_index+'-feature_version').val('');
         ansible_role_parameter_form = $('#ansible-role-parameters-form-'+feature_index);
         $(ansible_role_parameter_form).submit();
-        $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_selected_name').val());
         parameters_obj = JSON.parse($('#features-'+feature_index+'-feature_parameters').val());
         $(container).find('#features-'+feature_index+'-view-feature_val').html('');
         for (var key in parameters_obj) {
