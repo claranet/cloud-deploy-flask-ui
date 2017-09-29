@@ -5,9 +5,6 @@ function ghost_update_feature_form_details(provisioner_select) {
     ghost_update_feature_list_name(provisioner_type, container);
     container.find('div[data-provisioner-type]:not([data-provisioner-type="' + provisioner_type + '"])').hide();
     container.find('div[data-provisioner-type="' + provisioner_type + '"]').show();
-    if (provisioner_type == 'ansible') {
-        ghost_update_feature_ansible_role_parameters(container);
-    }
 }
 
 // Reload feature list depending on Salt or Ansible
@@ -22,6 +19,7 @@ function ghost_update_feature_list_name(provisioner_type, container) {
         });
         feature_name_list.val(cur_val);
         feature_name_list.selectpicker('refresh');
+        feature_name_list.change();
     }).fail(function() {
         alert("Failed to retrieve features");
     });
@@ -54,9 +52,12 @@ function ghost_update_feature_view(provisioner_select) {
 
 // When selecting an Ansible Role from the Select, get the associated Schema and generates the appropriate form.
 function ghost_update_feature_ansible_role_parameters(container) {
-    role_select = $(container).find('select[name$="feature_selected_name"]');
+    role_select = $(container).find('select[name$="feature_name"]');
     feature_index = $(container).find('.feature_provisioner').attr('data-index');
     role = $(role_select).val();
+    if (role == null) {
+        role = $(role_select).find('option:first').val();
+    }
     str_params = $(container).find('input[name$="feature_parameters"]').val();
     $.ajax('/web/feature/ansible/role-schema/'+role).done(function(data) {
         $(container).find('.ansible-role-parameters-form').html('');
@@ -157,7 +158,7 @@ JSONForm.elementTypes['array']['onInsert'] = function (evt, node) {
     $('.panel-features').on('change', 'select[name$="feature_provisioner"]', function () {
         ghost_update_feature_form_details($(this));
     });
-    $('.panel-features').on('change', 'select[name$="feature_selected_name"]', function () {
+    $('.panel-features').on('change', 'select[name$="feature_name"]', function () {
         ghost_update_feature_ansible_role_parameters($(this).parent().parent().parent().parent().parent());
     });
     $('.panel-features').on('show.bs.modal', '.feature-details-modal', function (event) {

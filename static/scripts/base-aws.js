@@ -237,7 +237,6 @@ function ghost_add_feature_entry_to_list(group_id_prefix, entry_id_prefix, entry
     ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to);
     $('tr[data-' + entry_id_prefix + ']:last').find('a.edit-entry').attr('data-target', '#feature-details-' + count);
 
-    ghost_update_feature_form_details($('#feature-details-' + count).find('select[name$="feature_provisioner"]'));
     $('#feature-details-' + count).modal('show');
 }
 
