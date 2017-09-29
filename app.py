@@ -377,7 +377,13 @@ def web_feature_salt_inventory():
 
 @app.route('/web/feature/ansible/role-schema/<role>')
 def web_feature_ansible_role_schema(role):
-    return jsonify(get_ansible_role_inventory().get(role))
+    data = get_ansible_role_inventory().get(role)
+    response = app.response_class(
+        response=json.dumps(data, sort_keys=False),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 
 @app.route('/web/t-apps')

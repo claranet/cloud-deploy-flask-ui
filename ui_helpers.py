@@ -58,7 +58,7 @@ def check_status_code(code):
 def get_pretty_yaml_from_json(json_string):
     """
     Get a JSON String and dump it has a pretty YAML string
-    :param json string:
+    :param json_string: string:
     :return: yaml string
     """
     return yaml.safe_dump(json.loads(json_string or '{}'), indent=4, allow_unicode=True).decode('utf-8')

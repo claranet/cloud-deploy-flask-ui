@@ -1,4 +1,6 @@
 from libs.lxd import list_lxd_images
+import collections
+import json
 import requests
 
 from models.apps import apps_schema as ghost_app_schema
@@ -137,8 +139,9 @@ def get_ansible_role_inventory():
     :return: json parsed object
     """
     inventory_url = config.get('features_provisioners', {}).get('ansible', {}).get('ansible_role_inventory_url', DEFAULT_ANSIBLE_ROLES_INVENTORY_URL)
-    json_obj = requests.get(inventory_url)
-    inventory = {role_info.get('name', 'Unknown'): role_info for role_info in json_obj.json()}
+    json_resp = requests.get(inventory_url)
+    json_obj = json.loads(json_resp.text, object_pairs_hook=collections.OrderedDict)
+    inventory = {role_info.get('name', 'Unknown'): role_info for role_info in json_obj}
     return inventory
 
 
