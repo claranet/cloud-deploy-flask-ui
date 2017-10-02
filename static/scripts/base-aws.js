@@ -224,7 +224,7 @@ $('#check_provider_creds').click(function(evt) {
 
 function ghost_add_feature_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to) {
     var count = $("div.feature-details-modal").size();
-    var clone = $("div.feature-details-modal:last").clone();
+    var clone = $("div.feature-details-modal:first").clone();
     clone.attr("id", "feature-details-" + count);
 
     clone = ghost_update_entry(clone, count);
