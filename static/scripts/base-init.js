@@ -49,7 +49,8 @@ $(document).ready(function() {
         style: 'btn-default',
         noneResultsText: 'No results matched {0} <button title="Create a new entry for this unknown option" class="btn-select-append-option btn btn-raised btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>',
         liveSearch: true,
-        dropupAuto:  false
+        dropupAuto:  false,
+        windowPadding: 42,
     });
 });
 
