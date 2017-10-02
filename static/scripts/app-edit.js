@@ -48,6 +48,7 @@ function ghost_update_feature_view(provisioner_select) {
             $(container).find('#features-'+feature_index+'-view-feature_val').append(key+': '+ parameters_obj[key]+ '\n');
         }
     }
+    $('#ajaxSpinnerImage').hide();
 }
 
 // When selecting an Ansible Role from the Select, get the associated Schema and generates the appropriate form.
