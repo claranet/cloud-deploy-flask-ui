@@ -188,7 +188,7 @@ class BuildInfosForm(FlaskForm):
                                        )
                                    ])
 
-    container = BetterSelectField('Source Container Image', description='Please choose an container source compatible with source_ami', choices=[], validators=[
+    container = BetterSelectFieldNonValidating('Source Container Image', description='Please choose an container source compatible with source_ami', choices=[], validators=[
         RegexpValidator(
             ghost_app_schema['build_infos']['schema']['source_container_image']['regex']
         )
