@@ -53,8 +53,12 @@ function ghost_update_feature_view(provisioner_select) {
 
 // When selecting an Ansible Role from the Select, get the associated Schema and generates the appropriate form.
 function ghost_update_feature_ansible_role_parameters(container) {
+    wrap_provisioner = $(container).find('.feature_provisioner');
+    if (wrap_provisioner.find('select[name$=feature_provisioner]').val() != 'ansible') {
+        return;
+    }
     role_select = $(container).find('select[name$="feature_name"]');
-    feature_index = $(container).find('.feature_provisioner').attr('data-index');
+    feature_index = wrap_provisioner.attr('data-index');
     role = $(role_select).val();
     if (role == null) {
         role = $(role_select).find('option:first').val();
@@ -189,11 +193,13 @@ JSONForm.elementTypes['array']['onInsert'] = function (evt, node) {
                     .replace('${GHOST_ROLE}',   ghost_app_role)
                     .replace('${GHOST_APP}',    ghost_app_name);
                 feature_provisioner = '' + feat_object['provisioner'];
+                feature_parameters = '' + feat_object['parameters'];
                 new_index = $("tr[data-feature]").size();
-                ghost_add_entry_to_list('features', 'feature', 'Feature', false);
+                ghost_add_feature_entry_to_list('features', 'feature', 'Feature', false, false);
                 $('#features-'+new_index+'-feature_name').val(feature_name);
                 $('#features-'+new_index+'-feature_version').val(feature_val);
                 $('#features-'+new_index+'-feature_provisioner').val(feature_provisioner);
+                ghost_update_feature_view($('#features-'+new_index+'-feature_provisioner'));
             });
         }).fail(function() {
             alert("Failed to retrieve Feature Preset " + preset_file);
