@@ -185,7 +185,7 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
             if 'provisioner' not in feature:
                 feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
             if embed_features_params_as_yml:
-                feature['parameters_pretty'] = get_pretty_yaml_from_json(feature.get('parameters') or '{}')
+                feature['parameters_pretty'] = get_pretty_yaml_from_json(feature.get('parameters') or {})
         # Container enhancements
         if 'source_container_image' in app.get('build_infos'):
             fingerprint = app['build_infos']['source_container_image']

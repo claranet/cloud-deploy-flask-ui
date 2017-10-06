@@ -1,3 +1,4 @@
+import json
 from flask_wtf import FlaskForm
 
 from web_ui.forms.form_helper import empty_fieldlist
@@ -8,7 +9,6 @@ from web_ui.forms.form_helper import get_ghost_app_envs
 from web_ui.forms.form_helper import get_ghost_app_roles
 from web_ui.forms.form_helper import get_ghost_optional_volumes
 from web_ui.forms.form_helper import get_ghost_mod_scopes
-from web_ui.forms.form_helper import get_ansible_role_inventory
 
 from web_ui.forms.form_aws_helper import get_aws_connection_data
 from web_ui.forms.form_aws_helper import get_aws_ec2_regions
@@ -398,7 +398,7 @@ class FeatureForm(FlaskForm):
         self.feature_name.data = feature.get('name', '')
         self.feature_version.data = feature.get('version', '')
         self.feature_provisioner.data = feature.get('provisioner', DEFAULT_PROVISIONER_TYPE)
-        self.feature_parameters.data = feature.get('parameters', '')
+        self.feature_parameters.data = json.dumps(feature.get('parameters', {}))
 
 
 class EnvvarForm(FlaskForm):
@@ -821,10 +821,12 @@ class BaseAppForm(FlaskForm):
             if form_feature.feature_provisioner.data:
                 feature['provisioner'] = form_feature.feature_provisioner.data
                 if form_feature.feature_parameters.data:
-                    feature['parameters'] = form_feature.feature_parameters.data
-                    feature['version'] = ''
-                else:
-                    feature['parameters'] = ''
+                    json_ob = json.loads(form_feature.feature_parameters.data)
+                    if json_ob:
+                        feature['parameters'] = json_ob
+                        feature['version'] = ''
+                    else:
+                        feature['parameters'] = {}
             if feature:
                 app['features'].append(feature)
 
