@@ -342,11 +342,16 @@ td.inline {
 #app-form .edit-entry,
 #app-form .delete-entry {
     padding: 9px 12px;
+    display: inline-block;
 }
 #app-form .edit-entry:hover,
 #app-form .delete-entry:hover {
     padding: 8px 11px;
     border: 1px solid;
+}
+#app-form .edit-entry span,
+#app-form .delete-entry span {
+    z-index: -1;
 }
 #app-form .features-presets-group {
     position: relative;
