@@ -349,8 +349,8 @@ td.inline {
     padding: 8px 11px;
     border: 1px solid;
 }
-#app-form .edit-entry span,
-#app-form .delete-entry span {
+#app-form .edit-entry i,
+#app-form .delete-entry i {
     z-index: -1;
 }
 #app-form .features-presets-group {
