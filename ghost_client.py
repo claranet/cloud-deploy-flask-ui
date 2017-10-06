@@ -394,6 +394,7 @@ def get_ghost_deployments(query=None, page=None):
         for deployment in deployments:
             try:
                 deployment['_created'] = datetime.strptime(deployment['_created'], RFC1123_DATE_FORMAT)
+                deployment['_timestamp'] = datetime.fromtimestamp(deployment['timestamp']).strftime(RFC1123_DATE_FORMAT)
             except:
                 traceback.print_exc()
     except:
@@ -411,6 +412,7 @@ def get_ghost_deployment(deployment_id):
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         deployment = result.json()
+        deployment['_timestamp'] = datetime.fromtimestamp(deployment['timestamp']).strftime(RFC1123_DATE_FORMAT)
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
