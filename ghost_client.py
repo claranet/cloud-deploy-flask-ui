@@ -2,7 +2,6 @@ from __future__ import print_function
 from flask import flash, Markup
 from flask_login import current_user
 from werkzeug.exceptions import default_exceptions
-from eve import RFC1123_DATE_FORMAT
 
 from datetime import datetime
 import traceback
@@ -14,6 +13,7 @@ from settings import API_BASE_URL, PAGINATION_LIMIT
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
 from ghost_tools import b64decode_utf8, b64encode_utf8
 
+RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
 API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
 
