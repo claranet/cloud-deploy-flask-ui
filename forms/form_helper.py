@@ -119,5 +119,6 @@ def get_app_command_recommendations(app_id, app=None):
 
     return get_recommendations(commands_fields, app_pending_changes)
 
+
 def get_container_images(config=None):
     return list_lxd_images(config)
