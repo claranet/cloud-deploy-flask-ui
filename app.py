@@ -254,7 +254,7 @@ def web_amis_list(provider, region_id):
         else request.args.getlist(key)[0]) for key in request.args.keys())
     return jsonify(dict(get_aws_ami_ids(provider, region_id, **query_string)))
 
-@app.route('/web/container/list')
+@app.route('/web/container/image/ids')
 def web_container_image_list():
     return jsonify(dict(get_container_images(config)))
 

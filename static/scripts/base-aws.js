@@ -140,6 +140,20 @@ function ghost_update_ec2_amis(region) {
     });
 }
 
+function ghost_update_container_images() {
+    $('[id^=build_infos-container]').find('option').remove();
+    $.ajax("/web/container/image/ids").done(function(data) {
+        $.each(data, function(key, value) {
+            $.each($('[id^=build_infos-container]'), function(index) {
+            $(this).append('<option value=' + key + '>' + value + '</option>');
+            });
+        });
+        $('[id^=build_infos-container]').selectpicker('refresh');
+    }).fail(function() {
+        alert("Failed to retrieve container images");
+    });
+}
+
 function ghost_update_ec2_asgs(region) {
     $('#autoscale-as_name').find('option').remove();
     $.ajax("/web/" + provider + "/regions/" + region + "/ec2/autoscale/ids" + provider_identity_query).done(function(data) {

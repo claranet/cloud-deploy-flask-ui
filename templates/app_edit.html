@@ -203,7 +203,7 @@
                     <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#build_infos-source_ami" data-call="ghost_update_ec2_amis($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
 {% if lxd %}
                     {{ wtf.form_field(form.build_infos.form.container, form_type='horizontal') }}
-                    <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#build_infos-container" data-call="ghost_update_container();"><span class="glyphicon glyphicon-refresh"></span></button>
+                    <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#build_infos-container" data-call="ghost_update_container_images();"><span class="glyphicon glyphicon-refresh"></span></button>
 {% endif %}
                     {{ wtf.form_field(form.build_infos.form.subnet_id, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#build_infos-subnet_id" data-call="ghost_update_vpc_subnets($('select#region').val(), $('select#vpc_id').val(), true);"><span class="glyphicon glyphicon-refresh"></span></button>
