@@ -4,14 +4,16 @@ from flask_login import current_user
 from werkzeug.exceptions import default_exceptions
 
 from datetime import datetime
-import traceback
-import sys
-import requests
 import json
-from settings import API_BASE_URL, PAGINATION_LIMIT
+import requests
+import sys
+import traceback
 
+from ghost_tools import b64decode_utf8, b64encode_utf8, config
+from libs.lxd import list_lxd_images
 from libs.provisioner import DEFAULT_PROVISIONER_TYPE
-from ghost_tools import b64decode_utf8, b64encode_utf8
+
+from settings import API_BASE_URL, PAGINATION_LIMIT
 
 RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
@@ -180,6 +182,10 @@ def get_ghost_app(app_id, embed_deployments=False):
         for feature in app.get('features', []):
             if 'provisioner' not in feature:
                 feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
+        # Container enhancements
+        if 'source_container_image' in app.get('build_infos'):
+            fingerprint = app['build_infos']['source_container_image']
+            app['build_infos']['src_container_img'] = dict(list_lxd_images(config)).get(fingerprint)
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
