@@ -360,7 +360,7 @@ def web_app_create():
             form.assumed_role_name.data = ""
             form.assumed_region_name.data = ""
             aws_connection_data = {}
-        #form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
+        # form.region.choices = get_aws_ec2_regions(form.provider.data, **aws_connection_data)
         if not form.env.data in form.env.choices:
             form.env.choices = get_ghost_app_envs() + [(form.env.data, form.env.data)]
         if not form.role.data in form.role.choices:
@@ -406,8 +406,8 @@ def web_app_create():
             form.vpc_id.choices = get_aws_vpc_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
             form.autoscale.as_name.choices = get_aws_as_groups(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
             form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
-            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
             form.build_infos.container.choices = get_container_images(config)
+            form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], clone_from_app['vpc_id'], **aws_connection_data)
             form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
             form.environment_infos.key_name.choices = get_aws_ec2_key_pairs(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'], **aws_connection_data)
             for subnet in form.environment_infos.subnet_ids:
