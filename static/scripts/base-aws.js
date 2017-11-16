@@ -305,7 +305,7 @@ function ghost_del_feature_entry_from_list(entry_del_link, entry_id_prefix) {
     ghost_del_entry_from_list(entry_del_link, entry_id_prefix);
     var count = $("div.feature-details-modal").size();
     var entry = $($(entry_del_link).attr('data-target'));
-    ghost_cleanup_entry(count, entry);
+    ghost_cleanup_entry(count, entry, true);
 }
 
 function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
@@ -314,7 +314,7 @@ function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
     ghost_cleanup_entry(count, entry);
 }
 
-function ghost_cleanup_entry(count, entry) {
+function ghost_cleanup_entry(count, entry, clean_feature) {
     if (count > 1) {
         entry.remove();
     } else {
@@ -325,6 +325,10 @@ function ghost_cleanup_entry(count, entry) {
             $(this).selectpicker('refresh');
         });
         entry.find("input[type=checkbox]").prop("checked", "");
+        if (clean_feature) {
+            $('#features_list tr img.feature-provisioner').attr('src', '');
+            $('#features_list tr td .row p span.readonly').html('');
+        }
     }
 }
 
