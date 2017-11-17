@@ -98,6 +98,37 @@ JSONForm.elementTypes['array']['onInsert'] = function (evt, node) {
     });
 };
 
+function rewrite_feature_indexes() {
+    /* Rewrite indexes for Flask */
+    $('#features_list tr').each(function(index, mod) {
+        $(this).find('[name]').each(function() {
+            newModAttr = $(this).attr('name').replace(/features-[0-9]*-/i, 'features-'+index+'-');
+            $(this).attr('name', newModAttr);
+            $(this).attr('id', newModAttr);
+        });
+        $(this).find('[for]').each(function() {
+            newModAttr = $(this).attr('for').replace(/features-[0-9]*-/i, 'features-'+index+'-');
+            $(this).attr('for', newModAttr);
+        });
+        $(this).find('span[id]').each(function() {
+            newModAttr = $(this).attr('id').replace(/features-[0-9]*-/i, 'features-'+index+'-');
+            $(this).attr('id', newModAttr);
+        });
+        $(this).find('.edit-entry,.delete-entry').attr('data-target', '#feature-details-'+index);
+        $(this).attr('id', 'feature_'+index);
+    });
+    $('.feature-details-modal').each(function(index, mod) {
+        $(this).find('[name]').each(function() {
+            newModAttr = $(this).attr('name').replace(/features-[0-9]*-/i, 'features-'+index+'-');
+            $(this).attr('name', newModAttr);
+            $(this).attr('id', newModAttr);
+        });
+        $(this).find('.feature_provisioner').attr('data-index', index);
+        $(this).attr('id', 'feature-details-'+index);
+        $(this).attr('aria-labelledby', 'myModalLabelFeature'+index);
+    });
+}
+
 (function() {
     $('.quick-submit').click(function (evt) {
         evt.preventDefault();
@@ -148,14 +179,7 @@ JSONForm.elementTypes['array']['onInsert'] = function (evt, node) {
             if (!oneDropDone) {
                 oneDropDone = true;
                 $('#app-form').submit(function () {
-                    /* Rewrite indexes for Flask */
-                    $('#features_list tr').each(function(index, mod) {
-                        $(this).find('[name]').each(function() {
-                            newModAttr = $(this).attr('name').replace(/features-[0-9]*-/i, 'features-'+index+'-');
-                            $(this).attr('name', newModAttr);
-                            $(this).attr('id', newModAttr);
-                        });
-                    });
+                    rewrite_feature_indexes();
                 });
             }
         },
@@ -196,9 +220,10 @@ JSONForm.elementTypes['array']['onInsert'] = function (evt, node) {
                 feature_parameters = '' + feat_object['parameters'];
                 new_index = $("tr[data-feature]").size();
                 ghost_add_feature_entry_to_list('features', 'feature', 'Feature', false, false);
-                $('#features-'+new_index+'-feature_name').val(feature_name);
+                $('#features-'+new_index+'-feature_name option[selected]').attr('value', feature_name);
+                $('#features-'+new_index+'-feature_name').val(feature_name).selectpicker('refresh');
                 $('#features-'+new_index+'-feature_version').val(feature_val);
-                $('#features-'+new_index+'-feature_provisioner').val(feature_provisioner);
+                $('#features-'+new_index+'-feature_provisioner').val(feature_provisioner).selectpicker('refresh');
                 ghost_update_feature_view($('#features-'+new_index+'-feature_provisioner'));
             });
         }).fail(function() {

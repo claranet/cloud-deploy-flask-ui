@@ -306,12 +306,13 @@ function ghost_del_feature_entry_from_list(entry_del_link, entry_id_prefix) {
     var count = $("div.feature-details-modal").size();
     var entry = $($(entry_del_link).attr('data-target'));
     ghost_cleanup_entry(count, entry, true);
+    rewrite_feature_indexes();
 }
 
 function ghost_del_entry_from_list(entry_del_link, entry_id_prefix) {
     var count = $("tr[data-" + entry_id_prefix + "]").size();
     var entry = $(entry_del_link).parent().parent();
-    ghost_cleanup_entry(count, entry);
+    ghost_cleanup_entry(count, entry, false);
 }
 
 function ghost_cleanup_entry(count, entry, clean_feature) {
