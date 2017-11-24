@@ -12,8 +12,8 @@ from web_ui.ghost_client import get_ghost_job_commands
 
 from ghost_tools import config
 
-DEFAULT_ANSIBLE_ROLES_INVENTORY_URL = 'http://inventory.cloudeploy.io/ansible/{}/requirements.json'
-DEFAULT_SALT_FORMULAS_INVENTORY_URL = 'http://inventory.cloudeploy.io/salt/{}/morea-salt-formulas.json'
+DEFAULT_ANSIBLE_ROLES_INVENTORY_URL = 'https://inventory.cloudeploy.io/ansible/{}/requirements.json'
+DEFAULT_SALT_FORMULAS_INVENTORY_URL = 'https://inventory.cloudeploy.io/salt/{}/morea-salt-formulas.json'
 
 
 # Helpers
