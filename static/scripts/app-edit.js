@@ -17,8 +17,8 @@ function ghost_update_feature_list_name(provisioner_type, container) {
         $.each(data,function(key, value) {
             feature_name_list.append('<option value=' + key + '>' + value + '</option>');
         });
-        feature_name_list.val(cur_val);
         feature_name_list.selectpicker('refresh');
+        feature_name_list.val(cur_val);
         feature_name_list.change();
     }).fail(function() {
         alert("Failed to retrieve features");
@@ -182,6 +182,29 @@ function rewrite_feature_indexes() {
                     rewrite_feature_indexes();
                 });
             }
+            /* DOM Swap - need to also re-order Modals */
+            features_modals = $('.feature-details-modal');
+            oldModal = $(features_modals.get(evt.oldIndex));
+            clone = oldModal.clone(false);
+            // Bootstrap Dynamic Select - update
+            clone.find('select:not([readonly], [data-classic-select])').each(function() {
+                $(this).parent().before($(this));
+            });
+            clone.find('.bootstrap-select').remove();
+            clone.find('select:not([readonly], [data-classic-select])').selectpicker({
+                style: 'btn-default',
+                liveSearch: true,
+                dropupAuto:  false
+            });
+            clone.find('select:not([readonly], [data-classic-select])').each(function() {
+                // Jquery hack: need to re-affect previous select values
+                $(this).val(oldModal.find('#' + $(this).attr('id')).val());
+            });
+            if (evt.oldIndex > evt.newIndex)
+                $(features_modals.get(evt.newIndex)).before(clone);
+            else
+                $(features_modals.get(evt.newIndex)).after(clone);
+            oldModal.remove();
         },
     });
     $('.panel-features').on('change', 'select[name$="feature_provisioner"]', function () {

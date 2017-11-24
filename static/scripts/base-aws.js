@@ -230,6 +230,7 @@ function ghost_add_feature_entry_to_list(group_id_prefix, entry_id_prefix, entry
     clone = ghost_update_entry(clone, count);
     clone.find('.feature_provisioner').attr('data-index', count);
     clone.find('.ansible-role-parameters-form').attr('id', 'ansible-role-parameters-form-'+count);
+    clone.find('#features-'+count+'-feature_parameters').val('');
 
     // DOM Insert
     clone.appendTo(".panel-features");
