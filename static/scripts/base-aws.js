@@ -328,7 +328,7 @@ function ghost_cleanup_entry(count, entry, clean_feature) {
         });
         entry.find("input[type=checkbox]").prop("checked", "");
         if (clean_feature) {
-            $('#features_list tr img.feature-provisioner').attr('src', '');
+            $('#features_list tr img.feature-provisioner').attr('src', '').attr('alt', '').attr('title', '');
             $('#features_list tr td .row p span.readonly').html('');
         }
     }
