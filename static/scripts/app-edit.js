@@ -216,8 +216,15 @@ function rewrite_feature_indexes() {
     $('.panel-features').on('show.bs.modal', '.feature-details-modal', function (event) {
         ghost_update_feature_form_details($(this).find('.modal-body select[name$="feature_provisioner"]'));
     });
-    $('.panel-features').on('hide.bs.modal', '.feature-details-modal', function (event) {
-        ghost_update_feature_view($(this).find('.modal-body select[name$="feature_provisioner"]'));
+    $('.panel-features').on('hide.bs.modal', '.feature-details-modal', function (evt) {
+        if ($(this).find('.has-error').length > 0) {
+            alert('Please correct invalid fields before saving this form.');
+            evt.preventDefault();
+            evt.stopImmediatePropagation();
+            return false;
+        } else {
+            ghost_update_feature_view($(this).find('.modal-body select[name$="feature_provisioner"]'));
+        }
     });
     ghost_update_feature_presets();
     var ghost_client_name = window.location.hostname.replace('.ghost.morea.fr', '');
