@@ -976,6 +976,14 @@ thead td.module-state span {
 /**
 ** BS popover
 **/
-.popover.top {
-    max-width: 500px;
+.popover {
+    max-width: 50%;
+}
+.popover .popover-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.popover .popover-content pre {
+    margin: 0;
+    overflow: hidden;
 }
