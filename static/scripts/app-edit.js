@@ -17,8 +17,8 @@ function ghost_update_feature_list_name(provisioner_type, container) {
         $.each(data,function(key, value) {
             feature_name_list.append('<option value=' + key + '>' + value + '</option>');
         });
-        feature_name_list.selectpicker('refresh');
         feature_name_list.val(cur_val);
+        feature_name_list.selectpicker('refresh');
         feature_name_list.change();
     }).fail(function() {
         alert("Failed to retrieve features");
@@ -37,15 +37,17 @@ function ghost_update_feature_view(provisioner_select) {
     $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
     if (provisioner_type == 'salt') {
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_version').val());
-        $('#features-'+feature_index+'-feature_parameters').val('');
+        $('#features-'+feature_index+'-feature_parameters').val('null');
     } else {
         $('#features-'+feature_index+'-feature_version').val('');
         ansible_role_parameter_form = $('#ansible-role-parameters-form-'+feature_index);
         $(ansible_role_parameter_form).submit();
-        parameters_obj = JSON.parse($('#features-'+feature_index+'-feature_parameters').val());
-        $(container).find('#features-'+feature_index+'-view-feature_val').html('');
-        for (var key in parameters_obj) {
-            $(container).find('#features-'+feature_index+'-view-feature_val').append(key+': '+ parameters_obj[key]+ '\n');
+        parameters_obj = JSON.parse($('#features-'+feature_index+'-feature_parameters').val() || "null");
+        if (parameters_obj != null) {
+            $(container).find('#features-'+feature_index+'-view-feature_val').html('');
+            for (var key in parameters_obj) {
+                $(container).find('#features-'+feature_index+'-view-feature_val').append(key+': '+ parameters_obj[key]+ '\n');
+            }
         }
     }
     $('#ajaxSpinnerImage').hide();
