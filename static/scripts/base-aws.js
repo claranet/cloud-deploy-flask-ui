@@ -330,6 +330,8 @@ function ghost_cleanup_entry(count, entry, clean_feature) {
         if (clean_feature) {
             $('#features_list tr img.feature-provisioner').attr('src', '').attr('alt', '').attr('title', '');
             $('#features_list tr td .row p span.readonly').html('');
+            jQuery.removeData('.feature-details-modal .ansible-role-parameters-form');
+            $('.feature-details-modal .ansible-role-parameters-form').html('');
         }
     }
 }

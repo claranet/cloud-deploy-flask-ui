@@ -67,7 +67,8 @@ function ghost_update_feature_ansible_role_parameters(container) {
     }
     str_params = $(container).find('input[name$="feature_parameters"]').val();
     $.ajax('/web/feature/ansible/role-schema/'+role).done(function(data) {
-        $(container).find('.ansible-role-parameters-form').html('');
+        $(container).find('.ansible-role-parameters-form').html('').removeClass('jsonform');
+        jQuery.removeData($(container).find('.ansible-role-parameters-form'));
         $(container).find('.ansible-role-parameters-form').jsonForm({
             schema: data,
             value: str_params == '' || str_params == '{}' ? undefined : JSON.parse(str_params),
@@ -126,6 +127,7 @@ function rewrite_feature_indexes() {
             $(this).attr('id', newModAttr);
         });
         $(this).find('.feature_provisioner').attr('data-index', index);
+        $(this).find('.ansible-role-parameters-form').attr('id', 'ansible-role-parameters-form-'+index);
         $(this).attr('id', 'feature-details-'+index);
         $(this).attr('aria-labelledby', 'myModalLabelFeature'+index);
     });
