@@ -242,6 +242,7 @@ function rewrite_feature_indexes() {
         $.ajax('/web/feature/presets/import/' + preset_file).done(function(data) {
             desc = data['description'];
             feats = data['features'];
+            var count = $("div.feature-details-modal").size();
             $.each(feats, function(index, feat_object) {
                 feature_name = '' + feat_object['name'];
                 feature_val = '' + feat_object['value'];
@@ -260,6 +261,10 @@ function rewrite_feature_indexes() {
                 $('#features-'+new_index+'-feature_provisioner').val(feature_provisioner).selectpicker('refresh');
                 ghost_update_feature_view($('#features-'+new_index+'-feature_provisioner'));
             });
+            var first_img = $('tr[data-feature]:first').find('img.feature-provisioner');
+            if (count == 1 && first_img.length == 1 && first_img.attr('src') == '') {
+                $('#feature_0 .delete-entry').click();
+            }
         }).fail(function() {
             alert("Failed to retrieve Feature Preset " + preset_file);
         });

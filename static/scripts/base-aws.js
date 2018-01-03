@@ -238,6 +238,11 @@ function ghost_add_feature_entry_to_list(group_id_prefix, entry_id_prefix, entry
     ghost_add_entry_to_list(group_id_prefix, entry_id_prefix, entry_label, scroll_to);
     $('tr[data-' + entry_id_prefix + ']:last').find('a.edit-entry').attr('data-target', '#feature-details-' + count);
 
+    var first_img = $('tr[data-feature]:first').find('img.feature-provisioner');
+    if (count == 1 && show_modal && first_img.length == 1 && first_img.attr('src') == '') {
+        $('#feature_0 .delete-entry').click();
+        count = 0;
+    }
     if (show_modal) {
         $('#feature-details-' + count).modal('show');
     }
