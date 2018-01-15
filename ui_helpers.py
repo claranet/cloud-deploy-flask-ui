@@ -61,7 +61,10 @@ def get_pretty_yaml_from_json(json_obj):
     :param json_obj: object:
     :return: yaml string
     """
-    return yaml.safe_dump(json_obj, indent=4, allow_unicode=True).decode('utf-8')
+    try:
+        return yaml.safe_dump(json_obj, indent=4, allow_unicode=True).decode('utf-8')
+    except:
+        return ''
 
 
 def get_pretty_yaml_from_json_str(json_str):
@@ -70,4 +73,7 @@ def get_pretty_yaml_from_json_str(json_str):
     :param json_str: string:
     :return: yaml string
     """
-    return yaml.safe_dump(json.loads(json_str), indent=4, allow_unicode=True).decode('utf-8')
+    try:
+        return yaml.safe_dump(json.loads(json_str), indent=4, allow_unicode=True).decode('utf-8')
+    except:
+        return ''
