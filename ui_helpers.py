@@ -63,7 +63,7 @@ def get_pretty_yaml_from_json(json_obj):
     """
     try:
         return yaml.safe_dump(json_obj, indent=4, allow_unicode=True).decode('utf-8')
-    except:
+    except TypeError as e:
         return ''
 
 
@@ -75,5 +75,5 @@ def get_pretty_yaml_from_json_str(json_str):
     """
     try:
         return yaml.safe_dump(json.loads(json_str), indent=4, allow_unicode=True).decode('utf-8')
-    except:
+    except TypeError as e:
         return ''
