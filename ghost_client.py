@@ -13,7 +13,7 @@ from ui_helpers import get_pretty_yaml_from_json
 
 from ghost_tools import b64decode_utf8, b64encode_utf8, config
 from libs.lxd import list_lxd_images
-from libs.provisioner import DEFAULT_PROVISIONER_TYPE
+from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
 
 from settings import API_BASE_URL, PAGINATION_LIMIT
 
