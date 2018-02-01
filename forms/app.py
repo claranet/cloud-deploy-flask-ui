@@ -1,6 +1,7 @@
 import json
 from flask_wtf import FlaskForm
 
+from web_ui.forms.form_helper import StrippedStringField
 from web_ui.forms.form_helper import empty_fieldlist
 from web_ui.forms.form_helper import get_wtforms_selectfield_values
 
@@ -428,7 +429,7 @@ class ModuleForm(FlaskForm):
         )
     ])
     module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
-    module_path = StringField('Path', description='Destination path to deploy to', validators=[
+    module_path = StrippedStringField('Path', description='Destination path to deploy to', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['modules']['schema']['schema']['path']['regex']

@@ -12,8 +12,21 @@ from web_ui.ghost_client import get_ghost_job_commands
 
 from ghost_tools import config
 
+from wtforms import StringField
+
 DEFAULT_ANSIBLE_ROLES_INVENTORY_URL = 'https://inventory.cloudeploy.io/ansible/{}/requirements.json'
 DEFAULT_SALT_FORMULAS_INVENTORY_URL = 'https://inventory.cloudeploy.io/salt/{}/morea-salt-formulas.json'
+
+
+class Stripped(object):
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = valuelist[0].lstrip(' ').rstrip(' /')
+        else:
+            self.data = ''
+
+
+class StrippedStringField(Stripped, StringField): pass
 
 
 # Helpers
