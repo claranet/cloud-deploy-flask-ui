@@ -1,7 +1,6 @@
 import json
 from flask_wtf import FlaskForm
 
-from web_ui.forms.form_helper import StrippedStringField
 from web_ui.forms.form_helper import empty_fieldlist
 from web_ui.forms.form_helper import get_wtforms_selectfield_values
 
@@ -16,7 +15,7 @@ from web_ui.forms.form_aws_helper import get_aws_ec2_regions
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField
 from wtforms import TextAreaField, BooleanField, SelectField
-from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating
+from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating, StrippedStringField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
 from wtforms.validators import Optional as OptionalValidator

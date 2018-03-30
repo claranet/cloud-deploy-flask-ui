@@ -7,6 +7,7 @@
 from copy import copy
 
 from wtforms import SelectField
+from wtforms import StringField
 from wtforms.compat import text_type
 
 __all__ = (
@@ -37,3 +38,15 @@ class BetterSelectFieldNonValidating(BetterSelectField):
     """
     def pre_validate(self, form):
         pass
+
+
+class Stripped(object):
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = valuelist[0].strip()
+        else:
+            self.data = ''
+
+
+class StrippedStringField(Stripped, StringField):
+    pass
