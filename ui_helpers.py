@@ -9,8 +9,11 @@ HALF_DEPLOYED_STATE_INFOS = ("warning", "half-deployed", "Deployment outdated")
 FULLY_DEPLOYED_STATE_INFOS = ("check", "fully-deployed", "Fully deployed")
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-with open(os.path.dirname(os.path.realpath(__file__)) + '/config.yml', 'r') as conf_file:
-    ui_config = yaml.load(conf_file)
+try:
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/config.yml', 'r') as conf_file:
+        ui_config = yaml.load(conf_file)
+except:
+    ui_config = {}
 
 
 def app_modules_state(app):
