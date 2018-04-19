@@ -49,6 +49,7 @@ function refresh_options_list() {
 
 function get_app_subnets(app_id) {
     $('#subnet').find('option').remove();
+    $('#submit').prop('disabled', true);
     $.ajax("/web/aws/appinfos/" + app_id +"/subnet/ids").done(function(data) {
         // Update Subnets select input options
         $.each(data, function(key, value) {
@@ -56,6 +57,7 @@ function get_app_subnets(app_id) {
         });
         $("#subnet option:nth-child(2)").attr("selected", "selected");
         $('#subnet').selectpicker('refresh');
+        $('#submit').prop('disabled', false);
     }).fail(function() {
         alert("Failed to retrieve Subnet for App " + app_id);
     });
@@ -65,11 +67,13 @@ function get_app_safe_deployment_possibilities(select_id, mode) {
     if (mode != 'append') {
         $(select_id).find('option').remove();
     }
+    $('#submit').prop('disabled', true);
     $.ajax("/web/apps/" + app_id + "/command/deploy/safe_possibilities").done(function(data) {
         $.each(data, function(key, value) {
         $(select_id).append('<option value=' + key + '>' + value + '</option>');
         });
         refresh_options_list();
+        $('#submit').prop('disabled', false);
     }).fail(function() {
         alert("Failed to retrieve Safe Strategies");
     });
@@ -77,11 +81,13 @@ function get_app_safe_deployment_possibilities(select_id, mode) {
 
 function get_app_ec2_possibilities() {
     $('#single_host_instance').find('option').remove();
+    $('#submit').prop('disabled', true);
     $.ajax("/web/aws/regions/" + app_region + "/ec2/" + app_id + "/infos").done(function(data) {
         $.each(data, function(key, value) {
         $('#single_host_instance').append('<option value=' + key + '>' + value + '</option>');
         });
         refresh_options_list();
+        $('#submit').prop('disabled', false);
     }).fail(function() {
         alert("Failed to retrieve Safe Strategies");
     });
@@ -150,9 +156,11 @@ function refresh_execute_script_fields() {
 })();
 
 function ghost_update_command_deploy_revision(module_name, revision_id) {
+    $('#submit').prop('disabled', true);
     $.ajax("/web/apps/" + app_id + "/command/module/" + module_name).done(function(data) {
         // Update revision input default
         $('#' + revision_id).val(data);
+        $('#submit').prop('disabled', false);
     }).fail(function() {
         alert("Failed to retrieve last deployed revision for module " + module_name);
     });
@@ -160,6 +168,7 @@ function ghost_update_command_deploy_revision(module_name, revision_id) {
 
 function ghost_update_command_deploy_available_revisions(dom_module_prefix, module_name) {
     $('select[id=' + dom_module_prefix + '-available_revisions]').find('option').remove();
+    $('#submit').prop('disabled', true);
     $.ajax("/web/apps/" + app_id + "/module/" + module_name + "/available-revisions").done(function(data) {
         // Update available_revisionss select
         $.each(JSON.parse(data), function(index, elt) {
@@ -174,6 +183,7 @@ function ghost_update_command_deploy_available_revisions(dom_module_prefix, modu
             size: 5
         });
         $('select[id=' + dom_module_prefix + '-available_revisions]').selectpicker('refresh');
+        $('#submit').prop('disabled', false);
     }).fail(function() {
         alert("Failed to retrieve all available revisions for module " + module_name);
     });
