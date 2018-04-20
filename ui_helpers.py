@@ -1,4 +1,5 @@
 import json
+import os
 import yaml
 
 from flask import Markup
@@ -6,6 +7,13 @@ from flask import Markup
 NOT_DEPLOYED_STATE_INFOS = ("exclamation-circle", "not-deployed", "Not deployed")
 HALF_DEPLOYED_STATE_INFOS = ("warning", "half-deployed", "Deployment outdated")
 FULLY_DEPLOYED_STATE_INFOS = ("check", "fully-deployed", "Fully deployed")
+ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
+
+try:
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/config.yml', 'r') as conf_file:
+        ui_config = yaml.load(conf_file)
+except:
+    ui_config = {}
 
 
 def app_modules_state(app):

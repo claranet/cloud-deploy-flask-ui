@@ -32,6 +32,16 @@
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ionicons.min.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost.css')}}?v={{current_revision}}">
     <link rel="stylesheet" href="{{url_for('.static', filename='css/ghost-colors.css')}}?v={{current_revision}}">
+    <style>
+        .navbar.navbar-inverse {
+            background-color: {{ ui_config.get('header_menu_background_color', '#415560') }};
+        }
+        {%- if ui_config.get('header_background_custom') -%}
+        #topHeader {
+            background: #FFF url('{{ ui_config.get('header_background_custom') }}') no-repeat top left;
+        }
+        {%- endif -%}
+    </style>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 {% endblock %}
 
@@ -43,12 +53,12 @@
             <div class="navbar-header">
                 <a class="pull-left" href="/web/apps">
                     <img class="site-logo" alt="Claranet" height="35" typeof="foaf:Image" src="//www.claranet.fr/sites/all/themes/claranet_responsive_2015/logo.png" alt="Claranet France">
-                    <img height="40" id="logo_cloud_deploy" alt="Cloud Deploy" src="{{ url_for('static', filename='cloud_deploy.png')}}?v={{current_revision}}" />
+                    <img height="40" id="logo_cloud_deploy" alt="Cloud Deploy" src="{{ url_for('static', filename='cloud_deploy.png') }}?v={{current_revision}}" />
                 </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right ghost-logo">
-                    <li><img height="50" alt="Logo" src="{{ url_for('static', filename='logo_cloud_deploy.png')}}?v={{current_revision}}" /></li>
+                    <li><img height="50" alt="Logo" src="{{ ui_config.get('header_logo_custom', url_for('static', filename='logo_cloud_deploy.png')) }}?v={{current_revision}}" /></li>
                 </ul>
             </div>
         </div>
