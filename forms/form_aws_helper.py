@@ -130,10 +130,10 @@ def get_aws_ec2_regions(provider, log_file=None, **kwargs):
     regions = []
     try:
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
-        regions = sorted(cloud_connection.get_regions(['ec2']), key=lambda region: region['Name'])
+        regions = sorted(cloud_connection.get_regions(['ec2']))
     except:
         traceback.print_exc()
-    return [(region['Name'], '{} ({})'.format(region['Name'], region['Endpoint']))
+    return [(region, region)
             for region in regions]
 
 
