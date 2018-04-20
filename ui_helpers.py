@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import yaml
 
 from flask import Markup
@@ -85,3 +86,18 @@ def get_pretty_yaml_from_json_str(json_str):
         return yaml.safe_dump(json.loads(json_str), indent=4, allow_unicode=True).decode('utf-8')
     except TypeError as e:
         return ''
+
+
+def check_log_id(log_id):
+    """
+    Check log_id syntax
+    :param log_id: string
+    :return SRE_Match object
+
+    >>> check_log_id("5ab13d4673c5787c54a75e1d") is not None
+    True
+
+    >>> check_log_id("/etc/test") is not None
+    False
+    """
+    return re.match("^[a-f0-9]{24}$", log_id)
