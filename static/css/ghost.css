@@ -523,7 +523,8 @@ fieldset.well.the-fieldset legend.the-legend {
 fieldset.well.the-fieldset legend.the-legend h4 {
     display: inline;
 }
-#as-instance-details p {
+#as-instance-details  p strong
+,#as-instance-details p span {
     white-space: normal;
 }
 
