@@ -21,6 +21,9 @@
     <td>{{ app_modules_state(app) }}</td>
     <td>
         <a href="/web/apps/{{ app['_id'] }}" title="View app details" data-toggle="tooltip">{{ app['name'] }}</a>
+        {%- if app.get('description') -%}
+        &nbsp;<i class="fa fa-info-circle" title="{{ app.get('description', '') }}" data-toggle="tooltip"></i>
+        {%- endif -%}
         <br>
         <span class="app-uid">{{ app['_id'] }}</span>
         {%- if app['assumed_account_id'] and app['assumed_role_name'] -%}

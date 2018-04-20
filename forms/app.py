@@ -540,6 +540,8 @@ class BaseAppForm(FlaskForm):
                             validators=[DataRequiredValidator()], choices=get_ghost_app_envs())
     role = BetterSelectField('App role', description='This mandatory field will not be editable after app creation',
                              validators=[DataRequiredValidator()], choices=get_ghost_app_roles())
+    description = StringField('App description', validators=[OptionalValidator()])
+
     # Cloud Provider
     # Leave the following line commented to remember for further
     # dev to manage other cloud providers than aws
@@ -625,6 +627,12 @@ class BaseAppForm(FlaskForm):
         """
         if self.name:
             app['name'] = self.name.data
+        if self.env:
+            app['env'] = self.env.data
+        if self.role:
+            app['role'] = self.role.data
+        if self.description:
+            app['description'] = self.description.data
         # app['provider'] = self.provider.data
         if self.assumed_account_id:
             app['assumed_account_id'] = self.assumed_account_id.data
@@ -632,10 +640,6 @@ class BaseAppForm(FlaskForm):
             app['assumed_role_name'] = self.assumed_role_name.data
         if self.assumed_region_name:
             app['assumed_region_name'] = self.assumed_region_name.data
-        if self.env:
-            app['env'] = self.env.data
-        if self.role:
-            app['role'] = self.role.data
         app['region'] = self.region.data
         app['instance_type'] = self.instance_type.data
         app['instance_monitoring'] = self.instance_monitoring.data
@@ -863,12 +867,15 @@ class BaseAppForm(FlaskForm):
 
         # Populate form with app data
         self.name.data = app.get('name', '')
+        self.env.data = app.get('env', '')
+        self.role.data = app.get('role', '')
+        self.description.data = app.get('description', '')
+
         # self.provider.data = app.get('provider', DEFAULT_PROVIDER)
         self.assumed_account_id.data = app.get('assumed_account_id', '')
         self.assumed_role_name.data = app.get('assumed_role_name', '')
         self.assumed_region_name.data = app.get('assumed_region_name', '')
-        self.env.data = app.get('env', '')
-        self.role.data = app.get('role', '')
+
         self.region.data = app.get('region', '')
         self.instance_type.data = app.get('instance_type', '')
         self.instance_monitoring.data = app.get('instance_monitoring', False)

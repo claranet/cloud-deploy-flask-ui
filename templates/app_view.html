@@ -97,6 +97,7 @@
                 {{ ghost_display_field('app-role', 'Role', app['role']) }}
             </div>
             <div class="row">
+                {{ ghost_display_field('app-desc', 'Description', app.get('description', '')) }}
                 {{ ghost_display_field('app-log_notifications', 'Log Notifications', ', '.join(app.get('log_notifications', []))) }}
             </div>
         </div>
