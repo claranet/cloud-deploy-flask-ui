@@ -233,6 +233,7 @@ def get_ghost_jobs(query=None, page=None):
         jobs = result.json().get('_items', [])
         for job in jobs:
             try:
+                set_job_duration(job)
                 job['_created'] = datetime.strptime(job['_created'], RFC1123_DATE_FORMAT)
                 job['_updated'] = datetime.strptime(job['_updated'], RFC1123_DATE_FORMAT)
             except:
@@ -251,6 +252,7 @@ def get_ghost_job(job_id):
         url = url_jobs + '/' + job_id + '?embedded={"app_id": 1}'
         result = requests.get(url, headers=headers, auth=current_user.auth)
         job = result.json()
+        set_job_duration(job)
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
@@ -258,6 +260,13 @@ def get_ghost_job(job_id):
         flash(message, 'danger')
         job = {}
     return job
+
+
+def set_job_duration(job):
+    if job.get('started_at') and job.get('status') not in ['init', 'started']:
+        job_updated = datetime.strptime(job['_updated'], RFC1123_DATE_FORMAT)
+        job_started = datetime.strptime(job['started_at'], RFC1123_DATE_FORMAT)
+        job['duration'] = job_updated - job_started
 
 
 def get_ghost_job_commands(with_fields=False, app_id=''):

@@ -7,9 +7,11 @@
         <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
     </td>
     <td>
-        {{ job['_created'] }}
-        <br>
-        {{ job['_updated'] }}</td>
+        {{ job['_created'] }}<br />{{ job['_updated'] }}
+        {%- if job.get('duration') -%}
+        <br />(Duration: {{ job['duration'] }})
+        {%- endif -%}
+    </td>
     <td>
         <p>
             <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
@@ -26,7 +28,7 @@
     <td>{{ job['user'] }}</td>
     <td>
         {% for option in job['options'] %}
-            {{ ghost_abbrev_field('Job option', option) }}</br>
+            {{ ghost_abbrev_field('Job option', option) }}<br/>
         {% endfor %}
     </td>
     <td>
