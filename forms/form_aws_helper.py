@@ -1,7 +1,7 @@
 import traceback
 from datetime import datetime
 
-import aws_data
+from web_ui import aws_data
 from ghost_tools import config
 from libs import load_balancing
 from libs.blue_green import get_blue_green_from_app

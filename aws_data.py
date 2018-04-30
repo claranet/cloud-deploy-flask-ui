@@ -48,8 +48,8 @@ def load_instance_data(instance_types, filename):
     """
     >>> instance_types = {}
     >>> instance_types['cn-north-1'] = { InstanceType(name='t1.micro', cores='1', memory='0.613', disk='EBS only'), }
-    >>> load_instance_data(instance_types, 'aws_data_instance_types.json')
-    >>> load_instance_data(instance_types, 'aws_data_instance_types_previous.json')
+    >>> load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types.json')
+    >>> load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types_previous.json')
     >>> { type.name: type for type in instance_types["cn-north-1"] }['t1.micro']
     InstanceType:t1.micro-1,0.613,EBS only
     >>> { type.name: type for type in instance_types["us-east-1"] }['t2.nano']
@@ -76,5 +76,5 @@ def load_instance_data(instance_types, filename):
                                                             'memoryGiB'],
                                                         disk=size['storageGB']))
 
-load_instance_data(instance_types, 'aws_data_instance_types.json')
-load_instance_data(instance_types, 'aws_data_instance_types_previous.json')
+load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types.json')
+load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types_previous.json')
