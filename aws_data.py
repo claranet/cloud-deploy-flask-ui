@@ -78,3 +78,18 @@ def load_instance_data(instance_types, filename):
 
 load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types.json')
 load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types_previous.json')
+
+regions_locations = {}
+
+def load_regions_locations(regions_locations, filename):
+    """
+    unit tests here
+    """
+    with open(filename) as data_file:
+        data = json.load(data_file)
+    for location_data in data:
+        region = location_data.get('Region', '')
+        location = location_data.get('Location', '').encode('ascii', 'ignore')
+        regions_locations[region] = location
+
+load_regions_locations(regions_locations, 'web_ui/data/aws_data_regions_locations.json')
