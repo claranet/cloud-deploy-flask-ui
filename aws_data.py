@@ -85,7 +85,14 @@ regions_locations = {}
 
 def load_regions_locations(regions_locations, filename):
     """
-    unit tests here
+    >>> locations = {}
+    >>> load_regions_locations(locations, 'web_ui/data/aws_data_regions_locations.json')
+
+    >>> {'eu-west-3', 'cn-northwest-1', 'us-gov-west-1'} <= set(locations)
+    True
+
+    >>> ', '.join([locations['eu-west-3'], locations['cn-northwest-1'], locations['us-gov-west-1']])
+    'EU (Paris), China (Ningxia), AWS GovCloud (US)'
     """
     with open(filename) as data_file:
         data = json.load(data_file)
