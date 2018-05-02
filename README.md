@@ -1,5 +1,9 @@
 # Claranet Cloud Deploy UI
 
+## Configuration
+* copy config.yml.sample as config.yml
+* customize your UI as you want using the config.yml parameters
+
 ## Updating AWS data
 Requires curl, nodejs and jq:
 
