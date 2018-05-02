@@ -44,6 +44,7 @@ instance_types['cn-north-1'] = {
     InstanceType(name='i2.8xlarge',  cores='32', memory='244',   disk='8 x 800 SSD'),
  } # yapf: disable
 
+
 def load_instance_data(instance_types, filename):
     """
     >>> instance_types = {}
@@ -80,6 +81,7 @@ load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types.json')
 load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types_previous.json')
 
 regions_locations = {}
+
 
 def load_regions_locations(regions_locations, filename):
     """

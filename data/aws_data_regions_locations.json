@@ -1,23 +1,7 @@
 [
   {
-    "Region": "us-east-2",
-    "Location": "US East (Ohio)"
-  },
-  {
-    "Region": "us-east-1",
-    "Location": "US East (N. Virginia)"
-  },
-  {
-    "Region": "us-west-1",
-    "Location": "US West (N. California)"
-  },
-  {
-    "Region": "us-west-2",
-    "Location": "US West (Oregon)"
-  },
-  {
-    "Region": "ap-south-1",
-    "Location": "Asia Pacific (Mumbai)"
+    "Region": "ap-northeast-1",
+    "Location": "Asia Pacific (Tokyo)"
   },
   {
     "Region": "ap-northeast-2",
@@ -28,6 +12,10 @@
     "Location": "Asia Pacific (Osaka-Local)"
   },
   {
+    "Region": "ap-south-1",
+    "Location": "Asia Pacific (Mumbai)"
+  },
+  {
     "Region": "ap-southeast-1",
     "Location": "Asia Pacific (Singapore)"
   },
@@ -36,16 +24,16 @@
     "Location": "Asia Pacific (Sydney)"
   },
   {
-    "Region": "ap-northeast-1",
-    "Location": "Asia Pacific (Tokyo)"
-  },
-  {
     "Region": "ca-central-1",
     "Location": "Canada (Central)"
   },
   {
     "Region": "cn-north-1",
     "Location": "China (Beijing)"
+  },
+  {
+    "Region": "cn-northwest-1",
+    "Location": "China (Ningxia)"
   },
   {
     "Region": "eu-central-1",
@@ -65,6 +53,26 @@
   },
   {
     "Region": "sa-east-1",
-    "Location": "South America (São Paulo)"
+    "Location": "South America (Sao Paulo)"
+  },
+  {
+    "Region": "us-east-1",
+    "Location": "US East (N. Virginia)"
+  },
+  {
+    "Region": "us-east-2",
+    "Location": "US East (Ohio)"
+  },
+  {
+    "Region": "us-gov-west-1",
+    "Location": "AWS GovCloud (US)"
+  },
+  {
+    "Region": "us-west-1",
+    "Location": "US West (N. California)"
+  },
+  {
+    "Region": "us-west-2",
+    "Location": "US West (Oregon)"
   }
 ]
