@@ -34,6 +34,17 @@
             </ul>
         </li>
     </ul>
+    {%- if ui_config.get('home_shortcuts') -%}
+    <ul class="nav nav-stacked action-btns">
+        {%- for shortcut in ui_config.get('home_shortcuts'): -%}
+        <li>
+            <a href="{{ shortcut.get('link', '#') }}" title="{{ shortcut.get('description', '') }}" data-toggle="tooltip" data-html="true">
+                <button class="btn btn-raised btn-xs btn-{{ shortcut.get('style', 'default') }}"><span class="glyphicon glyphicon-console"></span>
+                    {{ shortcut.get('title', 'Shortcut') }}</button></a>
+        </li>
+        {%- endfor -%}
+    </ul>
+    {%- endif -%}
 {% endblock %}"
 
 {% block page_content %}

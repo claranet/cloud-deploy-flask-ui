@@ -11,3 +11,30 @@
 
     # Override header menu background color, hexadecimal color value
     #header_menu_background_color: "#415560"
+
+
+    # List of shortcuts to display on the Homepage (App List)
+    #home_shortcuts:
+
+        # Shortcut title
+        #- title: "Shortcut button title"
+
+        # Shortcut description, HTML inline tag allowed (<span>,<b>,<i>,<strong>)
+        #  description: '<strong class="text-danger">Destroy</strong> every instances'
+
+        # Shortcut link, generally pointing to a command on a specific application
+        #  link: /web/apps/xxxxxxxxxxxxxx/command/job/yyyyyyyyy
+
+        # Shortcut button style, can be: default (grey) | primary (dark blue) | info (light blue) | success (green) | warning (yellow) | danger (red)
+        #  style: default
+
+    # Shortcut examples:
+    #    - title: "Deploy prod"
+    #      description: "Deploy in parallel <strong>www to front-prod</strong>"
+    #      link: "/web/apps/56af244a9cfca434cd6ab4cd/command/job/593172fd9cfca41a2681d790"
+    #      style: "danger"
+    #
+    #    - title: "Cleanup test env"
+    #      description: '<strong class="text-danger">Destroy</strong> every instances on test env'
+    #      link: "/web/apps/56af244a9cfca434cd6ab4cd/command/job/5931734d9cfca41a2681d79a"
+    #      style: "default"
