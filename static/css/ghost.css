@@ -573,6 +573,8 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 /*Generic List*/
 .top-right {
     float: right;
+    text-align: right;
+    margin-top: 20px;
 }
 #loadmoreajaxloader td, #backtotop td {
     text-align: center;
