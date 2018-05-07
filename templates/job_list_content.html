@@ -7,9 +7,9 @@
         <a href="/web/jobs/{{ job['_id'] }}">{{ job['_id'] }}</a>
     </td>
     <td>
-        {{ job['_created'] }}<br />{{ job['_updated'] }}
+        {{ job['_created'] }}<br>{{ job['_updated'] }}
         {%- if job.get('duration') -%}
-        <br />(Duration: {{ job['duration'] }})
+        <br>(Duration: {{ job['duration'] }})
         {%- endif -%}
     </td>
     <td>
@@ -28,7 +28,7 @@
     <td>{{ job['user'] }}</td>
     <td>
         {% for option in job['options'] %}
-            {{ ghost_abbrev_field('Job option', option) }}<br/>
+            {{ ghost_abbrev_field('Job option', option) }}<br>
         {% endfor %}
     </td>
     <td>
@@ -39,7 +39,7 @@
             {%- else -%}
                 {{ module['name'] }} / {{ module['rev'] }}
             {%- endif -%}
-            <br/>
+            <br>
         {% endfor %}
         {%- endif -%}
     </td>
