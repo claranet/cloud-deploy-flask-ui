@@ -574,8 +574,12 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .top-right {
     float: right;
     text-align: right;
-    margin-top: 20px;
 }
+.top-right fieldset.well.the-fieldset {
+    padding: 0 10px;
+    margin-bottom: 5px;
+}
+
 #loadmoreajaxloader td, #backtotop td {
     text-align: center;
 }
