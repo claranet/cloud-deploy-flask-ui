@@ -84,13 +84,10 @@ def load_instance_data(instance_types, filename):
 load_instance_data(instance_types, AWS_INSTANCES_DATA_PATH)
 load_instance_data(instance_types, AWS_INSTANCES_PREVIOUS_DATA_PATH)
 
-regions_locations = {}
 
-
-def load_regions_locations(regions_locations, filename):
+def load_regions_locations(filename):
     """
-    >>> locations = {}
-    >>> load_regions_locations(locations, AWS_REGIONS_LOCATIONS_DATA_PATH)
+    >>> locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
 
     >>> {'eu-west-3', 'cn-northwest-1', 'us-gov-west-1'} <= set(locations)
     True
@@ -98,11 +95,13 @@ def load_regions_locations(regions_locations, filename):
     >>> ', '.join([locations['eu-west-3'], locations['cn-northwest-1'], locations['us-gov-west-1']])
     'EU (Paris), China (Ningxia), AWS GovCloud (US)'
     """
+    regions_locations = {}
     with open(filename) as data_file:
-        data = json.load(data_file)
-        for location_data in data:
-            region = location_data.get('Region', '')
-            location = location_data.get('Location', '').encode('ascii', 'ignore')
-            regions_locations[region] = location
+        regions_locations = {
+            location_data.get('Region', ''): location_data.get('Location', '').encode('ascii', 'ignore')
+            for location_data in json.load(data_file)
+        }
 
-load_regions_locations(regions_locations, AWS_REGIONS_LOCATIONS_DATA_PATH)
+    return regions_locations
+
+regions_locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
