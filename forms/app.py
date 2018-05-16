@@ -573,7 +573,7 @@ class BaseAppForm(FlaskForm):
     log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
         OptionalValidator(),
         RegexpValidator(
-            ghost_app_schema['log_notifications']['schema']['regex']
+            ghost_app_schema['log_notifications']['schema']['schema']['email']['regex']
         )
     ]), min_entries=1)
 
