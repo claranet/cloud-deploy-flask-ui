@@ -37,6 +37,9 @@
             <a href="#properties">Properties</a>
         </li>
         <li>
+            <a href="#log-notifs">Log notifications</a>
+        </li>
+        <li>
             <a href="#aws">AWS</a>
         </li>
 {% if ghost_blue_green %}
@@ -98,9 +101,29 @@
             </div>
             <div class="row">
                 {{ ghost_display_field('app-desc', 'Description', app.get('description', '')) }}
-                {{ ghost_display_field('app-log_notifications', 'Log Notifications', ', '.join(app.get('log_notifications', []))) }}
             </div>
         </div>
+
+        <a name="log-notifs" class="anchor">&nbsp;</a>
+        <table class="table">
+            <div class="panel-heading">Log notifications</div>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Email</th>
+                <th>Job states</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for notif in app.get('log_notifications', []) %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ notif.get('email', '') }}</td>
+                <td>{{ notif.get('job_states', []) | join(', ') }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
         <a name="aws" class="anchor">&nbsp;</a>
         <div class="panel-heading">AWS</div>
