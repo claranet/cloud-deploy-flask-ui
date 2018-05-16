@@ -608,10 +608,6 @@ def web_app_edit(app_id):
     aws_connection_data = get_aws_connection_data(form.assumed_account_id.data, form.assumed_role_name.data,
                                                   form.assumed_region_name.data)
     form.region.choices = get_aws_ec2_regions(cloud_provider, **aws_connection_data)
-    if not form.env.data in form.env.choices:
-        form.env.choices = get_ghost_app_envs() + [(form.env.data, form.env.data)]
-    if not form.role.data in form.role.choices:
-        form.role.choices = get_ghost_app_roles() + [(form.role.data, form.role.data)]
     form.instance_type.choices = get_aws_ec2_instance_types(form.region.data)
     form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
     form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
