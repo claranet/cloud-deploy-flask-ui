@@ -697,17 +697,26 @@ class BaseAppForm(FlaskForm):
         >>> app
         {'log_notifications': []}
 
-        >>> form.log_notifications[0].data = "test@test.fr"
+        >>> form.log_notifications[0].form.email.data = "test@test.fr"
         >>> form.map_to_app_log_notifications(app)
-        >>> app
-        {'log_notifications': ['test@test.fr']}
+        >>> len(app.get('log_notifications'))
+        1
+
+        >>> sorted(app.get('log_notifications')[0].items())
+        [('email', 'test@test.fr'), ('job_states', ['*'])]
+
+        >>> form.log_notifications[0].form.email.data = "test@fr.clara.net"
+        >>> form.log_notifications[0].form.job_states.data = ['done', 'failed']
+        >>> form.map_to_app_log_notifications(app)
+        >>> sorted(app.get('log_notifications')[0].items())
+        [('email', 'test@fr.clara.net'), ('job_states', ['done', 'failed'])]
         """
         app['log_notifications'] = []
         for form_log_notification in self.log_notifications:
             log_notification = {}
             if form_log_notification.email.data:
                 log_notification['email'] = form_log_notification.email.data
-                log_notification['job_states'] = form_log_notification.job_states.data
+                log_notification['job_states'] = form_log_notification.job_states.data or ['*']
             if log_notification:
                 app['log_notifications'].append(log_notification)
 
