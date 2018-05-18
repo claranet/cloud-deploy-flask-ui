@@ -24,7 +24,7 @@ from wtforms.validators import Length as LengthValidator
 from wtforms.validators import NoneOf as NoneOfValidator
 
 from models.apps import apps_schema as ghost_app_schema
-from models.jobs import DELETABLE_JOB_STATUSES
+from models.jobs import DELETABLE_JOB_STATUSES as LOG_NOTIFICATION_JOB_STATES
 from models.volumes import block as ghost_block_schema
 
 from ghost_tools import get_available_provisioners_from_config
@@ -537,7 +537,7 @@ class LogNotificationForm(FlaskForm):
     job_states = SelectMultipleField('Job states',
                                      description='Select job states that need this email notification',
                                      validators=[OptionalValidator()],
-                                     choices=get_wtforms_selectfield_values(DELETABLE_JOB_STATUSES))
+                                     choices=get_wtforms_selectfield_values(LOG_NOTIFICATION_JOB_STATES))
 
     # Disable CSRF in module forms as they are subforms
     def __init__(self, csrf_enabled=False, *args, **kwargs):
@@ -549,13 +549,13 @@ class LogNotificationForm(FlaskForm):
         """
         if isinstance(log_notif, basestring):
             self.email.data = log_notif
-            self.job_states.data = DELETABLE_JOB_STATUSES
+            self.job_states.data = LOG_NOTIFICATION_JOB_STATES
         else:
             self.email.data = log_notif.get('email', '')
             if ''.join(log_notif.get('job_states', [])) == '*':
-                self.job_states.data = DELETABLE_JOB_STATUSES
+                self.job_states.data = LOG_NOTIFICATION_JOB_STATES
             else:
-                self.job_states.data = log_notif.get('job_states', DELETABLE_JOB_STATUSES)
+                self.job_states.data = log_notif.get('job_states', LOG_NOTIFICATION_JOB_STATES)
 
 
 class BaseAppForm(FlaskForm):
