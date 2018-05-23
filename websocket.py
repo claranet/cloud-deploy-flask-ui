@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+import chardet
 import os
 
 from flask import request
@@ -92,6 +95,40 @@ def ansi_to_html(text):
 
     return COLOR_REGEX.sub(single_sub, escape(text))
 
+
+def encode_line(line):
+    """
+    Encode any log line to utf-8
+
+    >>> import json # We use json dumps to simulate the way socketio build the websocket packet
+
+    >>> json.dumps(encode_line('é ç è ô ü'), separators=(',', ':'))
+    '"\\\\u00e9 \\\\u00e7 \\\\u00e8 \\\\u00f4 \\\\u00fc"'
+
+    >>> json.dumps(encode_line(''), separators=(',', ':'))
+    '""'
+
+    >>> json.dumps(encode_line('云部署很酷'), separators=(',', ':'))
+    '"\\\\u4e91\\\\u90e8\\\\u7f72\\\\u5f88\\\\u9177"'
+
+    >>> json.dumps(encode_line('(づ｡◕‿‿◕｡)づ'), separators=(',', ':'))
+    '"(\\\\u3065\\\\uff61\\\\u25d5\\\\u203f\\\\u203f\\\\u25d5\\\\uff61)\\\\u3065"'
+
+    >>> json.dumps(encode_line('String'), separators=(',', ':'))
+    '"String"'
+    """
+
+    encoding = chardet.detect(line)
+    if encoding['encoding'] == 'utf-8':
+        return line
+    elif encoding['encoding'] is not None:
+        line = line.decode(encoding['encoding']).encode('utf-8')
+    else:
+        line = line.encode('utf-8')
+
+    return line
+
+
 def create_ws(app):
     socketio = SocketIO(app)
 
@@ -120,6 +157,7 @@ def create_ws(app):
 
                     # Decorate lines
                     for idx, line in enumerate(readlines):
+                        line = encode_line(line)
                         for sub_line in line.split("\\n"):
                             clean_line = ansi_to_html(sub_line).replace('\r\n', '\n').replace('\r', '\n').replace('\n', '<br/>').replace('%!(PACKER_COMMA)', '&#44;')
                             if LOG_LINE_REGEX.match(sub_line) is not None:
