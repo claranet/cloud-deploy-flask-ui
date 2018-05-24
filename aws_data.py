@@ -1,6 +1,10 @@
+import json
 from boto.ec2.instancetype import InstanceType
 
-import json
+AWS_INSTANCES_DATA_PATH = 'web_ui/data/aws_data_instance_types.json'
+AWS_INSTANCES_PREVIOUS_DATA_PATH = 'web_ui/data/aws_data_instance_types_previous.json'
+AWS_REGIONS_LOCATIONS_DATA_PATH = 'web_ui/data/aws_data_regions_locations.json'
+
 
 instance_types = {}
 
@@ -44,12 +48,13 @@ instance_types['cn-north-1'] = {
     InstanceType(name='i2.8xlarge',  cores='32', memory='244',   disk='8 x 800 SSD'),
  } # yapf: disable
 
+
 def load_instance_data(instance_types, filename):
     """
     >>> instance_types = {}
     >>> instance_types['cn-north-1'] = { InstanceType(name='t1.micro', cores='1', memory='0.613', disk='EBS only'), }
-    >>> load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types.json')
-    >>> load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types_previous.json')
+    >>> load_instance_data(instance_types, AWS_INSTANCES_DATA_PATH)
+    >>> load_instance_data(instance_types, AWS_INSTANCES_PREVIOUS_DATA_PATH)
     >>> { type.name: type for type in instance_types["cn-north-1"] }['t1.micro']
     InstanceType:t1.micro-1,0.613,EBS only
     >>> { type.name: type for type in instance_types["us-east-1"] }['t2.nano']
@@ -62,19 +67,41 @@ def load_instance_data(instance_types, filename):
 
     with open(filename) as data_file:
         data = json.load(data_file)
-    for region_data in data:
-        region = region_data['region']
-        if not region in instance_types:
-            instance_types[region] = []
+        for region_data in data:
+            region = region_data['region']
+            if not region in instance_types:
+                instance_types[region] = []
 
-        instanceTypes = region_data['instanceTypes']
-        for generation in instanceTypes:
-            for size in generation['sizes']:
-                instance_types[region].append(InstanceType(name=size['size'],
-                                                        cores=size['vCPU'],
-                                                        memory=size[
-                                                            'memoryGiB'],
-                                                        disk=size['storageGB']))
+            instanceTypes = region_data['instanceTypes']
+            for generation in instanceTypes:
+                for size in generation['sizes']:
+                    instance_types[region].append(InstanceType(name=size['size'],
+                                                            cores=size['vCPU'],
+                                                            memory=size[
+                                                                'memoryGiB'],
+                                                            disk=size['storageGB']))
 
-load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types.json')
-load_instance_data(instance_types, 'web_ui/data/aws_data_instance_types_previous.json')
+load_instance_data(instance_types, AWS_INSTANCES_DATA_PATH)
+load_instance_data(instance_types, AWS_INSTANCES_PREVIOUS_DATA_PATH)
+
+
+def load_regions_locations(filename):
+    """
+    >>> locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
+
+    >>> {'eu-west-3', 'cn-northwest-1', 'us-gov-west-1'} <= set(locations)
+    True
+
+    >>> ', '.join([locations['eu-west-3'], locations['cn-northwest-1'], locations['us-gov-west-1']])
+    'EU (Paris), China (Ningxia), AWS GovCloud (US)'
+    """
+    regions_locations = {}
+    with open(filename) as data_file:
+        regions_locations = {
+            location_data.get('Region', ''): location_data.get('Location', '').encode('ascii', 'ignore')
+            for location_data in json.load(data_file)
+        }
+
+    return regions_locations
+
+regions_locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
