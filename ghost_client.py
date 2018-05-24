@@ -190,17 +190,6 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
         if 'source_container_image' in app.get('build_infos'):
             fingerprint = app['build_infos']['source_container_image']
             app['build_infos']['src_container_img'] = dict(list_lxd_images(config)).get(fingerprint)
-        # Normalize log_notifications
-        log_notifications = []
-        for notif in app.get('log_notifications', []):
-            if isinstance(notif, basestring):
-                log_notifications.append({
-                    'email': notif,
-                    'job_states': ['*']
-                })
-            else:
-                log_notifications.append(notif)
-        app['log_notifications'] = log_notifications
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
