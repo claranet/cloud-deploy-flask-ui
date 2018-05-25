@@ -505,6 +505,9 @@ td.inline {
     font-size: 42px;
     display: block;
 }
+.app-infos-wrap a.instance-item span.ionicons span.bad-ami {
+    font-size: 14px;
+}
 .app-infos-wrap a.instance-item span.instance-id {
     padding-left: 3px;
 }
@@ -548,7 +551,6 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 #as-instance-details p span.tags strong.col-md-2 {
     padding: 0;
 }
-
 /*Blue Green Elements*/
 .tablelist tr.app-row .app-is-bluegreen {
     background: linear-gradient(to right bottom, #03a9f4 50%, #4caf50 50%);
