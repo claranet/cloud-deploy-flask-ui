@@ -23,45 +23,8 @@
     {%- endif -%}
     {%- if as_instances | length > 0 -%}
 <ul class="app-infos-wrap">
-    {% for host in as_instances %}
-    <li>
-        <a class="instance-item {{ host['status'] }}" href="#" id="{{ host['id'] }}">
-            <span class="ionicons ion-cube"></span>
-            <span class="instance-id">{{ host['id'] }}</span>
-        </a>
-        <div class="instance-content hide">
-            <legend class="the-legend">
-                <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
-            </legend>
-            <p class="row">
-                <strong class="label label-default col-md-2">Private IP</strong><span class="col-md-10"> {{ host['private_ip_address'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Public IP</strong><span class="col-md-10"> {{ host['public_ip_address'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">State</strong><span class="col-md-10"> {{ host['status'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Launch Time</strong><span class="col-md-10"> {{ host['launch_time'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Security Groups</strong><span class="col-md-10"> {{ host['security_group'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Subnet Id</strong><span class="col-md-10"> {{ host['subnet_id'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Image Id</strong><span class="col-md-10"> {{ host['image_id'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Instance Type</strong><span class="col-md-10"> {{ host['instance_type'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Instance Profile</strong><span class="col-md-10"> {{ host['instance_profile'] }}</span>
-            </p>
-        </div>
-    </li>
+{% for host in as_instances %}
+    {% include 'app_infos_instance_content.html' %}
 {% endfor %}
 </ul>
 {%- else %}
@@ -77,44 +40,7 @@
     </legend>
 <ul class="app-infos-wrap">
 {% for host in ghost_instances %}
-    <li>
-        <a class="instance-item {{ host['status'] }}" href="#" id="{{ host['id'] }}">
-            <span class="ionicons ion-cube"></span>
-            <span class="instance-id">{{ host['id'] }}</span>
-        </a>
-        <div class="instance-content hide">
-            <legend class="the-legend">
-                <h4 class="modal-title"><span class="glyphicon glyphicon-th"></span> Instance Details <strong>{{ host['id'] }}</strong></h4>
-            </legend>
-            <p class="row">
-                <strong class="label label-default col-md-2">Private IP</strong><span class="col-md-10"> {{ host['private_ip_address'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Public IP</strong><span class="col-md-10"> {{ host['public_ip_address'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">State</strong><span class="col-md-10"> {{ host['status'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Launch Time</strong><span class="col-md-10"> {{ host['launch_time'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Security Groups</strong><span class="col-md-10"> {{ host['security_group'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Subnet Id</strong><span class="col-md-10"> {{ host['subnet_id'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Image Id</strong><span class="col-md-10"> {{ host['image_id'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Instance Type</strong><span class="col-md-10"> {{ host['instance_type'] }}</span>
-            </p>
-            <p class="row">
-                <strong class="label label-default col-md-2">Instance Profile</strong><span class="col-md-10"> {{ host['instance_profile'] }}</span>
-            </p>
-        </div>
-    </li>
+    {% include 'app_infos_instance_content.html' %}
 {% endfor %}
 </ul>
 </fieldset>
