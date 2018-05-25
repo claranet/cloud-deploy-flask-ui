@@ -22,14 +22,14 @@
     </div>
     {%- endif -%}
     {%- if as_instances | length > 0 -%}
-<ul class="app-infos-wrap">
-{% for host in as_instances %}
-    {% include 'app_infos_instance_content.html' %}
-{% endfor %}
-</ul>
-{%- else %}
-<p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
-{%- endif %}
+    <ul class="app-infos-wrap">
+        {% for host in as_instances %}
+            {% include 'app_infos_instance_content.html' %}
+        {% endfor %}
+    </ul>
+    {%- else %}
+        <p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
+    {%- endif %}
 </fieldset>
 {%- endif %}
 
@@ -38,11 +38,11 @@
     <legend class="the-legend">
         <h4 class="modal-title">Standalone instances</h4>
     </legend>
-<ul class="app-infos-wrap">
-{% for host in ghost_instances %}
-    {% include 'app_infos_instance_content.html' %}
-{% endfor %}
-</ul>
+    <ul class="app-infos-wrap">
+    {% for host in ghost_instances %}
+        {% include 'app_infos_instance_content.html' %}
+    {% endfor %}
+    </ul>
 </fieldset>
 {%- else %}
 <div class="zone">
