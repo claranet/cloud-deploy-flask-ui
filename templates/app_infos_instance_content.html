@@ -1,5 +1,5 @@
 {% set special_class = 'warning-bad-instance' if (
-            app['name'] != host['tags']['app'] or
+           app['name'] != host['tags']['app'] or
            app['env'] != host['tags']['env'] or
            app['role'] != host['tags']['role'])
         else ''

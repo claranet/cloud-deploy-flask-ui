@@ -6,7 +6,10 @@
 {%- if as_group -%}
 <fieldset class="well the-fieldset">
     <legend class="the-legend">
-        <h4 class="modal-title"><span class="fa fa-cubes"></span> Auto Scaling Group <strong>{{ as_group.name }}</strong></h4>
+        <h4 class="modal-title">
+            <span class="fa fa-cubes"></span>
+            Auto Scaling Group <strong>{{ as_group['AutoScalingGroupName'] }}</strong>
+        </h4>
     </legend>
     {%- if elbs_instances -%}
     {% set bootstrap_classes = ['info', 'success', 'warning', 'primary'] %}
