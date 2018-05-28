@@ -9,6 +9,7 @@ $(document).ready(function() {
         $(this).addClass('focus');
         $('#as-instance-details fieldset').removeClass('hide');
         $('#as-instance-details fieldset').html(instance_content);
+        $('#as-instance-details [data-toggle="tooltip"]').tooltip();
     });
     $(document).on('click', '#as-elb a', function(evt) {
         evt.preventDefault();

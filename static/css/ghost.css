@@ -551,6 +551,9 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 #as-instance-details p span.tags strong.col-md-2 {
     padding: 0;
 }
+#as-instance-details p span.bad-ami {
+    cursor: not-allowed;
+}
 /*Blue Green Elements*/
 .tablelist tr.app-row .app-is-bluegreen {
     background: linear-gradient(to right bottom, #03a9f4 50%, #4caf50 50%);
