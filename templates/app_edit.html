@@ -105,8 +105,8 @@
             <div class="panel-body">
                 <div class="row">
                     {{ wtf.form_field(form.name, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
-                    {{ wtf.form_field(form.env, readonly=edit, form_type='horizontal') }}
-                    {{ wtf.form_field(form.role, readonly=edit, form_type='horizontal') }}
+                    {{ wtf.form_field(form.env_ro if edit else form.env, readonly=edit, form_type='horizontal') }}
+                    {{ wtf.form_field(form.role_ro if edit else form.role, readonly=edit, form_type='horizontal') }}
 
                     {{ wtf.form_field(form.description, form_type='horizontal') }}
 

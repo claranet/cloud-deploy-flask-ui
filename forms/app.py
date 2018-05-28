@@ -1016,6 +1016,9 @@ class EditAppForm(BaseAppForm):
 
     submit = SubmitField('Update Application')
 
+    env_ro = StringField('App environment', description='This field is not editable')
+    role_ro = StringField('App role', description='This field is not editable')  
+
     def __init__(self, *args, **kwargs):
         super(EditAppForm, self).__init__(*args, **kwargs)
 
@@ -1034,6 +1037,9 @@ class EditAppForm(BaseAppForm):
             self.use_custom_identity.data = True
 
         super(EditAppForm, self).map_from_app(app)
+
+        self.env_ro.data = self.env.data
+        self.role_ro.data = self.role.data
 
 
 class DeleteAppForm(FlaskForm):
