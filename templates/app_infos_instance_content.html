@@ -54,7 +54,16 @@
             <span class="col-md-10 tags">
                 {% for tag, value in host['tags']|dictsort %}
                     <strong class="col-md-2" title="{{ tag }}">{{ tag }}:</strong>
-                    <span class="col-md-4" title="{{ value }}">{{ value }}</span>
+                    <span class="col-md-4" title="{{ value }}">
+                    {%- if not check_instance_tag(tag, value, app) -%}
+                        <span class="text-danger bad-ami" title="This tag doesn't match app values" data-toggle="tooltip">
+                            <i class="fa fa-exclamation-circle"></i>
+                            {{ value }}
+                        </span>
+                    {%- else -%}
+                        {{ value }}
+                    {%- endif -%}
+                    </span>
                 {% endfor %}
             </span>
         </p>

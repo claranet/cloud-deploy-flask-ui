@@ -101,3 +101,46 @@ def check_log_id(log_id):
     False
     """
     return re.match("^[a-f0-9]{24}$", log_id)
+
+
+def check_instance_tag(tag_key, tag_value, app):
+    """
+    Check if instance tag given matches the application configuration
+    :param tag_key:
+    :param tag_value:
+    :param app:
+    :return: bool
+
+    >>> my_app = {'_id': '123456789', 'name': 'webapp', 'env': 'dev', 'role': 'webfront'}
+    >>> check_instance_tag('app', 'nope', my_app)
+    False
+
+    >>> check_instance_tag('env', 'prod', my_app)
+    False
+
+    >>> check_instance_tag('app', 'webapp', my_app)
+    True
+
+    >>> check_instance_tag('app_id', '123456789', my_app)
+    True
+
+    >>> check_instance_tag('color', 'green', my_app)
+    False
+
+    >>> check_instance_tag('Name', 'ec2.test.front.webapp', my_app)
+    False
+    """
+    if tag_key == 'app_id':
+        return tag_value == app['_id']
+    if tag_key == 'app':
+        return tag_value == app['name']
+    if tag_key == 'env':
+        return tag_value == app['env']
+    if tag_key == 'role':
+        return tag_value == app['role']
+    if tag_key == 'color':
+        return tag_value == app.get('blue_green', {}).get('color')
+    if tag_key.startswith('aws:'):
+        return True
+    instance_tags = {t['tag_name']: t['tag_value'] for t in app.get('environment_infos', {}).get('instance_tags', [])}
+    return tag_value == instance_tags.get(tag_key)
