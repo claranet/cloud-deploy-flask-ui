@@ -34,7 +34,9 @@ function ghost_update_feature_view(provisioner_select) {
     img.attr('src', img.attr('data-base-uri').replace('[]', provisioner_type));
     img.attr('title', provisioner_type);
     img.attr('alt', provisioner_type);
-    $(container).find('#features-'+feature_index+'-view-feature_name').html($('#features-'+feature_index+'-feature_name').val());
+    feature_name = $('#features-'+feature_index+'-feature_name').val();
+    $('#feature-details-'+feature_index+' h4.modal-title strong').text(feature_name);
+    $(container).find('#features-'+feature_index+'-view-feature_name').html(feature_name);
     if (provisioner_type == 'salt') {
         $(container).find('#features-'+feature_index+'-view-feature_val').html($('#features-'+feature_index+'-feature_version').val());
         $('#features-'+feature_index+'-feature_parameters').val('null');
