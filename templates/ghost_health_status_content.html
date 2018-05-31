@@ -1,6 +1,6 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h3 class="modal-title">Ghost Health Status</strong></h3>
+    <h3 class="modal-title">Host health status</strong></h3>
 </div>
 
 <div class="health-elt col-md-3">
@@ -32,11 +32,12 @@
 </div>
 <div class="health-elt col-md-3">
     <h4><i class="fa fa-clock-o"></i> Boot date</h4>
-    <p class="health-info">Ghost host up since: {{ status['boot_time'] }}</p>
+    <p class="health-info">Host up since: {{ status['boot_time'] }}</p>
     <br />
     <br />
     <br />
     <h4><i class="fa fa-wifi"></i> Network</h4>
+    <div class="health-network-wrap">
     {% for nic in status['network_io'] %}
         {% if nic != 'lo' %}
         {% set nic_stats = status.network_stats[nic] %}
@@ -46,6 +47,7 @@
         <p class="health-info">outgoing: bytes={{ nic_io.bytes_sent }}, pkts={{ nic_io.packets_sent }}, err={{ nic_io.errout }}, drops={{ nic_io.dropout }}</p>
         {% endif %}
     {% endfor %}
+    </div>
 </div>
 
 <div class="modal-footer" style="clear:both;"></div>

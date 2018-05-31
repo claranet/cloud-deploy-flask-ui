@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """Library to easily manage Host Health"""
 
 from __future__ import division
@@ -20,6 +20,7 @@ duplex_map = {
     psutil.NIC_DUPLEX_UNKNOWN: "?",
 }
 
+
 def get_host_health(cpu_percent, cpu_percent_details):
     status = {}
     cpu = {}
@@ -34,7 +35,7 @@ def get_host_health(cpu_percent, cpu_percent_details):
     status['cpu'] = cpu
 
     ram = {}
-    r_total, r_avail, r_percent, r_used, r_free, r_active, r_inactive, r_buffers, r_cached, r_shared = psutil.virtual_memory()
+    r_total, r_avail, r_percent, r_used, r_free, r_active, r_inactive, r_buffers, r_cached, r_shared, r_slab = psutil.virtual_memory()
     ram['total'] = r_total / 1024 / 1024 / 1024
     ram['available'] = r_avail / 1024 / 1024 / 1024
     ram['free'] = r_free / 1024 / 1024 / 1024
@@ -67,7 +68,8 @@ def get_host_health(cpu_percent, cpu_percent_details):
         status['network_stats'][key] = status['network_stats'][key]._replace(duplex=duplex_map[item.duplex])
     status['network_io'] = psutil.net_io_counters(pernic=True)
 
-    return status;
+    return status
+
 
 def get_host_cpu_label(cpu_percent):
     status = 'success'
@@ -75,7 +77,8 @@ def get_host_cpu_label(cpu_percent):
         status = 'warning'
     if cpu_percent > CPU_THRESHOLD_DANGER:
         status = 'danger'
-    return status;
+    return status
+
 
 class HostHealth:
     percent = 'N/A'
@@ -89,7 +92,7 @@ class HostHealth:
         self.interval = interval
 
     def start(self):
-        self.thread = threading.Timer(self.pool_time, self.update_stats, ())
+        self.thread = threading.Timer(self.pool_time, self.update_stats)
         self.thread.start()
 
     def update_stats(self):
@@ -98,4 +101,4 @@ class HostHealth:
         self.start()
 
     def get_stats(self):
-        return (self.percent, self.percent_details)
+        return self.percent, self.percent_details
