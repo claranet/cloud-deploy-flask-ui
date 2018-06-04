@@ -35,7 +35,14 @@ def get_host_health(cpu_percent, cpu_percent_details):
     status['cpu'] = cpu
 
     ram = {}
-    r_total, r_avail, r_percent, r_used, r_free, r_active, r_inactive, r_buffers, r_cached, r_shared, r_slab = psutil.virtual_memory()
+    # Original tuple:
+    # r_total, r_avail, r_percent, r_used, r_free, r_active, r_inactive, r_buffers, r_cached, r_shared, r_slab
+    ram_raw_values = psutil.virtual_memory()
+    r_total = ram_raw_values[0]
+    r_avail = ram_raw_values[1]
+    r_percent = ram_raw_values[2]
+    r_used = ram_raw_values[3]
+    r_free = ram_raw_values[4]
     ram['total'] = r_total / 1024 / 1024 / 1024
     ram['available'] = r_avail / 1024 / 1024 / 1024
     ram['free'] = r_free / 1024 / 1024 / 1024
