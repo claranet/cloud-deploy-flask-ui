@@ -14,7 +14,7 @@ from web_ui.forms.form_aws_helper import get_aws_connection_data
 from web_ui.forms.form_aws_helper import get_aws_ec2_regions
 
 from wtforms import FieldList, FormField, HiddenField, IntegerField, RadioField, StringField, SubmitField
-from wtforms import TextAreaField, BooleanField, SelectField
+from wtforms import TextAreaField, BooleanField, SelectField, SelectMultipleField
 from web_ui.forms.form_wtf_helper import BetterSelectField, BetterSelectFieldNonValidating, StrippedStringField
 from wtforms.validators import DataRequired as DataRequiredValidator
 from wtforms.validators import NumberRange as NumberRangeValidator
@@ -24,6 +24,7 @@ from wtforms.validators import Length as LengthValidator
 from wtforms.validators import NoneOf as NoneOfValidator
 
 from models.apps import apps_schema as ghost_app_schema
+from models.jobs import LOG_NOTIFICATION_JOB_STATUSES
 from models.volumes import block as ghost_block_schema
 
 from ghost_tools import get_available_provisioners_from_config
@@ -525,6 +526,38 @@ class BluegreenForm(FlaskForm):
                                                    if self.post_swap.data else '')
 
 
+class LogNotificationForm(FlaskForm):
+    email = StringField('Email', description='Recipient destination', validators=[
+        OptionalValidator(),
+        RegexpValidator(
+            ghost_app_schema['log_notifications']['schema']['schema']['email']['regex']
+        )
+    ])
+
+    job_states = SelectMultipleField('Job states',
+                                     description='Select job states that need this email notification',
+                                     validators=[OptionalValidator()],
+                                     choices=get_wtforms_selectfield_values(LOG_NOTIFICATION_JOB_STATUSES))
+
+    # Disable CSRF in module forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(LogNotificationForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
+
+    def map_from_app(self, log_notif):
+        """
+        Map app data to blue green form
+        """
+        if isinstance(log_notif, basestring):
+            self.email.data = log_notif
+            self.job_states.data = LOG_NOTIFICATION_JOB_STATUSES
+        else:
+            self.email.data = log_notif.get('email', '')
+            if ''.join(log_notif.get('job_states', [])) == '*':
+                self.job_states.data = LOG_NOTIFICATION_JOB_STATUSES
+            else:
+                self.job_states.data = log_notif.get('job_states', LOG_NOTIFICATION_JOB_STATUSES)
+
+
 class BaseAppForm(FlaskForm):
     # App properties
     name = StringField('App name', description='This mandatory field will not be editable after app creation',
@@ -570,12 +603,7 @@ class BaseAppForm(FlaskForm):
     ])
 
     # Notification properties
-    log_notifications = FieldList(StringField('Email', description='Recipient destination', validators=[
-        OptionalValidator(),
-        RegexpValidator(
-            ghost_app_schema['log_notifications']['schema']['regex']
-        )
-    ]), min_entries=1)
+    log_notifications = FieldList(FormField(LogNotificationForm), min_entries=1)
 
     # Blue Green hidden properties
     blue_green = FormField(BluegreenForm)
@@ -669,15 +697,27 @@ class BaseAppForm(FlaskForm):
         >>> app
         {'log_notifications': []}
 
-        >>> form.log_notifications[0].data = "test@test.fr"
+        >>> form.log_notifications[0].form.email.data = "test@test.fr"
         >>> form.map_to_app_log_notifications(app)
-        >>> app
-        {'log_notifications': ['test@test.fr']}
+        >>> len(app.get('log_notifications'))
+        1
+
+        >>> sorted(app.get('log_notifications')[0].items())
+        [('email', 'test@test.fr'), ('job_states', ['*'])]
+
+        >>> form.log_notifications[0].form.email.data = "test@fr.clara.net"
+        >>> form.log_notifications[0].form.job_states.data = ['done', 'failed']
+        >>> form.map_to_app_log_notifications(app)
+        >>> sorted(app.get('log_notifications')[0].items())
+        [('email', 'test@fr.clara.net'), ('job_states', ['done', 'failed'])]
         """
         app['log_notifications'] = []
         for form_log_notification in self.log_notifications:
-            if form_log_notification.data:
-                log_notification = form_log_notification.data
+            log_notification = {}
+            if form_log_notification.email.data:
+                log_notification['email'] = form_log_notification.email.data
+                log_notification['job_states'] = form_log_notification.job_states.data or ['*']
+            if log_notification:
                 app['log_notifications'].append(log_notification)
 
     def map_to_app_blue_green(self, app):
@@ -971,8 +1011,8 @@ class BaseAppForm(FlaskForm):
             empty_fieldlist(self.log_notifications)
             for log_notification in app.get('log_notifications', []):
                 self.log_notifications.append_entry()
-                form_log_notification = self.log_notifications.entries[-1]
-                form_log_notification.data = log_notification
+                form_log_notification = self.log_notifications.entries[-1].form
+                form_log_notification.map_from_app(log_notification)
 
 
 class CreateAppForm(BaseAppForm):
