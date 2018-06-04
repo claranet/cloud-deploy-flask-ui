@@ -144,3 +144,13 @@ def check_instance_tag(tag_key, tag_value, app):
         return True
     instance_tags = {t['tag_name']: t['tag_value'] for t in app.get('environment_infos', {}).get('instance_tags', [])}
     return tag_value == instance_tags.get(tag_key)
+
+
+def check_instance_tags(tags, app):
+    tags_to_check = ['app', 'env', 'role']
+    if 'color' in tags:
+        tags_to_check.append('color')
+    compliant = True
+    for tag_key in tags_to_check:
+        compliant = compliant and check_instance_tag(tag_key, tags[tag_key], app)
+    return compliant

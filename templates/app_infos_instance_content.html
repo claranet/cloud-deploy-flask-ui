@@ -1,9 +1,4 @@
-{% set special_class = 'warning-bad-instance' if (
-           app['name'] != host['tags']['app'] or
-           app['env'] != host['tags']['env'] or
-           app['role'] != host['tags']['role'])
-        else ''
-%}
+{% set special_class = 'warning-bad-instance' if check_instance_tags(host['tags'], app) else '' %}
 <li>
     <a class="instance-item {{ host['status'] }} {{ special_class }}" href="#" id="{{ host['id'] }}">
         <span class="ionicons ion-cube"></span>

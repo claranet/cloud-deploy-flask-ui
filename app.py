@@ -142,6 +142,7 @@ def template_context():
         get_pretty_yaml_from_json=ui_helpers.get_pretty_yaml_from_json_str,
         ui_config=ui_helpers.ui_config.get('web_ui', {}) or {},
         check_instance_tag=ui_helpers.check_instance_tag,
+        check_instance_tags=ui_helpers.check_instance_tags,
     )
 
 

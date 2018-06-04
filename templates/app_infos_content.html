@@ -31,7 +31,7 @@
         {% endfor %}
     </ul>
     {%- else %}
-        <p>No instance found in the AS <strong>{{ as_group.name }}</strong></p>
+        <p>No instance found in the AS <strong>{{ as_group['AutoScalingGroupName'] }}</strong></p>
     {%- endif %}
 </fieldset>
 {%- endif %}
