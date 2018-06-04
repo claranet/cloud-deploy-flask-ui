@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import base64
 import chardet
 import os
 
@@ -31,6 +32,120 @@ LOG_LINE_REGEX = re.compile(r'\d+/\d+/\d+ \d+:\d+:\d+ .*: .*')
 
 BOLD_TEMPLATE = '<span style="color: rgb{}; font-weight: bolder">{}</span>'
 LIGHT_TEMPLATE = '<span style="color: rgb{}">{}</span>'
+
+
+class HtmlLogFormatter():
+    @staticmethod
+    def format_line(log_line, line_number):
+        """
+        Format a log line to HTML format.
+        :param log_line: str:
+        :param line_number: int:
+        :return: str:
+
+        >>> HtmlLogFormatter.format_line('log line', 0)
+        '<samp>log line</samp>'
+
+        >>> HtmlLogFormatter.format_line('2018/02/08 16:34:44 GMT: Job processing started', 0)
+        '<div class="panel panel-default"><em class="panel-heading"><span class="timeinterval"><i class="glyphicon glyphicon-time"></i></span><span class="command-title">2018/02/08 16:34:44 GMT: Job processing started</span></em><div class="panel-body">'
+
+        >>> HtmlLogFormatter.format_line('2018/02/08 16:34:44 GMT: Job processing started', 1)
+        '</div></div><div class="panel panel-default"><em class="panel-heading"><span class="timeinterval"><i class="glyphicon glyphicon-time"></i></span><span class="command-title">2018/02/08 16:34:44 GMT: Job processing started</span></em><div class="panel-body">'
+        """
+        clean_line = ansi_to_html(log_line).replace('\r\n', '\n').replace('\r', '\n').replace('\n', '<br/>').replace('%!(PACKER_COMMA)', '&#44;')
+        if LOG_LINE_REGEX.match(log_line) is not None:
+            return '%s<div class="panel panel-default"><em class="panel-heading"><span class="timeinterval"><i class="glyphicon glyphicon-time"></i></span><span class="command-title">%s</span></em><div class="panel-body">' % ('</div></div>' if line_number > 0 else '', clean_line)
+        else:
+            return '<samp>%s</samp>' % clean_line
+
+    @staticmethod
+    def format_data(lines, last_pos):
+        """
+        Format a websocket data to HTML format.
+        :param lines: array: An array containing log lines
+        :param last_pos: int: Last file position
+        :return: dict:
+
+        >>> sorted(HtmlLogFormatter.format_data(["line1", "line2"], 10).items())
+        [('html', 'line1line2'), ('last_pos', 10)]
+
+        >>> sorted(HtmlLogFormatter.format_data([], 0).items())
+        [('html', ''), ('last_pos', 0)]
+        """
+        return {'html': ''.join(lines), 'last_pos': last_pos}
+
+    @staticmethod
+    def format_error(error_message):
+        """
+        Format a websocket error to HTML format.
+        :param error_message: str:
+        :return: dict:
+
+        >>> sorted(HtmlLogFormatter.format_error('Test error').items())
+        [('html', 'Test error'), ('last_pos', 0)]
+
+        >>> sorted(HtmlLogFormatter.format_error('').items())
+        [('html', ''), ('last_pos', 0)]
+
+        >>> sorted(HtmlLogFormatter.format_error(None).items())
+        [('html', None), ('last_pos', 0)]
+        """
+        return {'html': error_message, 'last_pos': 0}
+
+
+class RawLogFormatter():
+    @staticmethod
+    def format_line(log_line, line_number):
+        """
+        Format a log line to RAW format.
+        :param log_line: str:
+        :param line_number: int:
+        :return: str:
+
+        >>> RawLogFormatter.format_line('log line', 0)
+        'log line'
+
+        >>> RawLogFormatter.format_line('2018/02/08 16:34:44 GMT: Job processing started', 0)
+        '2018/02/08 16:34:44 GMT: Job processing started'
+
+        >>> RawLogFormatter.format_line('2018/02/08 16:34:44 GMT: Job processing started', 1)
+        '2018/02/08 16:34:44 GMT: Job processing started'
+        """
+        return log_line
+
+    @staticmethod
+    def format_data(lines, last_pos):
+        """
+        Format a websocket data to RAW format.
+        :param lines: array: An array containing log lines
+        :param last_pos: int: Last file position
+        :return: dict:
+
+        >>> sorted(RawLogFormatter.format_data(["line1", "line2"], 10).items())
+        [('last_pos', 10), ('raw', 'bGluZTFsaW5lMg==')]
+
+        >>> sorted(RawLogFormatter.format_data([], 0).items())
+        [('last_pos', 0), ('raw', '')]
+        """
+        return {'raw': base64.b64encode(''.join(lines)), 'last_pos': last_pos}
+
+    @staticmethod
+    def format_error(error_message):
+        """
+        Format a websocket error to RAW format.
+        :param error_message: str:
+        :return: dict:
+
+        >>> sorted(RawLogFormatter.format_error('Test error').items())
+        [('error', 'Test error'), ('last_pos', 0), ('raw', None)]
+
+        >>> sorted(RawLogFormatter.format_error('').items())
+        [('error', ''), ('last_pos', 0), ('raw', None)]
+
+        >>> sorted(RawLogFormatter.format_error(None).items())
+        [('error', None), ('last_pos', 0), ('raw', None)]
+        """
+        return {'raw': None, 'error': error_message, 'last_pos': 0}
 
 
 def ansi_to_html(text):
@@ -132,7 +247,7 @@ def encode_line(line):
 def create_ws(app):
     socketio = SocketIO(app)
 
-    def follow(filename, last_pos, sid):
+    def follow(filename, last_pos, sid, formatter):
         print 'SocketIO: starting loop for ' + sid
         try:
             hub = gevent.get_hub()
@@ -156,22 +271,14 @@ def create_ws(app):
                     eof = f.tell() == new_pos
 
                     # Decorate lines
-                    for idx, line in enumerate(readlines):
+                    for line_number, line in enumerate(readlines):
                         line = encode_line(line)
                         for sub_line in line.split("\\n"):
-                            clean_line = ansi_to_html(sub_line).replace('\r\n', '\n').replace('\r', '\n').replace('\n', '<br/>').replace('%!(PACKER_COMMA)', '&#44;')
-                            if LOG_LINE_REGEX.match(sub_line) is not None:
-                                lines.append('%s<div class="panel panel-default"><em class="panel-heading"><span class="timeinterval"><i class="glyphicon glyphicon-time"></i></span><span class="command-title">%s</span></em><div class="panel-body">'
-                                    % ('</div></div>' if idx > 0 else '', clean_line))
-                            else:
-                                lines.append('<samp>%s</samp>' % clean_line)
+                            lines.append(formatter.format_line(sub_line, line_number))
 
                 # Send new data to WebSocket client, if any
                 if new_pos != last_pos:
-                    data = {
-                        'html': ''.join(lines),
-                        'last_pos': last_pos,
-                    }
+                    data = formatter.format_data(lines, last_pos)
                     socketio.emit('job', data, room=sid)
 
                 # Update last_pos for next iteration
@@ -186,11 +293,7 @@ def create_ws(app):
                         continue
 
         except IOError:
-            data = {
-                'html': 'ERROR: failed to read log file.',
-                'last_pos': 0,
-            }
-            socketio.emit('job', data, room=sid)
+            socketio.emit('job', formatter.format_error('Failed to read log file.'), room=sid)
         print 'SocketIO: ending loop for ' + sid
 
     @socketio.on('connect')
@@ -204,29 +307,26 @@ def create_ws(app):
     @socketio.on('job_logging')
     def handle_message(data):
         print 'SocketIO: request from ' + request.sid
+        formatter = HtmlLogFormatter if data.get('raw_mode') is not True else RawLogFormatter
         if data and data.get('log_id'):
             log_id = data.get('log_id')
             last_pos = data.get('last_pos', 0)
 
             if check_log_id(log_id) is None:
-                socketio.close_room(request.sid)
+                socketio.emit('job', formatter.format_error('Invalid log_id syntax.'), room=request.sid)
             else:
                 filename = os.path.join(LOG_ROOT, log_id + '.txt')
                 if not os.path.isfile(filename):
-                    cloud_connection = cloud_connections.get(DEFAULT_PROVIDER)(None)
-                    bucket_name = config['bucket_s3']
-                    region = config.get('bucket_region', 'eu-west-1')
-
                     remote_log_path = get_job_log_remote_path(log_id)
-                    download_file_from_s3(cloud_connection, bucket_name, region, remote_log_path, filename)
+                    download_file_from_s3(cloud_connections.get(DEFAULT_PROVIDER)(None), config['bucket_s3'],
+                                          config['bucket_region'], remote_log_path, filename)
+                if not os.path.isfile(filename):
+                    socketio.emit('job', formatter.format_error('No log file yet.'), room=request.sid)
+                    return
 
                 # Spawn the follow loop in another thread to end this request and avoid CLOSED_WAIT connections leaking
-                gevent.spawn(follow, filename, last_pos, request.sid)
+                gevent.spawn(follow, filename, last_pos, request.sid, formatter)
         else:
-            data = {
-                'html': 'No log file yet.',
-                'last_pos': 0,
-            }
-            socketio.emit('job', data, room=request.sid)
+            socketio.emit('job', formatter.format_error('Undefined log_id.'), room=request.sid)
 
     return socketio
