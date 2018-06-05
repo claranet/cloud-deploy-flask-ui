@@ -476,8 +476,21 @@ td.inline {
 .instance-item {
     border: 1px solid transparent;
 }
+.app-infos-wrap a.instance-item.warning-bad-instance {
+    background: repeating-linear-gradient(
+        45deg,
+        #FFEBEE,
+        #FFEBEE 10px,
+        #FFCDD2 10px,
+        #FFCDD2 20px
+      );
+    border: 1px solid #eee;
+}
 .app-infos-wrap a.instance-item.focus {
     background-color: #e3e3e3;
+}
+.app-infos-wrap a.instance-item.warning-bad-instance.focus {
+    border: 1px solid #333;
 }
 .app-infos-wrap a.instance-item,
 .app-infos-wrap a.instance-item:hover {
@@ -526,6 +539,14 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 #as-instance-details  p strong
 ,#as-instance-details p span {
     white-space: normal;
+}
+#as-instance-details p strong.col-md-2 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#as-instance-details p span.tags strong.col-md-2 {
+    padding: 0;
 }
 
 /*Blue Green Elements*/

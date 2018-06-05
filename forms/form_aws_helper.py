@@ -243,7 +243,6 @@ def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role,
 
 
 def format_host_infos(instance, conn, cloud_connection, region):
-    sg_string = None
     image = conn.get_image(instance.image_id)
     image_string = "{ami_id} ({ami_name})".format(ami_id=instance.image_id,
                                                   ami_name=image.name if image is not None else 'deregistered')
@@ -265,7 +264,8 @@ def format_host_infos(instance, conn, cloud_connection, region):
         'subnet_id': subnet_string,
         'image_id': image_string,
         'instance_type': instance.instance_type,
-        'instance_profile': str(instance.instance_profile['arn']).split("/")[1] if instance.instance_profile else '-'
+        'instance_profile': str(instance.instance_profile['arn']).split("/")[1] if instance.instance_profile else '-',
+        'tags': instance.tags,
     }
     return host
 
