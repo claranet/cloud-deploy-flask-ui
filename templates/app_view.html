@@ -12,7 +12,10 @@
             <a href="/web/apps/{{ app['_id'] }}/command"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-console"></span> Run Command</button></a>
         </li>
         <li>
-            <a href="javascript:void(0)"><button href="/web/aws/appinfos/{{ app['_id'] }}" class="btn btn-raised btn-success app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app['_id'] }}"><span class="fa fa-sitemap"></span> Resources details</button></a>
+            <a href="javascript:void(0)"><button href="/web/aws/appinfos/{{ app['_id'] }}" class="btn btn-raised btn-success app-infos-btn" title="View resource details" data-toggle="modal" data-target="#app-infos-{{ app['_id'] }}">
+                <span class="fa fa-sitemap"></span> Resources details
+                <span class="label-danger bad-ami hide"><i class="fa fa-exclamation-circle" title="This instance is based on an outdated AMI" data-toggle="tooltip"></i></span>
+            </button></a>
         </li>
         <li>
             <a href="/web/apps/{{ app['_id'] }}/edit"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
