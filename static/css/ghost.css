@@ -748,6 +748,11 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .health-elt .material-icons {
     vertical-align: bottom;
 }
+.health-network-wrap {
+    max-height: 150px;
+    overflow: auto;
+}
+
 /**
 ** Material fixes
 **/
