@@ -914,9 +914,28 @@ def web_job_cancel(job_id):
 
 @app.route('/web/deployments')
 def web_deployments_list():
-    query = request.args.get('where', None)
     page = request.args.get('page', '1')
-    deployments = get_ghost_deployments(query, page)
+    application_name = request.args.get('application', None)
+    application_env = request.args.get('env', None)
+    application_role = request.args.get('role', None)
+    revision = request.args.get('revision', None)
+    module = request.args.get('module', None)
+
+    query = {}
+
+    if application_name:
+        applications = ['{"app_id":"' + application['_id'] + '"}' for application in get_ghost_apps(name=application_name, role=application_role, env=application_env)]
+        query['$or'] = '[' + ','.join(applications) + ']';
+
+    if revision:
+        query['revision'] = '"' + revision + '"'
+
+    if module:
+        query['module'] = '{"$regex":".*' + module + '.*"}'
+
+    querystr = '{'+','.join('"{}":{}'.format(key, value) for key, value in query.items())+'}'
+    print(querystr)
+    deployments = get_ghost_deployments(querystr, page)
 
     if request.is_xhr:
         return render_template('deployment_list_content.html', deployments=deployments,
