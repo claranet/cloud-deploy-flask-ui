@@ -175,11 +175,17 @@ span.index:after {
 .panel .row {
   margin: 0;
 }
+.filter-row > .form-group {
+    padding-bottom: 0px !important;
+}
 .ghost-titlebar .action-btns li a, .action-btns li {
     padding: 5px 3px;
 }
 .ghost-titlebar .action-btns li:first-child {
     margin: 2px 0;
+}
+.ghost-titlebar .action-btns-filter li:first-child {
+    margin: 0px;
 }
 .ghost-titlebar .action-btns li .input-group {
     padding: 5px 3px;
@@ -204,6 +210,9 @@ ul.nav.navbar-nav {
  .navbar-nav>li.filter> .input-group input {
     height: 22px;
     padding: 4px;
+}
+ .input-group-deployments input {
+    height: 51px;
 }
  .navbar-nav>li.filter> .input-group.expanded {
     width: 500px;
@@ -640,7 +649,7 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .action-btns li a, .action-btns li {
     float: left;
 }
-.action-btns a {    
+.action-btns a {
     cursor: pointer;
 }
 .action-btns li a:hover {

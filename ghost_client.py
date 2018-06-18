@@ -114,7 +114,7 @@ def get_ghost_lxd_images():
     return images
 
 
-def get_ghost_envs(query=None):
+def get_ghost_envs(query=None, insert_first=True):
     try:
         envs_list = list()
         envs_set = set()
@@ -126,7 +126,8 @@ def get_ghost_envs(query=None):
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
             envs_set.add(item['env'])
-        envs_list.insert(0, '*')
+        if insert_first:
+            envs_list.insert(0, '*')
         envs_list.extend(list(envs_set))
     except:
         message = 'Failure: Error while retrieving application envs'
@@ -136,7 +137,8 @@ def get_ghost_envs(query=None):
 
     return envs_list
 
-def get_ghost_roles(query=None):
+
+def get_ghost_roles(query=None, insert_first=True):
     try:
         roles_list = list()
         roles_set = set()
@@ -148,7 +150,8 @@ def get_ghost_roles(query=None):
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
             roles_set.add(item['role'])
-        roles_list.insert(0, '*')
+        if insert_first:
+            roles_list.insert(0, '*')
         roles_list.extend(list(roles_set))
     except:
         traceback.print_exc()

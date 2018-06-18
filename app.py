@@ -936,16 +936,14 @@ def web_deployments_list():
     if module:
         query['module'] = '{"$regex":".*' + module + '.*"}'
 
-    querystr = '{'+','.join('"{}":{}'.format(key, value) for key, value in query.items())+'}'
+    querystr = '{' + ','.join('"{key}":{value}'.format(key=key, value=value) for key, value in query.items()) + '}'
     deployments = get_ghost_deployments(querystr, page)
-    envs = get_ghost_envs()
-    envs.pop(0)
-    roles = get_ghost_roles()
-    roles.pop(0)
+    envs = get_ghost_envs(insert_first=False)
+    roles = get_ghost_roles(insert_first=False)
 
     if request.is_xhr:
-        return render_template('deployment_list_content.html', env_list=envs, role_list=roles,
-                               deployments=deployments, page=int(page), bucket_s3=config.get('bucket_s3'))
+        return render_template('deployment_list_content.html', env_list=envs, role_list=roles, page=int(page),
+                               deployments=deployments, bucket_s3=config.get('bucket_s3'))
 
     return render_template('deployment_list.html', env_list=envs, role_list=roles, page=int(page),
                            deployments=deployments, bucket_s3=config.get('bucket_s3'))
