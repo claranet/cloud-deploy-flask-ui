@@ -136,6 +136,28 @@ def get_ghost_envs(query=None):
 
     return envs_list
 
+def get_ghost_roles(query=None):
+    try:
+        roles_list = list()
+        roles_set = set()
+        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
+        url += '&max_results=%s&projection={"role":1}' % PAGINATION_LIMIT
+        if query:
+            url += '&where=' + query
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        for item in result.json().get('_items', []):
+            roles_set.add(item['role'])
+        roles_list.insert(0, '*')
+        roles_list.extend(list(roles_set))
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        roles_list[0] = 'Failed to retrieve Roles'
+
+    return roles_list
+
 
 def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name=None):
     try:

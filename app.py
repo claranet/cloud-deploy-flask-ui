@@ -21,7 +21,7 @@ from models.apps import apps_schema as ghost_app_schema
 from models.instance_role import role as ghost_role_default_values
 
 from ghost_api import FORBIDDEN_PATH
-from ghost_client import get_ghost_envs
+from ghost_client import get_ghost_envs, get_ghost_roles
 from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
@@ -923,9 +923,12 @@ def web_deployments_list():
 
     query = {}
 
-    if application_name:
+    if application_name or application_env or application_role:
         applications = ['{"app_id":"' + application['_id'] + '"}' for application in get_ghost_apps(name=application_name, role=application_role, env=application_env)]
-        query['$or'] = '[' + ','.join(applications) + ']';
+        if len(applications) > 0:
+            query['$or'] = '[' + ','.join(applications) + ']'
+        else:
+            query['$or'] = '[{"app_id": "null"}]'
 
     if revision:
         query['revision'] = '"' + revision + '"'
@@ -934,15 +937,18 @@ def web_deployments_list():
         query['module'] = '{"$regex":".*' + module + '.*"}'
 
     querystr = '{'+','.join('"{}":{}'.format(key, value) for key, value in query.items())+'}'
-    print(querystr)
     deployments = get_ghost_deployments(querystr, page)
+    envs = get_ghost_envs()
+    envs.pop(0)
+    roles = get_ghost_roles()
+    roles.pop(0)
 
     if request.is_xhr:
-        return render_template('deployment_list_content.html', deployments=deployments,
-                               page=int(page), bucket_s3=config.get('bucket_s3'))
+        return render_template('deployment_list_content.html', env_list=envs, role_list=roles,
+                               deployments=deployments, page=int(page), bucket_s3=config.get('bucket_s3'))
 
-    return render_template('deployment_list.html', deployments=deployments,
-                           page=int(page), bucket_s3=config.get('bucket_s3'))
+    return render_template('deployment_list.html', env_list=envs, role_list=roles, page=int(page),
+                           deployments=deployments, bucket_s3=config.get('bucket_s3'))
 
 
 @app.route('/web/deployments/<deployment_id>', methods=['GET'])
