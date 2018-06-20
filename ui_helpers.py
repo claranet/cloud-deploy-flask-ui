@@ -88,21 +88,6 @@ def get_pretty_yaml_from_json_str(json_str):
         return ''
 
 
-def check_log_id(log_id):
-    """
-    Check log_id syntax
-    :param log_id: string
-    :return SRE_Match object
-
-    >>> check_log_id("5ab13d4673c5787c54a75e1d") is not None
-    True
-
-    >>> check_log_id("/etc/test") is not None
-    False
-    """
-    return re.match("^[a-f0-9]{24}$", log_id)
-
-
 def check_instance_tag(tag_key, tag_value, app):
     """
     Check if instance tag given matches the application configuration
