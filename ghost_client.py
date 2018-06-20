@@ -23,6 +23,7 @@ API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
 # FIXME: Static conf to externalize with Flask-Appconfig
 headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 url_apps = API_BASE_URL + '/apps'
+url_webhooks = API_BASE_URL + '/webhooks'
 url_jobs = API_BASE_URL + '/jobs'
 url_commands = API_BASE_URL + '/commands'
 url_commands_fields = url_commands + '/fields'
@@ -583,3 +584,59 @@ def normalize_app_object(app, embed_features_params_as_yml):
         app['build_infos']['src_container_img'] = dict(get_ghost_lxd_images()).get(fingerprint)
 
     return app
+
+
+def get_ghost_webhooks(query=None, page=None):
+    try:
+        url = url_webhooks + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
+        if query:
+            url += "&where=" + query
+        if page:
+            url += "&page=" + page
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        webhooks = result.json().get('_items', [])
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        webhooks = ['Failed to retrieve Webhooks']
+
+    return webhooks
+
+
+def create_ghost_webhook(webhook):
+    message, result, status_code = do_request(requests.post, url=url_webhooks, data=json.dumps(webhook), headers=headers,
+                                              success_message='Webhook created',
+                                              failure_message='Webhook creation failed')
+    return message, result, status_code
+
+
+def update_ghost_webhook(webhook_id, local_headers, webhook):
+    message, result, status_code = do_request(requests.patch, url=url_webhooks + '/' + webhook_id, data=json.dumps(webhook),
+                                              headers=local_headers,
+                                              success_message='Webhook "{}" updated'.format(webhook_id),
+                                              failure_message='Webhook "{}" update failed'.format(webhook_id))
+    return message, status_code
+
+
+def delete_ghost_webhook(webhook_id, local_headers):
+    message, result, status_code = do_request(requests.delete, url=url_webhooks + '/' + webhook_id, data=None,
+                                              headers=local_headers,
+                                              success_message='Webhook "{}" deleted'.format(webhook_id),
+                                              failure_message='Webhook "{}" deletion failed'.format(webhook_id))
+    return message, status_code
+
+
+def get_ghost_webhook(webhook_id):
+    try:
+        url = url_webhooks + '/' + webhook_id + '?embedded={"app_id": 1}'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        webhook = result.json()
+        handle_response_status_code(result.status_code)
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        webhook = {}
+    return webhook

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Webhook Deletion' %}
+
+{% block page_content %}
+    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <h2>Delete webhook {{ webhook['_id'] }}?</h2>
+
+        {{ wtf.form_field(form.confirmation, form_type='horizontal') }}
+
+        {{ wtf.form_field(form.submit, form_type='horizontal') }}
+    </form>
+{% endblock %}

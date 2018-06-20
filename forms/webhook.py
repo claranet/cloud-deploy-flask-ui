@@ -1,0 +1,115 @@
+from flask_wtf import FlaskForm
+
+from wtforms import HiddenField, RadioField, SubmitField, StringField, FieldList
+from wtforms.validators import DataRequired
+from web_ui.forms.form_helper import empty_fieldlist
+from web_ui.forms.form_wtf_helper import BetterSelectField
+
+from command import DeployModuleForm, CommandAppForm
+
+
+class BaseWebhookForm(FlaskForm):
+    app_id = BetterSelectField('Application ID', validators=[DataRequired()])
+    module = BetterSelectField('Module name', validators=[DataRequired()])
+    rev = StringField('Revision regex')
+    secret_token = StringField('Secret token')
+    events = FieldList(BetterSelectField('Trigger events',
+                                         choices=[('push', 'push'), ('tag', 'tag'), ('merge', 'merge')]), min_entries=1)
+    commands = BetterSelectField('Command to run',
+                                 choices=[('deploy', 'deploy'), ('buildimage', 'buildimage')], default='deploy')
+    deployment_strategy = BetterSelectField('Deployement Stategy',
+                                            choices=[('serial', 'serial'), ('parallel', 'parallel')])
+    safe_deployment_strategy = BetterSelectField('Safe Deployement Stategy',
+                                                 choices=[('1by1', '1by1'), ('25', '25'), ('50', '50'), ('75', '75')])
+    instance_type = StringField('Instance Type (ex: t2.micro)')
+
+    def map_from_webhook(self, webhook):
+        """
+        Map webhook data to form
+        """
+        self.app_id.data = webhook.get('app_id', '')
+        self.module.data = webhook.get('module', '')
+        self.rev.data = webhook.get('rev', '')
+        self.secret_token.data = webhook.get('secret_token', '')
+
+        if len(webhook.get('events', [])) > 0:
+            empty_fieldlist(self.events)
+            for event in webhook.get('events', []):
+                self.events.append_entry(event)
+
+        if len(webhook.get('commands', [])) > 0:
+            for command in webhook.get('commands', []):
+                self.commands.data = command
+
+        self.deployment_strategy.data = webhook.get('deployment_strategy', '')
+        self.safe_deployment_strategy.data = webhook.get('safe_deployment_strategy', '')
+        self.instance_type.data = webhook.get('instance_type', '')
+
+        print(str(self))
+
+    def map_to_webhook(self, webhook):
+        """
+        Map webhook data from form to webhook
+        """
+        webhook['app_id'] = self.app_id.data
+        webhook['module'] = self.module.data
+        webhook['rev'] = self.rev.data
+        webhook['secret_token'] = self.secret_token.data
+        webhook['events'] = []
+        webhook['commands'] = [self.commands.data]
+        webhook['deployment_strategy'] = self.deployment_strategy.data
+        webhook['safe_deployment_strategy'] = self.safe_deployment_strategy.data
+        webhook['instance_type'] = self.instance_type.data
+
+        for event in self.events:
+            if event.data:
+                webhook['events'].append(event.data)
+
+
+class CreateWebhookForm(BaseWebhookForm):
+    submit = SubmitField('Create Webhook')
+
+    def __init__(self, *args, **kwargs):
+        super(CreateWebhookForm, self).__init__(*args, **kwargs)
+
+        # Set available choices
+        self.commands.choices = [('deploy', 'deploy'), ('buildimage', 'buildimage')]
+        self.deployment_strategy.choices = [('serial', 'serial'), ('parallel', 'parallel')]
+        self.safe_deployment_strategy.choices = [('1by1', '1by1'), ('25', '25'), ('50', '50'), ('75', '75')]
+        for event in self.events:
+            event.choices = [('push', 'push'), ('tag', 'tag'), ('merge', 'merge')]
+        self.module.choices = [('', 'Please select app first')]
+
+
+class EditWebhookForm(BaseWebhookForm):
+    submit = SubmitField('Update Webhook')
+    etag = HiddenField(validators=[DataRequired()])
+
+    app_id_ro = StringField('Webhook app', description='This field is not editable')
+    module_ro = StringField('Module name', description='This field is not editable')
+
+    def __init__(self, *args, **kwargs):
+        super(EditWebhookForm, self).__init__(*args, **kwargs)
+
+        # Set available choices
+        self.commands.choices = [('deploy', 'deploy'), ('buildimage', 'buildimage')]
+        self.deployment_strategy.choices = [('serial', 'serial'), ('parallel', 'parallel')]
+        self.safe_deployment_strategy.choices = [('1by1', '1by1'), ('25', '25'), ('50', '50'), ('75', '75')]
+        for event in self.events:
+            event.choices = [('push', 'push'), ('tag', 'tag'), ('merge', 'merge')]
+
+    def map_from_webhook(self, webhook):
+        super(EditWebhookForm, self).map_from_webhook(webhook)
+
+        self.app_id_ro.data = "{name} ({id})".format(name=self.app_id.data['name'], id=self.app_id.data['_id'])
+        self.module_ro.data = self.module.data
+        self.etag.data = webhook.get('_etag', '')
+
+
+class DeleteWebhookForm(FlaskForm):
+    etag = HiddenField(validators=[DataRequired()])
+    confirmation = RadioField('Are you sure?', validators=[DataRequired()],
+                              choices=[('yes', 'Yes'), ('no', 'No')])
+
+    submit = SubmitField('Delete Webhook')
+

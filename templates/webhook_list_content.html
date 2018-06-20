@@ -1,0 +1,90 @@
+{% if table_header: %}
+    <table class="table tablelist noscroll">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name / ID / Custom account</th>
+                <th>Created / Modified</th>
+                <th>App</th>
+                <th>Module</th>
+                <th>Events</th>
+                <th>Commands</th>
+                <th>Revision</th>
+                <th>Secret Token</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+{% endif %}
+{% for webhook in webhooks | sort(reverse=True, attribute='_updated') %}
+{% set app = webhook['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+<tr class="app-{{ app['env'] }} app-row">
+    <th scope="row"><span class="index"></span></th>
+    <td>
+        {{ webhook['_id'] }}
+    </td>
+    <td>
+        {{ webhook['_created'] }}
+        <br>
+        {{ webhook['_updated'] }}
+        <br>
+        by&nbsp;{{ webhook.get('user', '-') }}
+    </td>
+    <td>
+        <p>
+            <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
+        </p>
+    </td>
+    <td>
+        {{ webhook['module'] }}
+    </td>
+    <td>
+        <div>
+            {%- if webhook['events'] | length > 0 -%}
+            <abbr title="{{ webhook['events'] | join(', ') }}">
+                {{- webhook['events'] | join(', ') | truncate(42, True) -}}
+            </abbr>
+            {%- endif %}
+        </div>
+    </td>
+    <td>
+        <div>
+            {%- if webhook['commands'] | length > 0 -%}
+            <abbr title="{{ webhook['commands'] | join(', ') }}">
+                {{- webhook['commands'] | join(', ') | truncate(42, True) -}}
+            </abbr>
+            {%- endif %}
+        </div>    </td>
+    <td>
+        {{ webhook['rev'] }}
+    </td>
+
+    <td>
+        {{ webhook['secret_token'] }}
+    </td>
+    <td>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/command"><button class="btn btn-default btn-raised" title="Run Now" data-toggle="tooltip"><span class="glyphicon glyphicon-console"></span></button></a>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/edit"><button class="btn btn-warning btn-raised" title="Edit" data-toggle="tooltip"><span class="glyphicon glyphicon-edit"></span></button></a>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/delete"><button class="btn btn-danger btn-raised" title="Delete" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button></a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="app-infos-{{ webhook['_id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog app-infos" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+                <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ webhook['app_id'] }} / {{ webhook['module'] }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+            </div>
+            </div>
+        </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% if table_header: %}
+        </tbody>
+    </table>
+{% endif %}
