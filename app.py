@@ -24,7 +24,7 @@ from ghost_client import get_ghost_envs, get_ghost_roles
 from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
-from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
+from ghost_client import get_ghost_jobs, get_ghost_job, get_ghost_websocket_token, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import get_ghost_lxd_images, get_ghost_lxd_status, headers, test_ghost_auth
 from libs.blue_green import get_blue_green_copy_ami_config
@@ -889,7 +889,9 @@ def web_job_view(job_id):
     if request.is_xhr:
         return jsonify(job)
 
-    return render_template('job_view.html', job=job,
+    websocket_token = get_ghost_websocket_token(job_id)
+
+    return render_template('job_view.html', job=job, websocket_token=websocket_token,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
                            cancellable_job_statuses=CANCELLABLE_JOB_STATUSES)
 

@@ -305,6 +305,20 @@ def get_ghost_job(job_id):
     return job
 
 
+def get_ghost_websocket_token(job_id):
+    try:
+        url = url_jobs + '/' + job_id + '/websocket_token'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        token = result.json().get('token')
+        handle_response_status_code(result.status_code)
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        token = ''
+    return token
+
+
 def set_job_duration(job):
     if job.get('started_at') and job.get('status') not in ['init', 'started']:
         job_updated = datetime.strptime(job['_updated'], RFC1123_DATE_FORMAT)
