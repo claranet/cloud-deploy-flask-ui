@@ -79,7 +79,11 @@ def get_ghost_lxd_status():
     try:
         url = url_lxd + '/status'
         result = requests.get(url, headers=headers, auth=current_user.auth)
-        status = result.json().get('status')
+        json = result.json()
+        status = json.get('status')
+        if json.get('error'):
+            message = 'Failure: LXD Error %s' % json.get('error')
+            flash(message, 'danger')
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
@@ -94,6 +98,10 @@ def get_ghost_lxd_images():
         url = url_lxd + '/images'
         result = requests.get(url, headers=headers, auth=current_user.auth)
         images = result.json()
+        if type(images) is not list and images.get('error'):
+            message = 'Failure: LXD Error %s' % images.get('error')
+            flash(message, 'danger')
+            images = images.get('images')
         handle_response_status_code(result.status_code)
     except:
         traceback.print_exc()
