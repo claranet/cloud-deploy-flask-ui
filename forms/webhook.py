@@ -1,9 +1,11 @@
 from flask_wtf import FlaskForm
 
-from wtforms import HiddenField, RadioField, SubmitField, StringField, FieldList
+from wtforms import HiddenField, RadioField, SubmitField, StringField, FieldList, BooleanField, SelectField
 from wtforms.validators import DataRequired
 from web_ui.forms.form_helper import empty_fieldlist
 from web_ui.forms.form_wtf_helper import BetterSelectField
+from web_ui.forms.form_aws_helper import get_aws_ec2_instance_types
+
 
 from command import DeployModuleForm, CommandAppForm
 
@@ -11,17 +13,18 @@ from command import DeployModuleForm, CommandAppForm
 class BaseWebhookForm(FlaskForm):
     app_id = BetterSelectField('Application ID', validators=[DataRequired()])
     module = BetterSelectField('Module name', validators=[DataRequired()])
-    rev = StringField('Revision regex')
+    rev = StringField('Revision regex', validators=[DataRequired()])
     secret_token = StringField('Secret token')
     events = FieldList(BetterSelectField('Trigger events',
                                          choices=[('push', 'push'), ('tag', 'tag'), ('merge', 'merge')]), min_entries=1)
-    commands = BetterSelectField('Command to run',
-                                 choices=[('deploy', 'deploy'), ('buildimage', 'buildimage')], default='deploy')
-    deployment_strategy = BetterSelectField('Deployement Stategy',
-                                            choices=[('serial', 'serial'), ('parallel', 'parallel')])
-    safe_deployment_strategy = BetterSelectField('Safe Deployement Stategy',
-                                                 choices=[('1by1', '1by1'), ('25', '25'), ('50', '50'), ('75', '75')])
-    instance_type = StringField('Instance Type (ex: t2.micro)')
+    command = BetterSelectField('Command to run',
+                                choices=[('deploy', 'deploy'), ('buildimage', 'buildimage')], default='deploy',
+                                validators=[DataRequired()])
+    fabric_execution_strategy = BetterSelectField('Deployment strategy', validators=[],
+                                                  choices=[('serial', 'serial'), ('parallel', 'parallel')])
+    safe_deployment = BooleanField('Deploy with Safe Deployment')
+    safe_deployment_strategy = SelectField('Safe Deployment Strategy', default='')
+    instance_type = SelectField('Instance Type')
 
     def map_from_webhook(self, webhook):
         """
@@ -39,11 +42,12 @@ class BaseWebhookForm(FlaskForm):
 
         if len(webhook.get('commands', [])) > 0:
             for command in webhook.get('commands', []):
-                self.commands.data = command
+                self.command.data = command
 
-        self.deployment_strategy.data = webhook.get('deployment_strategy', '')
-        self.safe_deployment_strategy.data = webhook.get('safe_deployment_strategy', '')
-        self.instance_type.data = webhook.get('instance_type', '')
+        if 'options' in webhook:
+            self.fabric_execution_strategy.data = webhook['options'].get('fabric_execution_strategy', '')
+            self.safe_deployment_strategy.data = webhook['options'].get('safe_deployment_strategy', '')
+            self.instance_type.data = webhook['options'].get('instance_type', '')
 
         print(str(self))
 
@@ -55,15 +59,23 @@ class BaseWebhookForm(FlaskForm):
         webhook['module'] = self.module.data
         webhook['rev'] = self.rev.data
         webhook['secret_token'] = self.secret_token.data
+        webhook['commands'] = [self.command.data]
         webhook['events'] = []
-        webhook['commands'] = [self.commands.data]
-        webhook['deployment_strategy'] = self.deployment_strategy.data
-        webhook['safe_deployment_strategy'] = self.safe_deployment_strategy.data
-        webhook['instance_type'] = self.instance_type.data
-
         for event in self.events:
             if event.data:
                 webhook['events'].append(event.data)
+
+        # Add command options
+        webhook['options'] = {
+            'fabric_execution_strategy': None,
+            'safe_deployment_strategy': None,
+            'instance_type': None
+        }
+        if self.command.data == 'deploy':
+            webhook['options']['fabric_execution_strategy'] = self.fabric_execution_strategy.data
+            webhook['options']['safe_deployment_strategy'] = self.safe_deployment_strategy.data
+        if self.command.data == 'buildimage':
+            webhook['options']['instance_type'] = self.instance_type.data or None
 
 
 class CreateWebhookForm(BaseWebhookForm):
@@ -73,12 +85,13 @@ class CreateWebhookForm(BaseWebhookForm):
         super(CreateWebhookForm, self).__init__(*args, **kwargs)
 
         # Set available choices
-        self.commands.choices = [('deploy', 'deploy'), ('buildimage', 'buildimage')]
-        self.deployment_strategy.choices = [('serial', 'serial'), ('parallel', 'parallel')]
-        self.safe_deployment_strategy.choices = [('1by1', '1by1'), ('25', '25'), ('50', '50'), ('75', '75')]
+        self.command.choices = [('deploy', 'deploy'), ('buildimage', 'buildimage')]
+        self.fabric_execution_strategy.choices = [('serial', 'serial'), ('parallel', 'parallel')]
         for event in self.events:
             event.choices = [('push', 'push'), ('tag', 'tag'), ('merge', 'merge')]
         self.module.choices = [('', 'Please select app first')]
+        self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
+        self.instance_type.choices = [('', '-- Computing available instances --')]
 
 
 class EditWebhookForm(BaseWebhookForm):
@@ -92,9 +105,10 @@ class EditWebhookForm(BaseWebhookForm):
         super(EditWebhookForm, self).__init__(*args, **kwargs)
 
         # Set available choices
-        self.commands.choices = [('deploy', 'deploy'), ('buildimage', 'buildimage')]
-        self.deployment_strategy.choices = [('serial', 'serial'), ('parallel', 'parallel')]
-        self.safe_deployment_strategy.choices = [('1by1', '1by1'), ('25', '25'), ('50', '50'), ('75', '75')]
+        self.command.choices = [('deploy', 'deploy'), ('buildimage', 'buildimage')]
+        self.fabric_execution_strategy.choices = [('serial', 'serial'), ('parallel', 'parallel')]
+        self.safe_deployment_strategy.choices = [('', '-- Computing available strategies --')]
+        self.instance_type.choices = [('', '-- Computing available instances --')]
         for event in self.events:
             event.choices = [('push', 'push'), ('tag', 'tag'), ('merge', 'merge')]
 

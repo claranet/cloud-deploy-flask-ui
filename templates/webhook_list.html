@@ -59,18 +59,19 @@
                 <th>App</th>
                 <th>Module</th>
                 <th>Events</th>
-                <th>Commands</th>
                 <th>Revision</th>
-                <th>Secret Token</th>
+                <th>Commands</th>
+                <th>Options</th>
                 <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
             {% include 'webhook_list_content.html' %}
             <tr id="loadmoreajaxloader">
-                <td colspan="7" style="display:none;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></td>
+                <td colspan="10" style="display:none;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></td>
             </tr>
             <tr id="backtotop">
-                <td colspan="7" style="display:none">
+                <td colspan="10" style="display:none">
                     <a href="#" data-behavior="scrollTop"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
                 </td>
             </tr>

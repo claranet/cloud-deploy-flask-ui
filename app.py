@@ -1075,6 +1075,11 @@ def web_webhook_create():
         apps = get_ghost_apps()
         form.app_id.choices = [(app['_id'], "{name} ({id})".format(name=app['name'], id=app['_id'])) for app in apps]
         form.module.choices = get_ghost_modules_names(apps[0]['_id'])
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(apps[0])
+        form.instance_type.choices = get_aws_ec2_instance_types(apps[0]["region"])
+
+        print('data: ' + form.safe_deployment_strategy.data)
+        print('choices: ' + str(form.safe_deployment_strategy.choices))
 
     if form.validate_on_submit():
         webhook = {}
@@ -1092,6 +1097,8 @@ def web_webhook_create():
     apps = get_ghost_apps()
     form.app_id.choices = [(app['_id'], "{name} ({id})".format(name=app['name'], id=app['_id'])) for app in apps]
     form.module.choices = get_ghost_modules_names(apps[0]['_id'])
+    form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(apps[0])
+    form.instance_type.choices = get_aws_ec2_instance_types(apps[0]["region"])
 
     print(form.errors)
 
@@ -1108,9 +1115,13 @@ def web_webhook_edit(webhook_id):
         # Set read-only fields to pass validation
         webhook = get_ghost_webhook(webhook_id)
         form.module.choices = [(webhook['module'], webhook['module'])]
-        form.app_id.choices = [(webhook['app_id'], webhook['app_id'])]
+        form.app_id.choices = [(webhook['app_id']['_id'], webhook['app_id']['_id'])]
         form.module.data = webhook['module']
-        form.app_id.data = webhook['app_id']
+        form.app_id.data = webhook['app_id']['_id']
+
+        # Set dynamic fields
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
+        form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
 
     if form.validate_on_submit():
         local_headers = headers.copy()
@@ -1133,6 +1144,10 @@ def web_webhook_edit(webhook_id):
     # Get webhook data on first access
     webhook = get_ghost_webhook(webhook_id)
     form.map_from_webhook(webhook)
+
+    # Set dynamic fields
+    form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
+    form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
 
     # Display default template in GET case
     return render_template('webhook_edit.html', form=form, edit=True, webhook_id=webhook_id, webhook=webhook,

@@ -40,14 +40,11 @@
                     <div class="col-lg-offset-2">
                         {{ ghost_fieldlist(form.events, 'events', 'Events', 'events', 'Event', 'inline') }}
                     </div>
-                    {{ wtf.form_field(form.commands, form_type='horizontal', placeholder='Commands to run') }}
-                    <div class="deployment-params" style="{{ 'display:none;' if not form.commands.data == 'deploy' }}">
-                        {{ wtf.form_field(form.deployment_strategy, form_type='horizontal', placeholder='Application Name') }}
-                        {{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal', placeholder='Safe Deployment Strategy') }}
-                    </div>
-                    <div class="buildimage-params" style="{{ 'display:none;' if not form.commands.data == 'buildimage' }}">
-                        {{ wtf.form_field(form.instance_type, form_type='horizontal') }}
-                    </div>
+                    {{ wtf.form_field(form.command, form_type='horizontal', placeholder='Commands to run') }}
+                    <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal', placeholder='Application Name') }}</div>
+                    <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
+                    <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal', placeholder='Safe Deployment Strategy') }}</div>
+                    <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
 
                 </div>
             </div>

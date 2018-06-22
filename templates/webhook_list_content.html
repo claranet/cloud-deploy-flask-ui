@@ -8,9 +8,9 @@
                 <th>App</th>
                 <th>Module</th>
                 <th>Events</th>
-                <th>Commands</th>
                 <th>Revision</th>
-                <th>Secret Token</th>
+                <th>Commands</th>
+                <th>Options</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -48,19 +48,25 @@
         </div>
     </td>
     <td>
+        {{ webhook['rev'] }}
+    </td>
+    <td>
         <div>
             {%- if webhook['commands'] | length > 0 -%}
             <abbr title="{{ webhook['commands'] | join(', ') }}">
                 {{- webhook['commands'] | join(', ') | truncate(42, True) -}}
             </abbr>
             {%- endif %}
-        </div>    </td>
-    <td>
-        {{ webhook['rev'] }}
+        </div>
     </td>
-
     <td>
-        {{ webhook['secret_token'] }}
+        {% for key, value in webhook['options'].items() %}
+            {% if value: %}
+            <p>
+                {{ key }}: {{ value }}
+            </p>
+            {% endif %}
+        {% endfor %}
     </td>
     <td>
         <a href="/web/webhooks/{{ webhook['_id'] }}/command"><button class="btn btn-default btn-raised" title="Run Now" data-toggle="tooltip"><span class="glyphicon glyphicon-console"></span></button></a>

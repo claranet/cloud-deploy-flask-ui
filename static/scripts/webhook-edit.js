@@ -1,11 +1,3 @@
-function enable_submit_button() {
-    $('#submit').prop('disabled', false);
-}
-
-function disable_submit_button() {
-    $('#submit').prop('disabled', true);
-}
-
 function get_app_modules_names(app_id) {
     $('#module').find('option').remove();
     disable_submit_button();
@@ -23,21 +15,12 @@ function get_app_modules_names(app_id) {
 }
 
 (function() {
-    $('#commands').change(function() {
-        if ($(this).val() == 'deploy') {
-            $('.deployment-params').show();
-            $('.buildimage-params').hide();
-        } else if ($(this).val() == 'buildimage') {
-            $('.buildimage-params').show();
-            $('.deployment-params').hide();
-        } else {
-            $('.deployment-params').hide();
-            $('.buildimage-params').hide();
-        }
+    $('#command').change(function() {
+        show_options_fields();
     });
 
     $('#app_id').change(function () {
-        var app_id = $(this).val()
+        var app_id = $(this).val();
         get_app_modules_names(app_id)
     });
 
