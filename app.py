@@ -1074,9 +1074,10 @@ def web_webhook_create():
         # Set dynamic fields
         apps = get_ghost_apps()
         form.app_id.choices = [(app['_id'], "{name} ({id})".format(name=app['name'], id=app['_id'])) for app in apps]
-        form.module.choices = get_ghost_modules_names(apps[0]['_id'])
-        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(apps[0])
-        form.instance_type.choices = get_aws_ec2_instance_types(apps[0]["region"])
+        selected_app = get_ghost_app(form.app_id.data)
+        form.module.choices = get_ghost_modules_names(selected_app['_id'])
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(selected_app)
+        form.instance_type.choices = get_aws_ec2_instance_types(selected_app["region"])
 
         print('data: ' + form.safe_deployment_strategy.data)
         print('choices: ' + str(form.safe_deployment_strategy.choices))

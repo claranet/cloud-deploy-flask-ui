@@ -17,7 +17,9 @@ function get_app_modules_names(app_id) {
 (function() {
     $('#command').change(function() {
         show_options_fields();
-    });
+    })
+
+    refresh_safe_deploy_options(false);
 
     $('#app_id').change(function () {
         var app_id = $(this).val();
