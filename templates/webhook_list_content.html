@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Name / ID / Custom account</th>
+                <th>Webhook URL</th>
                 <th>Created / Modified</th>
                 <th>App</th>
                 <th>Module</th>
@@ -21,7 +21,7 @@
 <tr class="app-{{ app['env'] }} app-row">
     <th scope="row"><span class="index"></span></th>
     <td>
-        {{ webhook['_id'] }}
+        {{ request.url_root }}webhook/{{ webhook['_id'] }}
     </td>
     <td>
         {{ webhook['_created'] }}
