@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Webhooks invocations' %}
+
+{% block page_header %}
+    {% include 'partial_list_top_right.html' %}
+    <caption>Sorted by timestamp descending</caption>
+{% endblock %}"
+
+{% block page_content %}
+    <table class="table tablelist">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Webhook config</th>
+                <th>Jobs</th>
+                <th>Timestamp</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% include 'webhook_invocation_list_content.html' %}
+            <tr id="loadmoreajaxloader">
+                <td colspan="9" style="display:none;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

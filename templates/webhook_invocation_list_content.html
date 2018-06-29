@@ -1,0 +1,27 @@
+{% for invocation in invocations | sort(reverse=True, attribute='_created') %}
+    {% set webhook = invocation['webhook_id'] or {'_id': ''} %}
+<tr class="">
+    <th scope="row"><span class="index"></span></th>
+    <td>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/edit">
+            {{ webhook['_id'] }}
+        </a>
+    </td>
+    <td>
+        <div>
+            {% for job in invocation['jobs_objects'] %}
+                <p>
+                    <a href="/web/jobs/{{ job['_id'] }}">
+                        {{ job['command'] }} : {{ job['status'] }}
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
+    </td>
+    <td>{{ invocation['status']['code'] }}</td>
+    <td>{{ invocation['_created'] }}</td>
+    <td>
+        <a href="/web/invocations/{{ invocation['_id'] }}/redeploy" title="Deploy again this version" data-toggle="tooltip"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-refresh"></span> Redeploy</button></a>
+    </td>
+</tr>
+{% endfor %}

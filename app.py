@@ -27,6 +27,7 @@ from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, get_ghost_websocket_token, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_webhooks, get_ghost_webhook, create_ghost_webhook, update_ghost_webhook, delete_ghost_webhook
+from ghost_client import get_ghost_webhooks_invocations
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import get_ghost_lxd_images, get_ghost_lxd_status, headers, test_ghost_auth
 from libs.blue_green import get_blue_green_copy_ami_config
@@ -1037,6 +1038,18 @@ def web_webhook_list():
         return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page))
 
     return render_template('webhook_list.html', webhooks=webhooks, page=int(page))
+
+
+@app.route('/web/webhooks/all/invocations')
+def web_webhook_list_invocations():
+    query = request.args.get('where', None)
+    page = request.args.get('page', '1')
+    invocations = get_ghost_webhooks_invocations(query, page)
+
+    if request.is_xhr:
+        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page))
+
+    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page))
 
 
 @app.route('/web/webhooks/<webhook_id>/delete', methods=['GET', 'POST'])

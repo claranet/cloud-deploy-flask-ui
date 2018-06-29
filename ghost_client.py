@@ -640,3 +640,33 @@ def get_ghost_webhook(webhook_id):
         flash(message, 'danger')
         webhook = {}
     return webhook
+
+
+def get_ghost_webhooks_invocations(query=None, page=None):
+    try:
+        url = url_webhooks + '/all/invocations' + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"webhook_id": 1}'
+        if query:
+            url += "&where=" + query
+        if page:
+            url += "&page=" + page
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        invocations = result.json().get('_items', [])
+        for invocation in invocations:
+            try:
+                invocation['_created'] = datetime.strptime(invocation['_created'], RFC1123_DATE_FORMAT)
+            except:
+                traceback.print_exc()
+            try:
+                job_ids_list = ",".join(['"%s"' % job for job in invocation['jobs']])
+                invocation['jobs_objects'] = get_ghost_jobs('{"_id":{"$in":[%s]}}' % job_ids_list)
+            except:
+                traceback.print_exc()
+
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        invocations = ['Failed to retrieve webhook invocations']
+
+    return invocations

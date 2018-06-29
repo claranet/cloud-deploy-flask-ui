@@ -21,7 +21,9 @@
 <tr class="app-{{ app['env'] }} app-row">
     <th scope="row"><span class="index"></span></th>
     <td>
-        {{ request.url_root }}webhook/{{ webhook['_id'] }}
+        <a href="/web/webhooks/{{ webhook['_id'] }}/invocations" title="View webhook invocations" data-toggle="tooltip">
+            {{ request.url_root }}webhooks/{{ webhook['_id'] }}/invocations
+        </a>
     </td>
     <td>
         {{ webhook['_created'] }}
@@ -69,6 +71,7 @@
         {% endfor %}
     </td>
     <td>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/invocations"><button class="btn btn-success btn-raised" title="See invocations" data-toggle="tooltip"><span class="glyphicon glyphicon-th-list"></span></button></a>
         <a href="/web/webhooks/{{ webhook['_id'] }}/command"><button class="btn btn-default btn-raised" title="Run Now" data-toggle="tooltip"><span class="glyphicon glyphicon-console"></span></button></a>
         <a href="/web/webhooks/{{ webhook['_id'] }}/edit"><button class="btn btn-warning btn-raised" title="Edit" data-toggle="tooltip"><span class="glyphicon glyphicon-edit"></span></button></a>
         <a href="/web/webhooks/{{ webhook['_id'] }}/delete"><button class="btn btn-danger btn-raised" title="Delete" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button></a>
