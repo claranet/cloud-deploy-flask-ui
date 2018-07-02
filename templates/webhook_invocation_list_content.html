@@ -18,10 +18,15 @@
             {% endfor %}
         </div>
     </td>
-    <td>{{ invocation['status']['code'] }}</td>
     <td>{{ invocation['_created'] }}</td>
     <td>
-        <a href="/web/invocations/{{ invocation['_id'] }}/redeploy" title="Deploy again this version" data-toggle="tooltip"><button class="btn btn-raised btn-warning"><span class="glyphicon glyphicon-refresh"></span> Redeploy</button></a>
+        {% set color = 'text-info' if invocation['status']['code'] == 200 else 'text-danger' %}
+        {% set icon = 'glyphicon-ok' if invocation['status']['code'] == 200 else 'glyphicon-remove' %}
+        <div class="" title="{{ invocation['status']['message'] }}" data-toggle="tooltip">
+            <p class="glyphicon {{ icon }} {{ color }}">
+                {{ invocation['status']['code'] }}
+            </p>
+        </div>
     </td>
 </tr>
 {% endfor %}

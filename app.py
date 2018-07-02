@@ -1028,7 +1028,7 @@ def web_deployment_redeploy(deployment_id):
     return render_template('app_command.html', form=form, app=app)
 
 
-@app.route('/web/webhooks')
+@app.route('/web/webhooks', methods=['GET'])
 def web_webhook_list():
     query = request.args.get('where', None)
     page = request.args.get('page', '1')
@@ -1040,11 +1040,23 @@ def web_webhook_list():
     return render_template('webhook_list.html', webhooks=webhooks, page=int(page))
 
 
-@app.route('/web/webhooks/all/invocations')
-def web_webhook_list_invocations():
+@app.route('/web/webhooks/all/invocations', methods=['GET'])
+def web_webhook_list_all_invocations():
     query = request.args.get('where', None)
     page = request.args.get('page', '1')
     invocations = get_ghost_webhooks_invocations(query, page)
+
+    if request.is_xhr:
+        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page))
+
+    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page))
+
+
+@app.route('/web/webhooks/<webhook_id>/invocations/', methods=['GET'])
+def web_webhook_list_invocations(webhook_id):
+    query = request.args.get('where', None)
+    page = request.args.get('page', '1')
+    invocations = get_ghost_webhooks_invocations(query, page, webhook_id)
 
     if request.is_xhr:
         return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page))

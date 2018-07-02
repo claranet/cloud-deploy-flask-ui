@@ -642,9 +642,9 @@ def get_ghost_webhook(webhook_id):
     return webhook
 
 
-def get_ghost_webhooks_invocations(query=None, page=None):
+def get_ghost_webhooks_invocations(query=None, page=None, webhook_id='all'):
     try:
-        url = url_webhooks + '/all/invocations' + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"webhook_id": 1}'
+        url = url_webhooks + '/%s/invocations' % webhook_id + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"webhook_id": 1}'
         if query:
             url += "&where=" + query
         if page:
