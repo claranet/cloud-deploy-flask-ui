@@ -6,7 +6,7 @@ from models.apps import apps_schema as ghost_app_schema
 from models.env import env as ghost_env_default_values
 from models.instance_role import role as ghost_role_default_values
 
-from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands, get_ghost_lxd_images
+from web_ui.ghost_client import get_ghost_app, get_ghost_job_commands
 
 from ghost_tools import config
 
@@ -125,10 +125,6 @@ def get_app_command_recommendations(app_id, app=None):
     app_pending_changes = {ob['field']: ob for ob in app.get('pending_changes', [])}
 
     return get_recommendations(commands_fields, app_pending_changes)
-
-
-def get_container_images(config=None):
-    return get_ghost_lxd_images()
 
 
 def get_ansible_role_inventory():

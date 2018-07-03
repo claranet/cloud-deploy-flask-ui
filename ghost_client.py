@@ -30,6 +30,7 @@ url_commands_fields = url_commands + '/fields'
 url_deployments = API_BASE_URL + '/deployments'
 url_lxd = API_BASE_URL + '/lxd'
 
+
 # Helpers
 def format_success_message(success_message, result):
     """
