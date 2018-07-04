@@ -28,13 +28,12 @@ from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, create_ghost_job, cancel_ghost_job, delete_ghost_job
 from ghost_client import get_ghost_deployments, get_ghost_deployment
-from ghost_client import headers, test_ghost_auth
+from ghost_client import get_ghost_lxd_images, get_ghost_lxd_status, headers, test_ghost_auth
 from libs.blue_green import get_blue_green_copy_ami_config
 from libs.blue_green import ghost_has_blue_green_enabled
 from libs.blue_green import get_blue_green_from_app
 from libs.blue_green import get_blue_green_create_temporary_elb_config
 from libs.git_helper import git_ls_remote_branches_tags
-from libs.lxd import lxd_is_available
 from health import get_host_cpu_label, get_host_health, HostHealth
 
 from forms.command import CommandAppForm
@@ -42,7 +41,6 @@ from forms.app import CreateAppForm, DeleteAppForm, EditAppForm
 from forms.job import CancelJobForm, DeleteJobForm
 from forms.form_helper import get_ghost_app_roles, get_ghost_app_envs, get_wtforms_selectfield_values
 from forms.form_helper import get_app_command_recommendations
-from forms.form_helper import get_container_images
 from forms.form_helper import get_ansible_role_inventory, get_salt_formula_inventory
 from forms.form_aws_helper import get_aws_ec2_regions, get_aws_ec2_instance_types, get_aws_vpc_ids, get_aws_sg_ids
 from forms.form_aws_helper import get_aws_subnet_ids, get_aws_ami_ids, get_aws_ec2_key_pairs
@@ -133,7 +131,7 @@ def template_context():
         role_list=ghost_role_default_values,
         statuses=JOB_STATUSES,
         ghost_blue_green=ghost_has_blue_green_enabled(),
-        lxd=lxd_is_available(),
+        lxd=get_ghost_lxd_status,
         ghost_health_status=get_host_cpu_label(health_stats[0]),
         command_list=ghost_jobs_schema['command']['allowed'] + LEGACY_COMMANDS,
         app_modules_state=ui_helpers.app_modules_state,
@@ -291,7 +289,7 @@ def web_amis_list(provider, region_id):
 
 @app.route('/web/container/image/ids')
 def web_container_image_list():
-    return jsonify(dict(get_container_images(config)))
+    return jsonify(dict(get_ghost_lxd_images()))
 
 
 @app.route('/web/<provider>/appinfos/<app_id>/subnet/ids')
@@ -448,7 +446,7 @@ def web_app_create():
         form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
         form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
-        form.build_infos.container.choices = get_container_images(config)
+        form.build_infos.container.choices = get_ghost_lxd_images()
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data,
                                                                 **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider,
@@ -497,7 +495,7 @@ def web_app_create():
                                                                clone_from_app['region'], **aws_connection_data)
             form.build_infos.source_ami.choices = get_aws_ami_ids(clone_from_app.get('provider', DEFAULT_PROVIDER),
                                                                   clone_from_app['region'], **aws_connection_data)
-            form.build_infos.container.choices = get_container_images(config)
+            form.build_infos.container.choices = get_ghost_lxd_images()
             form.build_infos.subnet_id.choices = get_aws_subnet_ids(clone_from_app.get('provider', DEFAULT_PROVIDER),
                                                                     clone_from_app['region'], clone_from_app['vpc_id'],
                                                                     **aws_connection_data)
@@ -513,7 +511,7 @@ def web_app_create():
                 sg.choices = get_aws_sg_ids(clone_from_app.get('provider', DEFAULT_PROVIDER), clone_from_app['region'],
                                             clone_from_app['vpc_id'], **aws_connection_data)
 
-    form.build_infos.container.choices = get_container_images(config)
+    form.build_infos.container.choices = get_ghost_lxd_images()
 
     # Display default template in GET case
     return render_template('app_edit.html', form=form, edit=False,
@@ -556,7 +554,7 @@ def web_app_edit(app_id):
         form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
         form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
         form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
-        form.build_infos.container.choices = get_container_images(config)
+        form.build_infos.container.choices = get_ghost_lxd_images()
         form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data,
                                                                 **aws_connection_data)
         form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider,
@@ -570,7 +568,7 @@ def web_app_edit(app_id):
         for sg in form.environment_infos.security_groups:
             sg.choices = get_aws_sg_ids(cloud_provider, form.region.data, form.vpc_id.data, **aws_connection_data)
 
-    form.build_infos.container.choices = get_container_images(config)
+    form.build_infos.container.choices = get_ghost_lxd_images()
 
     # Perform validation
     if form.validate_on_submit():
@@ -614,7 +612,7 @@ def web_app_edit(app_id):
     form.vpc_id.choices = get_aws_vpc_ids(cloud_provider, form.region.data, **aws_connection_data)
     form.autoscale.as_name.choices = get_aws_as_groups(cloud_provider, form.region.data, **aws_connection_data)
     form.build_infos.source_ami.choices = get_aws_ami_ids(cloud_provider, form.region.data, **aws_connection_data)
-    form.build_infos.container.choices = get_container_images(config)
+    form.build_infos.container.choices = get_ghost_lxd_images()
     form.build_infos.subnet_id.choices = get_aws_subnet_ids(cloud_provider, form.region.data, form.vpc_id.data,
                                                             **aws_connection_data)
     form.environment_infos.instance_profile.choices = get_aws_iam_instance_profiles(cloud_provider, form.region.data,

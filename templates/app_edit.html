@@ -203,7 +203,7 @@
                     {{ wtf.form_field(form.build_infos.form.ssh_username, form_type='horizontal', placeholder='admin') }}
                     {{ wtf.form_field(form.build_infos.form.source_ami, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#build_infos-source_ami" data-call="ghost_update_ec2_amis($('select#region').val());"><span class="glyphicon glyphicon-refresh"></span></button>
-{% if lxd %}
+{% if lxd() %}
                     {{ wtf.form_field(form.build_infos.form.container, form_type='horizontal') }}
                     <button title="Refresh select values" class="btn btn-simple btn-xs refresh-select" data-target="select#build_infos-container" data-call="ghost_update_container_images();"><span class="glyphicon glyphicon-refresh"></span></button>
 {% endif %}

@@ -28,6 +28,7 @@ url_jobs = API_BASE_URL + '/jobs'
 url_commands = API_BASE_URL + '/commands'
 url_commands_fields = url_commands + '/fields'
 url_deployments = API_BASE_URL + '/deployments'
+url_lxd = API_BASE_URL + '/lxd'
 
 
 # Helpers
@@ -73,6 +74,42 @@ def handle_response_status_code(status_code):
 
 def test_ghost_auth(user):
     return requests.head(API_BASE_URL, headers=headers, auth=user.auth)
+
+
+def get_ghost_lxd_status():
+    try:
+        url = url_lxd + '/status'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        json = result.json()
+        status = json.get('status')
+        if json.get('error'):
+            message = 'Failure: LXD Error %s' % json.get('error')
+            flash(message, 'danger')
+        handle_response_status_code(result.status_code)
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        status = False
+    return status
+
+
+def get_ghost_lxd_images():
+    try:
+        url = url_lxd + '/images'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        images = result.json()
+        if type(images) is not list and images.get('error'):
+            message = 'Failure: LXD Error %s' % images.get('error')
+            flash(message, 'danger')
+            images = images.get('images')
+        handle_response_status_code(result.status_code)
+    except:
+        traceback.print_exc()
+        message = 'Failure: %s' % (sys.exc_info()[1])
+        flash(message, 'danger')
+        images = []
+    return images
 
 
 def get_ghost_envs(query=None):
@@ -189,7 +226,7 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
         # Container enhancements
         if 'source_container_image' in app.get('build_infos'):
             fingerprint = app['build_infos']['source_container_image']
-            app['build_infos']['src_container_img'] = dict(list_lxd_images(config)).get(fingerprint)
+            app['build_infos']['src_container_img'] = dict(get_ghost_lxd_images()).get(fingerprint)
     except:
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
