@@ -1,21 +1,19 @@
 from __future__ import print_function
+
+import json
+import sys
+import traceback
+from datetime import datetime
+
+import requests
 from flask import flash, Markup
 from flask_login import current_user
 from werkzeug.exceptions import default_exceptions
 
-from datetime import datetime
-import json
-import requests
-import sys
-import traceback
-import yaml
-from ui_helpers import get_pretty_yaml_from_json
-
-from ghost_tools import b64decode_utf8, b64encode_utf8, config
-from libs.lxd import list_lxd_images
+from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
-
 from settings import API_BASE_URL, PAGINATION_LIMIT
+from ui_helpers import get_pretty_yaml_from_json
 
 RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
@@ -48,6 +46,8 @@ def format_success_message(success_message, result):
 
 
 def do_request(method, url, data, headers, success_message, failure_message):
+    result_json = ''
+    status_code = 0
     try:
         result = method(url=url, data=data, headers=headers, auth=current_user.auth)
         status_code = result.status_code
@@ -130,7 +130,7 @@ def get_ghost_envs(query=None):
         traceback.print_exc()
         message = 'Failure: %s' % (sys.exc_info()[1])
         flash(message, 'danger')
-        envs_list[0] = 'Failed to retrieve Envs'
+        envs_list = ['Failed to retrieve Envs']
 
     return envs_list
 
@@ -140,13 +140,13 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
         # Eve Query building
         query = []
-        if role != None:
+        if role is not None:
             query.append('"role":"{role}"'.format(role=role))
-        if env != None:
+        if env is not None:
             query.append('"env":"{env}"'.format(env=env))
-        if name != None:
+        if name is not None:
             query.append('"name":{{"$regex":".*{name}.*"}}'.format(name=name))
-        if query.count > 0:
+        if len(query) > 0:
             url += '&where={' + ",".join(query) + '}'
         if page:
             url += '&page=' + page
