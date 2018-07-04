@@ -176,7 +176,7 @@ span.index:after {
   margin: 0;
 }
 .filter-row > .form-group {
-    padding-bottom: 0px !important;
+    padding-bottom: 0px;
 }
 .ghost-titlebar .action-btns li a, .action-btns li {
     padding: 5px 3px;

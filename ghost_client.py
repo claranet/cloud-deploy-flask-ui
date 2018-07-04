@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import json
 import logging
 import requests
@@ -143,7 +141,7 @@ def get_ghost_roles(query=None, insert_first=True):
         roles_list = list()
         roles_set = set()
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        url += '&max_results=%s&projection={"role":1}' % PAGINATION_LIMIT
+        url += '&max_results={}&projection={{"role":1}}'.format(PAGINATION_LIMIT)
         if query:
             url += '&where=' + query
         result = requests.get(url, headers=headers, auth=current_user.auth)
@@ -153,9 +151,9 @@ def get_ghost_roles(query=None, insert_first=True):
         if insert_first:
             roles_list.insert(0, '*')
         roles_list.extend(list(roles_set))
-    except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+    except Exception as e:
+        logging.exception(e)
+        message = 'Failure: {}'.format(sys.exc_info()[1])
         flash(message, 'danger')
         roles_list[0] = 'Failed to retrieve Roles'
 
