@@ -921,33 +921,24 @@ def web_deployments_list():
     revision = request.args.get('revision', None)
     module = request.args.get('module', None)
 
-    query = {}
+    query_values = {
+    'application_name': application_name,
+    'application_env': application_env,
+    'application_role': application_role,
+    'deployment_revision': revision,
+    'deployment_module': module
+    }
 
-    if application_name or application_env or application_role:
-        applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id']) for application in get_ghost_apps(name=application_name, role=application_role, env=application_env)]
-        if len(applications) > 0:
-            query['$or'] = '[{}]'.format(','.join(applications))
-        else:
-            query['$or'] = '[{"app_id": "null"}]'
-
-    if revision:
-        query['revision'] = '"{}"'.format(revision)
-
-    if module:
-        query['module'] = '{{"$regex":".*{module}.*"}}'.format(module=module)
-
-    querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value) for key, value in query.items()))
-    print(querystr)
-    deployments = get_ghost_deployments(querystr, page)
-    envs = get_ghost_envs(insert_first=False)
-    roles = get_ghost_roles(insert_first=False)
+    deployments = get_ghost_deployments(filters=query_values, page=page)
+    envs = get_ghost_envs(insert_wildcard=False)
+    roles = get_ghost_roles(insert_wildcard=False)
 
     if request.is_xhr:
         return render_template('deployment_list_content.html', env_list=envs, role_list=roles, page=int(page),
                                deployments=deployments, bucket_s3=config.get('bucket_s3'))
 
     return render_template('deployment_list.html', env_list=envs, role_list=roles, page=int(page),
-                           deployments=deployments, bucket_s3=config.get('bucket_s3'))
+                           deployments=deployments, bucket_s3=config.get('bucket_s3'), query_values=query_values)
 
 
 @app.route('/web/deployments/<deployment_id>', methods=['GET'])

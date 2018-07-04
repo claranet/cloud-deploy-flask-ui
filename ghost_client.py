@@ -112,7 +112,7 @@ def get_ghost_lxd_images():
     return images
 
 
-def get_ghost_envs(query=None, insert_first=True):
+def get_ghost_envs(query=None, insert_wildcard=True):
     try:
         envs_list = list()
         envs_set = set()
@@ -124,7 +124,7 @@ def get_ghost_envs(query=None, insert_first=True):
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
             envs_set.add(item['env'])
-        if insert_first:
+        if insert_wildcard:
             envs_list.insert(0, '*')
         envs_list.extend(list(envs_set))
     except:
@@ -136,7 +136,7 @@ def get_ghost_envs(query=None, insert_first=True):
     return envs_list
 
 
-def get_ghost_roles(query=None, insert_first=True):
+def get_ghost_roles(query=None, insert_wildcard=True):
     try:
         roles_list = list()
         roles_set = set()
@@ -148,7 +148,7 @@ def get_ghost_roles(query=None, insert_first=True):
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
             roles_set.add(item['role'])
-        if insert_first:
+        if insert_wildcard:
             roles_list.insert(0, '*')
         roles_list.extend(list(roles_set))
     except Exception as e:
@@ -462,11 +462,28 @@ def cancel_ghost_job(job_id, local_headers):
     return message
 
 
-def get_ghost_deployments(query=None, page=None):
+def get_ghost_deployments(query=None, page=None, filters=None):
     try:
         url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"app_id": 1, "job_id": 1}'
         if query:
             url += "&where=" + query
+        elif filters:
+            query = {}
+            if filters['application_name'] or filters['application_env'] or filters['application_role']:
+                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id']) for application in get_ghost_apps(name=filters['application_name'], role=filters['application_role'], env=filters['application_env'])]
+                if len(applications) > 0:
+                    query['$or'] = '[{}]'.format(','.join(applications))
+                else:
+                    query['$or'] = '[{"app_id": "null"}]'
+
+            if filters['deployment_revision']:
+                query['revision'] = '"{}"'.format(filters['deployment_revision'])
+
+            if filters['deployment_module']:
+                query['module'] = '{{"$regex":".*{module}.*"}}'.format(module=filters['deployment_module'])
+
+            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value) for key, value in query.items()))
+            url += "&where=" + querystr
         if page:
             url += "&page=" + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
