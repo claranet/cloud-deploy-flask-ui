@@ -91,8 +91,11 @@ def load_regions_locations(filename):
     >>> {'eu-west-3', 'cn-northwest-1', 'us-gov-west-1'} <= set(locations)
     True
 
-    >>> ', '.join([locations['eu-west-3'], locations['cn-northwest-1'], locations['us-gov-west-1']])
-    'EU (Paris), China (Ningxia), AWS GovCloud (US)'
+    >>> u', '.join([locations['eu-west-3'], locations['cn-northwest-1'], locations['us-gov-west-1']])
+    u'EU (Paris), China (Ningxia), AWS GovCloud (US)'
+
+    >>> u', '.join([locations['sa-east-1']]).encode('ascii', errors='xmlcharrefreplace')
+    'South America (S&#227;o Paulo)'
     """
     with open(filename) as data_file:
         locations = {
