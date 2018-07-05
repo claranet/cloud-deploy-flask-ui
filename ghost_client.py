@@ -177,6 +177,7 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
             url += '&page=' + page
         if embed_deployments:
             url += '&embedded={"modules.last_deployment":1}'
+
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         apps = result.json().get('_items', [])
@@ -470,11 +471,14 @@ def get_ghost_deployments(query=None, page=None, filters=None):
         elif filters:
             query = {}
             if filters['application_name'] or filters['application_env'] or filters['application_role']:
-                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id']) for application in get_ghost_apps(name=filters['application_name'], role=filters['application_role'], env=filters['application_env'])]
+                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id'])
+                                for application in get_ghost_apps(name=filters['application_name'],
+                                                                  role=filters['application_role'],
+                                                                  env=filters['application_env'])]
                 if len(applications) > 0:
                     query['$or'] = '[{}]'.format(','.join(applications))
                 else:
-                    query['$or'] = '[{"app_id": "null"}]'
+                    query['$or'] = '[{"app_id":"null"}]'
 
             if filters['deployment_revision']:
                 query['revision'] = '"{}"'.format(filters['deployment_revision'])
@@ -482,7 +486,8 @@ def get_ghost_deployments(query=None, page=None, filters=None):
             if filters['deployment_module']:
                 query['module'] = '{{"$regex":".*{module}.*"}}'.format(module=filters['deployment_module'])
 
-            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value) for key, value in query.items()))
+            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value)
+                                                           for key, value in query.items()))
             url += "&where=" + querystr
         if page:
             url += "&page=" + page

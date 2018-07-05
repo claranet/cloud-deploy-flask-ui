@@ -915,18 +915,18 @@ def web_job_cancel(job_id):
 @app.route('/web/deployments')
 def web_deployments_list():
     page = request.args.get('page', '1')
-    application_name = request.args.get('application', None)
-    application_env = request.args.get('env', None)
-    application_role = request.args.get('role', None)
-    revision = request.args.get('revision', None)
-    module = request.args.get('module', None)
+    application_name = request.args.get('application') or None
+    application_env = request.args.get('env') or None
+    application_role = request.args.get('role') or None
+    revision = request.args.get('revision') or None
+    module = request.args.get('module') or None
 
     query_values = {
-    'application_name': application_name,
-    'application_env': application_env,
-    'application_role': application_role,
-    'deployment_revision': revision,
-    'deployment_module': module
+        'application_name': application_name,
+        'application_env': application_env,
+        'application_role': application_role,
+        'deployment_revision': revision,
+        'deployment_module': module,
     }
 
     deployments = get_ghost_deployments(filters=query_values, page=page)
