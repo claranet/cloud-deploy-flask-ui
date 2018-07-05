@@ -5,56 +5,52 @@
 {% block page_header %}
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by timestamp descending</caption>
-            <form method="get">
-                <div class="row filter-row">
-                    <div class="form-group">
-                        <div class="col-xs-6 col-lg-2">
-                            <select name="env" class="form-control">
-                                <option value="">Application environment</option>
-                                {% for env in env_list: %}
-                                <option value="{{ env }}" {% if env == query_values['application_env']: %}selected{% endif %}>{{ env }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-6 col-lg-2">
-                            <select name="role" class="form-control">
-                                <option value="">Application role</option>
-                                {% for role in role_list: %}
-                                <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-6 col-lg-1">
-                        <div class="input-group input-group-deployments col-xs-12 col-lg-12" id="global-search">
-                            <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-6 col-lg-1">
-                        <div class="input-group input-group-deployments col-xs-12 col-lg-12" id="global-search">
-                            <input type="text" name="module" class="form-control" placeholder="Search module..." value="{{ query_values['deployment_module'] or '' }}"/>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-6 col-lg-1">
-                        <div class="input-group input-group-deployments col-xs-12 col-lg-12" id="global-search">
-                            <input type="text" name="revision" class="form-control" placeholder="Search revision..." value="{{ query_values['deployment_revision'] or '' }}"/>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-lg-1">
-                            <button class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-search"></span> Search</button>
-                        </div>
-                    </div>
+    <form method="get">
+    <ul class="nav nav-stacked action-btns-filter"><li>
+        <ul class="nav navbar-nav filter-group">
+            <li role="presentation" class="filter first">
+                <div class="form-group">
+                    <select name="env" class="form-control">
+                        <option value="">Application environment</option>
+                        {% for env in env_list: %}
+                        <option value="{{ env }}" {% if env == query_values['application_env']: %}selected{% endif %}>{{ env }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
+            </li>
+            <li role="presentation" class="filter">
+                <div class="form-group">
+                    <select name="role" class="form-control">
+                        <option value="">Application role</option>
+                        {% for role in role_list: %}
+                        <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </li>
+            <li role="presentation" class="filter">
+                <div class="form-group filter-row">
+                    <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
+                </div>
+            </li>
+            <li role="presentation" class="filter">
+                <div class="form-group filter-row">
+                    <input type="text" name="module" class="form-control" placeholder="Search module..." value="{{ query_values['deployment_module'] or '' }}"/>
+                </div>
+            </li>
+            <li role="presentation" class="filter">
+                <div class="form-group filter-row">
+                    <input type="text" name="revision" class="form-control" placeholder="Search revision..." value="{{ query_values['deployment_revision'] or '' }}"/>
+                </div>
+            </li>
+            <li class="filter">
+                <div class="form-group filter-row">
+                    <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                </div>
+            </li>
+        </ul>
+    </li></ul>
+    </form>
 {% endblock %}"
 
 {% block page_content %}

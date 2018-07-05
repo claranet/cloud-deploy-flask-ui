@@ -173,12 +173,15 @@ span.index:after {
     border-radius: 16px;
 }
 .panel .row {
-  margin: 0;
+    margin: 0;
 }
-.filter-row > .form-group {
+.form-group.filter-row {
     padding-bottom: 0px;
+    padding-top: 12px;
 }
-.ghost-titlebar .action-btns li a, .action-btns li {
+.ghost-titlebar .action-btns li a
+, .action-btns li
+, .action-btns-filter li {
     padding: 5px 3px;
 }
 .ghost-titlebar .action-btns li:first-child {
