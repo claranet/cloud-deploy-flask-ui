@@ -930,8 +930,8 @@ def web_deployments_list():
     }
 
     deployments = get_ghost_deployments(filters=query_values, page=page)
-    envs = get_ghost_envs(insert_wildcard=False)
-    roles = get_ghost_roles(insert_wildcard=False)
+    envs = get_ghost_envs(with_wildcard=False)
+    roles = get_ghost_roles(with_wildcard=False)
 
     if request.is_xhr:
         return render_template('deployment_list_content.html', env_list=envs, role_list=roles, page=int(page),
