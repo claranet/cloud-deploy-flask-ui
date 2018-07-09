@@ -31,7 +31,7 @@ from ghost_tools import get_available_provisioners_from_config
 from ghost_tools import b64encode_utf8
 
 from settings import DEFAULT_PROVIDER
-from libs.provisioner import DEFAULT_PROVISIONER_TYPE
+from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
 from libs.blue_green import get_blue_green_from_app
 
 
