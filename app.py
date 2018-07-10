@@ -398,11 +398,6 @@ def web_feature_ansible_role_schema(role):
     return response
 
 
-# @app.route('/web/apps/<app_id>/modules/names')
-# def web_feature_salt_inventory(app_id):
-#     return jsonify(dict(module['name'] for module in get_ghost_app(app_id)['modules']))
-#
-
 @app.route('/web/t-apps')
 def web_t_apps_list():
     # redirect to apps as the page was unified
@@ -1112,9 +1107,6 @@ def web_webhook_create():
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(selected_app)
         form.instance_type.choices = get_aws_ec2_instance_types(selected_app["region"])
 
-        print('data: ' + form.safe_deployment_strategy.data)
-        print('choices: ' + str(form.safe_deployment_strategy.choices))
-
     if form.validate_on_submit():
         webhook = {}
         form.map_to_webhook(webhook)
@@ -1133,8 +1125,6 @@ def web_webhook_create():
     form.module.choices = get_ghost_modules_names(apps[0]['_id'])
     form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(apps[0])
     form.instance_type.choices = get_aws_ec2_instance_types(apps[0]["region"])
-
-    print(form.errors)
 
     # Display default template in GET case
     return render_template('webhook_edit.html', form=form, edit=False, app=apps[0],

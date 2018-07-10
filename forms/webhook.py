@@ -49,8 +49,6 @@ class BaseWebhookForm(FlaskForm):
             self.safe_deployment_strategy.data = webhook['options'].get('safe_deployment_strategy', '')
             self.instance_type.data = webhook['options'].get('instance_type', '')
 
-        print(str(self))
-
     def map_to_webhook(self, webhook):
         """
         Map webhook data from form to webhook
