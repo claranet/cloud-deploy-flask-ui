@@ -1,3 +1,5 @@
+{% from "macros.html" import ghost_abbrev_payload with context %}
+
 {% for invocation in invocations | sort(reverse=True, attribute='_created') %}
     {% set webhook = invocation['webhook_id'] or {'_id': ''} %}
 <tr class="">
@@ -40,5 +42,6 @@
             </p>
         </div>
     </td>
+    <td>{{ ghost_abbrev_payload(invocation.get('payload', ''), 25) }}</td>
 </tr>
 {% endfor %}
