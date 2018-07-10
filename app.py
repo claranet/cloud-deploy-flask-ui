@@ -1034,6 +1034,11 @@ def web_webhook_list():
     page = request.args.get('page', '1')
     webhooks = get_ghost_webhooks(query, page)
 
+    # Generate error message if at least one of the webhook configs is invalid
+    if not ui_helpers.check_webhooks_validity(webhooks):
+        flash('At least one of your webhooks is invalid : invalid app or module.'
+              'You should remove them.', 'danger')
+
     if request.is_xhr:
         return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page))
 

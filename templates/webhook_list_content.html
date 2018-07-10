@@ -17,7 +17,7 @@
         <tbody>
 {% endif %}
 {% for webhook in webhooks | sort(reverse=True, attribute='_updated') %}
-{% set app = webhook['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+{% set app = webhook['app_id'] or {'_id': '', 'name': '', 'env': '-'} %}
 <tr class="app-{{ app['env'] }} app-row">
     <th scope="row"><span class="index"></span></th>
     <td>
@@ -33,12 +33,24 @@
         by&nbsp;{{ webhook.get('user', '-') }}
     </td>
     <td>
-        <p>
-            <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>{{ app['name'] }} {% if app['_id'] %}({{ app['env'] }}){% endif %}</a>
-        </p>
+        {% if app['_id'] %}
+            <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>
+                {{ app['name'] }} ({{ app['env'] }})
+            </a>
+        {% else %}
+            <div class="glyphicon glyphicon-remove text-danger">
+                Invalid app!
+            </div>
+        {% endif %}
     </td>
     <td>
-        {{ webhook['module'] }}
+        {% if webhook['module_object'] %}
+            {{ webhook['module'] }}
+        {% else %}
+        <div class="glyphicon glyphicon-remove text-danger">
+            Invalid module!
+        </div>
+        {% endif %}
     </td>
     <td>
         <div>

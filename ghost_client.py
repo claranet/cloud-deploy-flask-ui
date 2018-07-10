@@ -13,7 +13,7 @@ from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
 from models.apps import APPS_DEFAULT
 from settings import API_BASE_URL, PAGINATION_LIMIT
-from ui_helpers import get_pretty_yaml_from_json
+from ui_helpers import get_pretty_yaml_from_json, get_app_module_by_name
 from urllib import urlencode
 
 RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
@@ -596,10 +596,15 @@ def get_ghost_webhooks(query=None, page=None):
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         webhooks = result.json().get('_items', [])
+
+        # Add module object
+        for webhook in webhooks:
+            webhook['module_object'] = get_app_module_by_name(webhook['app_id'], webhook['module'])
+
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving webhooks'
         flash(message, 'danger')
+        logging.exception(message)
         webhooks = ['Failed to retrieve Webhooks']
 
     return webhooks
@@ -635,9 +640,9 @@ def get_ghost_webhook(webhook_id):
         webhook = result.json()
         handle_response_status_code(result.status_code)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving webhook'
         flash(message, 'danger')
+        logging.exception(message)
         webhook = {}
     return webhook
 
@@ -656,17 +661,17 @@ def get_ghost_webhooks_invocations(query=None, page=None, webhook_id='all'):
             try:
                 invocation['_created'] = datetime.strptime(invocation['_created'], RFC1123_DATE_FORMAT)
             except:
-                traceback.print_exc()
+                logging.exception('Error while converting invocation\'s date')
             try:
                 job_ids_list = ",".join(['"%s"' % job for job in invocation['jobs']])
                 invocation['jobs_objects'] = get_ghost_jobs('{"_id":{"$in":[%s]}}' % job_ids_list)
             except:
-                traceback.print_exc()
+                logging.exception('Error while retrieving webhooks invocations\' jobs')
 
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving webhooks invocations'
         flash(message, 'danger')
+        logging.exception(message)
         invocations = ['Failed to retrieve webhook invocations']
 
     return invocations

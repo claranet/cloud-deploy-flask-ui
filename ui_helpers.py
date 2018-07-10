@@ -150,3 +150,10 @@ def get_app_module_by_name(app, name):
             return module
 
     return None
+
+def check_webhooks_validity(webhooks):
+    for webhook in webhooks:
+        if not webhook['module_object']:
+            return False
+
+    return True
