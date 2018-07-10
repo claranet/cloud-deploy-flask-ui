@@ -7,6 +7,18 @@
             {{ webhook['_id'] }}
         </a>
     </td>
+    {% if all %}
+    <td>
+        {% if invocation['app_object'] %}
+        <a href="/web/apps/{{ webhook['app_id']['_id'] }}">
+            {{ invocation['app_object']['name'] }} ({{ invocation['app_object']['env'] }})
+        </a>
+        {% endif %}
+    </td>
+    <td>
+        {{ webhook['module'] }}
+    </td>
+    {% endif %}
     <td>
         <div>
             {% for job in invocation['jobs_objects'] %}

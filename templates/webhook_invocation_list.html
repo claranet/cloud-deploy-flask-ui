@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
-{% set page_title = 'Webhooks invocations' %}
+{% if not all %}
+    {% set app_infos = 'for app ' + webhook['app_id']['name'] + ' (' + webhook['app_id']['env'] + ') | module ' + webhook['module'] %}
+{% else %}
+    {% set app_infos = '' %}
+{% endif %}
+{% set page_title = 'Webhooks invocations ' + app_infos %}
 
 {% block page_header %}
     {% include 'partial_list_top_right.html' %}
@@ -13,6 +18,10 @@
             <tr>
                 <th>#</th>
                 <th>Webhook config</th>
+                {% if all %}
+                <th>App</th>
+                <th>Module</th>
+                {% endif %}
                 <th>Jobs</th>
                 <th>Timestamp</th>
                 <th>Status</th>

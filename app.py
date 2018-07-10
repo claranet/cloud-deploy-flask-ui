@@ -1052,9 +1052,9 @@ def web_webhook_list_all_invocations():
     invocations = get_ghost_webhooks_invocations(query, page)
 
     if request.is_xhr:
-        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page))
+        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page), all=True)
 
-    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page))
+    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page), all=True)
 
 
 @app.route('/web/webhooks/<webhook_id>/invocations/', methods=['GET'])
@@ -1062,11 +1062,14 @@ def web_webhook_list_invocations(webhook_id):
     query = request.args.get('where', None)
     page = request.args.get('page', '1')
     invocations = get_ghost_webhooks_invocations(query, page, webhook_id)
+    webhook = get_ghost_webhook(webhook_id)
 
     if request.is_xhr:
-        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page))
+        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page),
+                               all=False, webhook=webhook)
 
-    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page))
+    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page),
+                           all=False, webhook=webhook)
 
 
 @app.route('/web/webhooks/<webhook_id>/delete', methods=['GET', 'POST'])

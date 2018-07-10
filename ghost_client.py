@@ -639,6 +639,7 @@ def get_ghost_webhook(webhook_id):
         result = requests.get(url, headers=headers, auth=current_user.auth)
         webhook = result.json()
         handle_response_status_code(result.status_code)
+        webhook['module_object'] = get_app_module_by_name(webhook['app_id'], webhook['module'])
     except:
         message = 'Failure: Error while retrieving webhook'
         flash(message, 'danger')
@@ -657,13 +658,19 @@ def get_ghost_webhooks_invocations(query=None, page=None, webhook_id='all'):
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         invocations = result.json().get('_items', [])
+
+        # Remove orphan invocations (no associated webhook config)
+        invocations = [invocation for invocation in invocations if invocation['webhook_id']]
+
         for invocation in invocations:
+
             try:
                 invocation['_created'] = datetime.strptime(invocation['_created'], RFC1123_DATE_FORMAT)
             except:
                 logging.exception('Error while converting invocation\'s date')
             try:
                 job_ids_list = ",".join(['"%s"' % job for job in invocation['jobs']])
+                invocation['app_object'] = get_ghost_app(invocation['webhook_id']['app_id'])
                 invocation['jobs_objects'] = get_ghost_jobs('{"_id":{"$in":[%s]}}' % job_ids_list)
             except:
                 logging.exception('Error while retrieving webhooks invocations\' jobs')
