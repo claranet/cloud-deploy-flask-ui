@@ -115,8 +115,12 @@ class EditWebhookForm(BaseWebhookForm):
     def map_from_webhook(self, webhook):
         super(EditWebhookForm, self).map_from_webhook(webhook)
 
-        self.app_id_ro.data = "{name} ({id})".format(name=self.app_id.data['name'], id=self.app_id.data['_id'])
+        if not self.app_id.data:
+            self.app_id_ro.data = 'Invalid app. Webhook must be removed.'
+        else:
+            self.app_id_ro.data = '{name} ({id})'.format(name=self.app_id.data['name'], id=self.app_id.data['_id'])
         self.module_ro.data = self.module.data
+
         self.etag.data = webhook.get('_etag', '')
 
 

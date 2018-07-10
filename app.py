@@ -1171,6 +1171,13 @@ def web_webhook_edit(webhook_id):
     webhook = get_ghost_webhook(webhook_id)
     form.map_from_webhook(webhook)
 
+    # Check app and module still exist
+    module = ui_helpers.get_app_module_by_name(webhook['app_id'], webhook['module'])
+    if not module:
+        flash('Associated app or module has been removed! This webhook configuration is no '
+              'longer useful and must then be removed.', 'danger')
+        return redirect(url_for('web_webhook_delete', webhook_id=webhook_id))
+
     # Set dynamic fields
     form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
     form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
