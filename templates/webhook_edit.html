@@ -34,7 +34,7 @@
             <div class="panel-body">
                 <div class="row">
                     {{ wtf.form_field(form.app_id_ro if edit else form.app_id, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
-                    {{ wtf.form_field(form.module_ro if edit else form.module, readonly=edit, form_type='horizontal', placeholder='Module Name') }}
+                    {{ wtf.form_field(form.module, form_type='horizontal', placeholder='Module Name') }}
                     {{ wtf.form_field(form.rev, form_type='horizontal', placeholder='Revision Regex (ex: test*)') }}
                     {{ wtf.form_field(form.secret_token, form_type='horizontal', placeholder='Webhook Secret Token') }}
                     <div class="col-lg-offset-2">

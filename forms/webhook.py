@@ -97,7 +97,6 @@ class EditWebhookForm(BaseWebhookForm):
     etag = HiddenField(validators=[DataRequired()])
 
     app_id_ro = StringField('Webhook app', description='This field is not editable')
-    module_ro = StringField('Module name', description='This field is not editable')
 
     def __init__(self, *args, **kwargs):
         super(EditWebhookForm, self).__init__(*args, **kwargs)
@@ -117,7 +116,6 @@ class EditWebhookForm(BaseWebhookForm):
             self.app_id_ro.data = 'Invalid app. Webhook must be removed.'
         else:
             self.app_id_ro.data = '{name} ({id})'.format(name=self.app_id.data['name'], id=self.app_id.data['_id'])
-        self.module_ro.data = self.module.data
 
         self.etag.data = webhook.get('_etag', '')
 

@@ -1031,8 +1031,7 @@ def web_webhook_list():
 
     # Generate error message if at least one of the webhook configs is invalid
     if not ui_helpers.check_webhooks_validity(webhooks):
-        flash('At least one of your webhooks is invalid : invalid app or module.'
-              'You should remove them.', 'danger')
+        flash('At least one of your webhooks is invalid : invalid app or module.', 'danger')
 
     if request.is_xhr:
         return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page))
@@ -1138,14 +1137,13 @@ def web_webhook_edit(webhook_id):
     if form.is_submitted():
         # Set read-only fields to pass validation
         webhook = get_ghost_webhook(webhook_id)
-        form.module.choices = [(webhook['module'], webhook['module'])]
         form.app_id.choices = [(webhook['app_id']['_id'], webhook['app_id']['_id'])]
-        form.module.data = webhook['module']
         form.app_id.data = webhook['app_id']['_id']
 
         # Set dynamic fields
         form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
         form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
+        form.module.choices = get_ghost_modules_names(webhook['app_id']['_id'])
 
     if form.validate_on_submit():
         local_headers = headers.copy()
@@ -1157,7 +1155,6 @@ def web_webhook_edit(webhook_id):
 
         # Remove read-only fields that cannot be changed
         del webhook['app_id']
-        del webhook['module']
 
         message, status_code = update_ghost_webhook(webhook_id, local_headers, webhook)
 
@@ -1169,16 +1166,16 @@ def web_webhook_edit(webhook_id):
     webhook = get_ghost_webhook(webhook_id)
     form.map_from_webhook(webhook)
 
-    # Check app and module still exist
-    module = ui_helpers.get_app_module_by_name(webhook['app_id'], webhook['module'])
-    if not module:
-        flash('Associated app or module has been removed! This webhook configuration is no '
+    # Check app still exists
+    if not webhook['app_id']:
+        flash('Associated app has been removed! This webhook configuration is no '
               'longer useful and must then be removed.', 'danger')
         return redirect(url_for('web_webhook_delete', webhook_id=webhook_id))
 
     # Set dynamic fields
     form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
     form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
+    form.module.choices = get_ghost_modules_names(webhook['app_id']['_id'])
 
     # Display default template in GET case
     return render_template('webhook_edit.html', form=form, edit=True, webhook_id=webhook_id, webhook=webhook,
