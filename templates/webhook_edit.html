@@ -13,9 +13,6 @@
     {% if webhook_id %}
     <ul class="nav nav-stacked action-btns to-right">
         <li class="app-actions">
-            <a href="/web/webhooks/create?clone_from={{ webhook_id }}"><button class="btn btn-raised btn-info"><span class="glyphicon glyphicon-duplicate"></span> Clone</button></a>
-        </li>
-        <li class="app-actions">
             <a href="/web/webhooks/{{ webhook_id }}/delete"><button class="btn btn-raised btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
         </li>
     </ul>
@@ -23,34 +20,28 @@
 {% endblock %}
 
 {% block page_content %}
-    <form class="form-horizontal app-panel" id="webhook-form" method="POST" enctype="multipart/form-data">
+    <form class="form-horizontal" id="webhook-form" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
-        <a name="properties" class="anchor">&nbsp;</a>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <strong>Webhook properties</strong>
+        <div class="webhook-edit-options">
+            {{ wtf.form_field(form.app_id_ro if edit else form.app_id, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
+            {{ wtf.form_field(form.module, form_type='horizontal', placeholder='Module Name') }}
+            {{ wtf.form_field(form.rev, form_type='horizontal', placeholder='Revision Regex (ex: test*)') }}
+            {{ wtf.form_field(form.secret_token, form_type='horizontal', placeholder='Webhook Secret Token') }}
+            <div class="col-lg-offset-2">
+                {{ ghost_fieldlist(form.events, 'events', 'Events', 'events', 'Event', 'inline') }}
             </div>
-            <div class="panel-body">
-                <div class="row">
-                    {{ wtf.form_field(form.app_id_ro if edit else form.app_id, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
-                    {{ wtf.form_field(form.module, form_type='horizontal', placeholder='Module Name') }}
-                    {{ wtf.form_field(form.rev, form_type='horizontal', placeholder='Revision Regex (ex: test*)') }}
-                    {{ wtf.form_field(form.secret_token, form_type='horizontal', placeholder='Webhook Secret Token') }}
-                    <div class="col-lg-offset-2">
-                        {{ ghost_fieldlist(form.events, 'events', 'Events', 'events', 'Event', 'inline') }}
-                    </div>
-                    {{ wtf.form_field(form.command, form_type='horizontal', placeholder='Commands to run') }}
-                    <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal', placeholder='Application Name') }}</div>
-                    <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
-                    <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal', placeholder='Safe Deployment Strategy') }}</div>
-                    <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
-
-                </div>
-            </div>
+            {{ wtf.form_field(form.command, form_type='horizontal', placeholder='Commands to run') }}
+            <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal', placeholder='Application Name') }}</div>
+            <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
+            <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal', placeholder='Safe Deployment Strategy') }}</div>
+            <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
         </div>
 
-        {{ wtf.form_field(form.submit) }}
+        <div class="col-lg-offset-2">
+            {{ wtf.form_field(form.submit) }}
+        </div>
+
     </form>
 {% endblock %}
 

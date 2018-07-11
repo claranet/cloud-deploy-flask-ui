@@ -1056,3 +1056,9 @@ thead td.module-state span {
     margin: 0;
     overflow: hidden;
 }
+
+/*Webhooks*/
+.webhook-edit-options {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}

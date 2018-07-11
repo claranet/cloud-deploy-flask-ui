@@ -1031,7 +1031,7 @@ def web_webhook_list():
 
     # Generate error message if at least one of the webhook configs is invalid
     if not ui_helpers.check_webhooks_validity(webhooks):
-        flash('At least one of your webhooks is invalid : invalid app or module.', 'danger')
+        flash('At least one of your webhooks is invalid: invalid app or module.', 'danger')
 
     if request.is_xhr:
         return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page))
