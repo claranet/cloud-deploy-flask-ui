@@ -918,18 +918,19 @@ def web_deployments_list():
     application_name = request.args.get('application') or None
     application_env = request.args.get('env') or None
     application_role = request.args.get('role') or None
-    revision = request.args.get('revision') or None
-    module = request.args.get('module') or None
+    deployment_revision = request.args.get('revision') or None
+    deployment_module = request.args.get('module') or None
 
     query_values = {
         'application_name': application_name,
         'application_env': application_env,
         'application_role': application_role,
-        'deployment_revision': revision,
-        'deployment_module': module,
+        'deployment_revision': deployment_revision,
+        'deployment_module': deployment_module,
     }
 
-    deployments = get_ghost_deployments(filters=query_values, page=page)
+    deployments = get_ghost_deployments(page=page, application_name=application_name, application_role=application_role,
+                                        application_env=application_env, deployment_revision=deployment_revision, deployment_module=deployment_module)
     envs = get_ghost_envs(with_wildcard=False)
     roles = get_ghost_roles(with_wildcard=False)
 

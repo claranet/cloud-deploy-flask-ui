@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import json
 import logging
 import requests
@@ -141,7 +143,7 @@ def get_ghost_roles(query=None, with_wildcard=True):
         roles_list = list()
         roles_set = set()
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        url += '&max_results={}&projection={{"role":1}}'.format(PAGINATION_LIMIT)
+        url += '&' + urlencode({'max_results': PAGINATION_LIMIT, 'projection':'{"role":1}'})
         if query:
             url += '&where=' + query
         result = requests.get(url, headers=headers, auth=current_user.auth)
@@ -153,7 +155,7 @@ def get_ghost_roles(query=None, with_wildcard=True):
         roles_list.extend(list(roles_set))
     except Exception as e:
         logging.exception(e)
-        message = 'Failure: {}'.format(sys.exc_info()[1])
+        message = 'Failure: {}'.format(str(e))
         flash(message, 'danger')
         roles_list[0] = 'Failed to retrieve Roles'
 
@@ -463,28 +465,28 @@ def cancel_ghost_job(job_id, local_headers):
     return message
 
 
-def get_ghost_deployments(query=None, page=None, filters=None):
+def get_ghost_deployments(query=None, page=None, application_name=None, application_role=None, application_env=None, deployment_revision=None, deployment_module=None):
     try:
         url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"app_id": 1, "job_id": 1}'
         if query:
             url += "&where=" + query
-        elif filters:
+        else:
             query = {}
-            if filters['application_name'] or filters['application_env'] or filters['application_role']:
+            if application_name or application_env or application_role:
                 applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id'])
-                                for application in get_ghost_apps(name=filters['application_name'],
-                                                                  role=filters['application_role'],
-                                                                  env=filters['application_env'])]
+                                for application in get_ghost_apps(name=application_name,
+                                                                  role=application_role,
+                                                                  env=application_env)]
                 if len(applications) > 0:
                     query['$or'] = '[{}]'.format(','.join(applications))
                 else:
                     query['$or'] = '[{"app_id":"null"}]'
 
-            if filters['deployment_revision']:
-                query['revision'] = '"{}"'.format(filters['deployment_revision'])
+            if deployment_revision:
+                query['revision'] = '"{}"'.format(deployment_revision)
 
-            if filters['deployment_module']:
-                query['module'] = '{{"$regex":".*{module}.*"}}'.format(module=filters['deployment_module'])
+            if deployment_module:
+                query['module'] = '{{"$regex":".*{module}.*"}}'.format(module=deployment_module)
 
             querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value)
                                                            for key, value in query.items()))
