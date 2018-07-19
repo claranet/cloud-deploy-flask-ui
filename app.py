@@ -5,15 +5,14 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, UserMixin, login_required
 from werkzeug.contrib.fixers import ProxyFix
 
-from base64 import b64decode
-import traceback
-import sys
-import os
-import yaml
-import json
 import hashlib
+import json
+import logging
+import os
 import ui_helpers
+import yaml
 
+from base64 import b64decode
 from settings import DEFAULT_PROVIDER
 from .websocket import ansi_to_html
 
@@ -101,8 +100,8 @@ def load_user_from_request(request):
             if response.status_code == 200:
                 return user
         except:
-            traceback.print_exc()
-            message = 'Failure: %s' % (sys.exc_info()[1])
+            message = 'Failure: Error while loading user'
+            logging.exception(message)
             flash(message, 'danger')
 
     return None
@@ -154,7 +153,7 @@ def load_ghost_feature_presets():
                     prst = yaml.load(pre_file)
                     presets[file] = prst
     except:
-        traceback.print_exc()
+        logging.exception('Error while loading ghost feature presets')
     return presets
 
 
@@ -193,8 +192,8 @@ def web_cloud_check_assume_role_region(provider, account_id, role_name, region_n
     try:
         check = check_aws_assumed_credentials(provider, account_id, role_name, region_name)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while checking assume role region'
+        logging.exception(message)
         flash(message, 'danger')
         check = False
     return jsonify({'result': check})
@@ -205,8 +204,8 @@ def web_cloud_check_assume_role(provider, account_id, role_name):
     try:
         check = check_aws_assumed_credentials(provider, account_id, role_name)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while checking assume role'
+        logging.exception(message)
         flash(message, 'danger')
         check = False
     return jsonify({'result': check})
