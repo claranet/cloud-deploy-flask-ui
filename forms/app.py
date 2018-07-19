@@ -38,7 +38,7 @@ from libs.blue_green import get_blue_green_from_app
 class OptionalVolumeForm(FlaskForm):
     device_name_block_regex = ghost_block_schema['schema']['device_name']['regex']
     device_name = StringField('Device Name',
-                              description='Mount point must match %s' % device_name_block_regex,
+                              description='Mount point must match {}'.format(device_name_block_regex),
                               validators=[])
     volume_type = BetterSelectField('Volume Type',
                                     description='More details on <a target="_blank" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html">AWS Documentation</a>',
@@ -281,7 +281,7 @@ class EnvironmentInfosForm(FlaskForm):
         ])
     root_block_device_name_regex = ghost_app_schema['environment_infos']['schema']['root_block_device']['schema']['name']['regex']
     root_block_device_name = StringField('Block Device Name',
-                                         description='Empty if you want to use the default one. Otherwise must match %s' % root_block_device_name_regex,
+                                         description='Empty if you want to use the default one. Otherwise must match {}'.format(root_block_device_name_regex),
                                          validators=[
                                             OptionalValidator(),
                                             RegexpValidator(root_block_device_name_regex),

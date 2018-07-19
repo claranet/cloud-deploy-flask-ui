@@ -13,6 +13,7 @@ from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
 from settings import API_BASE_URL, PAGINATION_LIMIT
 from ui_helpers import get_pretty_yaml_from_json
+from urllib import urlencode
 
 RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
@@ -82,7 +83,7 @@ def get_ghost_lxd_status():
         json = result.json()
         status = json.get('status')
         if json.get('error'):
-            message = 'Failure: LXD Error %s' % json.get('error')
+            message = 'Failure: LXD Error {}'.format(json.get('error'))
             flash(message, 'danger')
         handle_response_status_code(result.status_code)
     except:
@@ -100,7 +101,7 @@ def get_ghost_lxd_images():
         result = requests.get(url, headers=headers, auth=current_user.auth)
         images = result.json()
         if type(images) is not list and images.get('error'):
-            message = 'Failure: LXD Error %s' % images.get('error')
+            message = 'Failure: LXD Error {}'.format(images.get('error'))
             flash(message, 'danger')
             images = images.get('images')
         handle_response_status_code(result.status_code)
@@ -118,7 +119,7 @@ def get_ghost_envs(query=None):
         envs_list = list()
         envs_set = set()
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        url += '&max_results=%s&projection={"env":1}' % PAGINATION_LIMIT
+        url += '&' + urlencode({'max_results': PAGINATION_LIMIT, 'projection': '{"env":1}'})
         if query:
             url += '&where=' + query
         result = requests.get(url, headers=headers, auth=current_user.auth)

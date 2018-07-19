@@ -776,7 +776,7 @@ def web_app_command_from_job(app_id, job_id):
 @app.route('/web/apps/<app_id>/command/module/<module>', methods=['GET', 'POST'])
 def web_app_module_last_revision(app_id, module):
     last_revision = ''
-    deployments = get_ghost_deployments('{"app_id": "%s", "module": "%s"}' % (app_id, module))
+    deployments = get_ghost_deployments('{{"app_id": "{}", "module": "{}"}}'.format(app_id, module))
     if deployments and len(deployments) > 0:
         last_revision = deployments[0].get('revision', '')
     return last_revision
@@ -821,7 +821,7 @@ def web_app_delete(app_id):
         else:
             return render_template('action_completed.html', message=message, form_action='delete')
     elif form.validate_on_submit and form.confirmation.data == 'no':
-        flash('App "%s" has not been deleted' % app_id, 'info')
+        flash('App "{}" has not been deleted'.format(app_id), 'info')
         return redirect(url_for('web_app_list'), code=301)
 
     # Get Application etag
@@ -878,7 +878,7 @@ def web_job_delete(job_id):
         else:
             return render_template('action_completed.html', message=message, form_action='delete')
     elif form.validate_on_submit and form.confirmation.data == 'no':
-        flash('Job "%s" has not been deleted' % job_id, 'info')
+        flash('Job "{}" has not been deleted'.format(job_id), 'info')
         return redirect(url_for('web_job_list'), code=301)
 
     # Get job etag
