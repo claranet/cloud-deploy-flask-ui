@@ -12,12 +12,12 @@ function initCodeMirror() {
     $('textarea').each(function(index, elem) {
         var mainWrapper = $(elem).parent().parent();
         // Already init?
-        if (mainWrapper.hasClass('script-panel') ||
-            mainWrapper.hasClass('script-textarea') ||
+        if (mainWrapper.data('CodeMirror') == 'ready' ||
             mainWrapper.hasClass('CodeMirror-wrap')) {
             return;
         }
         mainWrapper.addClass('script-textarea');
+        mainWrapper.data('CodeMirror', 'ready');
         $(elem).unbind('focus');
         $(elem).focus(function() {
             $(elem).unbind("focus");
