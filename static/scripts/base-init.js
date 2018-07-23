@@ -10,7 +10,14 @@ $(document).ready(function() {
 
 function initCodeMirror() {
     $('textarea').each(function(index, elem) {
-        $(elem).parent().parent().addClass('script-textarea');
+        var mainWrapper = $(elem).parent().parent();
+        // Already init?
+        if (mainWrapper.hasClass('script-panel') ||
+            mainWrapper.hasClass('script-textarea') ||
+            mainWrapper.hasClass('CodeMirror-wrap')) {
+            return;
+        }
+        mainWrapper.addClass('script-textarea');
         $(elem).unbind('focus');
         $(elem).focus(function() {
             $(elem).unbind("focus");
@@ -21,8 +28,8 @@ function initCodeMirror() {
                 lineWrapping: true,
                 mode: 'shell',
             });
-            $(elem).parent().parent().removeClass('script-textarea');
-            $(elem).parent().parent().addClass('script-panel');
+            mainWrapper.removeClass('script-textarea');
+            mainWrapper.addClass('script-panel');
         });
     });
 }
