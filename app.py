@@ -834,20 +834,39 @@ def web_app_delete(app_id):
 
 @app.route('/web/jobs')
 def web_job_list():
-    query = request.args.get('where', None)
     page = request.args.get('page', '1')
-    jobs = get_ghost_jobs(query, page)
+    application_name = request.args.get('application') or None
+    application_env = request.args.get('env') or None
+    application_role = request.args.get('role') or None
+    job_user = request.args.get('user') or None
+    job_status = request.args.get('status') or None
+    job_command = request.args.get('command') or None
+
+    query_values = {
+        'application_name': application_name,
+        'application_env': application_env,
+        'application_role': application_role,
+        'job_user': job_user,
+        'job_status': job_status,
+        'job_command': job_command
+    }
+
+    jobs = get_ghost_jobs(page=page, application_name=application_name, application_role=application_role,
+                          application_env=application_env, job_status=job_status, job_command=job_command,
+                          job_user=job_user)
+    envs = get_ghost_envs(with_wildcard=False)
+    roles = get_ghost_roles(with_wildcard=False)
 
     if request.is_xhr:
-        return render_template('job_list_content.html', jobs=jobs,
+        return render_template('job_list_content.html', jobs=jobs, env_list=envs, role_list=roles,
                                deletable_job_statuses=DELETABLE_JOB_STATUSES,
                                cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                               page=int(page))
+                               query_values=query_values, page=int(page))
 
-    return render_template('job_list.html', jobs=jobs,
+    return render_template('job_list.html', jobs=jobs, env_list=envs, role_list=roles,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
                            cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                           page=int(page))
+                           query_values=query_values, page=int(page))
 
 
 @app.route('/web/jobs/<job_id>', methods=['GET'])
