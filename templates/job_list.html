@@ -5,7 +5,7 @@
 {% block page_header %}
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by creation date</caption>
-    <form method="get">
+    <form method="get" class="filter-form">
     <ul class="nav nav-stacked action-btns-filter"><li>
         <ul class="nav navbar-nav filter-group">
             <li role="presentation" class="filter first">
@@ -91,4 +91,8 @@
             </tr>
         </tbody>
     </table>
+{% endblock %}
+
+{% block page_scripts %}
+    <script src="{{url_for('.static', filename='scripts/ajax-filter.js')}}?v={{current_revision}}"></script>
 {% endblock %}
