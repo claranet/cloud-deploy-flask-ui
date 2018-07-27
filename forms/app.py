@@ -9,6 +9,7 @@ from web_ui.forms.form_helper import get_ghost_app_envs
 from web_ui.forms.form_helper import get_ghost_app_roles
 from web_ui.forms.form_helper import get_ghost_optional_volumes
 from web_ui.forms.form_helper import get_ghost_mod_scopes
+from web_ui.forms.form_helper import get_ghost_mod_protocols
 
 from web_ui.forms.form_aws_helper import get_aws_connection_data
 from web_ui.forms.form_aws_helper import get_aws_ec2_regions
@@ -23,7 +24,7 @@ from wtforms.validators import Regexp as RegexpValidator
 from wtforms.validators import Length as LengthValidator
 from wtforms.validators import NoneOf as NoneOfValidator
 
-from models.apps import apps_schema as ghost_app_schema
+from models.apps import apps_schema as ghost_app_schema, apps_default
 from models.jobs import LOG_NOTIFICATION_JOB_STATUSES
 from models.volumes import block as ghost_block_schema
 
@@ -421,6 +422,29 @@ class EnvvarForm(FlaskForm):
         self.var_value.data = envvar.get('var_value', '')
 
 
+class ModuleSourceForm(FlaskForm):
+    source_protocol = BetterSelectField('Protocol',
+                                        validators=[DataRequiredValidator()],
+                                        choices=get_ghost_mod_protocols())
+    source_url = StringField('URL', validators=[DataRequiredValidator()])
+
+    # Disable CSRF in module forms as they are subforms
+    def __init__(self, csrf_enabled=False, *args, **kwargs):
+        super(ModuleSourceForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
+
+    def map_from_module(self, module_source):
+        self.source_protocol.data = module_source.get('protocol', apps_default['modules.source.protocol'])
+        self.source_url.data = module_source.get('url', '')
+
+    def map_to_module(self):
+        source = {
+            'protocol': self.source_protocol.data,
+            'url': self.source_url.data,
+            'mode': apps_default['modules.source.mode'],
+        }
+        return source
+
+
 class ModuleForm(FlaskForm):
     module_name = StringField('Name', description='Module name: should not include special chars', validators=[
         DataRequiredValidator(),
@@ -428,13 +452,15 @@ class ModuleForm(FlaskForm):
             ghost_app_schema['modules']['schema']['schema']['name']['regex']
         )
     ])
-    module_git_repo = StringField('Git Repository', validators=[DataRequiredValidator()])
     module_path = StrippedStringField('Path', description='Destination path to deploy to', validators=[
         DataRequiredValidator(),
         RegexpValidator(
             ghost_app_schema['modules']['schema']['schema']['path']['regex']
         )
     ])
+    # Source properties
+    module_source = FormField(ModuleSourceForm)
+
     module_uid = IntegerField('UID',
                               description='File UID (User), by default it uses the ID of Ghost user on the Ghost instance',
                               validators=[
@@ -468,7 +494,11 @@ class ModuleForm(FlaskForm):
 
     def map_from_app(self, module):
         self.module_name.data = module.get('name', '')
-        self.module_git_repo.data = module.get('git_repo', '')
+        self.module_source.form.map_from_module(module.get('source', {
+            'protocol': apps_default['modules.source.protocol'],
+            'url': module.get('git_repo'),
+            'mode': apps_default['modules.source.mode'],
+        }))
         self.module_path.data = module.get('path', '')
         self.module_scope.data = module.get('scope', '')
         self.module_uid.data = module.get('uid', '')
@@ -882,7 +912,7 @@ class BaseAppForm(FlaskForm):
         for form_module in self.modules:
             module = {}
             module['name'] = form_module.module_name.data
-            module['git_repo'] = form_module.module_git_repo.data
+            module['source'] = form_module.module_source.form.map_to_module()
             module['path'] = form_module.module_path.data
             module['scope'] = form_module.module_scope.data
             if isinstance(form_module.module_uid.data, int):
