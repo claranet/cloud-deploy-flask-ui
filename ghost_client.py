@@ -114,7 +114,7 @@ def get_ghost_lxd_images():
     return images
 
 
-def get_ghost_envs(query=None):
+def get_ghost_envs(query=None, with_wildcard=True):
     try:
         envs_list = list()
         envs_set = set()
@@ -126,7 +126,8 @@ def get_ghost_envs(query=None):
         handle_response_status_code(result.status_code)
         for item in result.json().get('_items', []):
             envs_set.add(item['env'])
-        envs_list.insert(0, '*')
+        if with_wildcard:
+            envs_list.insert(0, '*')
         envs_list.extend(list(envs_set))
     except:
         message = 'Failure: Error while retrieving application envs'
@@ -135,6 +136,30 @@ def get_ghost_envs(query=None):
         envs_list = ['Failed to retrieve Envs']
 
     return envs_list
+
+
+def get_ghost_roles(query=None, with_wildcard=True):
+    try:
+        roles_list = list()
+        roles_set = set()
+        url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
+        url += '&' + urlencode({'max_results': PAGINATION_LIMIT, 'projection':'{"role":1}'})
+        if query:
+            url += '&where=' + query
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        for item in result.json().get('_items', []):
+            roles_set.add(item['role'])
+        if with_wildcard:
+            roles_list.insert(0, '*')
+        roles_list.extend(list(roles_set))
+    except Exception as e:
+        logging.exception(e)
+        message = 'Failure: {}'.format(str(e))
+        flash(message, 'danger')
+        roles_list[0] = 'Failed to retrieve Roles'
+
+    return roles_list
 
 
 def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name=None):
@@ -154,6 +179,7 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
             url += '&page=' + page
         if embed_deployments:
             url += '&embedded={"modules.last_deployment":1}'
+
         result = requests.get(url, headers=headers, auth=current_user.auth)
         handle_response_status_code(result.status_code)
         apps = result.json().get('_items', [])
@@ -439,11 +465,32 @@ def cancel_ghost_job(job_id, local_headers):
     return message
 
 
-def get_ghost_deployments(query=None, page=None):
+def get_ghost_deployments(query=None, page=None, application_name=None, application_role=None, application_env=None, deployment_revision=None, deployment_module=None):
     try:
         url = url_deployments + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"app_id": 1, "job_id": 1}'
         if query:
             url += "&where=" + query
+        else:
+            query = {}
+            if application_name or application_env or application_role:
+                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id'])
+                                for application in get_ghost_apps(name=application_name,
+                                                                  role=application_role,
+                                                                  env=application_env)]
+                if len(applications) > 0:
+                    query['$or'] = '[{}]'.format(','.join(applications))
+                else:
+                    query['$or'] = '[{"app_id":"null"}]'
+
+            if deployment_revision:
+                query['revision'] = '"{}"'.format(deployment_revision)
+
+            if deployment_module:
+                query['module'] = '{{"$regex":".*{module}.*"}}'.format(module=deployment_module)
+
+            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value)
+                                                           for key, value in query.items()))
+            url += "&where=" + querystr
         if page:
             url += "&page=" + page
         result = requests.get(url, headers=headers, auth=current_user.auth)
