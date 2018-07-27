@@ -11,6 +11,7 @@ from werkzeug.exceptions import default_exceptions
 
 from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
+from models.apps import apps_default
 from settings import API_BASE_URL, PAGINATION_LIMIT
 from ui_helpers import get_pretty_yaml_from_json
 from urllib import urlencode
@@ -237,6 +238,19 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
                 module['post_deploy'] = b64decode_utf8(module['post_deploy'])
             if 'after_all_deploy' in module:
                 module['after_all_deploy'] = b64decode_utf8(module['after_all_deploy'])
+
+            # [GHOST-507] Normalize modules.*.source / git_repo
+            git_repo = module.get('git_repo')
+            module_source = module.get('source', {}) or {}
+            module_source['url'] = module_source.get('url', git_repo) or git_repo
+            module_source['protocol'] = (module_source.get('protocol', apps_default['modules.source.protocol'])
+                                         or apps_default['modules.source.protocol'])
+            module_source['mode'] = (module_source.get('mode', apps_default['modules.source.mode'])
+                                     or apps_default['modules.source.mode'])
+            git_repo = git_repo or module_source['url']
+
+            module['git_repo'] = git_repo
+            module['source'] = module_source
 
             if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
                 try:
