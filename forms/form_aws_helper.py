@@ -1,12 +1,11 @@
-import traceback
-from datetime import datetime
+import logging
 
-from web_ui import aws_data
+from datetime import datetime
 from ghost_tools import config
 from libs import load_balancing
 from libs.blue_green import get_blue_green_from_app
 from settings import cloud_connections, DEFAULT_PROVIDER
-
+from web_ui import aws_data
 
 def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_region_name=""):
     """
@@ -28,7 +27,7 @@ def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
         c = cloud_connection.get_connection(region, ["vpc"])
         vpcs = c.get_all_vpcs()
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS vpc')
     return [(vpc.id, '{} ({})'.format(vpc.id, vpc.tags.get('Name', ''))) for vpc in vpcs]
 
 
@@ -49,7 +48,7 @@ def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
         c = cloud_connection.get_connection(region, ["ec2"])
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS security groups')
     return [(sg.id, '{} ({})'.format(sg.id, sg.name)) for sg in sgs]
 
 
@@ -73,7 +72,7 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
                 }
             )
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS amis')
     return [(ami.id, "{}/{} ({})".format(ami.owner_id, ami.id, ami.name)) for ami in amis]
 
 
@@ -84,7 +83,7 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
         c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS subnets')
     return [(sub.id, '{} ({})'.format(sub.id, sub.tags.get('Name', ''))) for sub in subs]
 
 
@@ -95,7 +94,7 @@ def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwa
         c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(subnet_ids=subnets)
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS subnets')
     return [('', '')] + [(sub.id, '{} ({} - {})'.format( sub.id, sub.tags.get('Name', ''), sub.cidr_block))
                          for sub in subs]
 
@@ -107,7 +106,7 @@ def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
         c = cloud_connection.get_connection(region, ["iam"])
         profiles = c.list_instance_profiles()
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS iam instance profiles')
     if len(profiles):
         return [(profile.instance_profile_name, '{} ({})'.format(profile.instance_profile_name, profile.arn))
                 for profile in profiles.instance_profiles]
@@ -122,7 +121,7 @@ def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
         c = cloud_connection.get_connection(region, ["ec2"])
         keys = c.get_all_key_pairs()
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS ec2 key pairs')
     return [(key.name, '{} ({})'.format(key.name, key.fingerprint)) for key in keys]
 
 
@@ -132,7 +131,7 @@ def get_aws_ec2_regions(provider, log_file=None, **kwargs):
         cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
         regions = sorted(cloud_connection.get_regions(['ec2']))
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS ec2 regions')
     return [(region, u'{} - {}'.format(aws_data.regions_locations.get(region, 'Unknown'), region))
             for region in regions]
 
@@ -144,7 +143,7 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
         conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
         asgs = conn_as.describe_auto_scaling_groups()['AutoScalingGroups']
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS autoscaling groups')
     return [('', '-- No Autoscale for this app --')] + [
             (asg['AutoScalingGroupName'], '{} ({})'.format(asg['AutoScalingGroupName'], asg['LaunchConfigurationName']))
             for asg in asgs]
@@ -160,7 +159,7 @@ def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwa
             return asgs[0]
         return None
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS autoscaling group')
     return None
 
 
@@ -191,7 +190,7 @@ def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
         else:
             return None
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS elbs')
     return None
 
 
@@ -206,7 +205,7 @@ def get_elbs_instances_from_as_group(provider, as_group_name, region, log_file=N
         for lb, instances in lb_as_instances.items():
             lbs_instances.append({'elb_name': lb, 'elb_instances': [i_id for i_id, status in instances.items()]})
     except:
-        traceback.print_exc()
+        logging.exception('Error while retrieving AWS elbs')
     return lbs_instances
 
 

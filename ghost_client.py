@@ -1,11 +1,10 @@
 from __future__ import print_function
 
 import json
-import sys
-import traceback
-from datetime import datetime
-
+import logging
 import requests
+
+from datetime import datetime
 from flask import flash, Markup
 from flask_login import current_user
 from werkzeug.exceptions import default_exceptions
@@ -14,6 +13,7 @@ from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
 from settings import API_BASE_URL, PAGINATION_LIMIT
 from ui_helpers import get_pretty_yaml_from_json
+from urllib import urlencode
 
 RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 API_QUERY_SORT_UPDATED_DESCENDING = '?sort=-_updated'
@@ -60,8 +60,8 @@ def do_request(method, url, data, headers, success_message, failure_message):
         if message and message.strip():
             flash(message, 'info')
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while requesting Ghost API'
+        logging.exception(message)
         flash(failure_message, 'danger')
         flash(message, 'danger')
     return message, result_json, status_code
@@ -83,14 +83,15 @@ def get_ghost_lxd_status():
         json = result.json()
         status = json.get('status')
         if json.get('error'):
-            message = 'Failure: LXD Error %s' % json.get('error')
+            message = 'Failure: LXD Error {}'.format(json.get('error'))
             flash(message, 'danger')
         handle_response_status_code(result.status_code)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving LXD status'
+        logging.exception(message);
         flash(message, 'danger')
         status = False
+
     return status
 
 
@@ -100,15 +101,16 @@ def get_ghost_lxd_images():
         result = requests.get(url, headers=headers, auth=current_user.auth)
         images = result.json()
         if type(images) is not list and images.get('error'):
-            message = 'Failure: LXD Error %s' % images.get('error')
+            message = 'Failure: LXD Error {}'.format(images.get('error'))
             flash(message, 'danger')
             images = images.get('images')
         handle_response_status_code(result.status_code)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving LXD images'
+        logging.exception(message)
         flash(message, 'danger')
         images = []
+
     return images
 
 
@@ -117,7 +119,7 @@ def get_ghost_envs(query=None):
         envs_list = list()
         envs_set = set()
         url = url_apps + API_QUERY_SORT_UPDATED_DESCENDING
-        url += '&max_results=%s&projection={"env":1}' % PAGINATION_LIMIT
+        url += '&' + urlencode({'max_results': PAGINATION_LIMIT, 'projection': '{"env":1}'})
         if query:
             url += '&where=' + query
         result = requests.get(url, headers=headers, auth=current_user.auth)
@@ -127,8 +129,8 @@ def get_ghost_envs(query=None):
         envs_list.insert(0, '*')
         envs_list.extend(list(envs_set))
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving application envs'
+        logging.exception(message)
         flash(message, 'danger')
         envs_list = ['Failed to retrieve Envs']
 
@@ -160,12 +162,12 @@ def get_ghost_apps(role=None, page=None, embed_deployments=False, env=None, name
                 app['_created'] = datetime.strptime(app['_created'], RFC1123_DATE_FORMAT)
                 app['_updated'] = datetime.strptime(app['_updated'], RFC1123_DATE_FORMAT)
             except:
-                traceback.print_exc()
+                logging.exception('Error while converting application date')
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving applications'
+        logging.exception(message)
         flash(message, 'danger')
-        apps = ['Failed to retrieve Apps']
+        apps = []
 
     return apps
 
@@ -216,7 +218,7 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
                     module['last_deployment']['_created'] = datetime.utcfromtimestamp(
                         last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
                 except:
-                    traceback.print_exc()
+                    logging.exception('Error while converting application date')
         # Features checks
         for feature in app.get('features', []):
             if 'provisioner' not in feature:
@@ -228,8 +230,8 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
             fingerprint = app['build_infos']['source_container_image']
             app['build_infos']['src_container_img'] = dict(get_ghost_lxd_images()).get(fingerprint)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving application'
+        logging.exception(message)
         flash(message, 'danger')
         app = {}
     return app
@@ -274,12 +276,12 @@ def get_ghost_jobs(query=None, page=None):
                 job['_created'] = datetime.strptime(job['_created'], RFC1123_DATE_FORMAT)
                 job['_updated'] = datetime.strptime(job['_updated'], RFC1123_DATE_FORMAT)
             except:
-                traceback.print_exc()
+                logging.exception('Error while converting job date')
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving jobs'
+        logging.exception(message)
         flash(message, 'danger')
-        jobs = ['Failed to retrieve Jobs']
+        jobs = []
 
     return jobs
 
@@ -292,8 +294,8 @@ def get_ghost_job(job_id):
         set_job_duration(job)
         handle_response_status_code(result.status_code)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving job'
+        logging.exception(message)
         flash(message, 'danger')
         job = {}
     return job
@@ -315,8 +317,8 @@ def get_ghost_job_commands(with_fields=False, app_id=''):
         commands = sorted(commands)
         handle_response_status_code(result.status_code)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving job commands'
+        logging.exception(message)
         flash(message, 'danger')
         commands = [('Error', 'Failed to retrieve commands info')]
     return commands
@@ -451,12 +453,12 @@ def get_ghost_deployments(query=None, page=None):
             try:
                 deployment['_created'] = datetime.strptime(deployment['_created'], RFC1123_DATE_FORMAT)
             except:
-                traceback.print_exc()
+                logging.exception('Error while converting deployment date')
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving deployments'
+        logging.exception(message)
         flash(message, 'danger')
-        deployments = ['Failed to retrieve Deployments']
+        deployments = []
 
     return deployments
 
@@ -469,7 +471,7 @@ def get_ghost_deployment(deployment_id):
         deployment = result.json()
         deployment['_created'] = datetime.strptime(deployment['_created'], RFC1123_DATE_FORMAT)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving deployment'
+        logging.exception(message)
         flash(message, 'danger')
     return deployment
