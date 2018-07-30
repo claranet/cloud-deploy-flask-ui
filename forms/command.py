@@ -13,7 +13,7 @@ class DeployModuleForm(FlaskForm):
     name = HiddenField('')
     deploy = BooleanField('', validators=[])
     rev = StringField('Revision', validators=[])
-    available_revisions = BetterSelectFieldNonValidating('Available branches and tags', validators=[],
+    available_revisions = BetterSelectFieldNonValidating('Available revisions', validators=[],
                                                          choices=[('', '-- Retrieving available revisions --')])
 
     # Disable CSRF in module forms as they are subforms

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "macros.html" import ghost_display_field with context %}
 {% from "macros.html" import ghost_abbrev_field with context %}
+{% from "macros.html" import ghost_display_protocol_logo with context %}
 
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 {% set page_title = 'Application: %s (%s/%s) %s' % (app['name'], app['env'], app['role'], app_color) %}
@@ -405,7 +406,7 @@
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ module_state(module) }}</td>
                         <td>{{ module['name'] }}</td>
-                        <td>{{ module['source']['protocol'] }} / {{ module['source']['url'] }}</td>
+                        <td>{{ ghost_display_protocol_logo(module['source']['protocol'], 20) }} {{ module['source']['url'] }}</td>
                         <td>{{ module['path'] }}</td>
                         <td>{{ module['scope'] }}</td>
                         <td>{{ module['uid'] }} / {{ module['gid'] }}</td>
