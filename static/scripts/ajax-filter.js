@@ -30,7 +30,7 @@ $("form.filter-form").submit(function(event) {
 
     var values = $(this).serializeArray();
     values.forEach(function(value) {
-        tableListParameters[value.name] = value.value;
+        tableListParameters[value.name] = value.value != "" ? value.value : undefined;
     });
 
     updateQueryString();

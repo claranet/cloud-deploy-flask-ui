@@ -394,20 +394,29 @@ def web_t_apps_list():
 
 @app.route('/web/apps')
 def web_app_list():
-    role = request.args.get('role', None)
-    env = request.args.get("env", '*')
-    selected_env = env
-    if env == '*':
-        env = None
     page = request.args.get('page', '1')
-    name = request.args.get("name", None)
-    apps = get_ghost_apps(role=role, page=page, env=env, name=name, embed_deployments=True)
+    application_name = request.args.get('application') or None
+    application_env = request.args.get('env') or None
+    application_role = request.args.get('role') or None
+
+    selected_env = application_env
+    if selected_env == None:
+        selected_env = '*'
+
+    apps = get_ghost_apps(role=application_role, page=page, env=application_env, name=application_name, embed_deployments=True)
     envs = get_ghost_envs()
+
+    query_values = {
+        'application_name': application_name,
+        'application_env': application_env,
+        'application_role': application_role
+    }
+
     if request.is_xhr:
         return render_template('app_list_content.html', env_list=envs, apps=apps,
                                page=int(page))
-    return make_response(render_template('app_list.html', env_list=envs, selected_env=selected_env, apps=apps,
-                                         page=int(page)))
+    return render_template('app_list.html', env_list=envs, selected_env=selected_env, apps=apps,
+                           page=int(page), query_values=query_values)
 
 
 @app.route('/web/apps/create', methods=['GET', 'POST'])
@@ -861,7 +870,7 @@ def web_job_list():
         return render_template('job_list_content.html', jobs=jobs, env_list=envs, role_list=roles,
                                deletable_job_statuses=DELETABLE_JOB_STATUSES,
                                cancellable_job_statuses=CANCELLABLE_JOB_STATUSES,
-                               query_values=query_values, page=int(page))
+                               page=int(page))
 
     return render_template('job_list.html', jobs=jobs, env_list=envs, role_list=roles,
                            deletable_job_statuses=DELETABLE_JOB_STATUSES,
