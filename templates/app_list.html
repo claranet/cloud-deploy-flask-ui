@@ -6,29 +6,33 @@
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by last modification date</caption>
     <form method="get" class="filter-form">
-        <ul class="nav nav-stacked action-btns">
-            <li role="presentation" class="filter">
+        <ul class="list-inline">
+            <li class="list-button">
                 <a href="/web/apps/create" id="createApp"><button type="button" class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</button></a>
             </li>
-            <li role="presentation" class="filter">
-                <div class="form-group">
-                    <select name="role" class="form-control">
-                        <option value="">Application role</option>
-                        {% for role in role_list: %}
-                        <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </li>
-            <li role="presentation" class="filter">
-                <div class="form-group filter-row">
-                    <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
-                </div>
-            </li>
-            <li class="filter">
-                <div class="form-group filter-row">
-                    <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                </div>
+            <li>
+                <ul class="nav nav-stacked action-btns-filter nav navbar-nav filter-group">
+                    <li role="presentation" class="filter">
+                        <div class="form-group">
+                            <select name="role" class="form-control">
+                                <option value="">Application role</option>
+                                {% for role in role_list: %}
+                                <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </li>
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="application" class="form-control" placeholder="Search application name..." value="{{ query_values['application_name'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li class="filter">
+                        <div class="form-group filter-row">
+                            <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </div>
+                    </li>
+                </ul>
             </li>
         </ul>
     </form>

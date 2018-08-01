@@ -6,65 +6,67 @@
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by creation date</caption>
     <form method="get" class="filter-form">
-    <ul class="nav nav-stacked action-btns-filter"><li>
-        <ul class="nav navbar-nav filter-group">
-            <li role="presentation" class="filter first">
-                <div class="form-group">
-                    <select name="status" class="form-control">
-                        <option value="">Job status</option>
-                        {% for status in statuses: %}
-                        <option value="{{ status }}" {% if status == query_values['job_status']: %}selected{% endif %}>{{ status }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </li>
-            <li role="presentation" class="filter first">
-                <div class="form-group">
-                    <select name="command" class="form-control">
-                        <option value="">Job command</option>
-                        {% for command in command_list: %}
-                        <option value="{{ command }}" {% if command == query_values['job_command']: %}selected{% endif %}>{{ command }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </li>
-            <li role="presentation" class="filter first">
-                <div class="form-group">
-                    <select name="env" class="form-control">
-                        <option value="">Application environment</option>
-                        {% for env in env_list: %}
-                        <option value="{{ env }}" {% if env == query_values['application_env']: %}selected{% endif %}>{{ env }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </li>
-            <li role="presentation" class="filter">
-                <div class="form-group">
-                    <select name="role" class="form-control">
-                        <option value="">Application role</option>
-                        {% for role in role_list: %}
-                        <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </li>
-            <li role="presentation" class="filter">
-                <div class="form-group filter-row">
-                    <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
-                </div>
-            </li>
-            <li role="presentation" class="filter">
-                <div class="form-group filter-row">
-                    <input type="text" name="user" class="form-control" placeholder="Search user..." value="{{ query_values['job_user'] or '' }}"/>
-                </div>
-            </li>
-            <li class="filter">
-                <div class="form-group filter-row">
-                    <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                </div>
-            </li>
-        </ul>
-    </li></ul>
+    <ul class="nav nav-stacked action-btns-filter">
+        <li>
+            <ul class="nav navbar-nav filter-group">
+                <li role="presentation" class="filter first">
+                    <div class="form-group">
+                        <select name="status" class="form-control">
+                            <option value="">Job status</option>
+                            {% for status in statuses: %}
+                            <option value="{{ status }}" {% if status == query_values['job_status']: %}selected{% endif %}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </li>
+                <li role="presentation" class="filter first">
+                    <div class="form-group">
+                        <select name="command" class="form-control">
+                            <option value="">Job command</option>
+                            {% for command in command_list: %}
+                            <option value="{{ command }}" {% if command == query_values['job_command']: %}selected{% endif %}>{{ command }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </li>
+                <li role="presentation" class="filter first">
+                    <div class="form-group">
+                        <select name="env" class="form-control">
+                            <option value="">Application environment</option>
+                            {% for env in env_list: %}
+                            <option value="{{ env }}" {% if env == query_values['application_env']: %}selected{% endif %}>{{ env }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </li>
+                <li role="presentation" class="filter">
+                    <div class="form-group">
+                        <select name="role" class="form-control">
+                            <option value="">Application role</option>
+                            {% for role in role_list: %}
+                            <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </li>
+                <li role="presentation" class="filter">
+                    <div class="form-group filter-row">
+                        <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
+                    </div>
+                </li>
+                <li role="presentation" class="filter">
+                    <div class="form-group filter-row">
+                        <input type="text" name="user" class="form-control" placeholder="Search user..." value="{{ query_values['job_user'] or '' }}"/>
+                    </div>
+                </li>
+                <li class="filter">
+                    <div class="form-group filter-row">
+                        <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
     </form>
 {% endblock %}"
 

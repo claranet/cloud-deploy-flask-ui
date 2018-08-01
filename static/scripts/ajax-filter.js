@@ -36,3 +36,8 @@ $("form.filter-form").submit(function(event) {
     updateQueryString();
     resetTableList();
 });
+
+
+$('select').on('change', function() {
+    $("form.filter-form").submit();
+});
