@@ -152,5 +152,5 @@ def check_instance_tags(tags, app):
         tags_to_check.append('color')
     compliant = True
     for tag_key in tags_to_check:
-        compliant = compliant and check_instance_tag(tag_key, tags[tag_key], app)
+        compliant = compliant and check_instance_tag(tag_key, tags.get(tag_key), app)
     return compliant
