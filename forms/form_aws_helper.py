@@ -17,13 +17,13 @@ def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_regio
              ("assumed_region_name", assumed_region_name)])
     else:
         aws_connection_data = {}
-    return (aws_connection_data)
+    return aws_connection_data
 
 
-def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
+def get_aws_vpc_ids(provider, region, **kwargs):
     vpcs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         vpcs = c.get_all_vpcs()
     except:
@@ -31,20 +31,20 @@ def get_aws_vpc_ids(provider, region, log_file=None, **kwargs):
     return [(vpc.id, '{} ({})'.format(vpc.id, vpc.tags.get('Name', ''))) for vpc in vpcs]
 
 
-def check_aws_assumed_credentials(provider, account_id, role_name, region_name="", log_file=None):
+def check_aws_assumed_credentials(provider, account_id, role_name, region_name=""):
     cloud_connection = cloud_connections.get(provider)(
-        log_file,
+        config,
         assumed_account_id=account_id,
         assumed_role_name=role_name,
         assumed_region_name=region_name
     )
-    return (cloud_connection.check_credentials())
+    return cloud_connection.check_credentials()
 
 
-def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
+def get_aws_sg_ids(provider, region, vpc_id, **kwargs):
     sgs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         sgs = c.get_all_security_groups(filters={'vpc_id': vpc_id})
     except:
@@ -52,10 +52,10 @@ def get_aws_sg_ids(provider, region, vpc_id, log_file=None, **kwargs):
     return [(sg.id, '{} ({})'.format(sg.id, sg.name)) for sg in sgs]
 
 
-def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
+def get_aws_ami_ids(provider, region, **kwargs):
     amis = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         amis = c.get_all_images(
             filters={
@@ -76,10 +76,10 @@ def get_aws_ami_ids(provider, region, log_file=None, **kwargs):
     return [(ami.id, "{}/{} ({})".format(ami.owner_id, ami.id, ami.name)) for ami in amis]
 
 
-def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
+def get_aws_subnet_ids(provider, region, vpc_id, **kwargs):
     subs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(filters={'vpc_id': vpc_id})
     except:
@@ -87,10 +87,10 @@ def get_aws_subnet_ids(provider, region, vpc_id, log_file=None, **kwargs):
     return [(sub.id, '{} ({})'.format(sub.id, sub.tags.get('Name', ''))) for sub in subs]
 
 
-def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwargs):
+def get_aws_subnets_ids_from_app(provider, region, subnets, **kwargs):
     subs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["vpc"])
         subs = c.get_all_subnets(subnet_ids=subnets)
     except:
@@ -99,10 +99,10 @@ def get_aws_subnets_ids_from_app(provider, region, subnets, log_file=None, **kwa
                          for sub in subs]
 
 
-def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
+def get_aws_iam_instance_profiles(provider, region, **kwargs):
     profiles = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["iam"])
         profiles = c.list_instance_profiles()
     except:
@@ -114,10 +114,10 @@ def get_aws_iam_instance_profiles(provider, region, log_file=None, **kwargs):
         return []
 
 
-def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
+def get_aws_ec2_key_pairs(provider, region, **kwargs):
     keys = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         c = cloud_connection.get_connection(region, ["ec2"])
         keys = c.get_all_key_pairs()
     except:
@@ -125,10 +125,10 @@ def get_aws_ec2_key_pairs(provider, region, log_file=None, **kwargs):
     return [(key.name, '{} ({})'.format(key.name, key.fingerprint)) for key in keys]
 
 
-def get_aws_ec2_regions(provider, log_file=None, **kwargs):
+def get_aws_ec2_regions(provider, **kwargs):
     regions = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         regions = sorted(cloud_connection.get_regions(['ec2']))
     except:
         logging.exception('Error while retrieving AWS ec2 regions')
@@ -136,10 +136,10 @@ def get_aws_ec2_regions(provider, log_file=None, **kwargs):
             for region in regions]
 
 
-def get_aws_as_groups(provider, region, log_file=None, **kwargs):
+def get_aws_as_groups(provider, region, **kwargs):
     asgs = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
         asgs = conn_as.describe_auto_scaling_groups()['AutoScalingGroups']
     except:
@@ -149,9 +149,9 @@ def get_aws_as_groups(provider, region, log_file=None, **kwargs):
             for asg in asgs]
 
 
-def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwargs):
+def get_ghost_app_as_group(provider, as_group_name, region, **kwargs):
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
         conn_as = cloud_connection.get_connection(region, ['autoscaling'], boto_version='boto3')
         asgs_page = conn_as.describe_auto_scaling_groups(AutoScalingGroupNames=[as_group_name], MaxRecords=1)
         asgs = asgs_page['AutoScalingGroups']
@@ -163,8 +163,8 @@ def get_ghost_app_as_group(provider, as_group_name, region, log_file=None, **kwa
     return None
 
 
-def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
-    cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+def get_as_group_instances(provider, as_group, region, **kwargs):
+    cloud_connection = cloud_connections.get(provider)(config, **kwargs)
     conn = cloud_connection.get_connection(region, ["ec2"])
     instance_ids = []
     for i in as_group['Instances']:
@@ -178,7 +178,7 @@ def get_as_group_instances(provider, as_group, region, log_file=None, **kwargs):
     return hosts
 
 
-def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
+def get_elbs_in_as_group(cloud_connection, as_group, region):
     try:
         conn_elb = cloud_connection.get_connection(region, ["ec2", "elb"])
         if len(as_group['LoadBalancerNames']) > 0:
@@ -194,14 +194,13 @@ def get_elbs_in_as_group(cloud_connection, as_group, region, log_file=None):
     return None
 
 
-def get_elbs_instances_from_as_group(provider, as_group_name, region, log_file=None, **kwargs):
+def get_elbs_instances_from_as_group(provider, as_group_name, region, **kwargs):
     lbs_instances = []
     try:
-        cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+        cloud_connection = cloud_connections.get(provider)(config, **kwargs)
 
         lb_mgr = load_balancing.get_lb_manager(cloud_connection, region, load_balancing.LB_TYPE_AWS_MIXED)
-        lb_as_instances = lb_mgr.get_instances_status_from_autoscale(as_group_name,
-                                                                     log_file)
+        lb_as_instances = lb_mgr.get_instances_status_from_autoscale(as_group_name, None)
         for lb, instances in lb_as_instances.items():
             lbs_instances.append({'elb_name': lb, 'elb_instances': [i_id for i_id, status in instances.items()]})
     except:
@@ -209,10 +208,10 @@ def get_elbs_instances_from_as_group(provider, as_group_name, region, log_file=N
     return lbs_instances
 
 
-def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role, region, filters=None, log_file=None,
+def get_ghost_app_ec2_instances(provider, ghost_app_name, ghost_env, ghost_role, region, filters=None,
                                 ghost_app_color=None, **kwargs):
     filters = filters or []
-    cloud_connection = cloud_connections.get(provider)(log_file, **kwargs)
+    cloud_connection = cloud_connections.get(provider)(config, **kwargs)
     conn_as = cloud_connection.get_connection(region, ["ec2", "autoscale"])
     conn = cloud_connection.get_connection(region, ["ec2"])
 
@@ -293,10 +292,10 @@ def get_safe_deployment_possibilities(app):
     asg_name = app['autoscale']['name']
     if not asg_name or not get_ghost_app_as_group(app.get('provider', DEFAULT_PROVIDER), asg_name, app['region'],
                                                   **aws_connection_data):
-        return [('', '')] + [(None, 'Not Supported because there is no AutoScale Group for this application')]
+        return [('', '')] + [('None', 'Not Supported because there is no AutoScale Group for this application')]
     app_blue_green, app_color = get_blue_green_from_app(app)
     hosts_list = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'],
-                                             app['role'], app['region'], [], None, app_color, **aws_connection_data)
+                                             app['role'], app['region'], [], app_color, **aws_connection_data)
     safe_possibilities = safe_deployment_possibilities([i for i in hosts_list if i['status'] == 'running'])
     return [('', '')] + [(k, v) for k, v in safe_possibilities.items()]
 
@@ -305,7 +304,7 @@ def safe_deployment_possibilities(hosts_list):
     """ Return a dict with split types as key and string as value
         which describes the number of instances per deployment group.
 
-        :param  hosts_list  list:  A list of instances IPs.
+        :param  hosts_list:  list:  A list of instances IPs.
         :return  dict
     """
     split_types = ['1by1', '1/3', '25%', '50%']

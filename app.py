@@ -244,7 +244,7 @@ def web_ec2_app_list(provider, region_id, app_id):
     app_blue_green, app_color = get_blue_green_from_app(app)
     aws_connection_data = get_aws_connection_data(app.get('assumed_account_id', ''), app.get('assumed_role_name', ''),
                                                   app.get('assumed_region_name', ''))
-    ec2s = get_ghost_app_ec2_instances(provider, app['name'], app['env'], app['role'], app['region'], None, None,
+    ec2s = get_ghost_app_ec2_instances(provider, app['name'], app['env'], app['role'], app['region'], None,
                                        app_color, **aws_connection_data)
     return jsonify({ec2['private_ip_address']: '{ip} - {id} - {size}'.format(ip=ec2['private_ip_address'], id=ec2['id'],
                                                                              size=ec2['instance_type']) for ec2 in
@@ -319,18 +319,18 @@ def web_app_infos(provider, app_id):
                                                               as_group['AutoScalingGroupName'], app['region'],
                                                               **aws_connection_data)
             ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'],
-                                                          app['env'], app['role'], app['region'], as_instances, None,
+                                                          app['env'], app['role'], app['region'], as_instances,
                                                           app_color, **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances,
                                    as_group=as_group, as_instances=as_instances, elbs_instances=elbs_instances)
         else:
             ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'],
-                                                          app['env'], app['role'], app['region'], [], None, app_color,
+                                                          app['env'], app['role'], app['region'], [], app_color,
                                                           **aws_connection_data)
             return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
     else:
         ghost_instances = get_ghost_app_ec2_instances(app.get('provider', DEFAULT_PROVIDER), app['name'], app['env'],
-                                                      app['role'], app['region'], [], None, app_color,
+                                                      app['role'], app['region'], [], app_color,
                                                       **aws_connection_data)
         return render_template('app_infos_content.html', app=app, ghost_instances=ghost_instances)
 
