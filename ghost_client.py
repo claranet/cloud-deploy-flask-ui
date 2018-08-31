@@ -286,7 +286,8 @@ def delete_ghost_app(app_id, local_headers):
     return message, status_code
 
 
-def get_ghost_jobs(query=None, page=None, application_name=None, application_role=None, application_env=None, job_status=None, job_command=None, job_user=None):
+def get_ghost_jobs(query=None, page=None, application_name=None, application_role=None, application_env=None,
+                   job_status=None, job_command=None, job_user=None):
     try:
         url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
         if query:
