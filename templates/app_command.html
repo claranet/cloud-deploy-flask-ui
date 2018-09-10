@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import ghost_display_protocol_logo with context %}
 
 {% set app_color = " [{0}]".format(app['blue_green']['color']) if app.get('blue_green') and app['blue_green'].get('color') else "" %}
 {% set page_title = 'Run Command on %s (%s/%s) %s' % (app['name'], app['env'], app['role'], app_color) %}
@@ -80,11 +81,15 @@
                             </td>
                             <td class="inline td-module-field" id="td-modules-{{ loop.index0 }}-deploy">
                                 {{ wtf.form_field(subform['deploy'], form_type='horizontal') }}
+                                <span style="line-height: 32px;">{{ ghost_display_protocol_logo(app['modules'][loop.index0]['source']['protocol'], 20) }}</span>
                             </td>
                             <td class="inline td-module-field" id="td-modules-{{ loop.index0 }}-rev">
-                                <div class="col-lg-10">{{ wtf.form_field(subform['rev'], form_type='horizontal') }}</div>
+                                <div class="col-lg-10">
+                                    {{ wtf.form_field(subform['rev'], form_type='horizontal') }}
+                                </div>
                                 <div class="col-lg-2">
-                                    <button data-prefix="modules-{{ loop.index0 }}-rev" class="btn btn-raised btn-xs btn-info retrieve-available-revisions" title="Retrieves all available revisions">
+                                    <button data-prefix="modules-{{ loop.index0 }}-rev" data-protocol="{{ app['modules'][loop.index0]['source']['protocol'] }}"
+                                            class="btn btn-raised btn-xs btn-info retrieve-available-revisions" title="Retrieves all available revisions">
                                         <i class="fa fa-history"></i>
                                     </button>
                                 </div>

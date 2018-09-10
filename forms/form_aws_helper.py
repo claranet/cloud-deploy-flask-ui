@@ -1,4 +1,5 @@
 import logging
+import re
 
 from datetime import datetime
 from ghost_tools import config
@@ -6,6 +7,7 @@ from libs import load_balancing
 from libs.blue_green import get_blue_green_from_app
 from settings import cloud_connections, DEFAULT_PROVIDER
 from web_ui import aws_data
+
 
 def get_aws_connection_data(assumed_account_id, assumed_role_name, assumed_region_name=""):
     """
@@ -332,3 +334,18 @@ def safe_deployment_possibilities(hosts_list):
     if not possibilities:
         possibilities = {'None': 'Not Supported because at least two instances must be running for this application'}
     return possibilities
+
+
+def s3_list_object_revisions(app, object_url):
+    cloud_connection = cloud_connections.get(app.get('provider', DEFAULT_PROVIDER))(config)
+    conn = cloud_connection.get_connection(config.get('bucket_region', app['region']), ["s3"], boto_version='boto3')
+    pattern = re.compile('s3://([a-z0-9][a-z0-9-.]*)?/(.*)')
+    matches = pattern.search(object_url)
+    bucket_name = matches.group(1)
+    bucket_key_path = matches.group(2)
+
+    object_versions = conn.list_object_versions(Bucket=bucket_name, Prefix=bucket_key_path)['Versions']
+    revisions = [('latest' if v['IsLatest'] else v['VersionId'], str(v['LastModified']))
+                 for v in object_versions
+                 if v['Key'].strip('/') == bucket_key_path.strip('/')]
+    return revisions

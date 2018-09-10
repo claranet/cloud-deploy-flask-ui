@@ -48,6 +48,7 @@ from forms.form_aws_helper import get_ghost_app_ec2_instances, get_ghost_app_as_
 from forms.form_aws_helper import get_elbs_instances_from_as_group, get_safe_deployment_possibilities
 from forms.form_aws_helper import get_aws_subnets_ids_from_app
 from forms.form_aws_helper import get_aws_connection_data, check_aws_assumed_credentials
+from forms.form_aws_helper import s3_list_object_revisions
 
 # Web UI App
 app = Flask(__name__)
@@ -806,12 +807,17 @@ def web_app_get_safe_deployment_possibilities(app_id):
 def web_app_git_ls_remote(app_id, module_name):
     # Get App data
     app = get_ghost_app(app_id)
-    repo = ""
+    source_url = ""
+    source_protocol = None
     for mod in app['modules']:
         if mod['name'] == module_name:
-            repo = mod['git_repo']
+            source_url = mod['source']['url']
+            source_protocol = mod['source']['protocol']
     # We don't use jsonify here because it casts to dict, which is not sortable in Javascript/JSON
-    return json.dumps(git_ls_remote_branches_tags(repo))
+    if source_protocol == 'git':
+        return json.dumps(git_ls_remote_branches_tags(source_url))
+    else:
+        return json.dumps(s3_list_object_revisions(app, source_url))
 
 
 @app.route('/web/apps/<app_id>/delete', methods=['GET', 'POST'])

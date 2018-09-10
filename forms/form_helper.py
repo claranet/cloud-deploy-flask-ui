@@ -64,6 +64,10 @@ def get_ghost_mod_scopes():
     return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['scope']['allowed'])
 
 
+def get_ghost_mod_protocols():
+    return get_wtforms_selectfield_values(ghost_app_schema['modules']['schema']['schema']['source']['schema']['protocol']['allowed'])
+
+
 def get_ghost_optional_volumes():
     return get_wtforms_selectfield_values(
         ghost_app_schema['environment_infos']['schema']['optional_volumes']['schema']['schema']['volume_type'][
