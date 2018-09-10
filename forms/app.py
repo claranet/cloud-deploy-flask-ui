@@ -24,7 +24,7 @@ from wtforms.validators import Regexp as RegexpValidator
 from wtforms.validators import Length as LengthValidator
 from wtforms.validators import NoneOf as NoneOfValidator
 
-from models.apps import apps_schema as ghost_app_schema, apps_default
+from models.apps import apps_schema as ghost_app_schema, APPS_DEFAULT
 from models.jobs import LOG_NOTIFICATION_JOB_STATUSES
 from models.volumes import block as ghost_block_schema
 
@@ -433,14 +433,14 @@ class ModuleSourceForm(FlaskForm):
         super(ModuleSourceForm, self).__init__(meta={'csrf': False}, *args, **kwargs)
 
     def map_from_module(self, module_source):
-        self.source_protocol.data = module_source.get('protocol', apps_default['modules.source.protocol'])
+        self.source_protocol.data = module_source.get('protocol', APPS_DEFAULT['modules.source.protocol'])
         self.source_url.data = module_source.get('url', '')
 
     def map_to_module(self):
         source = {
             'protocol': self.source_protocol.data,
             'url': self.source_url.data,
-            'mode': apps_default['modules.source.mode'],
+            'mode': APPS_DEFAULT['modules.source.mode'],
         }
         return source
 
@@ -495,9 +495,9 @@ class ModuleForm(FlaskForm):
     def map_from_app(self, module):
         self.module_name.data = module.get('name', '')
         self.module_source.form.map_from_module(module.get('source', {
-            'protocol': apps_default['modules.source.protocol'],
+            'protocol': APPS_DEFAULT['modules.source.protocol'],
             'url': module.get('git_repo'),
-            'mode': apps_default['modules.source.mode'],
+            'mode': APPS_DEFAULT['modules.source.mode'],
         }))
         self.module_path.data = module.get('path', '')
         self.module_scope.data = module.get('scope', '')
