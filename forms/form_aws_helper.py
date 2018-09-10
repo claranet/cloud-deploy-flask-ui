@@ -337,7 +337,7 @@ def safe_deployment_possibilities(hosts_list):
 
 
 def s3_list_object_revisions(app, object_url):
-    cloud_connection = cloud_connections.get(app.get('provider', DEFAULT_PROVIDER))(None)
+    cloud_connection = cloud_connections.get(app.get('provider', DEFAULT_PROVIDER))(config)
     conn = cloud_connection.get_connection(config.get('bucket_region', app['region']), ["s3"], boto_version='boto3')
     pattern = re.compile('s3://([a-z0-9][a-z0-9-.]*)?/(.*)')
     matches = pattern.search(object_url)
