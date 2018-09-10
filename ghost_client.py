@@ -286,11 +286,36 @@ def delete_ghost_app(app_id, local_headers):
     return message, status_code
 
 
-def get_ghost_jobs(query=None, page=None):
+def get_ghost_jobs(query=None, page=None, application_name=None, application_role=None, application_env=None,
+                   job_status=None, job_command=None, job_user=None):
     try:
         url = url_jobs + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
         if query:
             url += "&where=" + query
+        else:
+            query = {}
+            if application_name or application_env or application_role:
+                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id'])
+                                for application in get_ghost_apps(name=application_name,
+                                                                  role=application_role,
+                                                                  env=application_env)]
+                if len(applications) > 0:
+                    query['$or'] = '[{}]'.format(','.join(applications))
+                else:
+                    query['$or'] = '[{"app_id":"null"}]'
+
+            if job_user:
+                query['user'] = '{{"$regex":".*{user}.*"}}'.format(user=job_user)
+
+            if job_command:
+                query['command'] = '"{}"'.format(job_command)
+
+            if job_status:
+                query['status'] = '"{}"'.format(job_status)
+
+            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value)
+                                                           for key, value in query.items()))
+            url += "&where=" + querystr
         if page:
             url += "&page=" + page
         result = requests.get(url, headers=headers, auth=current_user.auth)

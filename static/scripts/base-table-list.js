@@ -43,7 +43,7 @@ function resetTableList() {
     }
     TableList.currentPage = 0;
     TableList.bottomReached = false;
-    $('table.tablelist .app-row').remove();
+    $('table.tablelist .list-row').remove();
     fetchNextPage();
 }
 

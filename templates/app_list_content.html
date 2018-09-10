@@ -16,7 +16,7 @@
 {% endif %}
 {% for app in apps | sort(reverse=True, attribute='_updated') %}
 {% set app_is_bluegreen = app.get('blue_green') and app['blue_green'].get('alter_ego_id') and app['blue_green']['enable_blue_green'] %}
-<tr class="env-{{ app['env'] }} app-row">
+<tr class="env-{{ app['env'] }} app-row list-row">
     <th scope="row"><span class="index"></span></th>
     <td>{{ app_modules_state(app) }}</td>
     <td>

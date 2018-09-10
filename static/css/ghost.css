@@ -661,6 +661,14 @@ fieldset.well.the-fieldset legend.the-legend h4 {
 .action-btns ul.dropdown-menu li {
     width: 100%;
 }
+.list-inline li {
+    display: inline;
+}
+.list-inline .list-button {
+    float:left;
+    margin-right: 3px;
+    padding-top: 3px;
+}
 /*JobView*/
 .jobview #log {
     clear: both;

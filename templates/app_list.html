@@ -5,35 +5,37 @@
 {% block page_header %}
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by last modification date</caption>
-
-    <ul class="nav nav-stacked action-btns">
-        <li>
-            <a href="/web/apps/create" id="createApp"><button class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</button></a>
-        </li>
-        <li>
-            <ul class="nav navbar-nav filter-group">
-                <li role="presentation" class="dropdown filter">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="/web/apps" role="button" aria-expanded="false">
-                        {{ request.args.get('role') or 'Role' }} <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a data-behavior="role">- All -</a></li>
-                        {% for role in role_list: %}
-                        <li><a data-behavior="role" data-role="{{ role }}">{{ role }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                <li class="filter">
-                    <div class="input-group" id="global-search">
-                        <input type="text" class="form-control" placeholder="Search..."/>
-                        <span class="input-group-btn">
-                            <button class="btn btn-simple btn-default btn-xs" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                        </span>
-                    </div><!-- /input-group -->
-                </li>
-            </ul>
-        </li>
-    </ul>
+    <form method="get" class="filter-form">
+        <ul class="list-inline">
+            <li class="list-button">
+                <a href="/web/apps/create" id="createApp" class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create an Application</a>
+            </li>
+            <li>
+                <ul class="nav nav-stacked action-btns-filter nav navbar-nav filter-group">
+                    <li role="presentation" class="filter">
+                        <div class="form-group">
+                            <select name="role" class="form-control">
+                                <option value="">Application role</option>
+                                {% for role in role_list: %}
+                                <option value="{{ role }}" {% if role == query_values['application_role']: %}selected{% endif %}>{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </li>
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="application" class="form-control" placeholder="Search application name..." value="{{ query_values['application_name'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li class="filter">
+                        <div class="form-group filter-row">
+                            <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </form>
 {% endblock %}"
 
 {% block page_content %}
@@ -79,5 +81,6 @@
     </div>
 {% endblock %}
 {% block page_scripts %}
+    <script src="{{url_for('.static', filename='scripts/ajax-filter.js')}}?v={{current_revision}}"></script>
     <script src="{{url_for('.static', filename='scripts/app-list.js')}}?v={{current_revision}}"></script>
 {% endblock %}

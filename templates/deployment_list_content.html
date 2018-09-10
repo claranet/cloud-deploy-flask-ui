@@ -1,7 +1,7 @@
 {% for deployment in deployments | sort(reverse=True, attribute='_created') %}
     {% set app = deployment['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
     {% set job = deployment['job_id'] or {'_id': '', 'user': '-', '_created': '-', '_updated': '-'} %}
-<tr class="env-{{ app['env'] }}">
+<tr class="env-{{ app['env'] }} list-row">
     <th scope="row"><span class="index"></span></th>
     <td>
         <a href="/web/deployments/{{ deployment['_id'] }}">{{ deployment['_id'] }}</a>
