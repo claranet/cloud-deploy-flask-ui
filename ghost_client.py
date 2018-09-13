@@ -207,68 +207,7 @@ def get_ghost_app(app_id, embed_deployments=False, embed_features_params_as_yml=
         result = requests.get(url, headers=headers, auth=current_user.auth)
         app = result.json()
         handle_response_status_code(result.status_code)
-
-        # Decode lifecycle hooks scripts
-        lifecycle_hooks = app.get('lifecycle_hooks', None)
-        if lifecycle_hooks is not None:
-            if 'pre_buildimage' in lifecycle_hooks:
-                lifecycle_hooks['pre_buildimage'] = b64decode_utf8(lifecycle_hooks['pre_buildimage'])
-            if 'post_buildimage' in lifecycle_hooks:
-                lifecycle_hooks['post_buildimage'] = b64decode_utf8(lifecycle_hooks['post_buildimage'])
-            if 'pre_bootstrap' in lifecycle_hooks:
-                lifecycle_hooks['pre_bootstrap'] = b64decode_utf8(lifecycle_hooks['pre_bootstrap'])
-            if 'post_bootstrap' in lifecycle_hooks:
-                lifecycle_hooks['post_bootstrap'] = b64decode_utf8(lifecycle_hooks['post_bootstrap'])
-
-        # Decode blue/green hooks scripts
-        hooks = app.get('blue_green', {}).get('hooks', None)
-        if hooks:
-            if 'pre_swap' in hooks:
-                hooks['pre_swap'] = b64decode_utf8(hooks['pre_swap'])
-            if 'post_swap' in hooks:
-                hooks['post_swap'] = b64decode_utf8(hooks['post_swap'])
-
-        # Decode module scripts
-        for module in app.get('modules', []):
-            if 'build_pack' in module:
-                module['build_pack'] = b64decode_utf8(module['build_pack'])
-            if 'pre_deploy' in module:
-                module['pre_deploy'] = b64decode_utf8(module['pre_deploy'])
-            if 'post_deploy' in module:
-                module['post_deploy'] = b64decode_utf8(module['post_deploy'])
-            if 'after_all_deploy' in module:
-                module['after_all_deploy'] = b64decode_utf8(module['after_all_deploy'])
-
-            # [GHOST-507] Normalize modules.*.source / git_repo
-            git_repo = module.get('git_repo')
-            module_source = module.get('source', {}) or {}
-            module_source['url'] = module_source.get('url', git_repo) or git_repo
-            module_source['protocol'] = (module_source.get('protocol', APPS_DEFAULT['modules.source.protocol'])
-                                         or APPS_DEFAULT['modules.source.protocol'])
-            module_source['mode'] = (module_source.get('mode', APPS_DEFAULT['modules.source.mode'])
-                                     or APPS_DEFAULT['modules.source.mode'])
-            git_repo = git_repo or module_source['url']
-
-            module['git_repo'] = git_repo
-            module['source'] = module_source
-
-            if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
-                try:
-                    last_deployment_timestamp = module['last_deployment'].get('timestamp', None)
-                    module['last_deployment']['_created'] = datetime.utcfromtimestamp(
-                        last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
-                except:
-                    logging.exception('Error while converting application date')
-        # Features checks
-        for feature in app.get('features', []):
-            if 'provisioner' not in feature:
-                feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
-            if embed_features_params_as_yml:
-                feature['parameters_pretty'] = get_pretty_yaml_from_json(feature.get('parameters') or {})
-        # Container enhancements
-        if 'source_container_image' in app.get('build_infos'):
-            fingerprint = app['build_infos']['source_container_image']
-            app['build_infos']['src_container_img'] = dict(get_ghost_lxd_images()).get(fingerprint)
+        app = normalize_app_object(app, embed_features_params_as_yml)
     except:
         message = 'Failure: Error while retrieving application'
         logging.exception(message)
@@ -556,8 +495,77 @@ def get_ghost_deployment(deployment_id):
         handle_response_status_code(result.status_code)
         deployment = result.json()
         deployment['_created'] = datetime.strptime(deployment['_created'], RFC1123_DATE_FORMAT)
+        # app_id contains embedded full app object
+        deployment['app_id'] = normalize_app_object(deployment.get('app_id', {}), False)
     except:
         message = 'Failure: Error while retrieving deployment'
+        deployment = None
         logging.exception(message)
         flash(message, 'danger')
     return deployment
+
+
+def normalize_app_object(app, embed_features_params_as_yml):
+    # Decode lifecycle hooks scripts
+    lifecycle_hooks = app.get('lifecycle_hooks', None)
+    if lifecycle_hooks is not None:
+        if 'pre_buildimage' in lifecycle_hooks:
+            lifecycle_hooks['pre_buildimage'] = b64decode_utf8(lifecycle_hooks['pre_buildimage'])
+        if 'post_buildimage' in lifecycle_hooks:
+            lifecycle_hooks['post_buildimage'] = b64decode_utf8(lifecycle_hooks['post_buildimage'])
+        if 'pre_bootstrap' in lifecycle_hooks:
+            lifecycle_hooks['pre_bootstrap'] = b64decode_utf8(lifecycle_hooks['pre_bootstrap'])
+        if 'post_bootstrap' in lifecycle_hooks:
+            lifecycle_hooks['post_bootstrap'] = b64decode_utf8(lifecycle_hooks['post_bootstrap'])
+
+    # Decode blue/green hooks scripts
+    hooks = app.get('blue_green', {}).get('hooks', None)
+    if hooks:
+        if 'pre_swap' in hooks:
+            hooks['pre_swap'] = b64decode_utf8(hooks['pre_swap'])
+        if 'post_swap' in hooks:
+            hooks['post_swap'] = b64decode_utf8(hooks['post_swap'])
+
+    # Decode module scripts
+    for module in app.get('modules', []):
+        if 'build_pack' in module:
+            module['build_pack'] = b64decode_utf8(module['build_pack'])
+        if 'pre_deploy' in module:
+            module['pre_deploy'] = b64decode_utf8(module['pre_deploy'])
+        if 'post_deploy' in module:
+            module['post_deploy'] = b64decode_utf8(module['post_deploy'])
+        if 'after_all_deploy' in module:
+            module['after_all_deploy'] = b64decode_utf8(module['after_all_deploy'])
+
+        # [GHOST-507] Normalize modules.*.source / git_repo
+        git_repo = module.get('git_repo')
+        module_source = module.get('source', {}) or {}
+        module_source['url'] = module_source.get('url', git_repo) or git_repo
+        module_source['protocol'] = (module_source.get('protocol', APPS_DEFAULT['modules.source.protocol'])
+                                     or APPS_DEFAULT['modules.source.protocol'])
+        module_source['mode'] = (module_source.get('mode', APPS_DEFAULT['modules.source.mode'])
+                                 or APPS_DEFAULT['modules.source.mode'])
+        git_repo = git_repo or module_source['url']
+
+        module['git_repo'] = git_repo
+        module['source'] = module_source
+
+        if 'last_deployment' in module and isinstance(module['last_deployment'], dict):
+            try:
+                last_deployment_timestamp = module['last_deployment'].get('timestamp', None)
+                module['last_deployment']['_created'] = datetime.utcfromtimestamp(
+                    last_deployment_timestamp).strftime(RFC1123_DATE_FORMAT) if last_deployment_timestamp else None
+            except:
+                logging.exception('Error while converting application date')
+    # Features checks
+    for feature in app.get('features', []):
+        if 'provisioner' not in feature:
+            feature['provisioner'] = DEFAULT_PROVISIONER_TYPE
+        if embed_features_params_as_yml:
+            feature['parameters_pretty'] = get_pretty_yaml_from_json(feature.get('parameters') or {})
+    # Container enhancements
+    if 'source_container_image' in app.get('build_infos'):
+        fingerprint = app['build_infos']['source_container_image']
+        app['build_infos']['src_container_img'] = dict(get_ghost_lxd_images()).get(fingerprint)
+
+    return app
