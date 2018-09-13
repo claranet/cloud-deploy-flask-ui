@@ -312,8 +312,8 @@ def get_ghost_websocket_token(job_id):
         token = result.json().get('token')
         handle_response_status_code(result.status_code)
     except:
-        traceback.print_exc()
-        message = 'Failure: %s' % (sys.exc_info()[1])
+        message = 'Failure: Error while retrieving websocket token'
+        logging.exception(message)
         flash(message, 'danger')
         token = ''
     return token
