@@ -5,6 +5,7 @@ from boto.ec2.instancetype import InstanceType
 # full file AWS_INSTANCES_DATA_URL = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/{region}/index.json'
 # light file (on demand only extract)
 AWS_INSTANCES_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/region/{region}/ondemand/linux/index.json'
+AWS_REGIONS_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/manifest.json'
 AWS_REGIONS_LOCATIONS_DATA_PATH = 'web_ui/data/aws_data_regions_locations.json'
 
 instance_types = {}
@@ -108,7 +109,14 @@ def load_regions_locations(filename):
             for location_data in json.load(data_file)
         }
 
-    return locations
+    with requests.get(AWS_REGIONS_DATA_URL.format()) as api_regions:
+        region_list = api_regions.json()
+        supplementary_locations = {
+            region: region
+            for region in region_list['ec2'] if region not in locations.keys()
+        }
+
+    return dict(locations, **supplementary_locations)
 
 
 regions_locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
