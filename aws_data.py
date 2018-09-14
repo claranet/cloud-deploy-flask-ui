@@ -71,9 +71,9 @@ instance_types['cn-northwest-1'] = {
     InstanceType(name='c4.2xlarge',  cores='8',  memory='15',    disk='EBS only'),
     InstanceType(name='c4.4xlarge',  cores='16', memory='30',    disk='EBS only'),
     InstanceType(name='c4.8xlarge',  cores='36', memory='60',    disk='EBS only'),
-    InstanceType(name='g3.4xlarge',  cores='16', memory='122',    disk='EBS only'),
-    InstanceType(name='g3.8xlarge',  cores='32', memory='244',    disk='EBS only'),
-    InstanceType(name='g3.16xlarge',  cores='64', memory='488',    disk='EBS only'),
+    InstanceType(name='g3.4xlarge',  cores='16', memory='122',   disk='EBS only'),
+    InstanceType(name='g3.8xlarge',  cores='32', memory='244',   disk='EBS only'),
+    InstanceType(name='g3.16xlarge',  cores='64', memory='488',  disk='EBS only'),
     InstanceType(name='r4.large',    cores='2',  memory='15.25', disk='EBS only'),
     InstanceType(name='r4.xlarge',   cores='4',  memory='30.5',  disk='EBS only'),
     InstanceType(name='r4.2xlarge',  cores='8',  memory='61',    disk='EBS only'),
@@ -85,6 +85,7 @@ instance_types['cn-northwest-1'] = {
     InstanceType(name='i2.4xlarge',  cores='16', memory='122',   disk='4 x 800 SSD'),
     InstanceType(name='i2.8xlarge',  cores='32', memory='244',   disk='8 x 800 SSD'),
 }  # yapf: disable
+
 
 def load_instance_data(instance_types, filename):
     """
