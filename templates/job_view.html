@@ -203,7 +203,7 @@
         var previous_timespan = false;
 
         socket.on('connect', function() {
-            socket.emit('job_logging', {log_id: "{{ job['log_id'] }}", last_pos: last_pos });
+            socket.emit('job_logging', { auth_token: "{{ websocket_token }}", log_id: "{{ job['log_id'] }}", last_pos: last_pos });
         });
         socket.on('job', function(data) {
             last_pos = data['last_pos'];
