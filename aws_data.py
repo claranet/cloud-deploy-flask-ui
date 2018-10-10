@@ -1,12 +1,16 @@
 import json
+import os
 import requests
 from boto.ec2.instancetype import InstanceType
+from data.aws_data_dal import get_aws_per_region_data
 
-# full file AWS_INSTANCES_DATA_URL = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/{region}/index.json'
+# full file AWS_INSTANCES_DATA_URL =
+# 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/{region}/index.json'
 # light file (on demand only extract)
-AWS_INSTANCES_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/region/{region}/ondemand/linux/index.json'
 AWS_REGIONS_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/manifest.json'
-AWS_REGIONS_LOCATIONS_DATA_PATH = 'web_ui/data/aws_data_regions_locations.json'
+AWS_REGIONS_LOCATIONS_DATA_PATH = '{cwd}/data/aws_data_regions_locations.json'.format(
+    cwd=os.path.dirname(os.path.abspath(__file__))
+)
 
 instance_types = {}
 
@@ -142,17 +146,16 @@ def load_instance_data(instance_types, regions):
     for region in regions:
         if region not in instance_types:
             instance_types[region] = []
-            with requests.get(AWS_INSTANCES_DATA_URL.format(region=region)) as resp:
-                if resp.status_code != 200:
-                    print 'Cannot get region {r}'.format(r=region)
-                    continue
-                region_data = resp.json()
-                for p in region_data['prices']:
-                    size = p['attributes']
-                    instance_types[region].append(InstanceType(name=size['aws:ec2:instanceType'],
-                                                               cores=size['aws:ec2:vcpu'],
-                                                               memory=size['aws:ec2:memory'],
-                                                               disk=size['aws:ec2:storage']))
+            region_data = get_aws_per_region_data(region)
+            if not region_data:
+                print 'Cannot get region {r}'.format(r=region)
+                continue
+            for p in region_data['prices']:
+                size = p['attributes']
+                instance_types[region].append(InstanceType(name=size['aws:ec2:instanceType'],
+                                                           cores=size['aws:ec2:vcpu'],
+                                                           memory=size['aws:ec2:memory'],
+                                                           disk=size['aws:ec2:storage']))
 
 
 load_instance_data(instance_types, regions_locations)
