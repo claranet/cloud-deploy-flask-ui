@@ -146,16 +146,17 @@ def load_instance_data(instance_types, regions):
     for region in regions:
         if region not in instance_types:
             instance_types[region] = []
-            region_data = get_aws_per_region_data(region)
-            if not region_data:
+            aws_db_data = get_aws_per_region_data(region)
+            if not aws_db_data:
                 print 'Cannot get region {r}'.format(r=region)
                 continue
-            for p in region_data['prices']:
-                size = p['attributes']
-                instance_types[region].append(InstanceType(name=size['aws:ec2:instanceType'],
-                                                           cores=size['aws:ec2:vcpu'],
-                                                           memory=size['aws:ec2:memory'],
-                                                           disk=size['aws:ec2:storage']))
+            for region_data in [aws_db_data.get('data_latest', {}), aws_db_data.get('data_previous', {})]:
+                for p in region_data.get('prices', []):
+                    size = p['attributes']
+                    instance_types[region].append(InstanceType(name=size['aws:ec2:instanceType'],
+                                                               cores=size['aws:ec2:vcpu'],
+                                                               memory=size['aws:ec2:memory'],
+                                                               disk=size['aws:ec2:storage']))
 
 
 load_instance_data(instance_types, regions_locations)

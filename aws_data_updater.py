@@ -13,10 +13,11 @@ from data.aws_data_dal import update_aws_data_region
 from aws_data import regions_locations
 
 AWS_INSTANCES_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/region/{region}/ondemand/linux/index.json'
+AWS_OLD_INSTANCES_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/region/{region}/previous-generation/ondemand/linux/index.json'
 
 
-def get_region_data(aws_region):
-    with requests.get(AWS_INSTANCES_DATA_URL.format(region=aws_region)) as resp:
+def get_region_data(aws_region, url):
+    with requests.get(url.format(region=aws_region)) as resp:
         if resp.status_code != 200:
             print 'Cannot get region {r}'.format(r=aws_region)
             return None
@@ -36,7 +37,9 @@ def main():
     args = parse_args()
     for aws_region in [args.region] if args.region else regions_locations:
         print('Updating AWS Data for region "{r}"'.format(r=aws_region))
-        update_aws_data_region(aws_region, get_region_data(aws_region))
+        old_region_data = get_region_data(aws_region, AWS_OLD_INSTANCES_DATA_URL) or {}
+        latest_region_data = get_region_data(aws_region, AWS_INSTANCES_DATA_URL) or {}
+        update_aws_data_region(aws_region, old_region_data, latest_region_data)
 
 
 if __name__ == '__main__':

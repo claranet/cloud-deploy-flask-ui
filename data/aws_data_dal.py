@@ -25,12 +25,12 @@ def get_aws_per_region_data(aws_region):
     if not aws_region:
         return None
     region_data = db.aws_data.find_one({'region': aws_region})
-    return region_data['data'] if region_data else None
+    return region_data
 
 
-def update_aws_data_region(aws_region, json_data):
+def update_aws_data_region(aws_region, json_latest_data, json_previous_data):
     return db.aws_data.replace_one(
         {'region': aws_region},
-        {'region': aws_region, 'data': json_data},
+        {'region': aws_region, 'data_latest': json_latest_data, 'data_previous': json_previous_data},
         upsert=True,
     )
