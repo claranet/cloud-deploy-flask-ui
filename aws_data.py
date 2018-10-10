@@ -157,6 +157,7 @@ def load_instance_data(instance_types, regions):
                                                                cores=size['aws:ec2:vcpu'],
                                                                memory=size['aws:ec2:memory'],
                                                                disk=size['aws:ec2:storage']))
+            instance_types[region] = sorted(instance_types[region], key=lambda k: k.name)
 
 
 load_instance_data(instance_types, regions_locations)
