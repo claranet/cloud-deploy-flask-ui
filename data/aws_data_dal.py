@@ -4,12 +4,15 @@
 # -*- coding: utf-8 -*-
 
 from pymongo import MongoClient
-from bson.objectid import ObjectId
+import requests
 
 from settings import MONGO_DBNAME, MONGO_HOST, MONGO_PORT
 
+AWS_INSTANCES_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/region/{region}/ondemand/linux/index.json'
+AWS_OLD_INSTANCES_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/region/{region}/previous-generation/ondemand/linux/index.json'
+
 # DB Access
-db = MongoClient(host=MONGO_HOST, port=MONGO_PORT)[MONGO_DBNAME]
+db = MongoClient(host=MONGO_HOST, port=MONGO_PORT, connectTimeoutMS=100, serverSelectionTimeoutMS=100)[MONGO_DBNAME]
 
 
 def get_fresh_connection():
@@ -29,8 +32,17 @@ def get_aws_per_region_data(aws_region):
 
 
 def update_aws_data_region(aws_region, json_latest_data, json_previous_data):
-    return db.aws_data.replace_one(
-        {'region': aws_region},
-        {'region': aws_region, 'data_latest': json_latest_data, 'data_previous': json_previous_data},
-        upsert=True,
-    )
+    if aws_region and json_latest_data:
+        return db.aws_data.replace_one(
+            {'region': aws_region},
+            {'region': aws_region, 'data_latest': json_latest_data, 'data_previous': json_previous_data},
+            upsert=True,
+        )
+
+
+def get_fresh_region_data(aws_region, url):
+    with requests.get(url.format(region=aws_region)) as resp:
+        if resp.status_code != 200:
+            return {}
+    region_data = resp.json()
+    return region_data or {}

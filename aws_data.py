@@ -2,7 +2,8 @@ import json
 import os
 import requests
 from boto.ec2.instancetype import InstanceType
-from data.aws_data_dal import get_aws_per_region_data
+from data.aws_data_dal import AWS_OLD_INSTANCES_DATA_URL, AWS_INSTANCES_DATA_URL
+from data.aws_data_dal import get_aws_per_region_data, get_fresh_region_data
 
 # full file AWS_INSTANCES_DATA_URL =
 # 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/{region}/index.json'
@@ -126,19 +127,38 @@ def load_regions_locations(filename):
 regions_locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
 
 
-def load_instance_data(instance_types, regions):
+def get_aws_data(region, bypass_db_cache=False):
+    try:
+        if bypass_db_cache:
+            return {
+                'data_latest': get_fresh_region_data(region, AWS_INSTANCES_DATA_URL),
+                'data_previous': get_fresh_region_data(region, AWS_OLD_INSTANCES_DATA_URL),
+            }
+        aws_db_data = get_aws_per_region_data(region)
+        if not aws_db_data:
+            raise Exception('Cannot get region {r}'.format(r=region))
+        return aws_db_data
+    except:
+        return {
+            'data_latest': get_fresh_region_data(region, AWS_INSTANCES_DATA_URL),
+            'data_previous': get_fresh_region_data(region, AWS_OLD_INSTANCES_DATA_URL),
+        }
+
+
+def load_instance_data(instance_types, regions, bypass_db_cache=False):
     """
     >>> instance_types = {}
     >>> instance_types['cn-north-1'] = { InstanceType(name='t1.micro', cores='1', memory='0.613', disk='EBS only'), }
     >>> locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
-    >>> load_instance_data(instance_types, locations)
-    Cannot get region cn-northwest-1
+    >>> load_instance_data(instance_types, locations, bypass_db_cache=True)
     >>> { type.name: type for type in instance_types["cn-north-1"] }['t1.micro']
     InstanceType:t1.micro-1,0.613,EBS only
     >>> { type.name: type for type in instance_types["us-east-1"] }['t2.nano']
     InstanceType:t2.nano-1,0.5 GiB,EBS only
     >>> { type.name: type for type in instance_types["eu-west-1"] }['t3.xlarge']
     InstanceType:t3.xlarge-4,16 GiB,EBS only
+    >>> { type.name: type for type in instance_types["eu-west-1"] }['t1.micro']
+    InstanceType:t1.micro-1,0.613 GiB,EBS only
     >>> { type.name: type for type in instance_types["us-east-1"] }['c5.large']
     InstanceType:c5.large-2,4 GiB,EBS only
     """
@@ -146,11 +166,8 @@ def load_instance_data(instance_types, regions):
     for region in regions:
         if region not in instance_types:
             instance_types[region] = []
-            aws_db_data = get_aws_per_region_data(region)
-            if not aws_db_data:
-                print 'Cannot get region {r}'.format(r=region)
-                continue
-            for region_data in [aws_db_data.get('data_latest', {}), aws_db_data.get('data_previous', {})]:
+            aws_data = get_aws_data(region, bypass_db_cache)
+            for region_data in [aws_data.get('data_latest', {}), aws_data.get('data_previous', {})]:
                 for p in region_data.get('prices', []):
                     size = p['attributes']
                     instance_types[region].append(InstanceType(name=size['aws:ec2:instanceType'],
