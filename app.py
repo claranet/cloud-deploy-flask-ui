@@ -1120,6 +1120,9 @@ def web_webhook_create():
 
     # Set dynamic fields
     apps = get_ghost_apps()
+    if not apps:
+        flash('You need at least 1 app to create a webhook', 'info')
+        return redirect(url_for('web_app_list'), code=301)
     form.app_id.choices = [(app['_id'], "{name} ({id})".format(name=app['name'], id=app['_id'])) for app in apps]
     form.module.choices = get_ghost_modules_names(apps[0]['_id'])
     form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(apps[0])
