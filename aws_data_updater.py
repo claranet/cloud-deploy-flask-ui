@@ -8,8 +8,8 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
-from libs.aws_data_dal import AWS_OLD_INSTANCES_DATA_URL, AWS_INSTANCES_DATA_URL
-from libs.aws_data_dal import update_aws_data_region, get_fresh_region_data
+from data_libs.aws_data_dal import AWS_OLD_INSTANCES_DATA_URL, AWS_INSTANCES_DATA_URL
+from data_libs.aws_data_dal import update_aws_data_region, get_fresh_region_data
 from aws_data import regions_locations
 
 

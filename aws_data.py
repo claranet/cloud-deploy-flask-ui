@@ -2,8 +2,8 @@ import json
 import os
 import requests
 from boto.ec2.instancetype import InstanceType
-from libs.aws_data_dal import AWS_OLD_INSTANCES_DATA_URL, AWS_INSTANCES_DATA_URL
-from libs.aws_data_dal import get_aws_per_region_data, get_fresh_region_data, update_aws_data_region
+from data_libs.aws_data_dal import AWS_OLD_INSTANCES_DATA_URL, AWS_INSTANCES_DATA_URL
+from data_libs.aws_data_dal import get_aws_per_region_data, get_fresh_region_data, update_aws_data_region
 
 # full file AWS_INSTANCES_DATA_URL =
 # 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/{region}/index.json'
