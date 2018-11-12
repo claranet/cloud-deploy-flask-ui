@@ -1050,6 +1050,9 @@ def web_webhook_list_all_invocations():
 
     return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page), all=True)
 
+@app.route('/web/webhooks/<webhook_id>/', methods=['GET'])
+def web_webhook_redirect_list_invocations(**kwargs):
+    return redirect(url_for('web_webhook_list_invocations', **kwargs), code=301)
 
 @app.route('/web/webhooks/<webhook_id>/invocations/', methods=['GET'])
 def web_webhook_list_invocations(webhook_id):
