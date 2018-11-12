@@ -153,7 +153,7 @@ def get_app_module_by_name(app, name):
 
 def check_webhooks_validity(webhooks):
     for webhook in webhooks:
-        if not webhook['module_object']:
+        if not webhook.get('module_object'):
             return False
 
     return True

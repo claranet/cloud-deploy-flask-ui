@@ -586,11 +586,30 @@ def normalize_app_object(app, embed_features_params_as_yml):
     return app
 
 
-def get_ghost_webhooks(query=None, page=None):
+def get_ghost_webhooks(query=None, page=None, application_name=None, module_name=None, webhook_rev=None):
     try:
         url = url_webhooks + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
         if query:
             url += "&where=" + query
+        else:
+            query = {}
+            if application_name:
+                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id'])
+                                for application in get_ghost_apps(name=application_name)]
+                if len(applications) > 0:
+                    query['$or'] = '[{}]'.format(','.join(applications))
+                else:
+                    query['$or'] = '[{"app_id":"null"}]'
+
+            if module_name:
+                query['module'] = '"{}"'.format(module_name)
+
+            if webhook_rev:
+                query['rev'] = '"{}"'.format(webhook_rev)
+
+            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value)
+                                                           for key, value in query.items()))
+            url += "&where=" + querystr
         if page:
             url += "&page=" + page
         result = requests.get(url, headers=headers, auth=current_user.auth)

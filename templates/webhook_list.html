@@ -6,14 +6,40 @@
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by last modification date</caption>
 
-    <ul class="nav nav-stacked action-btns">
-        <li>
-            <a href="/web/webhooks/create" id="createWebhook"><button class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create a Webhook</button></a>
-        </li>
-        <li>
-            <a href="/web/webhooks/all/invocations" id="webhookInvocations"><button class="btn btn-raised btn-success"><span class="glyphicon glyphicon-th-list"></span> See all invocations</button></a>
-        </li>
-    </ul>
+    <form method="get" class="filter-form">
+        <ul class="list-inline">
+            <li class="list-button">
+                <a href="/web/webhooks/create" id="createWebhook" class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create a Webhook</a>
+            </li>
+            <li class="list-button">
+                <a href="/web/webhooks/all/invocations" id="webhookInvocations" class="btn btn-raised btn-success"><span class="glyphicon glyphicon-th-list"></span> See all invocations</a>
+            </li>
+            <li>
+                <ul class="nav nav-stacked action-btns-filter nav navbar-nav filter-group">
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="module" class="form-control" placeholder="Search module..." value="{{ query_values['module'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="revision" class="form-control" placeholder="Search revision..." value="{{ query_values['webhook_revision'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li class="filter">
+                        <div class="form-group filter-row">
+                            <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </form>
 {% endblock %}"
 
 {% block page_content %}

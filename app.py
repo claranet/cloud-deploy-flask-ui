@@ -1027,16 +1027,26 @@ def web_deployment_redeploy(deployment_id):
 def web_webhook_list():
     query = request.args.get('where', None)
     page = request.args.get('page', '1')
-    webhooks = get_ghost_webhooks(query, page)
+    application_name = request.args.get('application') or None
+    module = request.args.get('module') or None
+    webhook_revision = request.args.get('revision') or None
+
+    query_values = {
+        'application_name': application_name,
+        'webhook_revision': webhook_revision,
+        'module': module,
+    }
+
+    webhooks = get_ghost_webhooks(query, page, application_name, module, webhook_revision)
 
     # Generate error message if at least one of the webhook configs is invalid
     if not ui_helpers.check_webhooks_validity(webhooks):
         flash('At least one of your webhooks is invalid: invalid app or module.', 'danger')
 
     if request.is_xhr:
-        return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page))
+        return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page), query_values=query_values)
 
-    return render_template('webhook_list.html', webhooks=webhooks, page=int(page))
+    return render_template('webhook_list.html', webhooks=webhooks, page=int(page), query_values=query_values)
 
 
 @app.route('/web/webhooks/all/invocations', methods=['GET'])
