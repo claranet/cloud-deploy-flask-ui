@@ -344,7 +344,7 @@
                         {%- if feature['provisioner'] == 'salt' -%}
                             {{ feature['version'] }}
                         {%- else -%}
-                            <a tabindex="0" title="" role="button" data-toggle="popover" data-placement="top" data-trigger="focus"  data-container="body"
+                            <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-trigger="focus"  data-container="body"
                                title="Feature {{ feature['name'] }}" data-content="<pre>{{ feature['parameters_pretty'] }}</pre>">
                                 {{ feature['parameters_pretty'][:32] }}
                                 {%- if feature['parameters_pretty'] | length > 32 -%}&hellip;{%- endif -%}

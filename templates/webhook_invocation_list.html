@@ -10,6 +10,14 @@
 {% block page_header %}
     {% include 'partial_list_top_right.html' %}
     <caption>Sorted by timestamp descending</caption>
+    <ul class="nav nav-stacked action-btns">
+        <li>
+            <a href="{{ request.referer or '#' }}" onclick="return window.history.back();"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</button></a>
+        </li>
+        <li>
+            <a href="/web/webhooks"><button class="btn  btn-raised btn-primary"><span class="glyphicon glyphicon-link"></span> Webhooks List</button></a>
+        </li>
+    </ul>
 {% endblock %}"
 
 {% block page_content %}
