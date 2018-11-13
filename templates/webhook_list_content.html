@@ -21,8 +21,12 @@
 <tr class="app-{{ app['env'] }} app-row">
     <th scope="row"><span class="index"></span></th>
     <td>
-        <a href="/web/webhooks/{{ webhook['_id'] }}/invocations" title="View webhook invocations" data-toggle="tooltip">
-            {{ request.url_root }}webhooks/{{ webhook['_id'] }}/invocations
+        <input type="hidden" id="endpoint-{{ webhook['_id'] }}" value="{{ request.url_root }}webhooks/{{ webhook['_id'] }}/invocations" />
+        <a href="#endpoint-{{ webhook['_id'] }}" title="Copy webhook endpoint to clipboard" data-toggle="tooltip" data-type="clipboard-copy"><i class="glyphicon glyphicon-copy"></i></a>
+        &nbsp;
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-trigger="focus"  data-container="body"
+            title="Webhook API URL:" data-content="<pre>{{ request.url_root }}webhooks/{{ webhook['_id'] }}/invocations</pre>">
+            {{ "{}webhooks/{}/invocations".format(request.url_root, webhook['_id']) | truncate(50, True) }}
         </a>
     </td>
     <td>
