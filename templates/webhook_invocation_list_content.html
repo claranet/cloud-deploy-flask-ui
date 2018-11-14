@@ -1,0 +1,47 @@
+{% from "macros.html" import ghost_abbrev_payload with context %}
+
+{% for invocation in invocations | sort(reverse=True, attribute='_created') %}
+    {% set webhook = invocation['webhook_id'] or {'_id': ''} %}
+<tr class="">
+    <th scope="row"><span class="index"></span></th>
+    <td>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/edit">
+            {{ webhook['_id'] }}
+        </a>
+    </td>
+    {% if all %}
+    <td>
+        {% if invocation['app_object'] %}
+        <a href="/web/apps/{{ invocation['app_object']['_id'] }}">
+            {{ invocation['app_object']['name'] }} ({{ invocation['app_object']['env'] }})
+        </a>
+        {% endif %}
+    </td>
+    <td>
+        {{ webhook['module'] }}
+    </td>
+    {% endif %}
+    <td>
+        <div>
+            {% for job in invocation['jobs_objects'] %}
+                <p>
+                    <a href="/web/jobs/{{ job['_id'] }}">
+                        {{ job['command'] }} : {{ job['status'] }}
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
+    </td>
+    <td>{{ invocation['_created'] }}</td>
+    <td>
+        {% set color = 'text-info' if invocation['status']['code'] == 200 else 'text-danger' %}
+        {% set icon = 'glyphicon-ok' if invocation['status']['code'] == 200 else 'glyphicon-remove' %}
+        <div class="" title="{{ invocation['status']['message'] }}" data-toggle="tooltip">
+            <p class="glyphicon {{ icon }} {{ color }}">
+                {{ invocation['status']['code'] }}
+            </p>
+        </div>
+    </td>
+    <td>{{ ghost_abbrev_payload(invocation.get('payload', ''), 25) }}</td>
+</tr>
+{% endfor %}

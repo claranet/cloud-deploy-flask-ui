@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Webhooks' %}
+
+{% block page_header %}
+    {% include 'partial_list_top_right.html' %}
+    <caption>Sorted by last modification date</caption>
+
+    <form method="get" class="filter-form">
+        <ul class="list-inline">
+            <li class="list-button">
+                <a href="/web/webhooks/create" id="createWebhook" class="btn btn-raised btn-primary"><span class="glyphicon glyphicon-plus"></span> Create a Webhook</a>
+            </li>
+            <li class="list-button">
+                <a href="/web/webhooks/all/invocations" id="webhookInvocations" class="btn btn-raised btn-success"><span class="glyphicon glyphicon-th-list"></span> See all invocations</a>
+            </li>
+            <li>
+                <ul class="nav nav-stacked action-btns-filter nav navbar-nav filter-group">
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="application" class="form-control" placeholder="Search application..." value="{{ query_values['application_name'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="module" class="form-control" placeholder="Search module..." value="{{ query_values['module'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li role="presentation" class="filter">
+                        <div class="form-group filter-row">
+                            <input type="text" name="revision" class="form-control" placeholder="Search revision..." value="{{ query_values['webhook_revision'] or '' }}"/>
+                        </div>
+                    </li>
+                    <li class="filter">
+                        <div class="form-group filter-row">
+                            <button class="btn btn-default btn-simple btn-xs"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </form>
+{% endblock %}"
+
+{% block page_content %}
+    <div id="tabbed-apps">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            {% for env in env_list: %}
+                {% if env == selected_env: %}
+            <li role="presentation" class="active env-{{ env }}"><a data-behavior="env" data-env="{{ env }}" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
+                {% else %}
+            <li role="presentation" class="env-{{ env }}"><a data-behavior="env" data-env="{{ env }}" aria-controls="{{ env }}" role="tab" data-toggle="tab">{{ env }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <table class="table tablelist">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Webhook URL</th>
+                <th>Created / Modified</th>
+                <th>App</th>
+                <th>Module</th>
+                <th>Events</th>
+                <th>Revision</th>
+                <th>Commands</th>
+                <th>Options</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% include 'webhook_list_content.html' %}
+            <tr id="loadmoreajaxloader">
+                <td colspan="10" style="display:none;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></td>
+            </tr>
+            <tr id="backtotop">
+                <td colspan="10" style="display:none">
+                    <a href="#" data-behavior="scrollTop"><i class="glyphicon glyphicon-chevron-up"></i> Back to top</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    </div>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{{url_for('.static', filename='scripts/app-list.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='scripts/webhook-list.js')}}?v={{current_revision}}"></script>
+{% endblock %}

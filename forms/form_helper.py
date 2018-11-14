@@ -79,6 +79,12 @@ def get_ghost_instance_tags():
         ghost_app_schema['environment_infos']['schema']['instance_tags']['schema']['schema']['tag_name']['allowed'])
 
 
+def get_ghost_modules_names(app_id):
+    app = get_ghost_app(app_id)
+
+    return [(module['name'], module['name']) for module in app['modules']]
+
+
 def get_recommendations(commands_fields, app_pending_changes):
     """
     :param commands_fields:

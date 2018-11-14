@@ -17,6 +17,7 @@ from settings import DEFAULT_PROVIDER
 
 from models.jobs import CANCELLABLE_JOB_STATUSES, DELETABLE_JOB_STATUSES, JOB_STATUSES, jobs_schema as ghost_jobs_schema
 from models.apps import apps_schema as ghost_app_schema
+from models.webhooks import webhook_schema as ghost_webhook_schema
 from models.instance_role import role as ghost_role_default_values
 
 from ghost_api import FORBIDDEN_PATH
@@ -25,6 +26,8 @@ from ghost_tools import config, CURRENT_REVISION, boolify
 from ghost_tools import b64decode_utf8
 from ghost_client import get_ghost_apps, get_ghost_app, create_ghost_app, update_ghost_app, delete_ghost_app
 from ghost_client import get_ghost_jobs, get_ghost_job, get_ghost_websocket_token, create_ghost_job, cancel_ghost_job, delete_ghost_job
+from ghost_client import get_ghost_webhooks, get_ghost_webhook, create_ghost_webhook, update_ghost_webhook, delete_ghost_webhook
+from ghost_client import get_ghost_webhooks_invocations
 from ghost_client import get_ghost_deployments, get_ghost_deployment
 from ghost_client import get_ghost_lxd_images, get_ghost_lxd_status, headers, test_ghost_auth
 from libs.blue_green import get_blue_green_copy_ami_config
@@ -37,6 +40,7 @@ from health import get_host_cpu_label, get_host_health, HostHealth
 from forms.command import CommandAppForm
 from forms.app import CreateAppForm, DeleteAppForm, EditAppForm
 from forms.job import CancelJobForm, DeleteJobForm
+from forms.webhook import CreateWebhookForm, DeleteWebhookForm, EditWebhookForm
 from forms.form_helper import get_ghost_app_roles, get_ghost_app_envs, get_wtforms_selectfield_values
 from forms.form_helper import get_app_command_recommendations
 from forms.form_helper import get_ansible_role_inventory, get_salt_formula_inventory
@@ -48,6 +52,7 @@ from forms.form_aws_helper import get_elbs_instances_from_as_group, get_safe_dep
 from forms.form_aws_helper import get_aws_subnets_ids_from_app
 from forms.form_aws_helper import get_aws_connection_data, check_aws_assumed_credentials
 from forms.form_aws_helper import s3_list_object_revisions
+from forms.form_helper import get_ghost_modules_names
 
 # Web UI App
 app = Flask(__name__)
@@ -299,6 +304,14 @@ def web_app_subnets_list(provider, app_id):
     return jsonify(dict(
         get_aws_subnets_ids_from_app(DEFAULT_PROVIDER, app['region'], app['environment_infos']['subnet_ids'],
                                      **aws_connection_data)))
+
+
+@app.route('/web/<provider>/appinfos/<app_id>/modules/names')
+def web_app_modules_list(provider, app_id):
+    # Get App data
+    app = get_ghost_app(app_id)
+
+    return jsonify([module['name'] for module in app['modules']])
 
 
 @app.route('/web/<provider>/appinfos/<app_id>', methods=['GET'])
@@ -1008,6 +1021,181 @@ def web_deployment_redeploy(deployment_id):
 
     # Display default template in GET case
     return render_template('app_command.html', form=form, app=app)
+
+
+@app.route('/web/webhooks', methods=['GET'])
+def web_webhook_list():
+    query = request.args.get('where', None)
+    page = request.args.get('page', '1')
+    application_name = request.args.get('application') or None
+    module = request.args.get('module') or None
+    webhook_revision = request.args.get('revision') or None
+
+    query_values = {
+        'application_name': application_name,
+        'webhook_revision': webhook_revision,
+        'module': module,
+    }
+
+    webhooks = get_ghost_webhooks(query, page, application_name, module, webhook_revision)
+
+    # Generate error message if at least one of the webhook configs is invalid
+    if not ui_helpers.check_webhooks_validity(webhooks):
+        flash('At least one of your webhooks is invalid: invalid app or module.', 'danger')
+
+    if request.is_xhr:
+        return render_template('webhook_list_content.html', webhooks=webhooks, page=int(page), query_values=query_values)
+
+    return render_template('webhook_list.html', webhooks=webhooks, page=int(page), query_values=query_values)
+
+
+@app.route('/web/webhooks/all/invocations', methods=['GET'])
+def web_webhook_list_all_invocations():
+    query = request.args.get('where', None)
+    page = request.args.get('page', '1')
+    invocations = get_ghost_webhooks_invocations(query, page)
+
+    if request.is_xhr:
+        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page), all=True)
+
+    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page), all=True)
+
+@app.route('/web/webhooks/<webhook_id>/', methods=['GET'])
+def web_webhook_redirect_list_invocations(**kwargs):
+    return redirect(url_for('web_webhook_list_invocations', **kwargs), code=301)
+
+@app.route('/web/webhooks/<webhook_id>/invocations/', methods=['GET'])
+def web_webhook_list_invocations(webhook_id):
+    query = request.args.get('where', None)
+    page = request.args.get('page', '1')
+    invocations = get_ghost_webhooks_invocations(query, page, webhook_id)
+    webhook = get_ghost_webhook(webhook_id)
+
+    if request.is_xhr:
+        return render_template('webhook_invocation_list_content.html', invocations=invocations, page=int(page),
+                               all=False, webhook=webhook)
+
+    return render_template('webhook_invocation_list.html', invocations=invocations, page=int(page),
+                           all=False, webhook=webhook)
+
+
+@app.route('/web/webhooks/<webhook_id>/delete', methods=['GET', 'POST'])
+def web_webhook_delete(webhook_id):
+    form = DeleteWebhookForm()
+
+    # Perform validation
+    if form.validate_on_submit and form.confirmation.data == 'yes':
+        local_headers = headers.copy()
+        local_headers['If-Match'] = form.etag.data
+
+        message, status_code = delete_ghost_webhook(webhook_id, local_headers)
+
+        if ui_helpers.check_status_code(status_code):
+            return redirect(url_for('web_webhook_list'))
+        else:
+            return render_template('action_completed.html', message=message, form_action='delete')
+    elif form.validate_on_submit and form.confirmation.data == 'no':
+        flash('Webhook "%s" has not been deleted' % webhook_id, 'info')
+        return redirect(url_for('web_webhook_list'), code=301)
+
+    # Get webhook etag
+    webhook = get_ghost_webhook(webhook_id)
+    form.etag.data = webhook['_etag']
+
+    # Display default template in GET case
+    return render_template('webhook_delete.html', form=form, webhook=webhook)
+
+
+@app.route('/web/webhooks/create', methods=['GET', 'POST'])
+def web_webhook_create():
+    form = CreateWebhookForm()
+
+    if form.is_submitted():
+        # Set dynamic fields
+        apps = get_ghost_apps()
+        form.app_id.choices = [(app['_id'], "{name} ({id})".format(name=app['name'], id=app['_id'])) for app in apps]
+        selected_app = get_ghost_app(form.app_id.data)
+        form.module.choices = get_ghost_modules_names(selected_app['_id'])
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(selected_app)
+        form.instance_type.choices = get_aws_ec2_instance_types(selected_app["region"])
+
+    if form.validate_on_submit():
+        webhook = {}
+        form.map_to_webhook(webhook)
+
+        message, result, status_code = create_ghost_webhook(webhook)
+        webhook_id = result['_id'] if '_id' in result else None
+
+        return render_template('action_completed.html', message=message, action_object_type='webhooks',
+                               action_object_id=webhook_id,
+                               status_code=status_code,
+                               cmd_recommendations=None)
+
+    # Set dynamic fields
+    apps = get_ghost_apps()
+    if not apps:
+        flash('You need at least 1 app to create a webhook', 'info')
+        return redirect(url_for('web_app_list'), code=301)
+    form.app_id.choices = [(app['_id'], "{name} ({id})".format(name=app['name'], id=app['_id'])) for app in apps]
+    form.module.choices = get_ghost_modules_names(apps[0]['_id'])
+    form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(apps[0])
+    form.instance_type.choices = get_aws_ec2_instance_types(apps[0]["region"])
+
+    # Display default template in GET case
+    return render_template('webhook_edit.html', form=form, edit=False, app=apps[0],
+                           schema=ghost_webhook_schema, forbidden_paths=FORBIDDEN_PATH)
+
+
+@app.route('/web/webhooks/<webhook_id>/edit', methods=['GET', 'POST'])
+def web_webhook_edit(webhook_id):
+    form = EditWebhookForm()
+
+    if form.is_submitted():
+        # Set read-only fields to pass validation
+        webhook = get_ghost_webhook(webhook_id)
+        form.app_id.choices = [(webhook['app_id']['_id'], webhook['app_id']['_id'])]
+        form.app_id.data = webhook['app_id']['_id']
+
+        # Set dynamic fields
+        form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
+        form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
+        form.module.choices = get_ghost_modules_names(webhook['app_id']['_id'])
+
+    if form.validate_on_submit():
+        local_headers = headers.copy()
+        local_headers['If-Match'] = form.etag.data
+
+        # Update Webhook
+        webhook = {}
+        form.map_to_webhook(webhook)
+
+        # Remove read-only fields that cannot be changed
+        del webhook['app_id']
+
+        message, status_code = update_ghost_webhook(webhook_id, local_headers, webhook)
+
+        return render_template('action_completed.html', message=message, action_object_type='webhooks',
+                               action_object_id=webhook_id,
+                               status_code=status_code)
+
+    # Get webhook data on first access
+    webhook = get_ghost_webhook(webhook_id)
+    form.map_from_webhook(webhook)
+
+    # Check app still exists
+    if not webhook['app_id']:
+        flash('Associated app has been removed! This webhook configuration is no '
+              'longer useful and must then be removed.', 'danger')
+        return redirect(url_for('web_webhook_delete', webhook_id=webhook_id))
+
+    # Set dynamic fields
+    form.safe_deployment_strategy.choices = get_safe_deployment_possibilities(webhook['app_id'])
+    form.instance_type.choices = get_aws_ec2_instance_types(webhook['app_id']['region'])
+    form.module.choices = get_ghost_modules_names(webhook['app_id']['_id'])
+
+    # Display default template in GET case
+    return render_template('webhook_edit.html', form=form, edit=True, webhook_id=webhook_id, webhook=webhook,
+                           schema=ghost_webhook_schema, forbidden_paths=FORBIDDEN_PATH)
 
 
 @app.errorhandler(404)

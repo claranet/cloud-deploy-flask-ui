@@ -191,3 +191,30 @@
     {% endfor %}
 </div>
 {%- endmacro %}
+
+{% macro ghost_abbrev_payload(value, maxchars=10) -%}
+{%- set id = get_md5_hash(value) -%}
+{%- if value | length > maxchars -%}
+<a href="#payload-{{ id }}" data-toggle="modal" data-target="#payload-{{ id }}"><abbr>
+    {%- endif -%}
+    {{ value[:maxchars] }}
+    {%- if value | length > maxchars -%}
+    &hellip;</abbr></a>
+<!-- Modal -->
+<div class="modal fade ghost_abbrev_field" id="payload-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="payload-{{ id }}">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+                <h4 class="modal-title"><strong>Request payload</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="script-panel">
+                    <textarea id="txt-{{ id }}">{{ value }}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endif %}
+{%- endmacro %}

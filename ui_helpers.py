@@ -139,3 +139,21 @@ def check_instance_tags(tags, app):
     for tag_key in tags_to_check:
         compliant = compliant and check_instance_tag(tag_key, tags.get(tag_key), app)
     return compliant
+
+
+def get_app_module_by_name(app, name):
+    if not app or not name:
+        return None
+
+    for module in app['modules']:
+        if module['name'] == name:
+            return module
+
+    return None
+
+def check_webhooks_validity(webhooks):
+    for webhook in webhooks:
+        if not webhook.get('module_object'):
+            return False
+
+    return True

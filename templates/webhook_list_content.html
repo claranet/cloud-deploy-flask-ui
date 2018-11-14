@@ -1,0 +1,114 @@
+{% if table_header: %}
+    <table class="table tablelist noscroll">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Webhook URL</th>
+                <th>Created / Modified</th>
+                <th>App</th>
+                <th>Module</th>
+                <th>Events</th>
+                <th>Revision</th>
+                <th>Commands</th>
+                <th>Options</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+{% endif %}
+{% for webhook in webhooks | sort(reverse=True, attribute='_updated') %}
+{% set app = webhook['app_id'] or {'_id': '', 'name': '', 'env': '-'} %}
+<tr class="app-{{ app['env'] }} app-row">
+    <th scope="row"><span class="index"></span></th>
+    <td>
+        <input type="hidden" id="endpoint-{{ webhook['_id'] }}" value="{{ request.url_root }}webhooks/{{ webhook['_id'] }}/invocations" />
+        <a href="#endpoint-{{ webhook['_id'] }}" title="Copy webhook endpoint to clipboard" data-toggle="tooltip" data-type="clipboard-copy"><i class="glyphicon glyphicon-copy"></i></a>
+        &nbsp;
+        <a tabindex="0" role="button" data-toggle="popover" data-placement="top" data-trigger="focus"  data-container="body"
+            title="Webhook API URL:" data-content="<pre>{{ request.url_root }}webhooks/{{ webhook['_id'] }}/invocations</pre>">
+            {{ "{}webhooks/{}/invocations".format(request.url_root, webhook['_id']) | truncate(50, True) }}
+        </a>
+    </td>
+    <td>
+        {{ webhook['_created'] }}
+        <br>
+        {{ webhook['_updated'] }}
+        <br>
+        by&nbsp;{{ webhook.get('user', '-') }}
+    </td>
+    <td>
+        {% if app['_id'] %}
+            <a {% if app['_id'] %}href="/web/apps/{{ app['_id'] }}"{% endif %}>
+                {{ app['name'] }} ({{ app['env'] }})
+            </a>
+        {% else %}
+            <div class="glyphicon glyphicon-remove text-danger">
+                Invalid app!
+            </div>
+        {% endif %}
+    </td>
+    <td>
+        {% if webhook['module_object'] %}
+            {{ webhook['module'] }}
+        {% else %}
+        <div class="glyphicon glyphicon-remove text-danger">
+            Invalid module!
+        </div>
+        {% endif %}
+    </td>
+    <td>
+        <div>
+            {%- if webhook['events'] | length > 0 -%}
+            <abbr title="{{ webhook['events'] | join(', ') }}">
+                {{- webhook['events'] | join(', ') | truncate(42, True) -}}
+            </abbr>
+            {%- endif %}
+        </div>
+    </td>
+    <td>
+        {{ webhook['rev'] }}
+    </td>
+    <td>
+        <div>
+            {%- if webhook['commands'] | length > 0 -%}
+            <abbr title="{{ webhook['commands'] | join(', ') }}">
+                {{- webhook['commands'] | join(', ') | truncate(42, True) -}}
+            </abbr>
+            {%- endif %}
+        </div>
+    </td>
+    <td>
+        {% for key, value in webhook['options'].items() %}
+            {% if value: %}
+            <p>
+                {{ key }}: {{ value }}
+            </p>
+            {% endif %}
+        {% endfor %}
+    </td>
+    <td>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/invocations"><button class="btn btn-success btn-raised" title="See invocations" data-toggle="tooltip"><span class="glyphicon glyphicon-th-list"></span></button></a>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/edit"><button class="btn btn-warning btn-raised" title="Edit" data-toggle="tooltip"><span class="glyphicon glyphicon-edit"></span></button></a>
+        <a href="/web/webhooks/{{ webhook['_id'] }}/delete"><button class="btn btn-danger btn-raised" title="Delete" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button></a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="app-infos-{{ webhook['_id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog app-infos" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+                <h4 class="modal-title" id="myModalLabel">Resource details of <strong>{{ webhook['app_id'] }} / {{ webhook['module'] }}</strong></h4>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></p>
+            </div>
+            </div>
+        </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% if table_header: %}
+        </tbody>
+    </table>
+{% endif %}

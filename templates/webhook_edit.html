@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "macros.html" import ghost_menulist with context %}
+{% from "macros.html" import ghost_fieldlist with context %}
+{% from "macros.html" import ghost_fieldlist_features with context %}
+
+{% if edit %}
+    {% set app = webhook['app_id'] or {'_id': '', 'name': '-', 'env': '-'} %}
+{% endif %}
+{% set page_title = edit and ('Edit webhook on app %s (%s/%s) - module %s %s' % (app['name'], app['env'], app['role'], webhook['module'], app_color)) or 'Create a Webhook' %}
+{% set page_title_class = 'to-left' %}
+
+{% block page_header %}
+    {% if webhook_id %}
+    <ul class="nav nav-stacked action-btns to-right">
+        <li class="app-actions">
+            <a href="/web/webhooks/{{ webhook_id }}/delete"><button class="btn btn-raised btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button></a>
+        </li>
+    </ul>
+    {% endif %}
+{% endblock %}
+
+{% block page_content %}
+    <form class="form-horizontal" id="webhook-form" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="webhook-edit-options">
+            {{ wtf.form_field(form.app_id_ro if edit else form.app_id, form_type='horizontal', readonly=edit, placeholder='Application Name') }}
+            {{ wtf.form_field(form.module, form_type='horizontal', placeholder='Module Name') }}
+            {{ wtf.form_field(form.rev, form_type='horizontal', placeholder='Revision Regex (ex: test*)') }}
+            {{ wtf.form_field(form.secret_token, form_type='horizontal', placeholder='Webhook Secret Token') }}
+            <div class="col-lg-offset-2">
+                {{ ghost_fieldlist(form.events, 'events', 'Events', 'events', 'Event', 'inline') }}
+            </div>
+            {{ wtf.form_field(form.command, form_type='horizontal', placeholder='Commands to run') }}
+            <div class="wrap fabric_execution_strategy">{{ wtf.form_field(form.fabric_execution_strategy, form_type='horizontal', placeholder='Application Name') }}</div>
+            <div class="wrap safe_deployment">{{ wtf.form_field(form.safe_deployment, form_type='horizontal') }}</div>
+            <div class="wrap safe_deployment_strategy">{{ wtf.form_field(form.safe_deployment_strategy, form_type='horizontal', placeholder='Safe Deployment Strategy') }}</div>
+            <div class="wrap instance_type">{{ wtf.form_field(form.instance_type, form_type='horizontal') }}</div>
+        </div>
+
+        <div class="col-lg-offset-2">
+            {{ wtf.form_field(form.submit) }}
+        </div>
+
+    </form>
+{% endblock %}
+
+{% block page_scripts %}
+    <script src="{{url_for('.static', filename='scripts/app-command.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='scripts/app-infos.js')}}?v={{current_revision}}"></script>
+    <script src="{{url_for('.static', filename='scripts/webhook-edit.js')}}?v={{current_revision}}"></script>
+{% endblock %}

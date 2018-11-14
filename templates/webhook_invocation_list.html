@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% if not all %}
+    {% set app_infos = 'for app ' + webhook['app_id']['name'] + ' (' + webhook['app_id']['env'] + ') | module ' + webhook['module'] %}
+{% else %}
+    {% set app_infos = '' %}
+{% endif %}
+{% set page_title = 'Webhooks invocations ' + app_infos %}
+
+{% block page_header %}
+    {% include 'partial_list_top_right.html' %}
+    <caption>Sorted by timestamp descending</caption>
+    <ul class="nav nav-stacked action-btns">
+        <li>
+            <a href="{{ request.referer or '#' }}" onclick="return window.history.back();"><button class="btn btn-raised btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</button></a>
+        </li>
+        <li>
+            <a href="/web/webhooks"><button class="btn  btn-raised btn-primary"><span class="glyphicon glyphicon-link"></span> Webhooks List</button></a>
+        </li>
+    </ul>
+{% endblock %}"
+
+{% block page_content %}
+    <table class="table tablelist">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Webhook config</th>
+                {% if all %}
+                <th>App</th>
+                <th>Module</th>
+                {% endif %}
+                <th>Jobs</th>
+                <th>Timestamp</th>
+                <th>Status</th>
+                <th>Payload</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% include 'webhook_invocation_list_content.html' %}
+            <tr id="loadmoreajaxloader">
+                <td colspan="9" style="display:none;"><img src="{{ url_for('static', filename='ajax-loader.gif')}}" alt="Loading..."></td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

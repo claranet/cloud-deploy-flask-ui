@@ -13,7 +13,7 @@ from ghost_tools import b64decode_utf8, b64encode_utf8
 from libs.provisioners.provisioner import DEFAULT_PROVISIONER_TYPE
 from models.apps import APPS_DEFAULT
 from settings import API_BASE_URL, PAGINATION_LIMIT
-from ui_helpers import get_pretty_yaml_from_json
+from ui_helpers import get_pretty_yaml_from_json, get_app_module_by_name
 from urllib import urlencode
 
 RFC1123_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
@@ -23,6 +23,7 @@ API_QUERY_SORT_TIMESTAMP_DESCENDING = '?sort=-timestamp'
 # FIXME: Static conf to externalize with Flask-Appconfig
 headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 url_apps = API_BASE_URL + '/apps'
+url_webhooks = API_BASE_URL + '/webhooks'
 url_jobs = API_BASE_URL + '/jobs'
 url_commands = API_BASE_URL + '/commands'
 url_commands_fields = url_commands + '/fields'
@@ -583,3 +584,120 @@ def normalize_app_object(app, embed_features_params_as_yml):
         app['build_infos']['src_container_img'] = dict(get_ghost_lxd_images()).get(fingerprint)
 
     return app
+
+
+def get_ghost_webhooks(query=None, page=None, application_name=None, module_name=None, webhook_rev=None):
+    try:
+        url = url_webhooks + API_QUERY_SORT_UPDATED_DESCENDING + '&embedded={"app_id": 1}'
+        if query:
+            url += "&where=" + query
+        else:
+            query = {}
+            if application_name:
+                applications = ['{{"app_id":"{app_id}"}}'.format(app_id=application['_id'])
+                                for application in get_ghost_apps(name=application_name)]
+                if len(applications) > 0:
+                    query['$or'] = '[{}]'.format(','.join(applications))
+                else:
+                    query['$or'] = '[{"app_id":"null"}]'
+
+            if module_name:
+                query['module'] = '"{}"'.format(module_name)
+
+            if webhook_rev:
+                query['rev'] = '"{}"'.format(webhook_rev)
+
+            querystr = '{{{query}}}'.format(query=','.join('"{key}":{value}'.format(key=key, value=value)
+                                                           for key, value in query.items()))
+            url += "&where=" + querystr
+        if page:
+            url += "&page=" + page
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        webhooks = result.json().get('_items', [])
+
+        # Add module object
+        for webhook in webhooks:
+            webhook['module_object'] = get_app_module_by_name(webhook['app_id'], webhook['module'])
+
+    except:
+        message = 'Failure: Error while retrieving webhooks'
+        flash(message, 'danger')
+        logging.exception(message)
+        webhooks = ['Failed to retrieve Webhooks']
+
+    return webhooks
+
+
+def create_ghost_webhook(webhook):
+    message, result, status_code = do_request(requests.post, url=url_webhooks, data=json.dumps(webhook), headers=headers,
+                                              success_message='Webhook created',
+                                              failure_message='Webhook creation failed')
+    return message, result, status_code
+
+
+def update_ghost_webhook(webhook_id, local_headers, webhook):
+    message, result, status_code = do_request(requests.patch, url=url_webhooks + '/' + webhook_id, data=json.dumps(webhook),
+                                              headers=local_headers,
+                                              success_message='Webhook "{}" updated'.format(webhook_id),
+                                              failure_message='Webhook "{}" update failed'.format(webhook_id))
+    return message, status_code
+
+
+def delete_ghost_webhook(webhook_id, local_headers):
+    message, result, status_code = do_request(requests.delete, url=url_webhooks + '/' + webhook_id, data=None,
+                                              headers=local_headers,
+                                              success_message='Webhook "{}" deleted'.format(webhook_id),
+                                              failure_message='Webhook "{}" deletion failed'.format(webhook_id))
+    return message, status_code
+
+
+def get_ghost_webhook(webhook_id):
+    try:
+        url = url_webhooks + '/' + webhook_id + '?embedded={"app_id": 1}'
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        webhook = result.json()
+        handle_response_status_code(result.status_code)
+        webhook['module_object'] = get_app_module_by_name(webhook['app_id'], webhook['module'])
+    except:
+        message = 'Failure: Error while retrieving webhook'
+        flash(message, 'danger')
+        logging.exception(message)
+        webhook = {}
+    return webhook
+
+
+def get_ghost_webhooks_invocations(query=None, page=None, webhook_id='all'):
+    try:
+        url = url_webhooks + '/%s/invocations' % webhook_id + API_QUERY_SORT_TIMESTAMP_DESCENDING + '&embedded={"webhook_id": 1}'
+        if query:
+            url += "&where=" + query
+        if page:
+            url += "&page=" + page
+        result = requests.get(url, headers=headers, auth=current_user.auth)
+        handle_response_status_code(result.status_code)
+        invocations = result.json().get('_items', [])
+
+        # Remove orphan invocations (no associated webhook config)
+        invocations = [invocation for invocation in invocations if invocation['webhook_id']]
+
+        for invocation in invocations:
+
+            try:
+                invocation['_created'] = datetime.strptime(invocation['_created'], RFC1123_DATE_FORMAT)
+            except:
+                logging.exception('Error while converting invocation\'s date')
+            try:
+                job_ids_list = ",".join(['"%s"' % job for job in invocation['jobs']])
+                invocation['app_object'] = get_ghost_app(invocation['webhook_id']['app_id'])
+                invocation['jobs_objects'] = get_ghost_jobs('{"_id":{"$in":[%s]}}' % job_ids_list)
+            except:
+                logging.exception('Error while retrieving webhooks invocations\' jobs')
+
+    except:
+        message = 'Failure: Error while retrieving webhooks invocations'
+        flash(message, 'danger')
+        logging.exception(message)
+        invocations = ['Failed to retrieve webhook invocations']
+
+    return invocations
