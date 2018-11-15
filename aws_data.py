@@ -1,9 +1,17 @@
 import json
+import os
+import requests
 from boto.ec2.instancetype import InstanceType
+from data_libs.aws_data_dal import AWS_OLD_INSTANCES_DATA_URL, AWS_INSTANCES_DATA_URL
+from data_libs.aws_data_dal import get_aws_per_region_data, get_fresh_region_data, update_aws_data_region
 
-AWS_INSTANCES_DATA_PATH = 'web_ui/data/aws_data_instance_types.json'
-AWS_INSTANCES_PREVIOUS_DATA_PATH = 'web_ui/data/aws_data_instance_types_previous.json'
-AWS_REGIONS_LOCATIONS_DATA_PATH = 'web_ui/data/aws_data_regions_locations.json'
+# full file AWS_INSTANCES_DATA_URL =
+# 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/{region}/index.json'
+# light file (on demand only extract)
+AWS_REGIONS_DATA_URL = 'https://d2xn1uj035lhvj.cloudfront.net/pricing/1.0/ec2/manifest.json'
+AWS_REGIONS_LOCATIONS_DATA_PATH = '{cwd}/data/aws_data_regions_locations.json'.format(
+    cwd=os.path.dirname(os.path.abspath(__file__))
+)
 
 instance_types = {}
 
@@ -87,42 +95,6 @@ instance_types['cn-northwest-1'] = {
 }  # yapf: disable
 
 
-def load_instance_data(instance_types, filename):
-    """
-    >>> instance_types = {}
-    >>> instance_types['cn-north-1'] = { InstanceType(name='t1.micro', cores='1', memory='0.613', disk='EBS only'), }
-    >>> load_instance_data(instance_types, AWS_INSTANCES_DATA_PATH)
-    >>> load_instance_data(instance_types, AWS_INSTANCES_PREVIOUS_DATA_PATH)
-    >>> { type.name: type for type in instance_types["cn-north-1"] }['t1.micro']
-    InstanceType:t1.micro-1,0.613,EBS only
-    >>> { type.name: type for type in instance_types["us-east-1"] }['t2.nano']
-    InstanceType:t2.nano-1,0.5,ebsonly
-    >>> { type.name: type for type in instance_types["us-east-1"] }['m3.medium']
-    InstanceType:m3.medium-1,3.75,1 x 4 SSD
-    >>> { type.name: type for type in instance_types["us-east-1"] }['c5.large']
-    InstanceType:c5.large-2,4,ebsonly
-    """
-
-    with open(filename) as data_file:
-        data = json.load(data_file)
-        for region_data in data:
-            region = region_data['region']
-            if not region in instance_types:
-                instance_types[region] = []
-
-            instanceTypes = region_data['instanceTypes']
-            for generation in instanceTypes:
-                for size in generation['sizes']:
-                    instance_types[region].append(InstanceType(name=size['size'],
-                                                               cores=size['vCPU'],
-                                                               memory=size['memoryGiB'],
-                                                               disk=size['storageGB']))
-
-
-load_instance_data(instance_types, AWS_INSTANCES_DATA_PATH)
-load_instance_data(instance_types, AWS_INSTANCES_PREVIOUS_DATA_PATH)
-
-
 def load_regions_locations(filename):
     """
     >>> locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
@@ -142,7 +114,66 @@ def load_regions_locations(filename):
             for location_data in json.load(data_file)
         }
 
-    return locations
+    with requests.get(AWS_REGIONS_DATA_URL.format()) as api_regions:
+        region_list = api_regions.json()
+        supplementary_locations = {
+            region: region
+            for region in region_list['ec2'] if region not in locations.keys()
+        }
+
+    return dict(locations, **supplementary_locations)
 
 
 regions_locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
+
+
+def get_aws_data(region):
+    try:
+        aws_db_data = get_aws_per_region_data(region)
+        if not aws_db_data:
+            raise Exception('Cannot get region {r}'.format(r=region))
+        return aws_db_data
+    except:
+        aws_db_data = {
+            'data_latest': get_fresh_region_data(region, AWS_INSTANCES_DATA_URL),
+            'data_previous': get_fresh_region_data(region, AWS_OLD_INSTANCES_DATA_URL),
+        }
+        try:
+            update_aws_data_region(region, aws_db_data['data_latest'], aws_db_data['data_previous'])
+        finally:
+            return aws_db_data
+
+
+def load_instance_data(instance_types, regions):
+    """
+    >>> instance_types = {}
+    >>> instance_types['cn-north-1'] = { InstanceType(name='t1.micro', cores='1', memory='0.613', disk='EBS only'), }
+    >>> locations = load_regions_locations(AWS_REGIONS_LOCATIONS_DATA_PATH)
+    >>> load_instance_data(instance_types, locations)
+    >>> { type.name: type for type in instance_types["cn-north-1"] }['t1.micro']
+    InstanceType:t1.micro-1,0.613,EBS only
+    >>> { type.name: type for type in instance_types["us-east-1"] }['t2.nano']
+    InstanceType:t2.nano-1,0.5 GiB,EBS only
+    >>> { type.name: type for type in instance_types["eu-west-1"] }['t3.xlarge']
+    InstanceType:t3.xlarge-4,16 GiB,EBS only
+    >>> { type.name: type for type in instance_types["eu-west-1"] }['t1.micro']
+    InstanceType:t1.micro-1,0.613 GiB,EBS only
+    >>> { type.name: type for type in instance_types["us-east-1"] }['c5.large']
+    InstanceType:c5.large-2,4 GiB,EBS only
+    """
+
+    for region in regions:
+        if region not in instance_types:
+            instance_types[region] = []
+            aws_data = get_aws_data(region)
+            for region_data in [aws_data.get('data_latest', {}), aws_data.get('data_previous', {})]:
+                for p in region_data.get('prices', []):
+                    size = p['attributes']
+                    instance_types[region].append(InstanceType(name=size['aws:ec2:instanceType'],
+                                                               cores=size['aws:ec2:vcpu'],
+                                                               memory=size['aws:ec2:memory'],
+                                                               disk=size['aws:ec2:storage']))
+            instance_types[region] = sorted(instance_types[region], key=lambda k: k.name)
+
+
+load_instance_data(instance_types, regions_locations)
