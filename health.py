@@ -3,6 +3,7 @@
 """Library to easily manage Host Health"""
 
 from __future__ import division
+import logging
 import psutil
 import threading
 import time
@@ -70,10 +71,13 @@ def get_host_health(cpu_percent, cpu_percent_details):
 
     status['boot_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(psutil.boot_time()))
 
-    status['network_stats'] = psutil.net_if_stats()
-    for (key, item) in status['network_stats'].items():
-        status['network_stats'][key] = status['network_stats'][key]._replace(duplex=duplex_map[item.duplex])
-    status['network_io'] = psutil.net_io_counters(pernic=True)
+    try:
+        status['network_stats'] = psutil.net_if_stats()
+        for (key, item) in status['network_stats'].items():
+            status['network_stats'][key] = status['network_stats'][key]._replace(duplex=duplex_map[item.duplex])
+        status['network_io'] = psutil.net_io_counters(pernic=True)
+    except OSError as err:
+        logging.error("Error while reading NIC status: {}}".format(err))
 
     return status
 
