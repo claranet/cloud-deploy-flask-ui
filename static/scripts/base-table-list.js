@@ -63,7 +63,7 @@ $(document).ready(function() {
                 fetchNextPage();
             }
         });
-        if ($('.tablelist').height() <= $('.container[role=main]').innerHeight()) { //fetchfing next page to fill the document
+        if ($('.tablelist').height() < $('.container[role=main]').innerHeight()) { //fetchfing next page to fill the document
             fetchNextPage();
         }
     }
