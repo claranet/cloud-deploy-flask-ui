@@ -38,15 +38,19 @@
     <br />
     <h4><i class="fa fa-wifi"></i> Network</h4>
     <div class="health-network-wrap">
-    {% for nic in status['network_io'] %}
-        {% if nic != 'lo' %}
-        {% set nic_stats = status.network_stats[nic] %}
-        <p class="health-info">stats: speed={{ nic_stats.speed}}MB, duplex={{ nic_stats.duplex}}, mtu={{ nic_stats.mtu}}, up={{ "yes" if nic_stats.isup else "no" }}</p>
-        {% set nic_io = status.network_io[nic] %}
-        <p class="health-info">incoming: bytes={{ nic_io.bytes_recv }}, pkts={{ nic_io.packets_recv }}, err={{ nic_io.errin }}, drops={{ nic_io.dropin }}</p>
-        <p class="health-info">outgoing: bytes={{ nic_io.bytes_sent }}, pkts={{ nic_io.packets_sent }}, err={{ nic_io.errout }}, drops={{ nic_io.dropout }}</p>
-        {% endif %}
-    {% endfor %}
+    {% if not 'network_io' in status %}
+        <p class="health-info">N/A</p>
+    {% else %}
+        {% for nic in status['network_io'] %}
+            {% if nic != 'lo' %}
+            {% set nic_stats = status.network_stats[nic] %}
+            <p class="health-info">stats: speed={{ nic_stats.speed}}MB, duplex={{ nic_stats.duplex}}, mtu={{ nic_stats.mtu}}, up={{ "yes" if nic_stats.isup else "no" }}</p>
+            {% set nic_io = status.network_io[nic] %}
+            <p class="health-info">incoming: bytes={{ nic_io.bytes_recv }}, pkts={{ nic_io.packets_recv }}, err={{ nic_io.errin }}, drops={{ nic_io.dropin }}</p>
+            <p class="health-info">outgoing: bytes={{ nic_io.bytes_sent }}, pkts={{ nic_io.packets_sent }}, err={{ nic_io.errout }}, drops={{ nic_io.dropout }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     </div>
 </div>
 
