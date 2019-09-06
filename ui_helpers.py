@@ -12,7 +12,7 @@ ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 try:
     with open(os.path.dirname(os.path.realpath(__file__)) + '/config.yml', 'r') as conf_file:
-        ui_config = yaml.load(conf_file)
+        ui_config = yaml.safe_load(conf_file)
 except:
     ui_config = {}
 

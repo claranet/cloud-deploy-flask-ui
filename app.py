@@ -154,7 +154,7 @@ def load_ghost_feature_presets():
         for file in os.listdir(presets_path):
             if file.endswith('.yml'):
                 with open(presets_path + file, 'r') as pre_file:
-                    prst = yaml.load(pre_file)
+                    prst = yaml.safe_load(pre_file)
                     presets[file] = prst
     except:
         logging.exception('Error while loading ghost feature presets')
