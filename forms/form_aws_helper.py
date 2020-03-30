@@ -147,7 +147,7 @@ def get_aws_as_groups(provider, region, **kwargs):
     except:
         logging.exception('Error while retrieving AWS autoscaling groups')
     return [('', '-- No Autoscale for this app --')] + [
-            (asg['AutoScalingGroupName'], '{} ({})'.format(asg['AutoScalingGroupName'], asg['LaunchConfigurationName']))
+            (asg['AutoScalingGroupName'], '{} ({})'.format(asg['AutoScalingGroupName'], asg.get('LaunchConfigurationName', 'No LaunchConfig')))
             for asg in asgs]
 
 
